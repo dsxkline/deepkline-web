@@ -10,8 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "less": "^4.2.0",
     "nuxt": "^3.11.2",
+    "split.js": "^1.6.5",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.5"
   }
 }
