@@ -2,9 +2,15 @@
 	import Split from "split.js";
 	onMounted(() => {
 		Split(["#split-left", "#split-right"], {
-			sizes: [20, 80],
+			sizes: [80, 20],
 			direction: "horizontal",
 			gutterSize: 3,
+			onDragStart: () => {
+				console.log("onDragStart");
+			},
+			onDrag: () => {
+				console.log("onDrag");
+			},
 			onDragEnd: () => {
 				console.log("onDragEnd");
 			}
@@ -27,7 +33,7 @@
 <style lang="less" scoped>
 	.split-container {
 		width: 100%;
-		height: calc(100vh - 88px);
+		height: calc(100vh - 0px);
 		.split-horizontal {
 			display: flex;
 			flex-direction: row;

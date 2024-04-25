@@ -2,7 +2,6 @@ export default {
     title: "BitKline",
     htmlAttrs: {
         lang: "en",
-        "data-theme": "dark" // 默认主题
     },
     meta: [
         { charset: "utf-8" },

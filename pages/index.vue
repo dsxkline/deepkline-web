@@ -4,7 +4,7 @@
 <template>
     <div class="main-container">
         <SplitContainer>
-            <template #left><LeftMenu></LeftMenu></template>
+            <template #right><LeftMenu></LeftMenu></template>
         </SplitContainer>
     </div>
 </template>
