@@ -5,7 +5,7 @@ require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: { enabled: true },
-	modules: ["@nuxtjs/tailwindcss", "@nuxtjs/color-mode",'@pinia/nuxt'],
+	modules: ["@nuxtjs/tailwindcss", "@nuxtjs/color-mode",'@pinia/nuxt','@element-plus/nuxt'],
 	tailwindcss: {
 		cssPath: ["~/assets/css/tailwind.css", { injectPosition: "first" }],
 		configPath: "./config/tailwind.config",

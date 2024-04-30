@@ -1,43 +1,47 @@
-<script setup lang="ts">
-const menuList = [
-    {
-        name: "home",
-        icon: "icon-home",
-        text: "首页",
-        active: true
-    },
-    {
-        name: "market",
-        icon: "icon-market",
-        text: "行情",
-        active: false
-    },
-    {
-        name: "trade",
-        icon: "icon-trade",
-        text: "交易",
-       active: false
-    }]
+<script lang="ts" setup>
+import { ref } from 'vue'
+import {
+  Document,
+  Menu as IconMenu,
+  Location,
+  Setting,
+} from '@element-plus/icons-vue'
 
-const changeMenu = (name: string) => {
-    menuList.forEach((item) => {
-        item.active = item.name === name;
-    });
-};
+const isCollapse = ref(true)
+const handleOpen = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
+const handleClose = (key: string, keyPath: string[]) => {
+  console.log(key, keyPath)
+}
 </script>
+
+
 <template>
-    <div class="left-menu">
-        <ul>
-            <li
-                v-for="(item, index) in menuList"
-                :key="index"
-                :class="{ active: item.active }"
-                @click="changeMenu(item.name)"
-            >
-                <i :class="item.icon"></i>
-                <span class="left-menu-item-text">{{ item.text }}</span>
-            </li>
-        </ul>
-       
-    </div>
+	<div class="left-menu flex justify-between">
+		<el-menu
+			default-active="2"
+			class="el-menu-vertical-demo"
+			:collapse="isCollapse"
+			@open="handleOpen"
+			@close="handleClose">
+			<el-menu-item index="1">
+				<el-icon><location /></el-icon>
+			</el-menu-item>
+			<el-menu-item index="2">
+				<el-icon><icon-menu /></el-icon>
+			</el-menu-item>
+			<el-menu-item index="3">
+				<el-icon><document /></el-icon>
+			</el-menu-item>
+			<el-menu-item index="4">
+				<el-icon><setting /></el-icon>
+			</el-menu-item>
+		</el-menu>
+	</div>
 </template>
+<style>
+.left-menu{
+    width:var(--menu-width);
+}
+</style>
