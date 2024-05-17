@@ -22,5 +22,7 @@ export default defineNuxtConfig({
 		head: headConfig
 	},
 	css: cssConfig,
-	postcss: postcssConfig
+	postcss: postcssConfig,
+	components: ["~/components", "~/components/common"],
+	
 });

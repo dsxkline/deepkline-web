@@ -1,4 +1,7 @@
 
+html:root {
+    --el-menu-base-level-padding:10px;
+}
 html.dark{
     // el-menu
     --el-menu-active-color: var(--el-color-primary);
@@ -12,4 +15,20 @@ html.dark{
     
     --el-bg-color-overlay:var(--transparent10);
     --el-border-color-light:var(--transparent10);
+
+    --el-switch-off-color:var(--el-menu-bg-color);
+}
+
+body 
+{
+    .el-switch {
+        --el-switch-on-color: var(--el-color-primary);
+        --el-switch-off-color: var(--transparent10);
+    }
+    .el-switch.is-checked .el-switch__core .el-switch__action{
+        background-color: var(--el-color-white);
+    }
+    .el-switch__core .el-switch__action{
+        background-color: var(--transparent50);
+    }
 }
