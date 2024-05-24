@@ -1,28 +1,24 @@
+import colorModeConfig from "./config/color.mode.config";
+import componentsConfig from "./config/components.config";
 import cssConfig from "./config/css.config";
 import headConfig from "./config/head.config";
+import modulesConfig from "./config/modules.config";
+import pluginsConfig from "./config/plugins.config";
 import postcssConfig from "./config/postcss.config";
+import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
 require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devtools: { enabled: true },
-	modules: ["@nuxtjs/tailwindcss", "@nuxtjs/color-mode",'@pinia/nuxt','@element-plus/nuxt'],
-	tailwindcss: {
-		cssPath: ["~/assets/css/tailwind.css", { injectPosition: "first" }],
-		configPath: "./config/tailwind.config",
-		exposeConfig: {
-			level: 2
-		},
-		config: {},
-		viewer: true
-	},
-	colorMode: {
-		classSuffix: ""
-	},
+	modules: modulesConfig,
+	tailwindcss: tailwindNuxtConfig,
+	colorMode: colorModeConfig,
 	app: {
 		head: headConfig
 	},
 	css: cssConfig,
 	postcss: postcssConfig,
-	components: ["~/components", "~/components/common"],
+	components: componentsConfig,
+	plugins:pluginsConfig
 	
 });

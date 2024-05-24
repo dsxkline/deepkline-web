@@ -1,7 +1,7 @@
 export default {
     title: "BitKline",
     htmlAttrs: {
-        lang: "en",
+        lang: "zh-CN",
     },
     meta: [
         { charset: "utf-8" },
@@ -13,5 +13,9 @@ export default {
         { name: "format-detection", content: "telephone=no" }
     ],
     link: [],
-    script: []
+    script: [
+        {
+            src:'/js/dsx.kline_v_3_0_0.js'
+        }
+    ]
 }

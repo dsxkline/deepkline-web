@@ -5,7 +5,9 @@
     <div class="main-container flex flex-row justify-between">
         <LeftMenu></LeftMenu>
         <SplitContainer>
-            <template #right></template>
+            <template #right>
+                <KlineChart></KlineChart>
+            </template>
         </SplitContainer>
         
     </div>
