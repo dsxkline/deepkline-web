@@ -1,7 +1,5 @@
-import { Ref } from 'vue'
-
-declare module '#app' {
-  interface NuxtApp {
-
-  }
+export enum ApiSource{
+  OKX,
+  BINANCE,
+  DSX
 }

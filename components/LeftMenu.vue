@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 	import { ref } from "vue";
 	import { Document, Menu as IconMenu, Location, Setting } from "@element-plus/icons-vue";
-	import {CommonFetch} from '~/fetch/common.fetch'
+import { ComposFetch } from "~/fetch";
 	const fn = async () => {
-		CommonFetch.getCommon().then(({ data, error }) => {
+		ComposFetch.commonFetch.getCommon().then(({ data, error }) => {
 			console.log(data.value,typeof(data.value),data.value?.name);
 		});
 	};
@@ -46,4 +46,3 @@
 		width: var(--menu-width);
 	}
 </style>
-~/untils/global.fetch../fetch/global.fetch

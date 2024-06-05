@@ -1,8 +1,8 @@
 <script setup lang="ts">
 	import { useStore } from "~/store";
 	
-	const store = useStore();
-	store.increment();
+	// const store = useStore();
+	// store.increment();
 </script>
 <template>
 	<div class="header border-b border-[--border-color] w-full">

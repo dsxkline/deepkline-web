@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia'
+import { ApiSource } from '~/types/types.d'
 
 export const useStore = defineStore({
   id: 'main',
   state: () => ({
-    count: 0
+    apiSource:ApiSource.OKX
   }),
   actions: {
-    increment() {
-      this.count++
+    setApiSource(source:ApiSource) {
+      this.apiSource = source
     }
   }
 })

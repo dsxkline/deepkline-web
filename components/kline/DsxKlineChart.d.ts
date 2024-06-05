@@ -1,28 +1,28 @@
-enum ChartType {
+export enum ChartType {
 	timeSharing = 0, // 分时图
 	timeSharing5 = 1, // 五日分时图
 	candle = 2, // K线图
 	moveTime = 3
 }
 // 蜡烛图实心空心
-enum CandleType {
+export enum CandleType {
 	hollow = 0, // 空心
 	solid = 1 // 实心
 }
 // 缩放K线锁定类型
-enum ZoomLockType {
+export enum ZoomLockType {
 	left = 1, // 锁定左边进行缩放
 	middle = 2, // 锁定中间进行缩放
 	right = 3, // 锁定右边进行缩放
 	follow = 4 // 跟随鼠标位置进行缩放，web版效果比较好
 }
 // 十字线模式
-enum CrossModel {
+export enum CrossModel {
 	longPress = 0, // 默认长按2秒才开始显示十字线
 	mouseOver = 1 // 鼠标模式，鼠标落下即开使显示十字线
 }
 // 请求加载状态
-enum LoadStatus {
+export enum LoadStatus {
 	default = 0,
 	ready = 1,
 	loading = 2,
@@ -30,41 +30,39 @@ enum LoadStatus {
 	error = 4
 }
 
-type OnLoading = (kline: DsxKline) => void;
-type NextPage = (data: any[], index: number) => void;
+export type OnLoading = (kline: DsxKline) => void;
+export type NextPage = (data: any[], index: number) => void;
 
-interface DsxKlineConfig {
-	element: Element;
+export interface DsxKlineConfig {
+	element?: Element;
 	chartType?: ChartType;
 	klineWidth?: number;
 	theme?: String;
 	candleType?: CandleType;
-	zoomLockType: ZoomLockType;
-	crossModel: CrossModel;
+	zoomLockType?: ZoomLockType;
+	crossModel?: CrossModel;
 	moveAnimationTime?: number;
-	transformers: Bollean;
-	isShowKlineTipPannel: true;
-	lastClose: number;
-	sideHeight: number;
-	paddingBottom: number;
-	paddingMiddle: number;
-	autoSize: Boolean;
-	debug: Boolean;
-	main: String[];
-	sides: String[];
-	isShowTips: Boolean;
-	allMin: Boolean;
-	onLoading: OnLoading;
-	nextPage: NextPage;
+	transformers?: Bollean;
+	isShowKlineTipPannel?: true;
+	lastClose?: number;
+	sideHeight?: number;
+	paddingBottom?: number;
+	paddingMiddle?: number;
+	autoSize?: Boolean;
+	debug?: Boolean;
+	main?: String[];
+	sides?: String[];
+	isShowTips?: Boolean;
+	allMin?: Boolean;
+	onLoading?: OnLoading;
+	nextPage?: NextPage;
+    datas?: string[];
+    page?: number;
 }
-declare class DsxKline {
+export declare class DsxKline {
 	constructor(config: DsxKlineConfig);
 	update(config: DsxKlineConfig): void;
     onLoading:OnLoading;
 	startLoading(): void;
     finishLoading(): void;
 }
-
-
-
-export { DsxKline, DsxKlineConfig };
