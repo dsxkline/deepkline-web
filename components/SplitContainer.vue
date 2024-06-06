@@ -3,7 +3,7 @@
 	onMounted(() => {
 		Split(["#split-left", "#split-right"], {
 			sizes: [20, 80],
-			minSize: 300,
+			minSize: [0,600],
 			direction: "horizontal",
 			gutterSize: 3,
 			onDragStart: () => {

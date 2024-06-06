@@ -1,1 +1,1 @@
-export default ["~/components", "~/components/common"]
+export default ["~/components", "~/components/common", "~/components/kline"];

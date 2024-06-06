@@ -1,29 +1,35 @@
 <script setup>
+	import { useKlineStore } from "~/store/kline";
 	import DsxKlineChart from "./DsxKlineChart";
-    import {ChartType,CandleType,ZoomLockType,CrossModel} from "./DsxKlineChart.d";
+	import { ChartType, CandleType, ZoomLockType, CrossModel } from "./DsxKlineChart.d";
 	const klineDom = ref(null);
 	onMounted(() => {
-		const chart = new DsxKlineChart({
+        const symbol = 'BTC-USDT'
+		const chart = new DsxKlineChart(symbol,{
 			element: klineDom.value,
 			autoSize: true,
-            // chartType:ChartType.candle,
+			// chartType:ChartType.candle,
 			// klineWidth: 1,
 			// theme: 'dark',
 			candleType: CandleType.solid,
-			// zoomLockType: ZoomLockType.follow,
-            crossModel:CrossModel.mouseOver,
+			zoomLockType: ZoomLockType.follow,
+			crossModel: CrossModel.mouseOver,
 			// transformers: true,
 			// isShowKlineTipPannel: true,
 			// sideHeight: 80,
 			// paddingBottom: 20,
 			// paddingMiddle: 0,
-            // main: ["EMA"], // 主图指标
+			// main: ["EMA"], // 主图指标
 			// sides: ["VOL"], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			// isShowTips: true,
-			allMin: false,
+			allMin: false
 		});
 		nextTick(() => {
 			chart.create();
+		});
+
+		watch(() => useKlineStore().cycle, (newVal, oldVal) => {
+			chart.updateCycle(newVal);
 		});
 	});
 </script>

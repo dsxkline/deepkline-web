@@ -5,10 +5,9 @@
 	// store.increment();
 </script>
 <template>
-	<div class="header border-b border-[--border-color] w-full">
-		<p>
-			<ThemeSwitch></ThemeSwitch>
-		</p>
+	<div class="header border-b border-[--border-color] w-full flex items-center">
+		<ThemeSwitch></ThemeSwitch>
+		<CycleBar></CycleBar>
 	</div>
 </template>
 

@@ -4,7 +4,7 @@ import { useStore } from "~/store";
 
 
 export const marketFetch = {
-    getKlines:(symbol:string,cycle:string='',after:string='',before:string='',limit:number=300)=>{
+    getKlines:(symbol:string='',cycle:string='',after:string='',before:string='',limit:number=300)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         console.log("apiSource",apiSource);
