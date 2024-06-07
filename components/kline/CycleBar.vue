@@ -14,7 +14,7 @@ const cycleList = ref([
     { label: '1周', value: '1W' },
     { label: '1月', value: '1M' }
 ])
-const cycle = ref('1M')
+const cycle = ref('1m')
 function onCycleChange(value){
     cycle.value = value
     useKlineStore().setCycle(value);
