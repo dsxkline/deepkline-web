@@ -5,7 +5,7 @@
 	});
 </script>
 <template>
-	<div class="main-container flex flex-row justify-between">
+	<div class="main-container flex justify-between flex-row-reverse">
 		<LeftMenu></LeftMenu>
 		<SplitContainer>
 			<template #right>

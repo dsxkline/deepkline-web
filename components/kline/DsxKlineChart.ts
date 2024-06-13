@@ -11,7 +11,7 @@ class DsxKlineChart {
 	cycle?: string;
 	after?: string;
 	before?: string;
-	limit?: number = 300;
+	limit: number = 300;
 	theme?: string;
 	sides: string[] = ["MACD"];
 	main: string[] = ["MA"];
@@ -65,14 +65,23 @@ class DsxKlineChart {
 					.format("YYYYMMDD HHmmss")
 					.split(" ");
 				return [date, time, o, h, l, c, v, a].join(",");
-			});
-			this.datas = datas;
+			}).reverse();
+			this.after = data.value.data[data.value.data.length - 1][0];
+			if (this.page == 1) {
+				this.datas = datas;
+			}else{
+				this.datas = datas.concat(this.datas);
+			}
+			
 			this.kline.update({
-				datas: datas.reverse(),
+				datas: this.datas,
 				page: this.page
 			});
 			this.page++;
 			this.kline.finishLoading();
+			if(datas.length<this.limit){
+				this.kline.scrollTheend();
+			}
 		});
 	}
 

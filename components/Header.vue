@@ -6,6 +6,8 @@
 </script>
 <template>
 	<div class="header border-b border-[--border-color] w-full flex items-center">
+		<SymbolInfo></SymbolInfo>
+		<SymbolTools></SymbolTools>
 		<ThemeSwitch></ThemeSwitch>
 		<CycleBar></CycleBar>
 	</div>
@@ -14,5 +16,6 @@
 <style lang="less" scoped>
 	.header {
 		height: var(--header-height);
+		background-color: var(--transparent05);
 	}
 </style>

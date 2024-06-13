@@ -3,5 +3,6 @@
         <Header></Header>
         <slot />
         <Footer></Footer>
+        <StatusBar></StatusBar>
     </div>
 </template>

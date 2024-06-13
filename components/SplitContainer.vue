@@ -20,7 +20,7 @@
 </script>
 <template>
 	<div class="split-container">
-		<div class="split-horizontal flex w-full h-full">
+		<div class="split-horizontal flex w-full h-full flex-row-reverse">
 			<div id="split-left">
 				<slot name="left"></slot>
 			</div>
@@ -34,7 +34,7 @@
 <style lang="less" scoped>
 	.split-container {
 		width: calc(100% - var(--menu-width));
-		height: calc(100vh - var(--footer-height) - var(--header-height));
+		height: calc(100vh - var(--footer-height) - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			&:deep(.gutter) {
 				background-color: var(--border-color);

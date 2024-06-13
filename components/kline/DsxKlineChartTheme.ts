@@ -16,9 +16,9 @@ export default {
 			color: "#c5cbce", // 字体颜色
 			fontSize: (window.innerWidth < 999 ? 10 : 12) * window.devicePixelRatio, // 字体大小
 			redColor: "#F5465C",
-			greenColor: "#2DBD85",
+			greenColor: "rgb(0,220,130)",
 			rectRedColor: "#F5465C", // 矩形红色 一般用作成交量
-			rectGreenColor: "#2DBD85", // 矩形绿色
+			rectGreenColor: "rgb(0,220,130)", // 矩形绿色
 			crossLineColor: "rgba(255, 255, 255, 0.4)", // 十字线颜色
 			crossLineWidth: 0.5 * window.devicePixelRatio, // 十字线宽度
 			crossBorderColor: "rgba(255,255,255,0.05)", // 十字线边框颜色

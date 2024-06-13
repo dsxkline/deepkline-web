@@ -6,5 +6,6 @@
 <style lang="less" scoped>
 .footer {
     height: var(--footer-height);
+    background-color: var(--transparent05);
 }
 </style>

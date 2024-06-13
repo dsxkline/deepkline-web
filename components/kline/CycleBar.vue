@@ -21,7 +21,7 @@ function onCycleChange(value){
 }
 </script>
 <template>
-<div class="cycle-bar ml-4 w-max flex gap-1 *:p-1 *:px-3 *:rounded *:text-xs *:cursor-pointer">
+<div class="cycle-bar ml-4 w-max flex gap-1 *:p-1 *:px-2 *:rounded *:text-xs *:cursor-pointer">
     <div class="cycle-bar-item" v-for="(item, index) in cycleList" :key="index" :class="{active: item.value === cycle}" @click="onCycleChange(item.value)">
         {{item.label}}
     </div>
@@ -34,7 +34,7 @@ function onCycleChange(value){
     }
     .active{
         background-color: var(--el-menu-active-color);
-        color: #fff;
+        color: rgb(var(--color-bg-base));
     }
 }
 </style>

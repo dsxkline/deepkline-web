@@ -179,6 +179,7 @@ export declare class DsxKline {
 	nextPage: NextPage;
 	startLoading(): void;
 	finishLoading(): void;
+	scrollTheend():void;
 	updateIndex(main: string[] = [], sides: string[] = []): void;
 	updateChartType(chartType: any);
 	_zoomAnimation(n: number, x: number): void;
