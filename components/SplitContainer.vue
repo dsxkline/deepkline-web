@@ -5,15 +5,21 @@
 	const splitLeft = ref(null);
 	const splitRight = ref(null);
 	const rightWidth = 300;
+	const windowWidth = ref(window?.innerWidth);
+    const updateWindowWidth = () => {
+      windowWidth.value = window.innerWidth;
+	  setAutoSplit();
+    }
 	let left = 80;
 	let right = 100 - left;
 	let split: Split.Instance;
 	onMounted(() => {
+		window.addEventListener('resize', updateWindowWidth);
 		setAutoSplit();
 		split = Split(["#split-left", "#split-right"], {
 			sizes: [left, right],
 			minSize: [600, 0],
-			maxSize: [window.innerWidth, 400],
+			maxSize: [window.innerWidth, rightWidth],
 			direction: "horizontal",
 			gutterSize: 3,
 			onDragStart: () => {
@@ -27,6 +33,9 @@
 			}
 		});
 	});
+	onUnmounted(() => {
+      window.removeEventListener('resize', updateWindowWidth);
+    });
 	function setAutoSplit() {
 		left = ((window.innerWidth - rightWidth) / window.innerWidth) * 100;
 		right = 100 - left;

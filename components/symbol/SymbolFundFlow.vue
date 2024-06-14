@@ -7,17 +7,17 @@
 	const datas = [
 		////////////////////////////////////////
 		[
-			{ name: "圣彼得堡来客", value: 5.6 },
-			{ name: "陀思妥耶夫斯基全集", value: 1 },
-			{ name: "史记精注全译（全6册）", value: 0.8 },
-			{ name: "加德纳艺术通史", value: 0.5 },
-			{ name: "表象与本质", value: 0.5 },
-			{ name: "其它", value: 3.8 }
+			{ name: "大单卖出", value: 5.6 },
+			{ name: "中单卖出", value: 1 },
+			{ name: "小单卖出", value: 0.8 },
+			{ name: "大单买入", value: 0.5 },
+			{ name: "中单买入", value: 0.5 },
+			{ name: "小单买入", value: 3.8 }
 		]
 	];
 	const option = {
 		title: {
-			text: "阅读书籍分布",
+			text: "15分钟",
 			left: "center",
 			textStyle: {
 				color: "rgb(var(--text-color))",
@@ -31,11 +31,26 @@
 			left: "0", // 图表容器的左边距
 			right: "0" // 图表容器的右边距
 		},
+        legend: {
+            bottom: '5%',
+            left: '0',
+            right:'0',
+            itemWidth: 10,
+            itemHeight: 10,
+            itemStyle:{
+                borderWidth:0,
+            },
+            textStyle:{
+                color: "rgb(var(--text-color))",
+                fontSize:12,
+            }
+        },
 		series: datas.map(function (data, idx) {
 			var top = 0;
 			return {
 				type: "pie",
 				radius: [20, 60],
+                center: ['50%', '30%'],
 				top: "0",
 				height: "100%",
 				left: "0",
@@ -92,7 +107,6 @@
 	<div class="w-full h-full">
 		<h3>资金流向</h3>
 		<div class="container">
-			<h4>15分钟</h4>
 			<div
 				class="chart w-full h-[300px]"
 				ref="chart"></div>
