@@ -2,6 +2,7 @@
 	import { ref } from "vue";
 	import { Document, Menu as IconMenu, Location, Setting } from "@element-plus/icons-vue";
 import { ComposFetch } from "~/fetch";
+import { useStore } from "~/store";
 	const fn = async () => {
 		ComposFetch.commonFetch.getCommon().then(({ data, error }) => {
 			console.log(data.value,typeof(data.value),data.value?.name);
@@ -11,6 +12,7 @@ import { ComposFetch } from "~/fetch";
 	const handleOpen = (key: string, keyPath: string[]) => {
 		console.log(key, keyPath);
 		fn();
+		useStore().setSplitRight(!useStore().hideSplitRight)
 	};
 	const handleClose = (key: string, keyPath: string[]) => {
 		console.log(key, keyPath);

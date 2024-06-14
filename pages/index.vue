@@ -8,8 +8,11 @@
 	<div class="main-container flex justify-between flex-row-reverse">
 		<LeftMenu></LeftMenu>
 		<SplitContainer>
-			<template #right>
+			<template #left>
 				<KlineChart></KlineChart>
+			</template>
+			<template #right>
+				<SymbolMarketDatas></SymbolMarketDatas>
 			</template>
 		</SplitContainer>
 	</div>

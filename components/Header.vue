@@ -6,7 +6,7 @@
 </script>
 <template>
 	<div class="header border-b border-[--border-color] w-full flex items-center">
-		<SymbolInfo></SymbolInfo>
+		<SymbolTitle></SymbolTitle>
 		<SymbolTools></SymbolTools>
 		<ThemeSwitch></ThemeSwitch>
 		<CycleBar></CycleBar>

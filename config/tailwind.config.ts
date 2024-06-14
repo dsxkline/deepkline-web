@@ -15,7 +15,9 @@ export default <Partial<Config>>{
 				highlight: withOpacityValue("--color-highlight"),
 				main: withOpacityValue("--color-text-main"),
 				muted: withOpacityValue("--color-text-muted"),
-				invert: withOpacityValue("--color-text-invert")
+				invert: withOpacityValue("--color-text-invert"),
+				green:withOpacityValue("--color-green"),
+				red:withOpacityValue("--color-red"),
 			},
 			// 设置背景颜色基础类
 			// 其中 base 基础类是用于设置网页背景色，nav 基础类用于设置导航栏背景色
