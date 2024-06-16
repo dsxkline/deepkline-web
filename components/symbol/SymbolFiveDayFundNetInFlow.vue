@@ -23,7 +23,7 @@ const option = {
   },
 
   grid: {
-	top:20,
+	top:10,
     left: '0',
     right: '10',
     bottom: '3%',
@@ -108,7 +108,7 @@ onDeactivated(() => {
 			5日主力净流入:
 		</h3>
 		<div class="container">
-			<div class="chart w-full h-[260px]" ref="chart"></div>
+			<div class="chart w-full h-[150px]" ref="chart"></div>
 		</div>
 	</div>
 </template>

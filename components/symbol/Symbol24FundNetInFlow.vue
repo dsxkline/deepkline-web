@@ -17,7 +17,7 @@ const option = {
 		trigger: 'axis',
 	},
 	grid: {
-		top: "10", // 图表容器的上边距
+		top: "5", // 图表容器的上边距
 		bottom: "30", // 图表容器的下边距
 		// left: "50", // 图表容器的左边距
 		right: "10" // 图表容器的右边距
@@ -77,7 +77,7 @@ onDeactivated(() => {
 
 		</h3>
 		<div class="container">
-			<div class="chart w-full h-[200px]" ref="chart"></div>
+			<div class="chart w-full h-[150px]" ref="chart"></div>
 		</div>
 	</div>
 </template>
