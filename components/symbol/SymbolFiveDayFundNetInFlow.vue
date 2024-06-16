@@ -103,7 +103,7 @@ onDeactivated(() => {
 });
 </script>
 <template>
-	<div class="w-full h-full mt-3 border-b border-[--border-color] pb-3 ">
+	<div class="w-full h-full mt-2 border-b border-[--border-color] pb-3 ">
 		<h3 class="py-2 text-sm mb-3 flex justify-between items-center">
 			5日主力净流入:
 		</h3>
