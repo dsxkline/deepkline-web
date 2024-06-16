@@ -55,6 +55,8 @@
 			</li>
 		</ul>
 		<SymbolFundFlow></SymbolFundFlow>
+		<Symbol24FundNetInFlow></Symbol24FundNetInFlow>
+		<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
 	</div>
 </template>
 

@@ -4,7 +4,7 @@
 	const splitHorizontal = ref(null);
 	const splitLeft = ref(null);
 	const splitRight = ref(null);
-	const rightWidth = 300;
+	const rightWidth = 360;
 	const windowWidth = ref(window?.innerWidth);
     const updateWindowWidth = () => {
       windowWidth.value = window.innerWidth;
@@ -37,7 +37,7 @@
       window.removeEventListener('resize', updateWindowWidth);
     });
 	function setAutoSplit() {
-		left = ((window.innerWidth - rightWidth) / window.innerWidth) * 100;
+		left = ((window.innerWidth - rightWidth) / window.innerWidth) * 100.0;
 		right = 100 - left;
 	}
 	function addAnimation(dom: HTMLElement | null) {
@@ -111,10 +111,11 @@
 		height: calc(100vh - var(--footer-height) - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			#split-left {
-				width: calc(100% - 300px);
+				width: calc(100vw - 360px);
 			}
 			#split-right {
-				width: 300px;
+				width: 360px;
+				overflow-x:hidden;
 			}
 			&:deep(.gutter) {
 				background-color: var(--border-color);
