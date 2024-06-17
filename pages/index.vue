@@ -3,6 +3,7 @@
 	onMounted(async () => {
 		console.log("server", process.server);
 	});
+	
 </script>
 <template>
 	<div class="main-container flex justify-between flex-row-reverse">

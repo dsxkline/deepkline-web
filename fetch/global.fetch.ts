@@ -1,9 +1,9 @@
 import { useFetch, type UseFetchOptions } from "#app";
 import CryptoJS from 'crypto-js'
 const config = {
-    secretKey: "e6eb7293-4297-44f4-a117-4daaa8d04b55",
-    apikey: "2C1D26D7BADADA5535436C2F4208F2C8",
-    passPhrase:'gsjf@261811252F'
+    secretKey: process.env.OKX_SECRET_KEY||'',
+    apikey: process.env.OKX_API_KEY,
+    passPhrase: process.env.OKX_PASSPHRASE,
 }
 
 const sign = <T>(options:UseFetchOptions<T>,path:string)=>{
