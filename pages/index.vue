@@ -1,9 +1,12 @@
 <script lang="ts" setup>
 	import { useNuxtApp } from "#app";
+	import OKXWebSocket from "@/fetch/okx/okx.websocket";
 	onMounted(async () => {
 		console.log("server", process.server);
+		const ws = new OKXWebSocket()
+		ws.connect();
 	});
-	
+
 </script>
 <template>
 	<div class="main-container flex justify-between flex-row-reverse">
