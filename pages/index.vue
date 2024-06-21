@@ -5,6 +5,10 @@
 		console.log("server", process.server);
 		const ws = new OKXWebSocket()
 		ws.connect();
+		ws.subTickers(['BTC-USDT-SWAP','ETH-USD-SWAP'], (data,error) => {
+			console.log(data,error);
+		}
+);
 	});
 
 </script>

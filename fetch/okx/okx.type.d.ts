@@ -37,3 +37,26 @@ export interface Instruments {
     tickSz: number,
     uly: string
 }
+
+export interface SubMsg {
+    arg: SubArgs,
+    op: string
+}
+
+export interface SubArgs {
+    instId: string,
+    channel: string
+}
+
+export interface SubData {
+    event: string,
+    arg: SubArgs,
+    code: string,
+    msg: string,
+    connId: string
+}
+
+export interface SendData{
+    arg: SubArgs,
+    data: any[]
+}

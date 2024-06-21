@@ -8,6 +8,7 @@ export default class BaseWebSocket {
 	private reconnectSuccessCallback: any = null;
 	private url: string = "";
 	private subscribers: any = [];
+	private waitSendDatas: any = [];
 	constructor(url: string, reconnectErrorCallback: (error:Event|null)=>void = ()=>{}, reconnectSuccessCallback: any|null = null) {
 		this.url = url;
         this.reconnectErrorCallback = reconnectErrorCallback;
@@ -18,6 +19,10 @@ export default class BaseWebSocket {
 		this.ws.onopen = () => {
 			this.reconnectCount = 0;
 			this.reconnectSuccessCallback && this.reconnectSuccessCallback();
+			this.waitSendDatas.forEach((data: any) => {
+				this.send(data);
+			});
+			this.waitSendDatas = [];
 		};
 		this.ws.onmessage = (event) => {
             this.notifySubscribers(event.data,null);
@@ -45,7 +50,11 @@ export default class BaseWebSocket {
 		this.ws && this.ws.close();
 	}
 	send(data: any) {
-		this.ws && this.ws.send(data);
+		if (!this.isConnected) {
+			this.waitSendDatas.push(data);
+			return;
+		}
+		this.ws && this.ws.send(JSON.stringify(data));
 	}
 	
 	destroy() {
@@ -69,8 +78,9 @@ export default class BaseWebSocket {
 		return this.ws && this.ws.readyState === WebSocket.OPEN;
 	}
 
-	subscribe(callback: (data: any,error: Event|null) => void) {
+	subscribe(sendDatas:any,callback: (data: any,error: Event|null) => void) {
 		this.subscribers.push(callback);
+		this.send(sendDatas);
 	}
 
 	unsubscribe(callback: any) {
