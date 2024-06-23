@@ -4,15 +4,15 @@ export default class BaseWebSocket {
 	private reconnectCount = 0;
 	private reconnectMax = 300;
 	private reconnectInterval = 3000;
-	private reconnectErrorCallback: (error:Event|null)=>void;
+	private reconnectErrorCallback: (error: Event | null) => void;
 	private reconnectSuccessCallback: any = null;
 	private url: string = "";
-	private subscribers: any = [];
+	private subscribers: Record<string, any> = {};
 	private waitSendDatas: any = [];
-	constructor(url: string, reconnectErrorCallback: (error:Event|null)=>void = ()=>{}, reconnectSuccessCallback: any|null = null) {
+	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
-        this.reconnectErrorCallback = reconnectErrorCallback;
-        this.reconnectSuccessCallback = reconnectSuccessCallback;
+		this.reconnectErrorCallback = reconnectErrorCallback;
+		this.reconnectSuccessCallback = reconnectSuccessCallback;
 	}
 	connect() {
 		this.ws = new WebSocket(this.url);
@@ -25,16 +25,16 @@ export default class BaseWebSocket {
 			this.waitSendDatas = [];
 		};
 		this.ws.onmessage = (event) => {
-            this.notifySubscribers(event.data,null);
+			this.notifySubscribers(event.data, null);
 		};
 		this.ws.onerror = (event) => {
-            this.reconnectErrorCallback && this.reconnectErrorCallback(event);
-            this.notifySubscribers(null,event);
-        };
+			this.reconnectErrorCallback && this.reconnectErrorCallback(event);
+			this.notifySubscribers(null, event);
+		};
 		this.ws.onclose = (event) => {
-            this.notifySubscribers(null,event);
-            this.reconnect();
-        };
+			this.notifySubscribers(null, event);
+			this.reconnect();
+		};
 	}
 	reconnect() {
 		if (this.reconnectCount < this.reconnectMax) {
@@ -56,7 +56,7 @@ export default class BaseWebSocket {
 		}
 		this.ws && this.ws.send(JSON.stringify(data));
 	}
-	
+
 	destroy() {
 		this.ws && this.ws.close();
 		this.ws = null;
@@ -78,16 +78,63 @@ export default class BaseWebSocket {
 		return this.ws && this.ws.readyState === WebSocket.OPEN;
 	}
 
-	subscribe(sendDatas:any,callback: (data: any,error: Event|null) => void) {
-		this.subscribers.push(callback);
+	subscribe(sendDatas: any, tag: Record<string, any>, callback: (message: any, error: Event | null) => void): string {
+		const subId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+		this.subscribers[subId] = {
+			tag: tag,
+			callback: callback
+		};
 		this.send(sendDatas);
+		return subId;
 	}
 
-	unsubscribe(callback: any) {
-		this.subscribers = this.subscribers.filter((sub: any) => sub !== callback);
+	unsubscribe(subId: string) {
+		if (this.subscribers[subId]) {
+			delete this.subscribers[subId];
+		}
 	}
 
-	notifySubscribers(message: any,error:Event|null) {
-		this.subscribers.forEach((callback: (data: any,error: Event|null) => any) => callback(message,error));
+	unsubscribeWithCallBack(callback: (data: any, error: Event | null) => void) {
+		Object.values(this.subscribers).forEach((subscriber: any) => {
+			if (subscriber.callback === callback) {
+				delete this.subscribers[subscriber.tag];
+			}
+		});
 	}
+	unsubscribeWithTag(tag: Record<string, any>) {
+		Object.values(this.subscribers).forEach((subscriber: any) => {
+			if (subscriber.tag === tag) {
+				delete this.subscribers[subscriber.subId];
+			}
+		});
+	}
+	unsubscribeAll() {
+		this.subscribers = {};
+	}
+
+	notifySubscribers(message: any, error: Event | null) {
+		if(typeof message === 'string') message = JSON.parse(message);
+		Object.values(this.subscribers).forEach(({ tag, callback }) => {
+			const isMatch = this.routerWithTag(tag, message)
+			if (!isMatch) return;
+			callback(message, error)
+		});
+	}
+
+	routerWithTag(tag: Record<string, any>, message: any): boolean {
+		if (!message) return false;
+		if (Object.keys(tag).length === 0) {
+			return true;
+		}
+		const isMatch = Object.keys(tag).every((key) => {
+			if (typeof tag[key] === 'object') {
+				return this.routerWithTag(tag[key], message[key])
+			} else {
+				return tag[key] === message[key];
+			}
+		});
+		return isMatch;
+	}
+
+
 }

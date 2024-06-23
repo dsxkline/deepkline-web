@@ -19,7 +19,7 @@
 		split = Split(["#split-left", "#split-right"], {
 			sizes: [left, right],
 			minSize: [600, 0],
-			maxSize: [window.innerWidth, rightWidth],
+			// maxSize: [window.innerWidth, rightWidth],
 			direction: "horizontal",
 			gutterSize: 3,
 			onDragStart: () => {
@@ -57,7 +57,9 @@
 		addAnimation(splitRight.value);
 		addAnimation(splitLeft.value);
 		if (val) split.setSizes([100, 0]);
-		else split.setSizes([left, right]);
+		else {
+			split.setSizes([left, right]);
+		}
 		removeAnimation(splitRight.value);
 		removeAnimation(splitLeft.value);
 	}
