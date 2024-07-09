@@ -6,7 +6,7 @@
 	const klineDom = ref(null);
 	onMounted(() => {
 		const symbol = "BTC-USDT";
-		const chart = new DsxKlineChart(symbol, {
+		const chart = new DsxKlineChart(symbol,useKlineStore().cycle, {
 			element: klineDom.value||'',
 			autoSize: true,
 			chartType: ChartType.candle,
@@ -23,7 +23,7 @@
 			// main: ["EMA"], // 主图指标
 			// sides: ["VOL"], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
-			allMin: false
+			allMin: false,
 		});
 		nextTick(() => {
 			chart.create();
@@ -54,7 +54,7 @@
 				chart.selectSides(newVal);
 			}
 		);
-		
+
 	});
 </script>
 <template>

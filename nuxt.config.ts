@@ -9,6 +9,10 @@ import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
 require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+	devServer: {
+		port: 3010,
+		host: "0.0.0.0",
+	},
 	devtools: { enabled: true },
 	modules: modulesConfig,
 	tailwindcss: tailwindNuxtConfig,

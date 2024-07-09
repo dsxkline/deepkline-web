@@ -184,6 +184,7 @@ export declare class DsxKline {
 	updateChartType(chartType: any);
 	_zoomAnimation(n: number, x: number): void;
 	_setMiddleKlineLineIndex(x: number): void;
+	refreshLastOneData: (item:string,cycle:string) => void;
 }
 
 export interface DsxWindow extends Window {

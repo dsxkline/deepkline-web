@@ -2,7 +2,7 @@ import moment from "moment";
 import { DsxConfig, DsxKline, type DsxKlineConfig, type DsxWindow } from "./DsxKlineChart.d";
 import { ComposFetch } from "~/fetch";
 import KlineTheme from "./DsxKlineChartTheme";
-import { CandleCannel } from "~/fetch/okx/okx.type";
+import { CandleCannel } from "~/fetch/okx/okx.type.d";
 declare var window: DsxWindow;
 
 class DsxKlineChart {
@@ -18,13 +18,14 @@ class DsxKlineChart {
 	main: string[] = ["MA"];
 	datas: string[] = [];
 	chartType: any;
-	page:number = 1;
+	page: number = 1;
 	// 主题配置
-    themeConfig = new window.DsxConfig();
-	subCandleId:string = '';
-	constructor(symbol: string, config: DsxKlineConfig) {
+	themeConfig = new window.DsxConfig();
+	subCandleId: string = "";
+	constructor(symbol: string, cycle: string, config: DsxKlineConfig) {
 		this.config = config;
 		this.symbol = symbol;
+		this.cycle = cycle;
 	}
 
 	/**
@@ -40,21 +41,49 @@ class DsxKlineChart {
 	}
 
 	subscribe() {
-		const {wsb} = useNuxtApp();
-		this.subCandleId = wsb.subCandle(CandleCannel.candle1D,[this.symbol+''], (message, error) => {
-			console.log("candle3M",message.data, error);
-			if(message.data) message.data.forEach(([ts,o,h,l,c]) => {
-				console.log("candle3M",ts,o,h,l,c, error);
-			})
-		})
+		const { $wsb, $ws } = useNuxtApp();
+		const candleCycle: Record<string, CandleCannel> = {
+			"1m": CandleCannel.candle1m,
+			"5m": CandleCannel.candle5m,
+			"15m": CandleCannel.candle15m,
+			"30m": CandleCannel.candle30m,
+			"1h": CandleCannel.candle1H,
+			"2h": CandleCannel.candle2H,
+			"4h": CandleCannel.candle4H,
+			"1D": CandleCannel.candle1D,
+			"1W": CandleCannel.candle1W,
+			"1M": CandleCannel.candle1M
+		};
+
+		this.subCandleId = $wsb.subCandle(candleCycle[this.cycle + ""], [this.symbol + ""], (message, error) => {
+			console.log(candleCycle[this.cycle + ""], message.data, error);
+			if (message.data)
+				message.data.forEach((item) => {
+					// console.log(candleCycle[this.cycle+""],item, error);
+					this.refresh(item);
+				});
+		});
+		let lastTikerClose = "";
+		$ws.subTickers([this.symbol + ""], (message, error) => {
+			// console.log("subTickers", message.data, error);
+			if (message.data)
+				message.data.forEach((item) => {
+					if (item.last !== lastTikerClose) {
+						lastTikerClose = item.last;
+						console.log("subTickers", item, error);
+						const amount = parseFloat(item.last) * parseFloat(item.lastSz);
+						this.refresh([item.ts.toString(), item.last, item.last, item.last, item.last, item.lastSz, amount.toString()]);
+					}
+				});
+		});
 	}
 
 	unsubscribe() {
-		const {wsb} = useNuxtApp();
-		wsb.unsubscribe(this.subCandleId)
+		const { $wsb } = useNuxtApp();
+		$wsb.unsubscribe(this.subCandleId);
 	}
 
-	createTheme(){
+	createTheme() {
 		KlineTheme.createDarkTheme(this.themeConfig);
 		KlineTheme.createWhiteTheme(this.themeConfig);
 		KlineTheme.createNavyTheme(this.themeConfig);
@@ -68,7 +97,10 @@ class DsxKlineChart {
 
 	onLoading(kline: DsxKline) {
 		this.page = 1;
+		this.after = "";
 		this.getKlineData();
+		this.unsubscribe();
+		this.subscribe();
 	}
 
 	onNextPage(data: any[], index: number) {
@@ -77,28 +109,31 @@ class DsxKlineChart {
 
 	getKlineData() {
 		ComposFetch.marketFetch.getKlines(this.symbol, this.cycle, this.after, this.before, this.limit).then(({ data, error }) => {
-			const datas: string[] = data.value.data.map((item: string[]) => {
-				const [d, o, h, l, c, v, a] = item;
-				const [date, time] = moment
-					.unix(parseInt(d) / 1000)
-					.format("YYYYMMDD HHmmss")
-					.split(" ");
-				return [date, time, o, h, l, c, v, a].join(",");
-			}).reverse();
-			this.after = data.value.data[data.value.data.length - 1][0];
+			const datas: string[] = data.value.data
+				.map((item: string[]) => {
+					const [d, o, h, l, c, v, a] = item;
+					const [date, time] = moment
+						.unix(parseInt(d) / 1000)
+						.format("YYYYMMDD HHmmss")
+						.split(" ");
+					return [date, time, o, h, l, c, v, a].join(",");
+				})
+				.reverse();
+			// 下一页的开始时间
+			if (datas.length > 0) this.after = data.value.data[data.value.data.length - 1][0];
 			if (this.page == 1) {
 				this.datas = datas;
-			}else{
+			} else {
 				this.datas = datas.concat(this.datas);
 			}
-			
+
 			this.kline.update({
 				datas: this.datas,
 				page: this.page
 			});
 			this.page++;
 			this.kline.finishLoading();
-			if(datas.length<this.limit){
+			if (datas.length < this.limit) {
 				this.kline.scrollTheend();
 			}
 		});
@@ -158,8 +193,6 @@ class DsxKlineChart {
 	updateCycle(cycle: string) {
 		this.cycle = cycle;
 		this.kline.startLoading();
-		this.unsubscribe();
-		this.subscribe();
 	}
 
 	updateTheme(theme: string) {
@@ -167,6 +200,27 @@ class DsxKlineChart {
 		console.log(this.themeConfig);
 		this.kline.theme = this.themeConfig.theme[this.theme == "dark" ? "dark" : "white"];
 		this.kline.updateIndex(this.main, this.sides);
+	}
+
+	refresh(d: string[]) {
+		const [ts, o, h, l, c, v, a] = d;
+		const t = moment(parseInt(ts)).format("YYYYMMDD HH:mm:ss");
+		let date = t.split(" ")[0].replaceAll("/", "");
+		let time = t.split(" ")[1].replaceAll(":", "");
+		let item = [date, time, o, h, l, c, v, a].join(",");
+		let cycle = "t";
+		if (this.cycle == "1D") cycle = "d";
+		if (this.cycle == "1W") cycle = "w";
+		if (this.cycle == "1M") cycle = "m";
+		if (this.cycle == "1m") cycle = "m1";
+		if (this.cycle == "5m") cycle = "m5";
+		if (this.cycle == "15m") cycle = "m15";
+		if (this.cycle == "30m") cycle = "m30";
+		if (this.cycle == "60m") cycle = "m60";
+		console.log(t, this.cycle, item);
+		if (this.kline) {
+			this.kline.refreshLastOneData(item, cycle);
+		}
 	}
 }
 

@@ -8,7 +8,7 @@ export enum ApiSource{
 
 declare module '#app' {
   interface NuxtApp {
-    ws: OKXWebSocket,
-    wsb: OKXWebSocket,
+    $ws: OKXWebSocket,
+    $wsb: OKXWebSocket,
   }
 }

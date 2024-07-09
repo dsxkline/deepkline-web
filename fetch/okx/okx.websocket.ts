@@ -60,14 +60,10 @@ export default class OKXWebSocket extends BaseWebSocket {
         return this.subscribe(sendDatas,tag,callback);
     }
     unsubscribe(subId: string): void {
-        const {tag,sendDatas,callback} = this.subscribers[subId];
-        const unSendDatas = sendDatas.map((data: { args: any; }) => {
-            return {
-                op: "unsubscribe",
-                args: data.args
-            }
-        });
-        super.unsubscribe(subId,unSendDatas);
+        const {tag,sendDatas,callback} = this.subscribers[subId]||{};
+        if(!sendDatas) return;
+        sendDatas.op = "unsubscribe";
+        super.unsubscribe(subId,sendDatas);
     }
 
 }
