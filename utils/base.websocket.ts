@@ -7,7 +7,7 @@ export default class BaseWebSocket {
 	private reconnectErrorCallback: (error: Event | null) => void;
 	private reconnectSuccessCallback: any = null;
 	private url: string = "";
-	private subscribers: Record<string, any> = {};
+	public subscribers: Record<string, any> = {};
 	private waitSendDatas: any = [];
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
@@ -81,34 +81,45 @@ export default class BaseWebSocket {
 	subscribe(sendDatas: any, tag: Record<string, any>, callback: (message: any, error: Event | null) => void): string {
 		const subId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		this.subscribers[subId] = {
+			subId: subId,
 			tag: tag,
+			sendDatas: sendDatas,
 			callback: callback
 		};
 		this.send(sendDatas);
 		return subId;
 	}
 
-	unsubscribe(subId: string) {
+	unsubscribe(subId: string,sendDatas: any) {
 		if (this.subscribers[subId]) {
 			delete this.subscribers[subId];
+			this.send(sendDatas);
 		}
 	}
 
-	unsubscribeWithCallBack(callback: (data: any, error: Event | null) => void) {
+	unsubscribeWithCallBack(callback: (data: any, error: Event | null) => void,sendDatas: any) {
 		Object.values(this.subscribers).forEach((subscriber: any) => {
 			if (subscriber.callback === callback) {
-				delete this.subscribers[subscriber.tag];
+				this.unsubscribe(subscriber.subId,sendDatas);
 			}
 		});
 	}
-	unsubscribeWithTag(tag: Record<string, any>) {
+	unsubscribeWithTag(tag: Record<string, any>,sendDatas: any) {
 		Object.values(this.subscribers).forEach((subscriber: any) => {
 			if (subscriber.tag === tag) {
-				delete this.subscribers[subscriber.subId];
+				this.unsubscribe(subscriber.subId,sendDatas);
 			}
 		});
 	}
-	unsubscribeAll() {
+	/**
+	 * 取消订阅
+	 * 由上层业务构造取消订阅数据
+	 * @param getSendData 上层业务构造器
+	 */
+	unsubscribeAll(getSendData: (subscriber: any) => any) {
+		Object.values(this.subscribers).forEach((subscriber: any) => {
+			this.unsubscribe(subscriber.subId,getSendData(subscriber));
+		});
 		this.subscribers = {};
 	}
 

@@ -54,6 +54,7 @@
 				chart.selectSides(newVal);
 			}
 		);
+		
 	});
 </script>
 <template>

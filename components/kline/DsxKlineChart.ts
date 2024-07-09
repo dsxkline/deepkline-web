@@ -2,6 +2,7 @@ import moment from "moment";
 import { DsxConfig, DsxKline, type DsxKlineConfig, type DsxWindow } from "./DsxKlineChart.d";
 import { ComposFetch } from "~/fetch";
 import KlineTheme from "./DsxKlineChartTheme";
+import { CandleCannel } from "~/fetch/okx/okx.type";
 declare var window: DsxWindow;
 
 class DsxKlineChart {
@@ -20,6 +21,7 @@ class DsxKlineChart {
 	page:number = 1;
 	// 主题配置
     themeConfig = new window.DsxConfig();
+	subCandleId:string = '';
 	constructor(symbol: string, config: DsxKlineConfig) {
 		this.config = config;
 		this.symbol = symbol;
@@ -37,6 +39,21 @@ class DsxKlineChart {
 		this.kline.startLoading();
 	}
 
+	subscribe() {
+		const {wsb} = useNuxtApp();
+		this.subCandleId = wsb.subCandle(CandleCannel.candle1D,[this.symbol+''], (message, error) => {
+			console.log("candle3M",message.data, error);
+			if(message.data) message.data.forEach(([ts,o,h,l,c]) => {
+				console.log("candle3M",ts,o,h,l,c, error);
+			})
+		})
+	}
+
+	unsubscribe() {
+		const {wsb} = useNuxtApp();
+		wsb.unsubscribe(this.subCandleId)
+	}
+
 	createTheme(){
 		KlineTheme.createDarkTheme(this.themeConfig);
 		KlineTheme.createWhiteTheme(this.themeConfig);
@@ -45,6 +62,8 @@ class DsxKlineChart {
 
 	update(config: DsxKlineConfig) {
 		this.kline.update(config);
+		this.unsubscribe();
+		this.subscribe();
 	}
 
 	onLoading(kline: DsxKline) {
@@ -139,6 +158,8 @@ class DsxKlineChart {
 	updateCycle(cycle: string) {
 		this.cycle = cycle;
 		this.kline.startLoading();
+		this.unsubscribe();
+		this.subscribe();
 	}
 
 	updateTheme(theme: string) {

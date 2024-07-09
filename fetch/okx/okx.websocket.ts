@@ -34,7 +34,7 @@ export default class OKXWebSocket extends BaseWebSocket {
             })
         }
     }
-    subTickers(instIds:string[],callback: (message: TickersMessage, error: Event | null) => void): void {
+    subTickers(instIds:string[],callback: (message: TickersMessage, error: Event | null) => void): string {
         const channel = "tickers";
         const sendDatas = this.getSendData(channel,instIds)
         // 订阅成功推送的数据格式，符合这个格式才会触发回调
@@ -45,9 +45,9 @@ export default class OKXWebSocket extends BaseWebSocket {
         if(instIds.length === 1){
             tag.arg.instId = instIds[0];
         }
-        this.subscribe(sendDatas,tag,callback);
+        return this.subscribe(sendDatas,tag,callback);
     }
-    subCandle(channel:CandleCannel,instIds:string[],callback: (message: CandleMessage, error: Event | null) => void): void {
+    subCandle(channel:CandleCannel,instIds:string[],callback: (message: CandleMessage, error: Event | null) => void): string {
         const sendDatas = this.getSendData(channel,instIds)
         // 订阅成功推送的数据格式，符合这个格式才会触发回调
         const tag:any = {
@@ -57,7 +57,17 @@ export default class OKXWebSocket extends BaseWebSocket {
         if(instIds.length === 1){
             tag.arg.instId = instIds[0];
         }
-        this.subscribe(sendDatas,tag,callback);
+        return this.subscribe(sendDatas,tag,callback);
+    }
+    unsubscribe(subId: string): void {
+        const {tag,sendDatas,callback} = this.subscribers[subId];
+        const unSendDatas = sendDatas.map((data: { args: any; }) => {
+            return {
+                op: "unsubscribe",
+                args: data.args
+            }
+        });
+        super.unsubscribe(subId,unSendDatas);
     }
 
 }
