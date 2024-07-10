@@ -5,7 +5,7 @@
     declare var window: DsxWindow;
 	const klineDom = ref(null);
 	onMounted(() => {
-		const symbol = "BTC-USDT";
+		const symbol = "BTC-USDT-SWAP";
 		const chart = new DsxKlineChart(symbol,useKlineStore().cycle, {
 			element: klineDom.value||'',
 			autoSize: true,
