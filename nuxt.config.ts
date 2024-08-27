@@ -6,12 +6,13 @@ import modulesConfig from "./config/modules.config";
 import pluginsConfig from "./config/plugins.config";
 import postcssConfig from "./config/postcss.config";
 import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
+import { resolve } from "path";
 require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devServer: {
 		port: 3010,
-		host: "0.0.0.0",
+		host: "0.0.0.0"
 	},
 	devtools: { enabled: true },
 	modules: modulesConfig,
@@ -23,6 +24,20 @@ export default defineNuxtConfig({
 	css: cssConfig,
 	postcss: postcssConfig,
 	components: componentsConfig,
-	plugins:pluginsConfig
-	
+	plugins: pluginsConfig,
+	hooks: {
+		"pages:extend": (pages) => {
+			// qiankun微前端需要的追加自定义的路由
+			pages.push({
+				path: "/wikitrade",
+				file: resolve(__dirname, "components/QianKunContent.vue"),
+				children: [
+					{
+						path: "/:slug(.*)*", // 一定要加上这段兜底，不然qiankun匹配不到子应用的路由
+						file: resolve(__dirname, "components/QianKunContent.vue")
+					}
+				]
+			});
+		}
+	}
 });

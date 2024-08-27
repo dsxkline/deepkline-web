@@ -14,7 +14,7 @@ export default {
 			fontStyle: fontStyle, // 字体
 			backgroundColor: "rgba(13,16,23, 0.0)",
 			color: "#c5cbce", // 字体颜色
-			fontSize: (window.innerWidth < 999 ? 10 : 12) * window.devicePixelRatio, // 字体大小
+			fontSize: (window.innerWidth < 999 ? 10 : 10) * window.devicePixelRatio, // 字体大小
 			redColor: "#F5465C",
 			greenColor: "rgb(0,220,130)",
 			rectRedColor: "#F5465C", // 矩形红色 一般用作成交量
@@ -85,7 +85,7 @@ export default {
 			fontStyle: fontStyle, // 字体
 			backgroundColor: "rgba(255,255,255, 0.0)",
 			color: "rgba(163, 163, 163, 1)", // 字体颜色
-			fontSize: (window.innerWidth < 999 ? 10 : 12) * window.devicePixelRatio, // 字体大小
+			fontSize: (window.innerWidth < 999 ? 10 : 10) * window.devicePixelRatio, // 字体大小
 			redColor: "#D04058",
 			greenColor: "#3AAF9C",
 			rectRedColor: "#D04058", // 矩形红色 一般用作成交量
@@ -156,7 +156,7 @@ export default {
 			fontStyle: fontStyle, // 字体
 			backgroundColor: "rgba(13,16,23, 0.0)",
 			color: "#c5cbce", // 字体颜色
-			fontSize: window.devicePixelRatio <= 1 ? 12 : 12 * window.devicePixelRatio, // 字体大小
+			fontSize: window.devicePixelRatio <= 1 ? 10 : 10 * window.devicePixelRatio, // 字体大小
 			redColor: "#F5465C",
 			greenColor: "#2DBD85",
 			rectRedColor: "#F5465C", // 矩形红色 一般用作成交量
