@@ -15,7 +15,7 @@ export default {
     link: [],
     script: [
         {
-            src:'/js/dsx.kline_v_3_0_0.js'
+            src:'/js/dsx.kline_v_3_1_0.js'
         }
     ]
 }

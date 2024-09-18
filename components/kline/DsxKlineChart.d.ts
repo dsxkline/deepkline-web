@@ -50,6 +50,7 @@ export interface ThemeItem {
 	fontStyle: string; // 字体
 	backgroundColor: string; // 背景颜色
 	color: string; // 字体颜色
+	grey: string;
 	fontSize: number; // 字体大小
 	fontWeight: string;
 	redColor: string; // 蜡烛图红色
@@ -102,6 +103,7 @@ export interface ThemeItem {
 	priceShadowDownArrow: string;
 	realTimeLineColor: string;
 	realTimeLineFontColor: string;
+	realTimeBgColor: string;
 	askBidLineWidth: number;
 	askBidLineBash: number[];
 	askBidLineColor: string;
@@ -110,6 +112,9 @@ export interface ThemeItem {
 	askBidLineBgColor: string;
 	tipPaddingLeft: number; // 指标提示信息离左边的距离
 	tipPaddingTop: number; // 指标提示信息离顶部的距离
+	tipBorderColor: string;
+	maxMinBgColor: string;
+	maxMinLineColor: string;
 }
 export interface Theme {
     [key: string]: ThemeItem;
