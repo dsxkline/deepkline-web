@@ -16,7 +16,7 @@ onMounted(async () => {
 				<KlineChart></KlineChart>
 			</template>
 			<template #right>
-				<SymbolMarketDatas></SymbolMarketDatas>
+				<SymbolMarketDatas :symbol="'BTC-USDT-SWAP'"></SymbolMarketDatas>
 			</template>
 		</SplitContainer>
 	</div>

@@ -21,19 +21,19 @@ export default {
 			rectRedColor: "#F5465C", // 矩形红色 一般用作成交量
 			rectGreenColor: "#2DBD85", // 矩形绿色
 			crossLineColor: "rgba(255, 255, 255, 0.4)", // 十字线颜色
-			crossLineWidth: 1, // 十字线宽度
+			crossLineWidth: 0.5, // 十字线宽度
 			crossBorderColor: "#c5cbce", // 十字线边框颜色
 			crossFontColor: "#ffffff",
-			crossBgColor: "#c5cbce",
+			crossBgColor: "rgba(2,6,23,1)",
 			crossDash: [10, 5],
 			crossFontSize: 12,
 			crossButtonHeight: 24,
 			fontBgColor: "rgba(43,52,69,1)", // 文字背景颜色
 			fontWeight: "", // bold
-			gridLineColor: "rgba(61,67,82,1)", // 网格线颜色
+			gridLineColor: "rgba(255,255,255,.1)", // 网格线颜色
 			gridLineCount: 10, // 网格线数量
 			gridLineWidth: 1, // 网格线的宽度
-			lineWidth: 1.0, // 线条
+			lineWidth: 1, // 线条
 			klineWidth: 6, // 一根k线的默认宽度
 			klinePadding: 1.5, // k线之间的间隔
 			timeSharingLineColor: "#ffffff",
@@ -49,7 +49,7 @@ export default {
 			dashedBoxBorderLineColor: "rgba(255,255,225,0.10)", // 虚线框边框颜色
 			dashedBoxSpace: 20, // 虚线框虚线间的间隔
 			gridPriceColor: "rgba(165,169,176,0.8)",
-			gridPriceBackgroundColor: "rgba(13,16,23, 1.0)",
+			gridPriceBackgroundColor: "rgba(13,16,23, .0)",
 			gridPriceDirection: 1, // 网格价格提示器方向 0:左边 1:右边
 			gridPriceWidth: 0, // 左右网格线价格提示区域的宽度
 			gridPriceLineWidth: 0.0, // 网格分割线
@@ -65,7 +65,7 @@ export default {
 			priceShadowEndGreenColor: "rgba(46, 153, 135, 0)",
 			priceShadowUpArrow: "",
 			priceShadowDownArrow: "",
-			realTimeLineColor: "#fff",
+			realTimeLineColor: "rgba(255, 255, 255,1)",
 			realTimeBgColor: "rgba(2,6,23,1)",
 			realTimeLineFontColor: "#fff",
 			askBidLineTextColor: "#c5cbce", // 字体颜色

@@ -3,6 +3,7 @@ import { DsxConfig, DsxKline, type DsxKlineConfig, type DsxWindow } from "./DsxK
 import { ComposFetch } from "~/fetch";
 import KlineTheme from "./DsxKlineChartTheme";
 import { CandleCannel } from "~/fetch/okx/okx.type.d";
+import { useSymbolStore } from "~/store/symbol";
 declare var window: DsxWindow;
 
 class DsxKlineChart {
@@ -64,15 +65,18 @@ class DsxKlineChart {
 				});
 		});
 		let lastTikerClose = "";
+		useSymbolStore().setSubSymbols(this.symbol+"");
 		$ws.subTickers([this.symbol + ""], (message, error) => {
 			// console.log("subTickers", message.data, error);
 			if (message.data)
 				message.data.forEach((item) => {
 					if (item.last !== lastTikerClose) {
 						lastTikerClose = item.last;
-						console.log("subTickers", item, error);
+						// console.log("subTickers", item, error);
 						const amount = parseFloat(item.last) * parseFloat(item.lastSz);
 						this.refresh([item.ts.toString(), item.last, item.last, item.last, item.last, item.lastSz, amount.toString()]);
+						// 同步到store
+						useSymbolStore().setTickets(this.symbol+"",item);
 					}
 				});
 		});
