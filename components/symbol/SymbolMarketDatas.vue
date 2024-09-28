@@ -5,11 +5,22 @@ const props = defineProps({
 	symbol: String,
 });
 const item = ref<Ticker|null>(null);
+const change = ref<number>(0);
+const rate = ref<number>(0);
 const symbolStore = useSymbolStore();
 watchEffect(() => {
 	const { symbol } = props;
 	item.value = symbolStore.tickets[symbol + ''];
 	console.log('symbol', symbol, '行情tick', item.value);
+	// 涨跌额
+	change.value = parseFloat(item.value?.last||'0') - parseFloat(item.value?.sodUtc0||'0');
+	// 涨跌幅
+	rate.value = (change.value / parseFloat(item.value?.sodUtc0||'0')) * 100;
+	
+})
+// 监听行情变化
+watch(() => item.value, (newSymbol, oldSymbol) => {
+	console.log('newSymbol', newSymbol, 'oldSymbol', oldSymbol);
 })
 
 </script>
@@ -17,7 +28,7 @@ watchEffect(() => {
 	<div class="symbol-market-datas w-full min-w-max p-3 text-xs">
 		<div class="flex flex-col items-start mb-3">
 			<b class="text-2xl text-red">${{ item?.last }}</b>
-			<span class="text-red">+0.003003 (+0.34%)</span>
+			<span class="text-red">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
 		</div>
 		<ul class="grid grid-cols-2 gap-2 text-invert">
 			<li>
@@ -30,7 +41,7 @@ watchEffect(() => {
 			</li>
 			<li>
 				<span>24H收盘</span>
-				<span>{{ item?.open24h }}</span>
+				<span>{{ item?.last }}</span>
 			</li>
 			<li>
 				<span>24H最低</span>
@@ -52,9 +63,12 @@ watchEffect(() => {
 				<span>卖一价</span>
 				<span>{{ item?.bidPx }}</span>
 			</li>
-			<li>
+			<!-- <li>
 				<span>量比</span>
-				<span>1.9</span>
+				<span v-if="item?.vol24h">
+					{{ (parseFloat(item?.lastSz||'0') / parseFloat(item?.vol24h||'0')).toFixed(2) }}
+				</span>
+				<span v-else>-</span>
 			</li>
 			<li>
 				<span>涨速</span>
@@ -67,7 +81,7 @@ watchEffect(() => {
 			<li>
 				<span>换手率</span>
 				<span>1.78%</span>
-			</li>
+			</li> -->
 		</ul>
 		<SymbolFundFlow></SymbolFundFlow>
 		<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
