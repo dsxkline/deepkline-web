@@ -13,7 +13,14 @@ onMounted(async () => {
 		<LeftMenu></LeftMenu>
 		<SplitContainer>
 			<template #left>
-				<KlineChart></KlineChart>
+				<SplitRowContainer>
+					<template #up>
+						<KlineChart></KlineChart>
+					</template>
+					<template #down>
+						<Footer />
+					</template>
+				</SplitRowContainer>
 			</template>
 			<template #right>
 				<SymbolMarketDatas :symbol="'BTC-USDT-SWAP'"></SymbolMarketDatas>

@@ -110,7 +110,7 @@
 <style lang="less" scoped>
 	.split-container {
 		width: calc(100% - var(--menu-width));
-		height: calc(100vh - var(--footer-height) - var(--header-height) - var(--status-bar-height));
+		height: calc(100vh - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			#split-left {
 				width: calc(100vw - 360px);
