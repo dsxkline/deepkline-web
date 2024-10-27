@@ -57,7 +57,7 @@ class DsxKlineChart {
 		};
 
 		this.subCandleId = $wsb.subCandle(candleCycle[this.cycle + ""], [this.symbol + ""], (message, error) => {
-			console.log(candleCycle[this.cycle + ""], message.data, error);
+			// console.log(candleCycle[this.cycle + ""], message.data, error);
 			if (message.data)
 				message.data.forEach((item) => {
 					// console.log(candleCycle[this.cycle+""],item, error);
@@ -201,7 +201,7 @@ class DsxKlineChart {
 
 	updateTheme(theme: string) {
 		this.theme = theme;
-		console.log(this.themeConfig);
+		// console.log(this.themeConfig);
 		this.kline.theme = this.themeConfig.theme[this.theme == "dark" ? "dark" : "white"];
 		this.kline.updateIndex(this.main, this.sides);
 	}
@@ -221,7 +221,7 @@ class DsxKlineChart {
 		if (this.cycle == "15m") cycle = "m15";
 		if (this.cycle == "30m") cycle = "m30";
 		if (this.cycle == "60m") cycle = "m60";
-		console.log(t, this.cycle, item);
+		// console.log(t, this.cycle, item);
 		if (this.kline) {
 			this.kline.refreshLastOneData(item, cycle);
 		}

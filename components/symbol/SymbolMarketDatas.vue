@@ -8,10 +8,11 @@ const item = ref<Ticker|null>(null);
 const change = ref<number>(0);
 const rate = ref<number>(0);
 const symbolStore = useSymbolStore();
+const containerRef = ref(null);
 watchEffect(() => {
 	const { symbol } = props;
 	item.value = symbolStore.tickets[symbol + ''];
-	console.log('symbol', symbol, '行情tick', item.value);
+	// console.log('symbol', symbol, '行情tick', item.value);
 	// 涨跌额
 	change.value = parseFloat(item.value?.last||'0') - parseFloat(item.value?.sodUtc0||'0');
 	// 涨跌幅
@@ -20,17 +21,24 @@ watchEffect(() => {
 })
 // 监听行情变化
 watch(() => item.value, (newSymbol, oldSymbol) => {
-	console.log('newSymbol', newSymbol, 'oldSymbol', oldSymbol);
+	// console.log('newSymbol', newSymbol, 'oldSymbol', oldSymbol);
 })
 
+// 监听父级组件宽度变化自适应宽度
+onMounted(() => {
+	
+})
+onDeactivated(() => {
+	
+})
 </script>
 <template>
-	<div class="symbol-market-datas w-full min-w-max p-3 text-xs">
+	<div class="symbol-market-datas w-full min-w-max p-3 text-xs" ref="containerRef" >
 		<div class="flex flex-col items-start mb-3">
-			<b class="text-2xl text-red">${{ item?.last }}</b>
+			<b class="text-3xl text-red">${{ item?.last }}</b>
 			<span class="text-red">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
 		</div>
-		<ul class="grid grid-cols-2 gap-2 text-invert">
+		<ul class="grid grid-cols-2 gap-2 text-invert mb-3">
 			<li>
 				<span>24H开盘</span>
 				<span>{{ item?.open24h }}</span>
@@ -83,10 +91,12 @@ watch(() => item.value, (newSymbol, oldSymbol) => {
 				<span>1.78%</span>
 			</li> -->
 		</ul>
-		<SymbolFundFlow></SymbolFundFlow>
+		<!-- <SymbolFundFlow></SymbolFundFlow>
 		<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
-		<Symbol24FundNetInFlow></Symbol24FundNetInFlow>
-
+		<Symbol24FundNetInFlow></Symbol24FundNetInFlow> -->
+		<LongShortAccountRatio></LongShortAccountRatio>
+		<LoanRatio></LoanRatio>
+		<OpenInterestVolume></OpenInterestVolume>
 	</div>
 </template>
 

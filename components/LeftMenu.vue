@@ -20,7 +20,7 @@ import { useStore } from "~/store";
 </script>
 
 <template>
-	<div class="left-menu flex justify-between">
+	<div class="left-menu flex justify-between border-l border-[--border-color]">
 		<el-menu
 			default-active="2"
 			class="el-menu-vertical-demo"

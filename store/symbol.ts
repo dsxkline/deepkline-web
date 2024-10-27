@@ -18,7 +18,7 @@ export const useSymbolStore = defineStore({
     },
     setTickets(symbol:string,ticket:Ticker) {
       this.tickets[symbol] = ticket
-      console.log(this.tickets)
+      // console.log(this.tickets)
     }
   }
 })

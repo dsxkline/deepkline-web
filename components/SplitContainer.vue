@@ -37,7 +37,7 @@
       window.removeEventListener('resize', updateWindowWidth);
     });
 	function setAutoSplit() {
-		left = ((window.innerWidth - rightWidth) / window.innerWidth) * 100.0;
+		left = ((window.innerWidth - rightWidth - 1.5) / window.innerWidth) * 100.0;
 		right = 100 - left;
 	}
 	function addAnimation(dom: HTMLElement | null) {
@@ -99,7 +99,7 @@
 			<div
 				id="split-right"
 				ref="splitRight">
-				<el-scrollbar class="h-full">
+				<el-scrollbar class="h-full w-full">
 					<slot name="right"></slot>
 				</el-scrollbar>
 			</div>
@@ -113,10 +113,10 @@
 		height: calc(100vh - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			#split-left {
-				width: calc(100vw - 360px);
+				width: calc(100vw - 360px - 1.5px);
 			}
 			#split-right {
-				width: 360px;
+				width: calc(360px - 1.5px);
 				overflow-x:hidden;
 			}
 			&:deep(.gutter) {
