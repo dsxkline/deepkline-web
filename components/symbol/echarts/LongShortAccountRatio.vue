@@ -2,18 +2,18 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
+import { ComposFetch } from "@/fetch";
+import { Period } from "@/fetch/okx/okx.type.d";
 const chart = ref(null);
 const period = ref('5m');
+const loading = ref(true);
+const error = ref('');
+const props = defineProps<{
+    symbol: string|null
+}>();
 let echart: echarts.ECharts;
-let base = +new Date(1968, 9, 3);
-let oneDay = 24 * 3600 * 1000;
-let date = [];
-let data = [Math.random() * 300];
-for (let i = 1; i < 200; i++) {
-	var now = new Date((base += oneDay));
-	date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/'));
-	data.push(Math.round((Math.random() - 0.5) * 20 + data[i - 1]));
-}
+let date:string[] = [];
+let data:number[] = [];
 // 在组件顶部声明 resizeObserver
 let resizeObserver: ResizeObserver | null = null;
 const containerRef = ref(null)
@@ -74,7 +74,34 @@ const option = {
 	]
 };
 
+function fetchData(p:Period) {
+	period.value = p;
+	// loading.value = true;
+	ComposFetch.tradingDataFetch.longShortAccountRatio('BTC', p).then((res: any) => {
+		console.log(res);
+		loading.value = false;
+		if (res?.code === 0) {
+			res.data.forEach(([ts, longShortAccountRatio]: any) => {
+				date.push(ts);
+				data.push(longShortAccountRatio);
+			});
+			option.xAxis.data = date;
+			option.series[0].data = data;
+			echart.setOption(option);
+		}else{
+			error.value = res?.msg||'获取数据失败';
+		}
+		}).catch(() => {
+			loading.value = false;
+			error.value = '网络不给力';
+		});
+}
+watch(()=>period.value,(newVal)=>{
+	fetchData(newVal as Period);
+})
 onMounted(() => {
+	console.log(props.symbol,Period?.M5,process.server);
+	fetchData(period.value as Period);
 	echart = echarts.init(chart.value, 'light');
 	echart.setOption(option);
 
@@ -85,7 +112,6 @@ onMounted(() => {
 				const parentWidth = (parentElement.parentNode?.parentNode as HTMLElement).clientWidth;
 				const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left;
 				width.value = parentWidth - 2 * Math.abs(parentPaddingLeft);
-				console.log('width====', width.value,parentPaddingLeft);
 				echart.resize();
 			}
 		})
@@ -113,14 +139,15 @@ onDeactivated(() => {
 			<b class="text-base">多空账户比</b>
 			<button class="text-xs ml-1 bg-[--transparent10] p-1 rounded">合约</button>
 		</h3>
-		<el-radio-group v-model="period" class="mb-2">
+		<el-radio-group v-model="period" class="mb-2" v-show="!loading">
 			<el-radio-button value="5m">5分钟</el-radio-button>
-			<el-radio-button value="1h">1小时</el-radio-button>
-			<el-radio-button value="1d">1天</el-radio-button>
+			<el-radio-button value="1H">1小时</el-radio-button>
+			<el-radio-button value="1D">1天</el-radio-button>
 		</el-radio-group>
-		<div class="container">
+		<div class="container" v-show="!loading">
 			<div class="chart w-full h-[200px]" ref="chart"></div>
 		</div>
+		<el-skeleton :rows="5" animated v-if="loading" />
 	</div>
 </template>
 <style lang="less" scoped></style>

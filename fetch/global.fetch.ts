@@ -1,16 +1,17 @@
 import { useFetch, type UseFetchOptions } from "#app";
 import CryptoJS from 'crypto-js'
-const config = {
-    secretKey: process.env.OKX_SECRET_KEY||'',
-    apikey: process.env.OKX_API_KEY,
-    passPhrase: process.env.OKX_PASSPHRASE,
-}
+import { $fetch,type FetchOptions } from 'ofetch'
 
 const sign = <T>(options:UseFetchOptions<T>,path:string)=>{
+    const config = {
+        secretKey: useRuntimeConfig().public.OKX_SECRET_KEY,
+        apikey: useRuntimeConfig().public.OKX_API_KEY,
+        passPhrase: useRuntimeConfig().public.OKX_PASSPHRASE,
+    }
     const timestamp = new Date().toISOString();
     const method = options.method;
     const body = options.body?JSON.stringify(options.body):'';
-    const s = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(timestamp + method + path + body, config.secretKey));
+    const s = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(timestamp + method + path + body, config.secretKey as string));
     Object.assign(options.headers||{},{
         "OK-ACCESS-SIGN": s,
         "OK-ACCESS-TIMESTAMP": timestamp,
@@ -18,6 +19,11 @@ const sign = <T>(options:UseFetchOptions<T>,path:string)=>{
 }
 
 const commonHeader = (source:string):any=>{
+    const config = {
+        secretKey: useRuntimeConfig().public.OKX_SECRET_KEY,
+        apikey: useRuntimeConfig().public.OKX_API_KEY,
+        passPhrase: useRuntimeConfig().public.OKX_PASSPHRASE,
+    }
     return {
         okx:{
             "Content-Type": "application/json",
@@ -39,7 +45,11 @@ const usePost = async <T = any>(baseUrl:string,path: string, body: any = {}, hea
         baseURL: baseUrl,
 	};
     sign(options,path);
+
+    // const fetch = $fetch.create(options as FetchOptions)
+    // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
 	let { data, error, pending, status } = await useFetch(baseUrl+path, options);
+
 	return { data, error, loading: pending };
 };
 
@@ -55,7 +65,9 @@ const useGet = async <T = any>(baseUrl:string,path: string, query: Record<string
 	};
     sign(options,path);
     console.log(options,baseUrl+path)
-	let { data, error, pending, status } = await useFetch(baseUrl+path, options);
+    // const fetch = $fetch.create(options as FetchOptions)
+    // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
+	let { data, error, pending, status } = await useFetch(baseUrl +path, options);
 	return { data, error, loading: pending };
 };
 export { usePost, useGet };

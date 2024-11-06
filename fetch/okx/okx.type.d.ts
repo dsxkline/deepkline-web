@@ -95,7 +95,7 @@ export interface Instruments {
         normal：普通交易
         pre_market：盘前交易
      */
-    ruleType:string
+    ruleType: string
 }
 
 export interface SubMsg {
@@ -184,4 +184,10 @@ export type Candle = [ts, o, h, l, c, vol, volCcy, volCcyQuote, confirm]
 export interface CandleMessage {
     arg: SubArgs,
     data: Candle[]
+}
+
+export enum Period {
+    M5 = "5m",
+    H1 = "1H",
+    D1 = "1D",
 }

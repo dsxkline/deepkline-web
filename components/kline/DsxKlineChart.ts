@@ -20,6 +20,7 @@ class DsxKlineChart {
 	datas: string[] = [];
 	chartType: any;
 	page: number = 1;
+	lastItem: string = "";
 	// 主题配置
 	themeConfig = new window.DsxConfig();
 	subCandleId: string = "";
@@ -222,9 +223,10 @@ class DsxKlineChart {
 		if (this.cycle == "30m") cycle = "m30";
 		if (this.cycle == "60m") cycle = "m60";
 		// console.log(t, this.cycle, item);
-		if (this.kline) {
+		if (this.kline && this.lastItem != item) {
 			this.kline.refreshLastOneData(item, cycle);
 		}
+		this.lastItem = item;
 	}
 }
 

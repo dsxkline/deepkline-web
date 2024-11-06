@@ -7,6 +7,7 @@ import pluginsConfig from "./config/plugins.config";
 import postcssConfig from "./config/postcss.config";
 import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
 import { resolve } from "path";
+import config from "./config/config";
 require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -14,6 +15,7 @@ export default defineNuxtConfig({
 		port: 3010,
 		host: "0.0.0.0"
 	},
+	runtimeConfig: config,
 	devtools: { enabled: true },
 	modules: modulesConfig,
 	tailwindcss: tailwindNuxtConfig,
@@ -25,19 +27,30 @@ export default defineNuxtConfig({
 	postcss: postcssConfig,
 	components: componentsConfig,
 	plugins: pluginsConfig,
-	hooks: {
-		"pages:extend": (pages) => {
-			// qiankun微前端需要的追加自定义的路由
-			pages.push({
-				path: "/wikitrade",
-				file: resolve(__dirname, "components/QianKunContent.vue"),
-				children: [
-					{
-						path: "/:slug(.*)*", // 一定要加上这段兜底，不然qiankun匹配不到子应用的路由
-						file: resolve(__dirname, "components/QianKunContent.vue")
-					}
-				]
-			});
+	routeRules: {
+		'/api/okx/**': {
+			proxy: {
+				to: 'https://www.okx.com/**',
+				onResponse: (event, response) => {
+					console.log(response);
+				}
+			},
+			cors: true
 		}
 	}
+	// hooks: {
+	// 	"pages:extend": (pages) => {
+	// 		// qiankun微前端需要的追加自定义的路由
+	// 		pages.push({
+	// 			path: "/wikitrade",
+	// 			file: resolve(__dirname, "components/QianKunContent.vue"),
+	// 			children: [
+	// 				{
+	// 					path: "/:slug(.*)*", // 一定要加上这段兜底，不然qiankun匹配不到子应用的路由
+	// 					file: resolve(__dirname, "components/QianKunContent.vue")
+	// 				}
+	// 			]
+	// 		});
+	// 	}
+	// }
 });

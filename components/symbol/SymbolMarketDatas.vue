@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useSymbolStore } from '~/store/symbol';
 import {type Ticker} from '~/fetch/okx/okx.type.d';
-const props = defineProps({
-	symbol: String,
-});
+const props = defineProps<{
+	symbol: string|null,
+}>();
 const item = ref<Ticker|null>(null);
 const change = ref<number>(0);
 const rate = ref<number>(0);
@@ -94,7 +94,7 @@ onDeactivated(() => {
 		<!-- <SymbolFundFlow></SymbolFundFlow>
 		<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
 		<Symbol24FundNetInFlow></Symbol24FundNetInFlow> -->
-		<LongShortAccountRatio></LongShortAccountRatio>
+		<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
 		<LoanRatio></LoanRatio>
 		<OpenInterestVolume></OpenInterestVolume>
 	</div>
