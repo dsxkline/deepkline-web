@@ -1,6 +1,7 @@
 import { useGet, usePost } from "../global.fetch";
 import { Period, type Instruments } from "./okx.type.d";
 const baseUrl = "/api/okx";
+const baseUrlOkx = "https://www.okx.com";
 
 const longShortAccountRatio = "/api/v5/rubik/stat/contracts/long-short-account-ratio";
 

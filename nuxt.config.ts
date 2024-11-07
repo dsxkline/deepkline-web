@@ -27,17 +27,17 @@ export default defineNuxtConfig({
 	postcss: postcssConfig,
 	components: componentsConfig,
 	plugins: pluginsConfig,
-	routeRules: {
-		'/api/okx/**': {
-			proxy: {
-				to: 'https://www.okx.com/**',
-				onResponse: (event, response) => {
-					console.log(response);
-				}
-			},
-			cors: true
-		}
-	}
+	// routeRules: {
+	// 	'/api/okx/**': {
+	// 		proxy: {
+	// 			to: 'https://www.okx.com/**',
+	// 			onResponse: (event, response) => {
+	// 				console.log(response);
+	// 			}
+	// 		},
+	// 		// cors: true
+	// 	}
+	// }
 	// hooks: {
 	// 	"pages:extend": (pages) => {
 	// 		// qiankun微前端需要的追加自定义的路由

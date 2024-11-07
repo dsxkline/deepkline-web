@@ -12,8 +12,8 @@ const props = defineProps<{
     symbol: string|null
 }>();
 let echart: echarts.ECharts;
-let date:string[] = [];
-let data:number[] = [];
+let xAxisData:string[] = [];
+let seriesData:number[] = [];
 // 在组件顶部声明 resizeObserver
 let resizeObserver: ResizeObserver | null = null;
 const containerRef = ref(null)
@@ -48,7 +48,7 @@ const option = {
 	xAxis: {
 		type: 'category',
 		boundaryGap: true,
-		data: date
+		data: xAxisData
 	},
 	yAxis: {
 		type: 'value',
@@ -69,7 +69,7 @@ const option = {
 			itemStyle: {
 				color: 'rgb(255, 70, 131)'
 			},
-			data: data
+			data: seriesData
 		}
 	]
 };
@@ -77,17 +77,24 @@ const option = {
 function fetchData(p:Period) {
 	period.value = p;
 	// loading.value = true;
-	ComposFetch.tradingDataFetch.longShortAccountRatio('BTC', p).then((res: any) => {
-		console.log(res);
+	ComposFetch.tradingDataFetch.longShortAccountRatio('BTC', p).then(({data,error:err}) => {
+		console.log(data.value);
+		const res = data.value as any;
 		loading.value = false;
-		if (res?.code === 0) {
-			res.data.forEach(([ts, longShortAccountRatio]: any) => {
-				date.push(ts);
-				data.push(longShortAccountRatio);
-			});
-			option.xAxis.data = date;
-			option.series[0].data = data;
+		if (res?.code == 0) {
+			xAxisData = [];
+			seriesData = [];
+			option.xAxis.data = xAxisData;
+			option.series[0].data = seriesData;
 			echart.setOption(option);
+			res.data.forEach(([ts, longShortAccountRatio]: any) => {
+				xAxisData.push(ts);
+				seriesData.push(longShortAccountRatio);
+			});
+			option.xAxis.data = xAxisData;
+			option.series[0].data = seriesData;
+			echart.setOption(option);
+			console.log(xAxisData,seriesData);
 		}else{
 			error.value = res?.msg||'获取数据失败';
 		}
