@@ -4,9 +4,13 @@ export const useKlineStore = defineStore({
   state: () => ({
     cycle:'1m',
     main:['MA'],
-    sides:['MACD']
+    sides:['MACD'],
+    loading:false
   }),
   actions: {
+    setLoading(loading:boolean){
+      this.loading = loading
+    },
     setCycle(cycle:string) {
       this.cycle = cycle
     },

@@ -4,6 +4,7 @@ import { ComposFetch } from "~/fetch";
 import KlineTheme from "./DsxKlineChartTheme";
 import { CandleCannel } from "~/fetch/okx/okx.type.d";
 import { useSymbolStore } from "~/store/symbol";
+import { useKlineStore } from "~/store/kline";
 declare var window: DsxWindow;
 
 class DsxKlineChart {
@@ -103,6 +104,7 @@ class DsxKlineChart {
 	onLoading(kline: DsxKline) {
 		this.page = 1;
 		this.after = "";
+		useKlineStore().setLoading(true);
 		this.getKlineData();
 		this.unsubscribe();
 		this.subscribe();
@@ -113,8 +115,12 @@ class DsxKlineChart {
 	}
 
 	getKlineData() {
-		ComposFetch.marketFetch.getKlines(this.symbol, this.cycle, this.after, this.before, this.limit).then(({ data, error }) => {
-			const datas: string[] = data.value.data
+		const symbol = this.symbol;
+		const cycle = this.cycle;
+		ComposFetch.marketFetch.getKlines(this.symbol, this.cycle, this.after, this.before, this.limit).then((res) => {
+			// 丢弃
+			if(symbol != this.symbol || cycle != this.cycle) return;
+			const datas: string[] = res?.data
 				.map((item: string[]) => {
 					const [d, o, h, l, c, v, a] = item;
 					const [date, time] = moment
@@ -125,7 +131,7 @@ class DsxKlineChart {
 				})
 				.reverse();
 			// 下一页的开始时间
-			if (datas.length > 0) this.after = data.value.data[data.value.data.length - 1][0];
+			if (datas.length > 0) this.after = res?.data[res?.data.length - 1][0];
 			if (this.page == 1) {
 				this.datas = datas;
 			} else {
@@ -137,14 +143,18 @@ class DsxKlineChart {
 				page: this.page
 			});
 			this.page++;
-			this.kline.finishLoading();
+			this.finishLoading();
 			if (datas.length < this.limit) {
 				this.kline.scrollTheend();
 			}
+		}).catch(()=>{
+			
+			this.finishLoading();
 		});
 	}
 
 	finishLoading() {
+		useKlineStore().setLoading(false);
 		this.kline.finishLoading();
 	}
 

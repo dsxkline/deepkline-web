@@ -1,5 +1,5 @@
 
-<script setup>
+<script setup lang="ts">
 import { useKlineStore } from '~/store/kline';
 
 const cycleList = ref([
@@ -15,14 +15,15 @@ const cycleList = ref([
     { label: '1月', value: '1M' }
 ])
 const cycle = ref('1m')
-function onCycleChange(value){
+const onCycleChange = async (value:string)=>{
+    if(useKlineStore().loading) return;
     cycle.value = value
     useKlineStore().setCycle(value);
 }
 </script>
 <template>
 <div class="cycle-bar ml-4 w-max flex gap-1 *:p-1 *:px-2 *:rounded *:text-xs *:cursor-pointer">
-    <div class="cycle-bar-item" v-for="(item, index) in cycleList" :key="index" :class="{active: item.value === cycle}" @click="onCycleChange(item.value)">
+    <div class="cycle-bar-item" v-for="(item, index) in cycleList" :key="index" :class="{active: item.value === cycle}" @click.stop="onCycleChange(item.value)">
         {{item.label}}
     </div>
 </div>

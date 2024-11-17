@@ -62,7 +62,7 @@ async function sendRequest(event:any){
             retry: 0, // 增加重试次数
         }
         sign(options,path as string);
-        // console.log('server api options',url,options);
+        console.log('server api options',url,options);
         // 转发请求到目标 URL
         const fetch = $fetch.create({
             headers: newHeaders,
@@ -85,6 +85,10 @@ async function sendRequest(event:any){
     }
 }
 export default defineEventHandler((event) => {
-    // 区分多个请求
-    return sendRequest(event)
+    // const path = event.node.req.headers.path;
+    // console.log('New request: ' + path)
+    // if(path){
+    //     // 区分多个请求
+    //     // return sendRequest(event)
+    // }
 })

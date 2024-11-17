@@ -1,7 +1,7 @@
 import { useFetch, type UseFetchOptions } from "#app";
 import CryptoJS from 'crypto-js'
 
-const sign = <T>(options:UseFetchOptions<T>,path:string)=>{
+const sign = <T>(options: UseFetchOptions<T>, path: string) => {
     const config = {
         secretKey: useRuntimeConfig().public.OKX_SECRET_KEY,
         apikey: useRuntimeConfig().public.OKX_API_KEY,
@@ -9,23 +9,23 @@ const sign = <T>(options:UseFetchOptions<T>,path:string)=>{
     }
     const timestamp = new Date().toISOString();
     const method = options.method;
-    const body = options.body?JSON.stringify(options.body):'';
+    const body = options.body ? JSON.stringify(options.body) : '';
     const s = CryptoJS.enc.Base64.stringify(CryptoJS.HmacSHA256(timestamp + method + path + body, config.secretKey as string));
-    Object.assign(options.headers||{},{
+    Object.assign(options.headers || {}, {
         "OK-ACCESS-SIGN": s,
         "OK-ACCESS-TIMESTAMP": timestamp,
     })
 }
 
-const commonHeader = (source:string):any=>{
-    if(process.client) return {};
+const commonHeader = (source: string): any => {
+    if (process.client) return {};
     const config = {
         secretKey: useRuntimeConfig().public.OKX_SECRET_KEY,
         apikey: useRuntimeConfig().public.OKX_API_KEY,
         passPhrase: useRuntimeConfig().public.OKX_PASSPHRASE,
     }
     return {
-        okx:{
+        okx: {
             "Content-Type": "application/json",
             "OK-ACCESS-KEY": config.apikey,
             "OK-ACCESS-SIGN": "",
@@ -34,45 +34,63 @@ const commonHeader = (source:string):any=>{
         }
     }[source]
 }
-const usePost = async <T = any>(baseUrl:string,path: string, body: any = {}, headers: Record<string, string> = {}) => {
-	const options: UseFetchOptions<T> = {
-		headers: Object.assign(
-			commonHeader("okx"),
-			headers
-		),
-		body,
-		method: "POST",
+const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, headers: Record<string, any> = {}) => {
+    const options: UseFetchOptions<T> = {
+        headers: Object.assign(
+            commonHeader("okx"),
+            headers
+        ),
+        body,
+        method: "POST",
         baseURL: baseUrl,
-	};
-    sign(options,path);
+        key: 'okx-request-' + Date.now()+path
+    };
+    sign(options, path);
 
     // const fetch = $fetch.create(options as FetchOptions)
-    // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
-	let { data, error, pending, status } = await useFetch(baseUrl+path, options);
+    let { data, error, pending, status } = await useFetch(baseUrl + path, options);
+    if (status.value === "success") {
+        return data.value;
+    }
+    return {
 
-	return { data, error, loading: pending, status };
-};
+        code: error.value?.statusCode || 500,
+        msg: error.value?.data?.msg || '获取数据失败',
+        data: null
 
-const useGet = async <T = any>(baseUrl:string,path: string, query: Record<string, string> = {}, headers: any = {}) => {
-	const options: UseFetchOptions<T> = {
-		headers: Object.assign(
-			commonHeader("okx"),
-			Object.assign(headers,{
-                path:path
+    };
+}
+
+const useGet = async <T = any>(baseUrl: string, path: string, query: Record<string, any> = {}, headers: any = {}) => {
+    const options: UseFetchOptions<T> = {
+        headers: Object.assign(
+            commonHeader("okx"),
+            Object.assign(headers, {
+                path: path
             }),
-		),
-		query,
-		method: "GET",
+        ),
+        query,
+        method: "GET",
         baseURL: baseUrl,
-        
-	};
-    sign(options,path);
+        key: 'okx-request-' + Date.now()+path
+    };
+    sign(options, path);
     // 如果是本地转发
-    const url = baseUrl.startsWith('http')?baseUrl+path:baseUrl;
-    console.log(options,baseUrl+path)
+    const url = baseUrl.startsWith('http') ? baseUrl + path : baseUrl;
+    // console.log(process.client, url)
     // const fetch = $fetch.create(options as FetchOptions)
     // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
-	let { data, error, pending, status } = await useFetch(url, options);
-	return { data, error, loading: pending, status };
+    let { data, error, pending, status } = await useFetch(url, options);
+    // console.log(process.client, url)
+    // console.log("data",data);
+    if (status.value === "success") {
+        return data.value ;
+    }
+    return {
+        code: error.value?.statusCode || 500,
+        msg: error.value?.data?.msg || '获取数据失败',
+        data: null
+
+    };
 };
 export { usePost, useGet };

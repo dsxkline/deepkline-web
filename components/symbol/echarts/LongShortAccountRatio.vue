@@ -8,6 +8,7 @@ const chart = ref(null);
 const period = ref('5m');
 const loading = ref(true);
 const error = ref('');
+const disabled = ref(false);
 const props = defineProps<{
     symbol: string|null
 }>();
@@ -40,10 +41,11 @@ const option = {
 		trigger: 'axis',
 	},
 	grid: {
+		containLabel: true,
 		top: "30", // 图表容器的上边距
 		bottom: "30", // 图表容器的下边距
-		// left: "50", // 图表容器的左边距
-		right: "10" // 图表容器的右边距
+		left: "0", // 图表容器的左边距
+		right: "0" // 图表容器的右边距
 	},
 	xAxis: {
 		type: 'category',
@@ -75,12 +77,15 @@ const option = {
 };
 
 function fetchData(p:Period) {
+	if(disabled.value) return;
 	period.value = p;
+	disabled.value = true;
+	error.value = '';
 	// loading.value = true;
-	ComposFetch.tradingDataFetch.longShortAccountRatio('BTC', p).then(({data,error:err}) => {
-		console.log(data.value);
-		const res = data.value as any;
+	ComposFetch.tradingDataFetch.longShortAccountRatio('BTC', p).then((res) => {
+		// console.log(res?.data);
 		loading.value = false;
+		disabled.value = false;
 		if (res?.code == 0) {
 			xAxisData = [];
 			seriesData = [];
@@ -94,12 +99,13 @@ function fetchData(p:Period) {
 			option.xAxis.data = xAxisData;
 			option.series[0].data = seriesData;
 			echart.setOption(option);
-			console.log(xAxisData,seriesData);
+			// console.log(xAxisData,seriesData);
 		}else{
 			error.value = res?.msg||'获取数据失败';
 		}
 		}).catch(() => {
 			loading.value = false;
+			disabled.value = false;
 			error.value = '网络不给力';
 		});
 }
@@ -108,9 +114,11 @@ watch(()=>period.value,(newVal)=>{
 })
 onMounted(() => {
 	console.log(props.symbol,Period?.M5,process.server);
-	fetchData(period.value as Period);
-	echart = echarts.init(chart.value, 'light');
-	echart.setOption(option);
+	nextTick(()=>{
+		fetchData(period.value as Period);
+		echart = echarts.init(chart.value, 'light');
+		echart.setOption(option);
+	})
 
 	if (containerRef.value) {
 		resizeObserver = new ResizeObserver(entries => {
@@ -146,15 +154,20 @@ onDeactivated(() => {
 			<b class="text-base">多空账户比</b>
 			<button class="text-xs ml-1 bg-[--transparent10] p-1 rounded">合约</button>
 		</h3>
-		<el-radio-group v-model="period" class="mb-2" v-show="!loading">
+		<el-radio-group v-model="period" class="mb-2" v-show="!loading && !error" :disabled="disabled">
 			<el-radio-button value="5m">5分钟</el-radio-button>
 			<el-radio-button value="1H">1小时</el-radio-button>
 			<el-radio-button value="1D">1天</el-radio-button>
 		</el-radio-group>
-		<div class="container" v-show="!loading">
+		<div class="container" v-show="!loading && !error">
 			<div class="chart w-full h-[200px]" ref="chart"></div>
 		</div>
-		<el-skeleton :rows="5" animated v-if="loading" />
+		<el-skeleton :rows="5" animated v-if="loading && !error" />
+		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
+            <template #extra>
+                <el-button type="primary" @click.stop="loading=true;fetchData(Period.M5)">点击刷新</el-button>
+            </template>
+        </el-result>
 	</div>
 </template>
 <style lang="less" scoped></style>

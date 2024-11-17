@@ -6,6 +6,12 @@ export enum ApiSource{
   DSX
 }
 
+interface ApiResult{
+  data:any,
+  code:number,
+  msg:string
+}
+
 declare module '#app' {
   interface NuxtApp {
     $ws: OKXWebSocket,
