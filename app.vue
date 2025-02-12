@@ -1,8 +1,5 @@
 <template>
-  <div class="app-container flex flex-col justify-between">
-    <Header></Header>
+   <NuxtLayout>
     <NuxtPage />
-    <!-- <Footer></Footer> -->
-    <StatusBar></StatusBar>
-  </div>
+  </NuxtLayout>
 </template>

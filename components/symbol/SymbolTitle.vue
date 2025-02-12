@@ -1,5 +1,13 @@
+<script lang="js" setup>
+import SymbolSearch from './SymbolSearch.vue';
+const nuxtApp = useNuxtApp()
+function pushSearch(){
+    console.log(nuxtApp)
+    nuxtApp.$pushLeft(SymbolSearch,{},"200px")
+}
+</script>
 <template>
-    <div class="symbol-title flex items-center text-ms ml-3 mr-1 px-2 rounded-md cursor-pointer bg-[--transparent05] hover:bg-[--transparent10]">
+    <div class="symbol-title flex items-center text-ms ml-3 mr-1 px-2 rounded-md cursor-pointer bg-[--transparent05] hover:bg-[--transparent10]" @click="pushSearch">
         <img src="https://www.okx.com/cdn/oksupport/asset/currency/icon/eth.png" width="20px" class="mr-1"/>
         <b>BTCUSD</b>
         <el-icon class="ml-1"><ArrowDown /></el-icon>
@@ -13,3 +21,4 @@
     }
 }
 </style>
+

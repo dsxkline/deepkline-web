@@ -11,7 +11,7 @@ onMounted(() => {
 		autoSize: true,
 		chartType: ChartType.candle,
 		// klineWidth: 1,
-		// theme: 'dark',
+		theme: useColorMode().preference,
 		candleType: CandleType.solid,
 		zoomLockType: ZoomLockType.follow,
 		crossModel: CrossModel.mouseOver,

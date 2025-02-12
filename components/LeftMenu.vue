@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 	import { ref } from "vue";
 	import { Document, Menu as IconMenu, Location, Setting } from "@element-plus/icons-vue";
-import { ComposFetch } from "~/fetch";
-import { useStore } from "~/store";
+	import { ComposFetch } from "~/fetch";
+	import { useStore } from "~/store";
 	const fn = async () => {
 		ComposFetch.commonFetch.getCommon().then(({ data, error }) => {
 			// console.log(data.value,typeof(data.value),data.value?.name);

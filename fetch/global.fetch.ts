@@ -77,12 +77,12 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
     sign(options, path);
     // 如果是本地转发
     const url = baseUrl.startsWith('http') ? baseUrl + path : baseUrl;
-    // console.log(process.client, url)
+    console.log(process.client, url)
     // const fetch = $fetch.create(options as FetchOptions)
     // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
     let { data, error, pending, status } = await useFetch(url, options);
     // console.log(process.client, url)
-    // console.log("data",data);
+    console.log("error",error);
     if (status.value === "success") {
         return data.value ;
     }

@@ -95,8 +95,8 @@ onDeactivated(() => {
 		<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
 		<Symbol24FundNetInFlow></Symbol24FundNetInFlow> -->
 		<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
-		<LoanRatio></LoanRatio>
-		<OpenInterestVolume></OpenInterestVolume>
+		<LoanRatio :symbol="symbol"></LoanRatio>
+		<OpenInterestVolume :symbol="symbol"></OpenInterestVolume>
 	</div>
 </template>
 

@@ -2,6 +2,10 @@
 import { useNuxtApp } from "#app";
 import OKXWebSocket from "@/fetch/okx/okx.websocket";
 import { CandleCannel} from "@/fetch/okx/okx.type.d";
+// 使用默认布局
+definePageMeta({
+  layout: 'main'
+})
 onMounted(async () => {
 	console.log("server", process.server);
 	

@@ -1,5 +1,7 @@
 import { defineNuxtPlugin } from '#app'
+import { defineComponent, ref, h, render, createVNode } from 'vue';
 import { usePushStore } from "@/store/push";
+import Push from '~/components/app/Push.vue';
 
 function findRoute(path: string, routes: any) {
     try {
@@ -39,7 +41,7 @@ const pushHandle = async function (this: any,
     const context = this as any;
     let dynamicComponent = {
         url: null,
-        component: () => comp?.default || comp,
+        component: comp?.default || comp,
     };
     if (typeof comp === "string") {
         // 加载路由对应的组件
@@ -51,42 +53,42 @@ const pushHandle = async function (this: any,
     }
 
     // 加载 push 组件
-    const pushComponent = require("@/components/app/Push.vue").default;
-    if (!pushComponent) return;
     // 创建 push 组件实例
-    const pushInstance = defineComponent({
-        setup() {
-            const visible = ref(true);
-            return () => h(pushComponent, {
-                to: dynamicComponent.component,
-                url: dynamicComponent.url,
-                visible: visible.value,
-                $params: params || [],
-                parent: context,
-                direction: direction,
-                size,
-            });
-        }
-    });
+    // 创建 push 组件的虚拟节点
+    const props = {
+        to: dynamicComponent.component,  // 传递给 Push 组件的动态目标组件
+        url: dynamicComponent.url,       // 传递 URL 参数
+        params: params || [],           // 传递额外的参数
+        parent: context,                // 传递父组件或上下文
+        direction: direction,           // 传递方向
+        size: size,                     // 传递大小
+    }
+    // const pushComp = await import('~/components/app/Push.vue');
+    const pushInstance = createVNode(Push, props);
 
+    console.log("pushInstance", pushInstance, props);
     // 挂载 push 组件到目标元素中
-    pushInstance.$mount();
-    //console.log("pushInstance", pushInstance);
+    // pushInstance.$mount();
+    // 在某个目标 DOM 元素中挂载组件
+    render(pushInstance, document.body);
 
     // 查找上一层，实现轻微退出动画
-    if (direction == "rtl") {
-        pushInstance.$el.style.transform = "translateX(100vw)";
-        setTimeout(() => {
-            pushInstance.$el.style.transform = "translateX(0)";
-            const parentDrawer =
-                context.$el.closest(".el-drawer__wrapper") ||
-                document.querySelector("#__nuxt");
-            if (parentDrawer && !parentDrawer.classList.contains("pushup")) {
-                parentDrawer.style.transform = "translateX(-30%)";
-                // parentDrawer.classList.add("pop-right");
-            }
-        }, 50);
-    }
+    nextTick(() => {
+        console.log("pushInstance", pushInstance);
+        if (direction == "rtl") {
+            // pushInstance.el.style.transform = "translateX(100vw)";
+            setTimeout(() => {
+                // pushInstance.el.style.transform = "translateX(0)";
+                // const parentDrawer =
+                //     context.$el.closest(".el-drawer__wrapper") ||
+                //     document.querySelector("#__nuxt");
+                // if (parentDrawer && !parentDrawer.classList.contains("pushup")) {
+                //     parentDrawer.style.transform = "translateX(-30%)";
+                //     // parentDrawer.classList.add("pop-right");
+                // }
+            }, 50);
+        }
+    })
 
     return pushInstance;
 };
@@ -124,13 +126,21 @@ const pop = function (data = {}) {
 };
 
 // 右侧弹出
-function push(comp: any, params = {}, direction = "rtl", size = "100%") {
-    return pushHandle(comp, params, direction, size);
+function push(comp: any, params = {}, size = "100%") {
+    return pushHandle(comp, params, "rtl", size);
 }
+function pushLeft(comp: any, params = {}, size = "100%") {
+    return pushHandle(comp, params, "ltr", size);
+}
+
 // 底部弹出
 function pushUp(comp: any, params = {}, size = "100%") {
     return pushHandle(comp, params, "btt", size);
 }
+function pushDown(comp: any, params = {}, size = "100%") {
+    return pushHandle(comp, params, "ttb", size);
+}
+
 // 返回根视图
 const popRoot = function (data: any, index = 0) {
     const pushComopnents = usePushStore().pushComopnents;
@@ -148,8 +158,12 @@ const popRoot = function (data: any, index = 0) {
 
 export default defineNuxtPlugin(({ vueApp }) => {
     const nuxtApp = useNuxtApp()
-    nuxtApp.vueApp.provide('push', push);
-    nuxtApp.vueApp.provide('pushUp', pushUp);
-    nuxtApp.vueApp.provide('popRoot', popRoot);
-    nuxtApp.vueApp.provide('pop', pop);
+    nuxtApp.provide('push', push);
+    nuxtApp.provide('pushLeft', pushLeft);
+    nuxtApp.provide('pushUp', pushUp);
+    nuxtApp.provide('pushDown', pushDown);
+    nuxtApp.provide('popRoot', popRoot);
+    nuxtApp.provide('pop', pop);
+
+    console.log('push 注入。。。')
 });

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { usePushStore } from '~/store/push';
 import type { DrawerProps } from 'element-plus'
-import { getCurrentInstance } from 'vue'
+import { getCurrentInstance, render } from 'vue'
+// import SymbolSearch from '../symbol/SymbolSearch.vue';
 const instance = getCurrentInstance()
 const props = defineProps<{
     visible: boolean;
@@ -10,11 +11,12 @@ const props = defineProps<{
     asyncComponent: Component;
     url: string;
     to: string;
-    $params: any;
+    params: any;
     popData: any;
 }>();
 const drawerSize = ref(props.size);
 const drawer = ref(null);
+const show = ref(true)
 const hide = () => {
     if (drawer.value) {
         (drawer.value as any).hide();
@@ -24,72 +26,92 @@ const close = () => {
     hide();
 };
 const closed = () => {
-   // 调用组件卸载方法
-   
+    // 调用组件卸载方法
+    if (instance) {
+        nextTick(() => {
+            const container = instance?.vnode.el?.parentNode;
+            if (container) {
+                render(null,container);
+                // container.removeChild(instance.vnode.el);  // 从 DOM 中移除组件
+                console.log('Component unmounted!', container, instance.vnode.el, instance);
+                show.value = false;
+            }
+        });
+    }
 };
 
 // 是否显示
-const visibleDrawer = computed(() => {
-    const vs = usePushStore().getPushComponent(this as any) ? true : false;
-    return vs;
+const visibleDrawer = computed({
+    get: () => {
+        const vs = usePushStore().getPushComponent(instance) >= 0 ? true : false;
+        console.log('visibleDrawer', vs)
+        return vs;
+    }, set: (val) => {
+        console.log('visibleDrawer', val);
+    }
 });
 // 动态导入组件
 const asyncComponent = computed(() => {
     if (props.to) {
         // 动态导入组件，假设 `to` 是组件的名称或路径
-        return async () =>
-            new Promise((resolve) => {
-                const view = props.to;
-                // view.props = componentProps.value;
-                return resolve(view);
-            });
+        return props.to
     }
     return null;
 });
 
 // 把参数通过props传递给目标组件
-const componentProps = computed(() => (props.$params))
+const componentProps = computed(() => (props.params))
 
 const swipeDown = () => {
- 
+
 };
 
 onBeforeUnmount(() => {
     // 获取组件的父级
-    if (instance) {
-        let parent = instance.parent;
-        while (parent) {
-            // pop的时候返回执行自定义poped方法
-            // console.log("parent///test", parent, this.popData);
-            if (parent.exposed?.poped && instance.exposed?.popData) {
-                parent.exposed?.poped(instance.exposed?.popData);
-                break;
-            }
-            parent = parent.parent;
-        }
-    }
+    // if (instance) {
+    //     let parent = instance.parent;
+    //     while (parent) {
+    //         // pop的时候返回执行自定义poped方法
+    //         // console.log("parent///test", parent, this.popData);
+    //         if (parent.exposed?.poped && instance.exposed?.popData) {
+    //             parent.exposed?.poped(instance.exposed?.popData);
+    //             break;
+    //         }
+    //         parent = parent.parent;
+    //     }
+    // }
+    console.log('onBeforeUnmount')
     setTimeout(() => {
         usePushStore().setPushState(false);
     }, 100);
 })
+
+onMounted(() => {
+    console.log('push mounted...', props.size, instance)
+    usePushStore().push(instance)
+})
+
 </script>
 
 <template>
-    <el-drawer :visible.sync="visibleDrawer" :direction="direction" :withHeader="false" :modal-append-to-body="false"
-        :append-to-body="true" :modal="direction == 'btt' && size != '100%'"
-        :wrapperClosable="$params.wrapperClosable == undefined ? true : $params.wrapperClosable" :size="drawerSize"
-        @closed="closed" ref="drawer" :class="{ pushup: direction == 'btt' && size != '100%' }"
-        v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
-        <div class="drawer_body" ref="drawerBody">
-            <SafeArea></SafeArea>
-            <template v-if="direction == 'btt' && size != '100%'">
-                <DrawLine @click="hide" />
-                <div class="close" @click="hide" v-if="!$params.hideClose">
-                    <Close />
+    <div>
+        <el-drawer v-model="visibleDrawer" :direction="direction" :destroy-on-close="true"
+            :modal="true" :size="drawerSize" @closed="closed" ref="drawer"
+            :class="{ pushup: direction == 'btt' && size != '100%' }"
+        >
+            <template #default>
+                <div class="drawer_body" ref="drawerBody">
+                    <!-- <SafeArea></SafeArea>
+                    <template v-if="direction == 'btt' && size != '100%'">
+                        <DrawLine @click="hide" />
+                        <div class="close" @click="hide" v-if="!params?.hideClose">
+                            <Close />
+                        </div>
+                    </template> -->
+                    <component :is="to" :push="true" @close="close" v-bind="componentProps" />
+                    <!-- <WebView :url="url" v-if="!to && url"></WebView> -->
                 </div>
             </template>
-            <component :is="asyncComponent"  v-if="to && !url" :push="true" @close="close" v-bind="componentProps" />
-            <WebView :url="url" v-if="!to && url"></WebView>
-        </div>
-    </el-drawer>
+        </el-drawer>
+    </div>
 </template>
