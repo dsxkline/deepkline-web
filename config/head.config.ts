@@ -12,7 +12,9 @@ export default {
         },
         { name: "format-detection", content: "telephone=no" }
     ],
-    link: [],
+    link: [
+        {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons"}
+    ],
     script: [
         {
             src:'/js/dsx.kline_v_3_1_0.js'

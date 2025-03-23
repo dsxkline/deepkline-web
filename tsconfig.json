@@ -2,6 +2,7 @@
   // https://nuxt.com/docs/guide/concepts/typescript
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
-    "types": ["./types/types.ts"],
+    "types": ["./types"],
+    "typeRoots": ["./node_modules/@types", "./types","./fetch/okx/"]
   }
 }

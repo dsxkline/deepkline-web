@@ -1,0 +1,154 @@
+<script setup lang="ts">
+import type { Component } from "vue";
+
+export interface MenuModel {
+  name: string;
+  icon?: string;
+  titleComp?: Component;
+  contentComp?: Component;
+  contentParams?: {};
+  onClick?: () => {};
+}
+const props = defineProps({
+  menus: {
+    type: Array as PropType<MenuModel[]>, // 指定数组类型
+    default: () => [],
+  },
+  active: {
+    type: Number,
+    default: () => 0,
+  },
+  hideLine:{
+    type:Boolean,
+    default:false
+  }
+});
+const menuActive = ref(0);
+const tabbarContent = ref();
+const bottomLine = ref();
+const tabbarHeader = ref();
+const emit = defineEmits<{
+  (event: "update:active", value: number): void;
+}>();
+
+watch(
+  () => menuActive.value,
+  (n, o) => {
+    emit("update:active", n);
+  }
+);
+
+function menuHandler(item: MenuModel, index: number) {
+  menuActive.value = index;
+  moveContent(index);
+  if (item.onClick) {
+    item.onClick();
+    return;
+  }
+}
+
+function moveContent(index: number) {
+  // 重置所有item的x轴偏移
+  const translateX = -index * 100;
+  tabbarContent.value.style.transform = `translateX(${translateX}%)`;
+  // 横线移动
+  nextTick(() => {
+    const line = tabbarHeader.value.querySelector(".line");
+    const li = tabbarHeader.value.querySelector("li.active");
+    if (li && line) {
+      const w = li.clientWidth;
+      line.style.width = w + "px";
+      // 计算菜单的位置
+      const offsetLeft = li.offsetLeft
+      line.style.left = offsetLeft + 'px'
+    }
+  });
+}
+
+onMounted(()=>{
+    menuActive.value = props.active
+    nextTick(()=>{
+        moveContent(menuActive.value)
+    })
+})
+</script>
+
+<template>
+  <div class="tabbar-container">
+    <div class="tabbar-header" ref="tabbarHeader">
+      <ul>
+        <li
+          v-for="(item, index) in menus"
+          :key="index"
+          @click.stop="menuHandler(item, index)"
+          :class="{ active: index == menuActive }"
+        >
+          <template v-if="item.titleComp">
+            <component :is="item.titleComp" />
+          </template>
+          <template v-else>
+            <img v-if="item.icon" :src="item.icon" />
+            <span>{{ item.name }}</span>
+          </template>
+        </li>
+      </ul>
+      <div class="line" ref="bottomLine" v-show="!hideLine"></div>
+    </div>
+    <div class="tabbar-content" ref="tabbarContent">
+      <div class="tabbar-content-item" v-for="(item, index) in menus">
+        <component :is="item.contentComp" v-bind="item.contentParams" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="less">
+.tabbar-container {
+  overflow: hidden;
+  .tabbar-header {
+    width: 100%;
+    overflow-x: scroll;
+    position: relative;
+    ul {
+      width: max-content;
+      display: flex;
+      flex-direction: row;
+      padding: 5px 0;
+      li {
+        cursor: pointer;
+        margin: 0 10px;
+        color: rgb(var(--color-text-muted));
+        &:first-child {
+          margin-left: 0;
+        }
+        &:last-child {
+          margin-right: 0;
+        }
+        &.active {
+          color: rgb(var(--color-text-main));
+          font-weight: bold;
+        }
+      }
+    }
+    .line {
+      position: absolute;
+      height: 2px;
+      background: rgb(var(--color-text-main));
+      width: 10px;
+      bottom: 0;
+      transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
+  }
+  .tabbar-content {
+    width: 100%;
+    position: relative;
+    display: flex;
+    transform: translateX(0%);
+    transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+    .tabbar-content-item {
+      width: 100%;
+      flex: none;
+    }
+  }
+}
+</style>

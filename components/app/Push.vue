@@ -5,14 +5,14 @@ import { getCurrentInstance, render } from 'vue'
 // import SymbolSearch from '../symbol/SymbolSearch.vue';
 const instance = getCurrentInstance()
 const props = defineProps<{
-    visible: boolean;
-    direction: DrawerProps['direction'];
-    size: string;
-    asyncComponent: Component;
-    url: string;
-    to: string;
-    params: any;
-    popData: any;
+    visible?: boolean;
+    direction?: DrawerProps['direction'];
+    size?: string;
+    asyncComponent?: Component;
+    url?: string;
+    to?: any;
+    params?: any;
+    popData?: any;
 }>();
 const drawerSize = ref(props.size);
 const drawer = ref(null);
