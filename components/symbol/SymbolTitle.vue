@@ -3,7 +3,7 @@ import SymbolSearch from './SymbolSearch.vue';
 const nuxtApp = useNuxtApp()
 function pushSearch(){
     console.log(nuxtApp)
-    nuxtApp.$pushLeft(SymbolSearch,{},"auto")
+    nuxtApp.$pushLeft(SymbolSearch,{},"460px")
 }
 </script>
 <template>

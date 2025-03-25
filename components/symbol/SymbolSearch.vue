@@ -48,7 +48,7 @@ onMounted(() => {
       v-model="keyword"
       placeholder="Please Input"
       :prefix-icon="Search"
-      style="width: 300px"
+      class="w-[100%] px-5 py-3"
       @keyup.enter="search"
     />
     <TabBar :menus="menus" :hideLine="true"/>

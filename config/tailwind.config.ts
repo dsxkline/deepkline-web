@@ -18,6 +18,7 @@ export default <Partial<Config>>{
 				invert: withOpacityValue("--color-text-invert"),
 				green:withOpacityValue("--color-green"),
 				red:withOpacityValue("--color-red"),
+				grey:withOpacityValue("--color-text-grey"),
 			},
 			// 设置背景颜色基础类
 			// 其中 base 基础类是用于设置网页背景色，nav 基础类用于设置导航栏背景色
@@ -27,7 +28,7 @@ export default <Partial<Config>>{
 				base: withOpacityValue("--color-bg-base"),
 				nav: withOpacityValue("--color-bg-nav"),
 				main: withOpacityValue("--color-fill-main"),
-				muted: withOpacityValue("--color-fill-muted")
+				muted: withOpacityValue("--color-fill-muted"),
 			},
 			// 设置渐变颜色基础类
 			gradientColorStops: {

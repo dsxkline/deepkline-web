@@ -109,6 +109,7 @@ onMounted(()=>{
     width: 100%;
     overflow-x: scroll;
     position: relative;
+    padding: 0px 20px;
     ul {
       width: max-content;
       display: flex;
@@ -118,6 +119,7 @@ onMounted(()=>{
         cursor: pointer;
         margin: 0 10px;
         color: rgb(var(--color-text-muted));
+        font-size: 18px;
         &:first-child {
           margin-left: 0;
         }

@@ -31,7 +31,7 @@ const menus = ref<MenuModel[]>([
     .tabbar-header{
         ul{
             li{
-                font-size: 12px;
+                @apply text-sm;
             }
         }
     }
