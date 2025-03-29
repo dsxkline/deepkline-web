@@ -9,7 +9,7 @@
 		<SymbolTitle></SymbolTitle>
 		<SymbolTools></SymbolTools>
 		<ThemeSwitch></ThemeSwitch>
-		<CycleBar></CycleBar>
+		
 	</div>
 </template>
 

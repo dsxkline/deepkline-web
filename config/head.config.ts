@@ -13,7 +13,7 @@ export default {
         { name: "format-detection", content: "telephone=no" }
     ],
     link: [
-        {rel:"stylesheet", href:"https://fonts.googleapis.com/icon?family=Material+Icons"}
+        
     ],
     script: [
         {

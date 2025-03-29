@@ -50,14 +50,10 @@ const visibleDrawer = computed({
         console.log('visibleDrawer', val);
     }
 });
-// 动态导入组件
-const asyncComponent = computed(() => {
-    if (props.to) {
-        // 动态导入组件，假设 `to` 是组件的名称或路径
-        return props.to
-    }
-    return null;
-});
+
+// 异步加载组件
+const asyncComponent = computed(() => props.to)
+
 
 // 把参数通过props传递给目标组件
 const componentProps = computed(() => (props.params))
@@ -100,7 +96,7 @@ onMounted(() => {
             :class="{ pushup: direction == 'btt' && size != '100%' }"
         >
             <template #default>
-                <div class="drawer_body" ref="drawerBody">
+                <div class="drawer_body w-full" ref="drawerBody">
                     <!-- <SafeArea></SafeArea>
                     <template v-if="direction == 'btt' && size != '100%'">
                         <DrawLine @click="hide" />
@@ -108,7 +104,7 @@ onMounted(() => {
                             <Close />
                         </div>
                     </template> -->
-                    <component :is="to" :push="true" @close="close" v-bind="componentProps" />
+                    <component :is="asyncComponent" :push="true" @close="close" v-bind="componentProps" />
                     <!-- <WebView :url="url" v-if="!to && url"></WebView> -->
                 </div>
             </template>

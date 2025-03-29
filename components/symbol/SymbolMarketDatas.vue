@@ -17,7 +17,6 @@ watchEffect(() => {
 	change.value = parseFloat(item.value?.last||'0') - parseFloat(item.value?.sodUtc0||'0');
 	// 涨跌幅
 	rate.value = (change.value / parseFloat(item.value?.sodUtc0||'0')) * 100;
-	
 })
 // 监听行情变化
 watch(() => item.value, (newSymbol, oldSymbol) => {

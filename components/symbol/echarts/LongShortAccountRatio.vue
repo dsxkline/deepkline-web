@@ -127,7 +127,7 @@ onMounted(() => {
 				const parentWidth = (parentElement.parentNode?.parentNode as HTMLElement).clientWidth;
 				const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left;
 				width.value = parentWidth - 2 * Math.abs(parentPaddingLeft);
-				echart.resize();
+				echart && echart.resize();
 			}
 		})
 		// 监听父级元素宽度变化

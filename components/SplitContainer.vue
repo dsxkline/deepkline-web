@@ -1,107 +1,103 @@
 <script setup lang="ts">
-	import Split from "split.js";
-	import { useStore } from "~/store";
-	const splitHorizontal = ref(null);
-	const splitLeft = ref(null);
-	const splitRight = ref(null);
-	const rightWidth = 360;
-	const windowWidth = ref(window?.innerWidth);
-    const updateWindowWidth = () => {
-      windowWidth.value = window.innerWidth;
-	  setAutoSplit();
-    }
-	let left = 80;
-	let right = 100 - left;
-	let split: Split.Instance;
+	import Split from 'split.js'
+	import { useStore } from '~/store'
+	const splitHorizontal = ref(null)
+	const splitLeft = ref(null)
+	const splitRight = ref(null)
+	const leftWidth = 360
+	const windowWidth = ref(window?.innerWidth)
+	const updateWindowWidth = () => {
+		windowWidth.value = window.innerWidth
+		setAutoSplit()
+		split && split.setSizes([left, right])
+	}
+	let left = 20
+	let right = 100 - left
+	let split: Split.Instance
 	onMounted(() => {
-		window.addEventListener('resize', updateWindowWidth);
-		setAutoSplit();
-		split = Split(["#split-left", "#split-right"], {
+		window.addEventListener('resize', updateWindowWidth)
+		setAutoSplit()
+		split = Split(['#split-left', '#split-right'], {
 			sizes: [left, right],
-			minSize: [600, 0],
-			// maxSize: [window.innerWidth, rightWidth],
-			direction: "horizontal",
+			minSize: [0, 0],
+			// maxSize: [leftWidth,0],
+			direction: 'horizontal',
 			gutterSize: 3,
 			onDragStart: () => {
-				console.log("onDragStart");
+				console.log('onDragStart')
 			},
 			onDrag: () => {
-				console.log("onDrag");
+				console.log('onDrag')
 			},
 			onDragEnd: () => {
-				console.log("onDragEnd");
+				console.log('onDragEnd')
 			}
-		});
-	});
+		})
+	})
 	onUnmounted(() => {
-      window.removeEventListener('resize', updateWindowWidth);
-    });
+		window.removeEventListener('resize', updateWindowWidth)
+	})
 	function setAutoSplit() {
-		left = ((window.innerWidth - rightWidth - 1.5) / window.innerWidth) * 100.0;
-		right = 100 - left;
+		left = ((leftWidth+1.5) / (windowWidth.value-40)) * 100.0
+		right = 100 - left
+		
 	}
 	function addAnimation(dom: HTMLElement | null) {
 		if (dom) {
-			dom.style.transition = "0.2s";
+			dom.style.transition = '0.2s'
 		}
 	}
 	function removeAnimation(dom: HTMLElement | null) {
 		setTimeout(() => {
 			if (dom) {
-				dom.style.transition = "none";
+				dom.style.transition = 'none'
 			}
-		}, 200);
+		}, 200)
 	}
 	function hideRight(val: boolean) {
-		setAutoSplit();
-		addAnimation(splitRight.value);
-		addAnimation(splitLeft.value);
-		if (val) split.setSizes([100, 0]);
+		setAutoSplit()
+		addAnimation(splitRight.value)
+		addAnimation(splitLeft.value)
+		if (val) split.setSizes([100, 0])
 		else {
-			split.setSizes([left, right]);
+			split.setSizes([left, right])
 		}
-		removeAnimation(splitRight.value);
-		removeAnimation(splitLeft.value);
+		removeAnimation(splitRight.value)
+		removeAnimation(splitLeft.value)
 	}
 	function hideLeft(val: boolean) {
-		setAutoSplit();
-		addAnimation(splitRight.value);
-		addAnimation(splitLeft.value);
-		if (val) split.setSizes([0, 100]);
-		else split.setSizes([left, right]);
-		removeAnimation(splitRight.value);
-		removeAnimation(splitLeft.value);
+		setAutoSplit()
+		addAnimation(splitRight.value)
+		addAnimation(splitLeft.value)
+		if (val) split.setSizes([0, 100])
+		else split.setSizes([left, right])
+		removeAnimation(splitRight.value)
+		removeAnimation(splitLeft.value)
 	}
 
 	watch(
 		() => useStore().hideSplitRight,
-		(val) => {
-			hideRight(val);
+		val => {
+			hideRight(val)
 		}
-	);
+	)
 	watch(
 		() => useStore().hideSplitLeft,
-		(val) => {
-			hideLeft(val);
+		val => {
+			hideLeft(val)
 		}
-	);
+	)
 </script>
 <template>
 	<div class="split-container">
-		<div
-			class="split-horizontal flex w-full h-full *:overflow-hidden"
-			ref="splitHorizontal">
-			<div
-				id="split-left"
-				ref="splitLeft">
-				<slot name="left"></slot>
-			</div>
-			<div
-				id="split-right"
-				ref="splitRight">
+		<div class="split-horizontal flex w-full h-full *:overflow-hidden" ref="splitHorizontal">
+			<div id="split-left" ref="splitLeft">
 				<el-scrollbar class="h-full w-full">
-					<slot name="right"></slot>
+					<slot name="left"></slot>
 				</el-scrollbar>
+			</div>
+			<div id="split-right" ref="splitRight">
+				<slot name="right"></slot>
 			</div>
 		</div>
 	</div>
@@ -113,11 +109,11 @@
 		height: calc(100vh - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			#split-left {
-				width: calc(100vw - 360px - 1.5px);
+				width: calc(360px - 1.5px);
 			}
 			#split-right {
-				width: calc(360px - 1.5px);
-				overflow-x:hidden;
+				width: calc(100vw - 360px - 40px - 1.5px);
+				overflow-x: hidden;
 			}
 			&:deep(.gutter) {
 				background-color: var(--border-color);
@@ -127,7 +123,7 @@
 					cursor: col-resize;
 				}
 				.gutter-horizontal {
-					background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+					background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
 					cursor: col-resize;
 				}
 			}

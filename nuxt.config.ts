@@ -6,7 +6,6 @@ import modulesConfig from "./config/modules.config";
 import pluginsConfig from "./config/plugins.config";
 import postcssConfig from "./config/postcss.config";
 import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
-import { resolve } from "path";
 import config from "./config/config";
 require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
 // https://nuxt.com/docs/api/configuration/nuxt-config

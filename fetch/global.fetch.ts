@@ -50,6 +50,9 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
     // const fetch = $fetch.create(options as FetchOptions)
     let { data, error, pending, status } = await useFetch(baseUrl + path, options);
     if (status.value === "success") {
+        if (data.value && typeof data.value === 'object' && 'code' in data.value) {
+            data.value.code = parseInt((data.value as { code: any }).code) || 0;
+        }
         return data.value;
     }
     return {
@@ -84,6 +87,9 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
     // console.log(process.client, url)
     console.log("error",error);
     if (status.value === "success") {
+        if (data.value && typeof data.value === 'object' && 'code' in data.value) {
+            data.value.code = parseInt((data.value as { code: any }).code) || 0;
+        }
         return data.value ;
     }
     return {

@@ -4,15 +4,15 @@
 	import { ComposFetch } from "~/fetch";
 	import { useStore } from "~/store";
 	const fn = async () => {
-		ComposFetch.commonFetch.getCommon().then(({ data, error }) => {
-			// console.log(data.value,typeof(data.value),data.value?.name);
-		});
+		// ComposFetch.commonFetch.getCommon().then((res) => {
+		// 	// console.log(data.value,typeof(data.value),data.value?.name);
+		// });
 	};
 	const isCollapse = ref(true);
 	const handleOpen = (key: string, keyPath: string[]) => {
 		// console.log(key, keyPath);
 		fn();
-		useStore().setSplitRight(!useStore().hideSplitRight)
+		useStore().setSplitLeft(!useStore().hideSplitLeft)
 	};
 	const handleClose = (key: string, keyPath: string[]) => {
 		// console.log(key, keyPath);

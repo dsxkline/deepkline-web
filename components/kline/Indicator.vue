@@ -11,6 +11,7 @@
 </script>
 <template>
 	<div class="indicator ml-4 w-max flex gap-1 *:p-1 *:rounded *:text-xs *:cursor-pointer">
+		<div class="indicator-item">指标</div>
 		<div
 			class="indicator-item"
 			v-for="(item, index) in mainIndicatorList"

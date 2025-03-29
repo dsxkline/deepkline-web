@@ -1,13 +1,13 @@
 <script setup lang="ts">
 	import Split from "split.js";
 	const splitVertical = ref(null);
-	const downHeight = 30;
+	const upHeight = 30;
 	const windowWidth = ref(window?.innerWidth);
     const updateWindowWidth = () => {
       windowWidth.value = window.innerWidth;
 	  setAutoSplit();
     }
-	let up = 80;
+	let up = 20;
 	let down = 100 - up;
 	let split: Split.Instance;
 	onMounted(() => {
@@ -15,7 +15,7 @@
 		setAutoSplit();
 		split = Split(["#split-up", "#split-down"], {
 			sizes: [up, down],
-			minSize: [600, 0],
+			minSize: [0, 600],
 			// maxSize: [window.innerWidth, rightWidth],
 			direction: "vertical",
 			gutterSize: 0,
@@ -35,7 +35,7 @@
     });
 	function setAutoSplit() {
 		const containerHeight = splitVertical.value ? (splitVertical.value as HTMLElement).offsetHeight : 0;
-		up = ((containerHeight - downHeight) / containerHeight) * 100.0;
+		up = ((upHeight) / containerHeight) * 100.0;
 		down = 100 - up;
 	}
 	function addAnimation(dom: HTMLElement | null) {
@@ -78,12 +78,12 @@
 		.split-vertical {
 			#split-up {
 				width: calc(100%);
-				height: calc(100% - var(--footer-height));
+				height: var(--footer-height);
 			}
 			#split-down {
 				width: calc(100%);
 				overflow-x:hidden;
-				height: var(--footer-height);
+				height: calc(100% - var(--footer-height));
 			}
 			&:deep(.gutter) {
 				background-color: var(--border-color);

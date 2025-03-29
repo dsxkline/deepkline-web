@@ -5,7 +5,7 @@ import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from 
 declare var window: DsxWindow;
 const klineDom = ref(null);
 onMounted(() => {
-	const symbol = "BTC-USDT-SWAP";
+	const symbol = "BTC-USDT";
 	const chart = new DsxKlineChart(symbol, useKlineStore().cycle, {
 		element: klineDom.value || '',
 		autoSize: true,
@@ -60,6 +60,5 @@ onMounted(() => {
 <template>
 	<div class="kline-chart-container w-full h-full">
 		<div class="kline w-full h-full" ref="klineDom"></div>
-		
 	</div>
 </template>

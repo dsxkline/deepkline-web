@@ -16,5 +16,9 @@ declare module '#app' {
   interface NuxtApp {
     $ws: OKXWebSocket,
     $wsb: OKXWebSocket,
+    $push:(comp: any, params: {}, size: string)=>void,
+    $pushLeft:(comp: any, params: {}, size: string)=>void,
+    $pushUp:(comp: any, params: {}, size: string)=>void,
+    $pushDown:(comp: any, params: {}, size: string)=>void
   }
 }

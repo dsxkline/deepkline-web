@@ -78,7 +78,7 @@ export default class BaseWebSocket {
 		return this.ws && this.ws.readyState === WebSocket.OPEN;
 	}
 
-	subscribe(sendDatas: any, tag: Record<string, any>, callback: (message: any, error: Event | null) => void): string {
+	subscribe(sendDatas: any, tag: Record<string, any>, callback?: (message: any, error: Event | null) => void): string {
 		const subId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		this.subscribers[subId] = {
 			subId: subId,
@@ -128,7 +128,7 @@ export default class BaseWebSocket {
 		Object.values(this.subscribers).forEach(({ tag, callback }) => {
 			const isMatch = this.routerWithTag(tag, message)
 			if (!isMatch) return;
-			callback(message, error)
+			callback && callback(message, error)
 		});
 	}
 

@@ -23,6 +23,7 @@ const onCycleChange = async (value:string)=>{
 </script>
 <template>
 <div class="cycle-bar ml-4 w-max flex gap-1 *:p-1 *:px-2 *:rounded *:text-xs *:cursor-pointer">
+    <div class="cycle-bar-item">周期</div>
     <div class="cycle-bar-item" v-for="(item, index) in cycleList" :key="index" :class="{active: item.value === cycle}" @click.stop="onCycleChange(item.value)">
         {{item.label}}
     </div>

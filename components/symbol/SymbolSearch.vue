@@ -6,6 +6,11 @@ import Options from "./search/Options.vue";
 import SymbolList from "./search/SymbolList.vue";
 import MarketList from "./search/MarketList.vue";
 const keyword = ref("");
+
+const tabbarHeight = computed(()=>{
+  // 获取当前组件的高度
+  return window.innerHeight-40-56
+});
 const menus = ref<MenuModel[]>([
   {
     name: "自选",
@@ -51,6 +56,6 @@ onMounted(() => {
       class="w-[100%] px-5 py-3"
       @keyup.enter="search"
     />
-    <TabBar :menus="menus" :hideLine="true"/>
+    <TabBar :menus="menus" :hideLine="true" :height="tabbarHeight"/>
   </div>
 </template>

@@ -23,9 +23,9 @@ export default class OKXWebSocket extends BaseWebSocket {
         return new OKXWebSocket(WsChannel.business);
     }
 
-    getSendData(channel:string,instId:string[]){
+    getSendData(channel:string,instId:string[],op:"subscribe"|"unsubscribe"="subscribe"){
         return {
-            "op":"subscribe",
+            "op":op,
             "args":instId.map((item)=>{
                 return {
                     "channel":channel,
