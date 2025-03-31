@@ -6,6 +6,7 @@ export const useSymbolStore = defineStore({
   id: 'symbol',
   state: () => ({
     currency: 'USDT',
+    activeSymbol: 'BTC-USDT',
     // 保存所有的symbols
     symbols:{} as Record<string,Instruments>,
     // symbols 分组
@@ -14,8 +15,17 @@ export const useSymbolStore = defineStore({
     subSymbols:{} as Record<string, any>,
     // symbol的tick行情
     tickets:shallowReactive({} as Record<string, Ticker>),
+    // 收藏的symbols
+    favoriteSymbols:[] as Instruments[]
   }),
+  
   actions: {
+    setActiveSymbol(symbol:string){
+      this.activeSymbol = symbol
+    },
+    getActiveSymbol(){
+      return this.symbols[this.activeSymbol]
+    },
     setSubSymbols(symbol:any) {
       if(typeof symbol=='string'){
         this.subSymbols[symbol] = symbol
@@ -43,6 +53,25 @@ export const useSymbolStore = defineStore({
       const symbols = this.symbolGroup[category]
       if(!symbols) return
       return symbols.filter(item=>item.quoteCcy==currency || item.settleCcy==currency)
+    },
+    favoriteSymbol(symbol:Instruments){
+      if(this.favoriteSymbols.find(item=>item.instId==symbol.instId)){
+        this.favoriteSymbols = this.favoriteSymbols.filter(item=>item.instId!=symbol.instId)
+      }else{
+        this.favoriteSymbols.push(symbol)
+      }
+      // 保存到localStore
+      localStorage.setItem('favoriteSymbols',JSON.stringify(this.favoriteSymbols))
+    },
+    isFavorite(symbol:Instruments){
+      return this.favoriteSymbols.find(item=>item.instId==symbol.instId)
+    },
+    loadFavoriteSymbols(){
+      const favoriteSymbols = localStorage.getItem('favoriteSymbols')
+      if(favoriteSymbols){
+        this.favoriteSymbols = JSON.parse(favoriteSymbols)
+      }
+      return this.favoriteSymbols
     }
   }
 })

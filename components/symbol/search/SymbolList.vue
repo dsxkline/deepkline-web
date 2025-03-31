@@ -10,7 +10,8 @@
 
 	const props = defineProps<{
 		symbolCategory: InstanceType
-		height: number
+		height: number,
+        favorite?:boolean
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -56,8 +57,8 @@
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
-		end.value = Math.min(start.value + visibleCount.value + 2*offset.value, symbols.value.length-1)
-		// console.log('scrollHandler', start.value, end.value, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		end.value = Math.min(start.value + visibleCount.value + 2*offset.value, symbols.value.length)
+		// console.log('scrollHandler', start.value, end.value, symbols.value.length,visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
@@ -65,8 +66,25 @@
 		}, 300)
 	}
 
+    watch(() => useSymbolStore().favoriteSymbols, (n, o) => {
+        getGroupSymbols()
+    },{deep:true})
+
 	function getGroupSymbols() {
 		error.value = ''
+        // 如果是自选，从自选中获取
+        if(props.favorite){
+            symbols.value = useSymbolStore().favoriteSymbols || []
+            symbols.value = symbols.value.filter(item => item.instType === props.symbolCategory)||[]
+            if (symbols.value?.length) {
+                nextTick(() => {
+                    scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
+                })
+            }
+            loading.value = false
+            console.log('symbols',symbols.value,props.symbolCategory)
+            return
+        }   
 		// 从store中获取
 		symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
 		if (symbols.value?.length) {
@@ -98,7 +116,8 @@
 			})
 	}
 	function update() {
-		console.log('update')
+		console.log('update',props.favorite)
+        useSymbolStore().loadFavoriteSymbols()
 		getGroupSymbols()
 	}
 
@@ -116,6 +135,7 @@
 				message.data.forEach(item => {
 					// 同步到store
 					// useSymbolStore().setTickets(item.instId, item)
+                    $ws.setTickers(item.instId, item)
 				})
 		})
 	}
@@ -126,12 +146,15 @@
 			$ws.unsubscribe(subHandle)
 		}
 	}
+    function clickSymbol(item?:Instruments){
+        item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
+    }
 	// 暴露给父组件的方法
 	defineExpose({ update, leave })
 </script>
 <template>
 	<div class="w-full">
-		<ul class="w-full" v-if="(loading && !error) || !symbols.length">
+		<ul class="w-full" v-if="(loading && !error)">
 			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
 					<template #template>
@@ -159,7 +182,7 @@
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar">
 			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - 1 - end) * itemHeight + 'px' }">
-				<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in virtualList" :key="item.instId + '-' + start + '-' + end">
+				<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer" v-for="item in virtualList" :key="item.instId + '-' + start + '-' + end" @click.stop="clickSymbol(item)">
 					<div class="col-span-2"><SymbolName :symbol="item" /></div>
 					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>

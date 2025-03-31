@@ -1,13 +1,9 @@
 html:root {
     --el-menu-base-level-padding: 10px;
     --el-color-primary: rgba(0 193 106 / 1);
-}
-
-html.dark {
-    --el-color-primary: rgba(0 220 130 / 1);
     // el-menu
     --el-menu-active-color: var(--el-color-primary);
-    --el-menu-text-color: #fff;
+    --el-menu-text-color: rgb(var(--color-main));
     --el-menu-hover-text-color: var(--el-color-primary);
     --el-menu-bg-color: var(--transparent05);
     --el-menu-hover-bg-color: var(--transparent10);
@@ -16,6 +12,7 @@ html.dark {
     --el-menu-border-color: var(--transparent10);
 
     --el-bg-color-overlay: var(--transparent10);
+    --el-border-color: var(--transparent10);
     --el-border-color-light: var(--transparent10);
 
     --el-switch-off-color: var(--el-menu-bg-color);
@@ -24,9 +21,21 @@ html.dark {
     --el-text-color-regular: rgb(var(--color-text-muted));
     --el-bg-color-overlay: rgb(var(--color-bg-base));
     --el-fill-color-light: var(--transparent10);
+
+    --el-input-border-color: var(--transparent10);
+    --el-input-border-color-hover: var(--transparent20);
+}
+
+html.dark {
+    --el-color-primary: rgba(0 220 130 / 1);
+    
 }
 
 body {
+    .el-input {
+        --el-input-border-color: var(--transparent10);
+        --el-input-border-color-hover: var(--transparent20);
+    }
     .el-switch {
         --el-switch-on-color: var(--el-color-primary);
         --el-switch-off-color: var(--transparent10);

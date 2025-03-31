@@ -7,10 +7,7 @@
 	import MarketList from './search/MarketList.vue'
 	const keyword = ref('')
 
-	const tabbarHeight = computed(() => {
-		// 获取当前组件的高度
-		return window?.innerHeight - 40 - 56 - 30
-	})
+	const tabbarHeight = ref(0)
 	const menus = ref<MenuModel[]>([
 		{
 			name: '自选',
@@ -27,6 +24,7 @@
 	const search = () => {}
 
 	onMounted(() => {
+    tabbarHeight.value = window?.innerHeight - 40 - 56 - 30;
 		setInterval(() => {
 			if (menus.value[0].contentParams)
 				menus.value[0].contentParams = {

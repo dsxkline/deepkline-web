@@ -2,10 +2,11 @@
 import { useKlineStore } from "~/store/kline";
 import DsxKlineChart from "./DsxKlineChart";
 import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from "./DsxKlineChart.d";
+import { useSymbolStore } from "~/store/symbol";
 declare var window: DsxWindow;
 const klineDom = ref(null);
 onMounted(() => {
-	const symbol = "BTC-USDT";
+	const symbol = useSymbolStore().activeSymbol;
 	const chart = new DsxKlineChart(symbol, useKlineStore().cycle, {
 		element: klineDom.value || '',
 		autoSize: true,
@@ -52,6 +53,13 @@ onMounted(() => {
 		() => useKlineStore().sides,
 		(newVal) => {
 			chart.selectSides(newVal);
+		}
+	);
+
+	watch(
+		() => useSymbolStore().activeSymbol,
+		(newVal) => {
+			chart.tapSymbol(newVal);
 		}
 	);
 

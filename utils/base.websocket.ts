@@ -1,3 +1,5 @@
+import type { Instruments, Ticker } from "~/fetch/okx/okx.type";
+
 export default class BaseWebSocket {
 	private ws: WebSocket | null = null;
 	private reconnectTimer: any = null;
@@ -9,6 +11,8 @@ export default class BaseWebSocket {
 	private url: string = "";
 	public subscribers: Record<string, any> = {};
 	private waitSendDatas: any = [];
+	private tickers: Record<string, Ticker> = {};
+	private tickersHandler: Record<string, any>[] = [];
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
 		this.reconnectErrorCallback = reconnectErrorCallback;
@@ -147,5 +151,23 @@ export default class BaseWebSocket {
 		return isMatch;
 	}
 
-
+	setTickers(instId:string,ticker: Ticker) {
+		this.tickers[instId] = ticker;
+		this.tickersHandler.forEach((item)=>{
+			if(item.instId === instId){
+				item.callback(ticker,null);
+			}
+		})
+	}
+	getTickers(instId:string) {
+		return this.tickers[instId];
+	}
+	addTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
+		this.tickersHandler.push({instId,callback});
+	}
+	removeTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
+		this.tickersHandler = this.tickersHandler.filter((item)=>{
+			return item.instId !== instId && item.callback !== callback;
+		})
+	}
 }

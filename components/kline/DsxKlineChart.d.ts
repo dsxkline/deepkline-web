@@ -190,6 +190,7 @@ export declare class DsxKline {
 	_zoomAnimation(n: number, x: number): void;
 	_setMiddleKlineLineIndex(x: number): void;
 	refreshLastOneData: (item:string,cycle:string) => void;
+	destroy: () => void;
 }
 
 export interface DsxWindow extends Window {

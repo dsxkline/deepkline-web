@@ -4,9 +4,17 @@ import { useSymbolStore } from '~/store/symbol';
 const props = defineProps<{
     symbol: Instruments
 }>()
-const price = computed(()=>{
-    const val = useSymbolStore().tickets[props?.symbol?.instId];
-    return parseFloat(val?.last||'0')*parseFloat(val?.vol24h||"0")
+const { $wsb, $ws } = useNuxtApp()
+const ticker = $ws.getTickers(props.symbol.instId)
+const price = ref(parseFloat(ticker?.last||'0')*parseFloat(ticker?.vol24h||"0"))
+const tickerHandler = (data: Ticker) => {
+    price.value = parseFloat(data?.last||'0')*parseFloat(data?.vol24h||"0")
+}
+onMounted(() => {
+    $ws.addTickerHandler(props.symbol.instId,tickerHandler)
+})
+onUnmounted(() => {
+    $ws.removeTickerHandler(props.symbol.instId,tickerHandler)
 })
 
 </script>

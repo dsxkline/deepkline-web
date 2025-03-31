@@ -14,14 +14,16 @@
 			name: '现货',
 			contentComp: markRaw(SymbolList),
 			contentParams: {
-				symbolCategory: InstanceType.SPOT
+				symbolCategory: InstanceType.SPOT,
+                favorite: true
 			}
 		},
 		{
 			name: '合约',
 			contentComp: markRaw(SymbolList),
 			contentParams: {
-				symbolCategory: InstanceType.SWAP
+				symbolCategory: InstanceType.SWAP,
+                favorite: true
 			}
 		}
 	])
