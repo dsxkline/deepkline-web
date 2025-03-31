@@ -13,7 +13,7 @@ export const useSymbolStore = defineStore({
     // 正在订阅的symbols
     subSymbols:{} as Record<string, any>,
     // symbol的tick行情
-    tickets:{} as Record<string, Ticker>,
+    tickets:shallowReactive({} as Record<string, Ticker>),
   }),
   actions: {
     setSubSymbols(symbol:any) {

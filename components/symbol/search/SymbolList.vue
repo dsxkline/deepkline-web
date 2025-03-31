@@ -26,14 +26,14 @@
 	// 虚拟化
 	const scrollbar = ref<HTMLElement>()
 	// 每个元素的高度
-	const itemHeight = 64
+	const itemHeight = 54
 	// 可视区域的数量
 	const visibleCount = computed(() => {
 		// 获取当前组件的高度
 		return Math.ceil(contentHeight.value / itemHeight)
 	})
 	// 上下偏移量
-	const offset = ref(Math.max(1, visibleCount.value / 2))
+	const offset = computed(() => Math.max(1, Math.floor(visibleCount.value)))
 	// 虚拟列表的起始索引
 	const start = ref(0)
 	// 虚拟列表的结束索引
@@ -55,9 +55,8 @@
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		mainScrollTop.value = params.scrollTop
-		offset.value = Math.max(1, Math.floor(visibleCount.value / 2))
-		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight) - offset.value)
-		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
+		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
+		end.value = Math.min(start.value + visibleCount.value + 2*offset.value, symbols.value.length-1)
 		// console.log('scrollHandler', start.value, end.value, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
@@ -116,7 +115,7 @@
 			if (message.data)
 				message.data.forEach(item => {
 					// 同步到store
-					useSymbolStore().setTickets(item.instId, item)
+					// useSymbolStore().setTickets(item.instId, item)
 				})
 		})
 	}
@@ -133,25 +132,25 @@
 <template>
 	<div class="w-full">
 		<ul class="w-full" v-if="(loading && !error) || !symbols.length">
-			<li class="w-full h-[64px] grid grid-cols-4 *:flex *:items-center py-3 hover:bg-[--transparent03] px-5" v-for="item in 10">
+			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
 					<template #template>
-						<el-skeleton-item variant="p" style="width: 80%" />
+						<el-skeleton-item variant="p" style="width: 80%; height: 30%" />
 					</template>
 				</el-skeleton>
-				<el-skeleton :rows="0" animated class="justify-end px-1">
+				<el-skeleton :rows="0" animated class="justify-end">
 					<template #template>
-						<el-skeleton-item variant="p" style="width: 60%" />
+						<el-skeleton-item variant="p" style="width: 60%; height: 30%" />
 					</template>
 				</el-skeleton>
-				<el-skeleton :rows="0" animated class="justify-end px-1">
+				<el-skeleton :rows="0" animated class="justify-end">
 					<template #template>
-						<el-skeleton-item variant="p" style="width: 60%" />
+						<el-skeleton-item variant="p" style="width: 60%; height: 30%" />
 					</template>
 				</el-skeleton>
 			</li>
 		</ul>
-		<div ref="lheader" class="w-full py-2 px-5" v-else>
+		<div ref="lheader" class="w-full py-2 px-4" v-else>
 			<ul class="grid grid-cols-4 *:flex *:items-center text-xs text-grey">
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp ref="addouName" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp ref="addouPrice" /></li>
@@ -160,10 +159,10 @@
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar">
 			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - 1 - end) * itemHeight + 'px' }">
-				<li class="w-full h-[64px] grid grid-cols-4 *:flex *:items-center py-3 hover:bg-[--transparent03] px-5" v-for="item in virtualList" :key="item.instId + '-' + start + '-' + end">
+				<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in virtualList" :key="item.instId + '-' + start + '-' + end">
 					<div class="col-span-2"><SymbolName :symbol="item" /></div>
-					<div class="justify-end px-1"><SymbolPrice :symbol="item" /></div>
-					<div class="justify-end px-1"><SymbolChangeButton :symbol="item" /></div>
+					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
+					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
 				</li>
 			</ul>
 		</el-scrollbar>

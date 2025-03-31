@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import Split from "split.js";
 	const splitVertical = ref(null);
-	const upHeight = 30;
+	const upHeight = 40;
 	const windowWidth = ref(window?.innerWidth);
     const updateWindowWidth = () => {
       windowWidth.value = window.innerWidth;

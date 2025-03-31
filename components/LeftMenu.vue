@@ -1,15 +1,18 @@
 <script lang="ts" setup>
 	import { ref } from "vue";
-	import { Document, Menu as IconMenu, Location, Setting } from "@element-plus/icons-vue";
-	import { ComposFetch } from "~/fetch";
 	import { useStore } from "~/store";
+	import type { MenuModel } from "./common/TabBar.vue";
+	const props = defineProps<{
+		menus: MenuModel[],
+		active?:number
+	}>();
 	const fn = async () => {
 		// ComposFetch.commonFetch.getCommon().then((res) => {
 		// 	// console.log(data.value,typeof(data.value),data.value?.name);
 		// });
 	};
 	const isCollapse = ref(true);
-	const handleOpen = (key: string, keyPath: string[]) => {
+	const handleOpen = (menu: MenuModel, index: number) => {
 		// console.log(key, keyPath);
 		fn();
 		useStore().setSplitLeft(!useStore().hideSplitLeft)
@@ -20,31 +23,24 @@
 </script>
 
 <template>
-	<div class="left-menu flex justify-between border-l border-[--border-color]">
-		<el-menu
-			default-active="2"
-			class="el-menu-vertical-demo"
-			:collapse="isCollapse"
-			@open="handleOpen"
-			@close="handleClose"
-			@select="handleOpen">
-			<el-menu-item index="1">
-				<el-icon><location /></el-icon>
-			</el-menu-item>
-			<el-menu-item index="2">
-				<el-icon><icon-menu /></el-icon>
-			</el-menu-item>
-			<el-menu-item index="3">
-				<el-icon><document /></el-icon>
-			</el-menu-item>
-			<el-menu-item index="4">
-				<el-icon><setting /></el-icon>
-			</el-menu-item>
-		</el-menu>
+	<div class="left-menu flex flex-col justify-between border-r border-[--border-color] bg-[--transparent05]">
+		<div>
+			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted">
+				<li :class="(active||0)==index?'bg-[var(--transparent05)] !text-main':'hover:bg-[var(--transparent02)]'+''" v-for="(menu,index) in props.menus" :key="menu.name" @click="handleOpen(menu,index)">
+					<component :is="menu.icon" class="w-5" v-if="menu.icon" />
+					<span v-if="menu.name" class="py-2">{{ menu.name }}</span>
+				</li>
+			</ul>
+		</div>
+		<div>
+			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xls *:cursor-pointer *:text-muted">
+				<li>
+					<el-icon class="!w-[20px] !h-[20px] text-muted :hover:text-main"><Setting class="!w-[20px] !h-[20px]" /></el-icon>
+				</li>
+			</ul>
+		</div>
 	</div>
 </template>
 <style>
-	.left-menu {
-		width: var(--menu-width);
-	}
+
 </style>

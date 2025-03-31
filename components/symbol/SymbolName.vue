@@ -4,13 +4,11 @@ import { useSymbolStore } from '~/store/symbol';
 const props = defineProps<{
     symbol: Instruments
 }>()
-const price = ref(0)
-watch(()=>useSymbolStore().tickets[props?.symbol?.instId],(val)=>{
-    price.value = parseFloat(val?.last||'0')*parseFloat(val?.vol24h||"0")
-    // console.log('symbol price',props?.symbol?.instId,val)
-},{
-    deep:true
+const price = computed(()=>{
+    const val = useSymbolStore().tickets[props?.symbol?.instId];
+    return parseFloat(val?.last||'0')*parseFloat(val?.vol24h||"0")
 })
+
 </script>
 <template>
     <div class="flex items-center">

@@ -3,7 +3,7 @@
 
 	export interface MenuModel {
 		name: string
-		icon?: string
+		icon?: Component
 		titleComp?: Component
 		contentComp?: Component
 		contentParams?: {}
@@ -119,7 +119,7 @@
 						<component :is="item.titleComp" />
 					</template>
 					<template v-else>
-						<img v-if="item.icon" :src="item.icon" />
+						<component v-if="item.icon" :is="item.icon" />
 						<span>{{ item.name }}</span>
 					</template>
 				</li>
@@ -143,7 +143,7 @@
 			width: 100%;
 			overflow-x: scroll;
 			position: relative;
-			padding: 0px 20px;
+			padding: 0px 16px;
 			ul {
 				width: max-content;
 				display: flex;

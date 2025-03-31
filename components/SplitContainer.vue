@@ -19,10 +19,10 @@
 		setAutoSplit()
 		split = Split(['#split-left', '#split-right'], {
 			sizes: [left, right],
-			minSize: [0, 0],
+			minSize: [leftWidth, 0],
 			// maxSize: [leftWidth,0],
 			direction: 'horizontal',
-			gutterSize: 3,
+			gutterSize: 1,
 			onDragStart: () => {
 				console.log('onDragStart')
 			},
@@ -38,9 +38,8 @@
 		window.removeEventListener('resize', updateWindowWidth)
 	})
 	function setAutoSplit() {
-		left = ((leftWidth+1.5) / (windowWidth.value-40)) * 100.0
+		left = ((leftWidth + 0.5) / (windowWidth.value - 40)) * 100.0
 		right = 100 - left
-		
 	}
 	function addAnimation(dom: HTMLElement | null) {
 		if (dom) {
@@ -89,12 +88,10 @@
 	)
 </script>
 <template>
-	<div class="split-container">
+	<div class="split-container w-full h-full">
 		<div class="split-horizontal flex w-full h-full *:overflow-hidden" ref="splitHorizontal">
 			<div id="split-left" ref="splitLeft">
-				<el-scrollbar class="h-full w-full">
-					<slot name="left"></slot>
-				</el-scrollbar>
+				<slot name="left"></slot>
 			</div>
 			<div id="split-right" ref="splitRight">
 				<slot name="right"></slot>
@@ -105,14 +102,13 @@
 
 <style lang="less" scoped>
 	.split-container {
-		width: calc(100% - var(--menu-width));
 		height: calc(100vh - var(--header-height) - var(--status-bar-height));
 		.split-horizontal {
 			#split-left {
-				width: calc(360px - 1.5px);
+				width: calc(360px - 0.5px);
 			}
 			#split-right {
-				width: calc(100vw - 360px - 40px - 1.5px);
+				width: calc(100vw - 360px - 40px - 0.5px);
 				overflow-x: hidden;
 			}
 			&:deep(.gutter) {

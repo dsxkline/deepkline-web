@@ -4,21 +4,8 @@ import { useSymbolStore } from '~/store/symbol';
 const props = defineProps<{
     symbol: Instruments
 }>()
-const price = ref<Ticker>(useSymbolStore().tickets[props?.symbol?.instId])
-watch(()=>useSymbolStore().tickets[props?.symbol?.instId],(val)=>{
-    price.value = val
-    // console.log('symbol price',props?.symbol?.instId,val)
-},{
-    deep:true
-})
-// watchEffect(() => {
-// 	price.value = useSymbolStore().tickets[props?.symbol?.instId]
-//     console.log('symbol price',props?.symbol?.instId,price.value)
-// })
-onMounted(()=>{
-    price.value = useSymbolStore().tickets[props?.symbol?.instId]
-    // console.log('symbol price',props?.symbol?.instId,price.value,JSON.stringify(useSymbolStore().tickets))
-})
+const price = computed(()=>useSymbolStore().tickets[props?.symbol?.instId])
+
 </script>
 <template>
     <div>

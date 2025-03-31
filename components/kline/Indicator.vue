@@ -34,12 +34,12 @@
 <style scoped lang="less">
 	.indicator {
 		.indicator-item:not(.active):hover {
-			background-color: var(--el-menu-hover-bg-color);
+			background-color: var(--transparent05);
             
 		}
 		.active {
 			// border:1px solid var(--el-menu-active-color);
-			color: var(--el-menu-active-color);
+			color: rgb(var(--color-green));
 		}
 	}
 </style>

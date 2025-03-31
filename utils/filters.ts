@@ -1,7 +1,7 @@
 
 export const formatPrice = (value:number,precision:number,prefix:string="") => {
     value = parseFloat(value.toString())
-    const point = precision.toString().split('.')[1].length
+    const point = precision.toString().indexOf('.')>0?precision.toString().split('.')[1].length:0
     return `${prefix}${value.toFixed(point)}`;
 };
 
@@ -18,7 +18,7 @@ export const formatChangeRate = (value:number,precision:number=2) => {
         const subStr = str.substring(index + 1)
         let t = 0
         for (let i = 0; i < subStr.length; i++) {
-            if (subStr[i] !== '0') {
+            if (subStr[i] !== '0' || t > 0) {
                 point = i + 1
                 t += 1
                 if (t >= precision) {
