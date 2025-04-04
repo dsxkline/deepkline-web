@@ -2,9 +2,9 @@
 	import Split from "split.js";
 	const splitVertical = ref(null);
 	const upHeight = 40;
-	const windowWidth = ref(window?.innerWidth);
+	const windowWidth = ref(window?.innerHeight);
     const updateWindowWidth = () => {
-      windowWidth.value = window.innerWidth;
+      windowWidth.value = window.innerHeight - 40 - 40 - 40;
 	  setAutoSplit();
     }
 	let up = 20;
@@ -74,7 +74,7 @@
 <style lang="less" scoped>
 	.split-row-container {
 		width: calc(100%);
-		height: calc(100vh - var(--header-height) - var(--status-bar-height));
+		height: calc(100%);
 		.split-vertical {
 			#split-up {
 				width: calc(100%);

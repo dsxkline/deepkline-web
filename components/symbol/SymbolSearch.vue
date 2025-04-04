@@ -24,13 +24,7 @@
 	const search = () => {}
 
 	onMounted(() => {
-    tabbarHeight.value = window?.innerHeight - 40 - 56 - 30;
-		setInterval(() => {
-			if (menus.value[0].contentParams)
-				menus.value[0].contentParams = {
-					title: new Date().getTime().toFixed(0)
-				}
-		}, 1000)
+		tabbarHeight.value = window?.innerHeight - 40 - 56 - 30
 	})
 </script>
 <template>
@@ -43,7 +37,7 @@
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			padding: 0 16px;
-			
+      border-bottom:1px solid var(--transparent05);
 		}
 	}
 </style>

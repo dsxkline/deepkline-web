@@ -45,6 +45,7 @@
 	:deep(.tabbar-container) {
 		.tabbar-header {
             padding: 0 16px;
+            border-bottom: none;
 			ul {
 				li {
 					@apply text-sm;

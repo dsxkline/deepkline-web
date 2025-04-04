@@ -64,6 +64,7 @@ export interface ThemeItem {
 	crossFontColor: string;
 	crossBgColor: string;
 	crossDash: number[]; // 虚线配置 例如 [5;5] 每隔五像素空五像素，达到虚线效果
+	crossLineMarginRight:number;
 	crossButtonHeight: number;
 	fontBgColor: string; // 文字背景颜色 十字线提示的文字背景颜色
 	gridLineColor: string; // 网格线颜色
@@ -99,8 +100,8 @@ export interface ThemeItem {
 	priceShadowEndRedColor: string;
 	priceShadowStartGreenColor: string;
 	priceShadowEndGreenColor: string;
-	priceShadowUpArrow: string;
-	priceShadowDownArrow: string;
+	priceShadowUpArrow?: string;
+	priceShadowDownArrow?: string;
 	realTimeLineColor: string;
 	realTimeLineFontColor: string;
 	realTimeBgColor: string;
@@ -147,7 +148,7 @@ export interface DsxKlineConfig {
 	element?: Element | string;
 	chartType?: ChartType;
 	klineWidth?: number;
-	theme?: String;
+	theme?: DsxConfig.theme;
 	candleType?: CandleType;
 	zoomLockType?: ZoomLockType;
 	crossModel?: CrossModel;

@@ -44,6 +44,7 @@
 <style lang="less" scoped>
 	:deep(.tabbar-container) {
 		.tabbar-header {
+            border-bottom: none;
 			ul {
 				li {
 					@apply text-sm;

@@ -1,11 +1,12 @@
 
-export const formatPrice = (value:number,precision:number,prefix:string="") => {
+export const formatPrice = (value:any,precision:number,prefix:string="") => {
+    if(!precision) return value;
     value = parseFloat(value.toString())
     const point = precision.toString().indexOf('.')>0?precision.toString().split('.')[1].length:0
     return `${prefix}${value.toFixed(point)}`;
 };
 
-export const formatChangeRate = (value:number,precision:number=2) => {
+export const formatChangeRate = (value:any,precision:number=2) => {
     value = parseFloat(value.toString())
     let point = precision
     // 如果出现很多小数点 例如 0.00000000234 会导致toFixed(2) 会变成 0.00
@@ -31,7 +32,7 @@ export const formatChangeRate = (value:number,precision:number=2) => {
     return `${prefix}${value.toFixed(point)}`;
 };
 
-export const moneyFormat = (value:number,currency:string="") => {
+export const moneyFormat = (value:any,currency:string="") => {
     let unit = ''
     const precision=2
     value = parseFloat(value.toString())

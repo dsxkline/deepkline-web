@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { useSymbolStore } from '~/store/symbol';
-
+	import { useSymbolStore } from '~/store/symbol'
 </script>
 <template>
 	<div class="w-full h-full">
@@ -9,17 +8,24 @@ import { useSymbolStore } from '~/store/symbol';
 				<SymbolSearch />
 			</template>
 			<template #right>
-				<SplitRowContainer>
-					<template #up>
-						<KlineHeader :symbol="useSymbolStore().getActiveSymbol()" />
+				<SplitContainer>
+					<template #left>
+						<SymbolDetail :symbol="useSymbolStore().activeSymbol" />
 					</template>
-					<template #down>
-						<div class="flex flex-col justify-between w-full h-full">
-                            <div class="flex-1"><KlineChart :symbol="useSymbolStore().getActiveSymbol()" /></div>
-                            <div><KlineFooter :symbol="useSymbolStore().getActiveSymbol()" /></div>
-						</div>
+					<template #right>
+						<SplitRowContainer>
+							<template #up>
+								<KlineHeader :symbol="useSymbolStore().getActiveSymbol()" />
+							</template>
+							<template #down>
+								<div class="flex flex-col justify-between w-full h-full">
+									<div class="flex-1"><KlineChart :symbol="useSymbolStore().getActiveSymbol()" /></div>
+									<div><KlineFooter :symbol="useSymbolStore().getActiveSymbol()" /></div>
+								</div>
+							</template>
+						</SplitRowContainer>
 					</template>
-				</SplitRowContainer>
+				</SplitContainer>
 			</template>
 		</SplitContainer>
 	</div>

@@ -12,4 +12,12 @@ export const marketFetch = {
         }
         return Promise.reject('api source is not supported')
     },
+    booksFull:(symbol:string,sz:number)=>{
+        const state = useStore();
+        const apiSource = state.apiSource;
+        if(apiSource==ApiSource.OKX){
+            return Okx.marketFetch.booksFull(symbol,sz)
+        }
+        return Promise.reject('api source is not supported')
+    }
 }

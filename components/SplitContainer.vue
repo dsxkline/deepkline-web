@@ -1,13 +1,25 @@
 <script setup lang="ts">
 	import Split from 'split.js'
 	import { useStore } from '~/store'
+	const props = defineProps({
+		left:{
+			type:Number,
+			default:360
+		},
+		right:{
+			type:Number,
+			default:0
+		},
+	})
 	const splitHorizontal = ref(null)
 	const splitLeft = ref(null)
 	const splitRight = ref(null)
-	const leftWidth = 360
+	const leftWidth = props.left
+	const rightWidth = props.right
 	const windowWidth = ref(window?.innerWidth)
+	const splitContainer = ref()
 	const updateWindowWidth = () => {
-		windowWidth.value = window.innerWidth
+		windowWidth.value = splitContainer.value.clientWidth;
 		setAutoSplit()
 		split && split.setSizes([left, right])
 	}
@@ -16,13 +28,13 @@
 	let split: Split.Instance
 	onMounted(() => {
 		window.addEventListener('resize', updateWindowWidth)
-		setAutoSplit()
-		split = Split(['#split-left', '#split-right'], {
+		updateWindowWidth()
+		split = Split([splitContainer.value.querySelector('#split-left'), splitContainer.value.querySelector('#split-right')], {
 			sizes: [left, right],
-			minSize: [leftWidth, 0],
+			minSize: [leftWidth, rightWidth],
 			// maxSize: [leftWidth,0],
 			direction: 'horizontal',
-			gutterSize: 1,
+			gutterSize: 2,
 			onDragStart: () => {
 				console.log('onDragStart')
 			},
@@ -38,8 +50,14 @@
 		window.removeEventListener('resize', updateWindowWidth)
 	})
 	function setAutoSplit() {
-		left = ((leftWidth + 0.5) / (windowWidth.value - 40)) * 100.0
-		right = 100 - left
+		if(leftWidth>0){
+			left = ((leftWidth) / (windowWidth.value-2)) * 100.0
+			right = 100 - left
+		}
+		if(rightWidth>0){
+			right = ((rightWidth) / (windowWidth.value-2)) * 100.0
+			left = 100 - right
+		}
 	}
 	function addAnimation(dom: HTMLElement | null) {
 		if (dom) {
@@ -88,7 +106,7 @@
 	)
 </script>
 <template>
-	<div class="split-container w-full h-full">
+	<div class="split-container w-full h-full" ref="splitContainer">
 		<div class="split-horizontal flex w-full h-full *:overflow-hidden" ref="splitHorizontal">
 			<div id="split-left" ref="splitLeft">
 				<slot name="left"></slot>
@@ -102,13 +120,14 @@
 
 <style lang="less" scoped>
 	.split-container {
-		height: calc(100vh - var(--header-height) - var(--status-bar-height));
+		height: calc(100%);
+		width:100%;
 		.split-horizontal {
 			#split-left {
-				width: calc(360px - 0.5px);
+				width: calc(360px);
 			}
 			#split-right {
-				width: calc(100vw - 360px - 40px - 0.5px);
+				width: calc(100% - 360px - 2px);
 				overflow-x: hidden;
 			}
 			&:deep(.gutter) {

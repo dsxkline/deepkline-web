@@ -26,4 +26,11 @@ export default defineNuxtConfig({
 	postcss: postcssConfig,
 	components: componentsConfig,
 	plugins: pluginsConfig,
+	vite: {
+		resolve: {
+		  alias: {
+			'vue': 'vue/dist/vue.esm-bundler.js' // ✅ 让 Vue 使用 full build
+		  }
+		}
+	  }
 });

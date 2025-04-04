@@ -9,6 +9,10 @@
 		}
 	);
 
+	function changeTheme(){
+		colorMode.preference = theme.value ? 'light' : 'dark'
+	}
+
 </script>
 <template>
 	<el-switch
@@ -17,5 +21,5 @@
 		inline-prompt
 		:active-icon="ElIconSunny"
 		:inactive-icon="ElIconMoon"
-		@change="colorMode.preference = theme ? 'light' : 'dark'" />
+		@change="changeTheme" />
 </template>

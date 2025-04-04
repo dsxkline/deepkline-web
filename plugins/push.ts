@@ -29,7 +29,7 @@ function findRoute(path: string, routes: any) {
 
     return {};
 }
-const pushHandle = async function (this: any,
+const pushHandle = function (this: any,
     comp: any,
     params = {},
     direction = "rtl",
@@ -52,6 +52,8 @@ const pushHandle = async function (this: any,
         params = Object.assign(params, pas);
     }
 
+    // const instance = getCurrentInstance(); // 获取当前 Vue 组件实例
+
     // 加载 push 组件
     // 创建 push 组件实例
     // 创建 push 组件的虚拟节点
@@ -62,9 +64,12 @@ const pushHandle = async function (this: any,
         parent: context,                // 传递父组件或上下文
         direction: direction,           // 传递方向
         size: size,                     // 传递大小
+        // parent:instance?.proxy
     }
-    // const pushComp = await import('~/components/app/Push.vue');
     const pushInstance = createVNode(Push, props);
+    // 手动提供 Nuxt 上下文
+    const nuxtApp = useNuxtApp(); // 获取 Nuxt 上下文
+    pushInstance.appContext = nuxtApp.vueApp._context;
 
     console.log("pushInstance", pushInstance, props);
     // 挂载 push 组件到目标元素中

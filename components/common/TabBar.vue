@@ -25,7 +25,11 @@
 		height: {
 			type: Number,
 			default: 0
-		}
+		},
+        lineWidth:{
+            type:Number,
+            default:6
+        }
 	})
 	const menuActive = ref(0)
 	const tabbarContent = ref()
@@ -84,9 +88,10 @@
 			const li = tabbarHeader.value.querySelector('li.active')
 			if (li && line) {
 				const w = li.clientWidth
-				line.style.width = w + 'px'
+				if(props.lineWidth<=0) line.style.width = w + 'px'
+                else line.style.width = props.lineWidth + 'px'
 				// 计算菜单的位置
-				const offsetLeft = li.offsetLeft
+				const offsetLeft = li.offsetLeft + (props.lineWidth>0?(w-props.lineWidth)/2:0)
 				line.style.left = offsetLeft + 'px'
 			}
 		})
@@ -149,12 +154,15 @@
 				display: flex;
 				flex-direction: row;
 				padding: 5px 0;
+                height: 100%;
 				li {
 					cursor: pointer;
 					margin: 0 10px;
 					color: rgb(var(--color-text-muted));
 					font-size: 18px;
 					user-select: none;
+                    display:flex;
+                    align-items: center;
 					&:first-child {
 						margin-left: 0;
 					}
@@ -171,7 +179,7 @@
 				position: absolute;
 				height: 2px;
 				background: rgb(var(--color-text-main));
-				width: 10px;
+				width: 0px;
 				bottom: 0;
 				transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 			}

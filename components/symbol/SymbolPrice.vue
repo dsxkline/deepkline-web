@@ -2,12 +2,17 @@
 import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
 import { useSymbolStore } from '~/store/symbol';
 const props = defineProps<{
-    symbol: Instruments
+    symbol: Instruments,
+    price?:string
+}>()
+const emit = defineEmits<{
+    (event:'update:price',value:string):void
 }>()
 const { $wsb, $ws } = useNuxtApp()
-const price = ref($ws.getTickers(props.symbol.instId))
+const ticker = ref($ws.getTickers(props.symbol.instId))
 const tickerHandler = (data: Ticker) => {
-    price.value = data
+    ticker.value = data
+    emit('update:price',props.symbol.instId+"@"+data.last)
 }
 
 onMounted(() => {
@@ -20,7 +25,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div>
-        <b class="text-sm" v-if="!price?.last">-</b>
-        <b class="text-sm" v-else>{{ formatPrice(price.last,props.symbol.tickSz)}}</b>
+        <b class="text-sm" v-if="!ticker?.last">-</b>
+        <b class="text-sm" v-else>{{ formatPrice(ticker.last,props.symbol.tickSz)}}</b>
     </div>
 </template>

@@ -26,7 +26,8 @@ class DsxKlineChart {
 	themeConfig = new window.DsxConfig()
 	subCandleId: string = ''
 	subTickerId: string = ''
-	constructor(symbol: string, cycle: string, config: DsxKlineConfig) {
+	constructor(symbol: string, cycle: string,theme:string, config: DsxKlineConfig) {
+		this.theme = theme;
 		this.config = config
 		this.symbol = symbol
 		this.cycle = cycle
@@ -37,11 +38,10 @@ class DsxKlineChart {
 	 */
 	create() {
 		this.createTheme()
+		this.config.onLoading = this.onLoading.bind(this)
+		this.config.nextPage = this.onNextPage.bind(this)
 		this.kline = new window.DsxKline(this.config)
-		this.kline.onLoading = this.onLoading.bind(this)
-		this.kline.nextPage = this.onNextPage.bind(this)
-		this.kline.finishLoading()
-		this.kline.startLoading()
+		console.log('kline create....',new Date().getTime())
 	}
 
 	tapSymbol(symbol: string) {
@@ -101,6 +101,7 @@ class DsxKlineChart {
 		KlineTheme.createDarkTheme(this.themeConfig)
 		KlineTheme.createWhiteTheme(this.themeConfig)
 		KlineTheme.createNavyTheme(this.themeConfig)
+		this.config.theme = this.themeConfig.theme[this.theme == 'dark' ? 'dark' : 'white']
 	}
 
 	update(config: DsxKlineConfig) {
@@ -110,6 +111,7 @@ class DsxKlineChart {
 	}
 
 	onLoading(kline: DsxKline) {
+		console.log('kline start loading....',new Date().getTime())
 		this.page = 1
 		this.after = ''
 		useKlineStore().setLoading(true)
@@ -231,6 +233,7 @@ class DsxKlineChart {
 	}
 
 	refresh(d: string[]) {
+		if(!this.kline.datas?.length) return;
 		const [ts, o, h, l, c, v, a] = d
 		const t = moment(parseInt(ts)).format('YYYYMMDD HH:mm:ss')
 		let date = t.split(' ')[0].replaceAll('/', '')

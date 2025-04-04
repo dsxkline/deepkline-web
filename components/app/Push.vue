@@ -104,7 +104,7 @@ onMounted(() => {
                             <Close />
                         </div>
                     </template> -->
-                    <component :is="asyncComponent" :push="true" @close="close" v-bind="componentProps" />
+                    <component :is="to" :push="true" @close="close" v-bind="componentProps" />
                     <!-- <WebView :url="url" v-if="!to && url"></WebView> -->
                 </div>
             </template>

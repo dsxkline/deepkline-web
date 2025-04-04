@@ -29,6 +29,8 @@ export default <Partial<Config>>{
 				nav: withOpacityValue("--color-bg-nav"),
 				main: withOpacityValue("--color-fill-main"),
 				muted: withOpacityValue("--color-fill-muted"),
+				green:withOpacityValue("--color-green"),
+				red:withOpacityValue("--color-red"),
 			},
 			// 设置渐变颜色基础类
 			gradientColorStops: {

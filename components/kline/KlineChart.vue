@@ -7,12 +7,11 @@ declare var window: DsxWindow;
 const klineDom = ref(null);
 onMounted(() => {
 	const symbol = useSymbolStore().activeSymbol;
-	const chart = new DsxKlineChart(symbol, useKlineStore().cycle, {
+	const chart = new DsxKlineChart(symbol, useKlineStore().cycle,useColorMode().preference, {
 		element: klineDom.value || '',
 		autoSize: true,
 		chartType: ChartType.candle,
 		// klineWidth: 1,
-		theme: useColorMode().preference,
 		candleType: CandleType.solid,
 		zoomLockType: ZoomLockType.follow,
 		crossModel: CrossModel.mouseOver,

@@ -99,7 +99,6 @@ export interface Instruments {
 	ruleType: string
 	// 图标
 	icon: string
-    
 }
 
 export interface SubMsg {
@@ -194,4 +193,25 @@ export enum Period {
 	M5 = '5m',
 	H1 = '1H',
 	D1 = '1D'
+}
+
+interface BookEntry {
+	px: number; // 价格 (USDT)
+	sz: number; // 数量 (BTC)
+	total: number; // 合计 (BTC)
+	ratio:number;// 占比
+  }
+export interface Books {
+	asks: BookEntry[]
+	bids: BookEntry[]
+	ts: string
+}
+
+interface BookResponse {
+	asks: [string, string, string][];
+	bids: [string, string, string][];
+}
+export interface BookMessage {
+	arg: SubArgs
+	data: BookResponse[]
 }

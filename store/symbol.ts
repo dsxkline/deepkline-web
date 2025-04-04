@@ -34,7 +34,6 @@ export const useSymbolStore = defineStore({
           this.subSymbols[item] = item
         })
       }
-      
     },
     setTickets(symbol:string,ticket:Ticker) {
       this.tickets[symbol] = ticket
@@ -64,7 +63,7 @@ export const useSymbolStore = defineStore({
       localStorage.setItem('favoriteSymbols',JSON.stringify(this.favoriteSymbols))
     },
     isFavorite(symbol:Instruments){
-      return this.favoriteSymbols.find(item=>item.instId==symbol.instId)
+      return this.favoriteSymbols.find(item=>item.instId==symbol?.instId)
     },
     loadFavoriteSymbols(){
       const favoriteSymbols = localStorage.getItem('favoriteSymbols')
@@ -73,5 +72,8 @@ export const useSymbolStore = defineStore({
       }
       return this.favoriteSymbols
     }
+  },
+  getters:{
+    
   }
 })

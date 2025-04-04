@@ -7,7 +7,8 @@ const props = defineProps<{
 
 </script>
 <template>
-    <div class="kline-header px-1 h-[var(--footer-height)] border-[var(--transparent03)] bg-[var(--transparent02)] border-b w-full flex items-center">
+    <div class="kline-header px-1 h-[var(--footer-height)] border-[var(--transparent05)] bg-nav border-b w-full flex items-center">
+        <button class="flex items-center"><el-icon><Expand /></el-icon></button>
         <SymbolTitle :symbol="symbol" />
         <SymbolTools  :symbol="symbol"/>
         <el-divider direction="vertical"></el-divider>
