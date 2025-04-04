@@ -15,7 +15,7 @@ const apiLoanRatio = "/api/v5/rubik/stat/margin/loan-ratio";
 const apiOpenInterestVolume = "/api/v5/rubik/stat/contracts/open-interest-volume"
 
 export const tradingDataFetch = {
-    supportCoin: () => useGet<ApiResult>(baseUrl, apiSupportCoin),
+    supportCoin: <T = any>() => useGet<ApiResult<T>>(baseUrl, apiSupportCoin),
     /**
      * 获取多空持仓人数比
      * 获取交割永续净开多持仓用户数与净开空持仓用户数的比值。
@@ -28,8 +28,8 @@ export const tradingDataFetch = {
      * @param end 结束时间 如 1597026383011
      * @returns 
      */
-    longShortAccountRatio: (ccy: string, period: Period = Period.M5, begin: string = "", end: string = "") =>
-        useGet<ApiResult>(baseUrl, apiLongShortAccountRatio, {
+    longShortAccountRatio: <T = any>(ccy: string, period: Period = Period.M5, begin: string = "", end: string = "") =>
+        useGet<ApiResult<T>>(baseUrl, apiLongShortAccountRatio, {
             ccy,
             begin,
             end,
@@ -46,8 +46,8 @@ export const tradingDataFetch = {
      * @param limit 分页返回的结果集数量，最大为100，不填默认返回100条
      * @returns 
      */
-    longShortAccountRatioContract: (instId: string, period: Period = Period.M5, begin: string = "", end: string = "", limit: number = 100) =>
-        useGet<ApiResult>(baseUrl, apiLongShortAccountRatioContract, {
+    longShortAccountRatioContract: <T = any>(instId: string, period: Period = Period.M5, begin: string = "", end: string = "", limit: number = 100) =>
+        useGet<ApiResult<T>>(baseUrl, apiLongShortAccountRatioContract, {
             instId,
             begin,
             end,

@@ -54,6 +54,7 @@ export const useSymbolStore = defineStore({
       return symbols.filter(item=>item.quoteCcy==currency || item.settleCcy==currency)
     },
     favoriteSymbol(symbol:Instruments){
+      if(!symbol) return;
       if(this.favoriteSymbols.find(item=>item.instId==symbol.instId)){
         this.favoriteSymbols = this.favoriteSymbols.filter(item=>item.instId!=symbol.instId)
       }else{

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 	import { marketFetch } from '~/fetch/market.fetch'
-	import type { BookEntry, BookResponse, Books, Instruments } from '~/fetch/okx/okx.type.d'
+	import type { BookEntry, BookMessage, BookResponse, Books, Instruments } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
+	import { throttle } from 'lodash-es'
 
 	const props = defineProps<{
 		symbol: string
@@ -21,7 +22,7 @@
 			.sort((a, b) => b.px - a.px)
 			.slice(0, 9)
 	})
-    let totalAsks = ref(0)
+	let totalAsks = ref(0)
 	let totalBids = ref(0)
 	// 小数点
 	const point = ref(0)
@@ -34,6 +35,13 @@
 	// 订阅句柄
 	let subHandle = ''
 
+	const updateBookList = throttle((message: BookMessage) => {
+		if (message.data && message.data.length > 0) {
+			const data = message.data[0]
+			updateOrderBook(data)
+		}
+	}, 10)
+
 	function getBooksFull() {
 		loading.value = true
 		error.value = ''
@@ -41,12 +49,13 @@
 			.booksFull(props.symbol, 400)
 			.then(res => {
 				loading.value = false
-				if (res?.code == 0) {
-					const data = res.data[0] as BookResponse
+				if (res?.code == 0 && res.data) {
+					const data = res.data[0]
 					updateOrderBook(data)
-					subHandle = $ws.subBooks('books', [symbolObj.value.instId], (message, error) => {
+					// 限制频率
+					subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, error) => {
 						// console.log('subBooksL2Tbt', message.data[0])
-						message.data && updateOrderBook(message.data[0])
+						updateBookList(message)
 					})
 				} else {
 					error.value = res?.msg
@@ -60,8 +69,6 @@
 	}
 
 	function updateOrderBook(updates: BookResponse) {
-
-		
 		updates.asks.forEach(([px, sz]) => {
 			const price = parseFloat(px)
 			const size = parseFloat(sz)
@@ -70,23 +77,23 @@
 				if (p > point.value) point.value = Math.min(5, p)
 			}
 			if (size === 0) orderBook.value.asks.delete(price)
-			else orderBook.value.asks.set(price, { px: price, sz: size, total: 0,ratio:0 })
+			else orderBook.value.asks.set(price, { px: price, sz: size, total: 0, ratio: 0 })
 		})
 
 		updates.bids.forEach(([px, sz]) => {
 			const price = parseFloat(px)
 			const size = parseFloat(sz)
-            if (sz.indexOf('.') >= 0) {
+			if (sz.indexOf('.') >= 0) {
 				const p = sz.split('.')[1].length
 				if (p > point.value) point.value = Math.min(5, p)
 			}
 			if (size === 0) orderBook.value.bids.delete(price)
-			else orderBook.value.bids.set(price, { px: price, sz: size, total: 0,ratio:0 })
+			else orderBook.value.bids.set(price, { px: price, sz: size, total: 0, ratio: 0 })
 		})
 		point.value = 1 / 10 ** point.value
 
-        totalAsks.value = 0;
-        totalBids.value = 0
+		totalAsks.value = 0
+		totalBids.value = 0
 
 		asks.value.forEach(item => {
 			item.total = totalAsks.value += item.sz
@@ -117,23 +124,22 @@
 		<h3 class="text-base py-1">订单表</h3>
 		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
 			<template #extra>
-				<el-button type="primary" @click.stop="getBooksFull()">点击刷新</el-button>
+				<el-button @click.stop="getBooksFull()">点击刷新</el-button>
 			</template>
 		</el-result>
-		<el-skeleton :rows="20" animated v-if="loading && !error" class="py-2" />
-		<template v-else>
-			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[3px] *:items-center *:justify-between *:relative *:transition-all *:transition-1000 *:ease-linear">
+		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
+		<template v-else-if="!error">
+			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[3px] *:items-center *:justify-between *:relative ">
 				<li class="text-grey">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量(BTC)</div>
 					<div class="text-right">合计(BTC)</div>
-                   
 				</li>
 				<li v-for="(item, index) in bids">
-					<div class="text-red">{{ formatPrice(item.px, symbolObj.tickSz) }}</div>
+					<div class="text-red">{{ formatPrice(item.px, symbolObj?.tickSz) }}</div>
 					<div class="text-right">{{ formatPrice(item.sz, point) }}</div>
 					<div class="text-right">{{ formatPrice(item.total, point) }}</div>
-                    <div class="absolute top-0 right-0 h-full bg-red/10" :style="{width:(item.total/(totalBids+totalAsks)*100)+'%'}"></div>
+					<div class="absolute top-0 right-0 h-full bg-red/10 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
 				</li>
 
 				<li class="">
@@ -154,10 +160,10 @@
 				</li>
 
 				<li v-for="(item, index) in asks">
-					<div class="text-green">{{ formatPrice(item.px, symbolObj.tickSz) }}</div>
+					<div class="text-green">{{ formatPrice(item.px, symbolObj?.tickSz) }}</div>
 					<div class="text-right">{{ formatPrice(item.sz, point) }}</div>
 					<div class="text-right">{{ formatPrice(item.total, point) }}</div>
-                    <div class="absolute top-0 right-0 h-full bg-green/10" :style="{width:(item.total/(totalBids+totalAsks)*100)+'%'}"></div>
+					<div class="absolute top-0 right-0 h-full bg-green/10 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
 				</li>
 			</ul>
 		</template>

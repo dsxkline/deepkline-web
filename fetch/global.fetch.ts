@@ -43,7 +43,8 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
         body,
         method: "POST",
         baseURL: baseUrl,
-        key: 'okx-request-' + Date.now()+path
+        key: 'okx-request-' + Date.now()+path,
+        timeout:10000
     };
     sign(options, path);
 
@@ -75,7 +76,8 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
         query,
         method: "GET",
         baseURL: baseUrl,
-        key: 'okx-request-' + Date.now()+path
+        key: 'okx-request-' + Date.now()+path,
+        timeout:10000
     };
     sign(options, path);
     // 如果是本地转发

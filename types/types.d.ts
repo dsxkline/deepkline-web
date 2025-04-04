@@ -6,8 +6,8 @@ export enum ApiSource{
   DSX
 }
 
-interface ApiResult{
-  data:any,
+interface ApiResult<T = any> {
+  data:T,
   code:number,
   msg:string
 }

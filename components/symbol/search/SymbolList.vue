@@ -114,6 +114,8 @@
 					nextTick(() => {
 						scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
 					})
+				}else{
+					error.value = res?.msg
 				}
 			})
 			.catch(err => {
@@ -184,7 +186,12 @@
 	defineExpose({ update, leave })
 </script>
 <template>
-	<div class="w-full" ref="symbolDom">
+	<div class="w-full h-full" ref="symbolDom">
+		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
+			<template #extra>
+				<el-button @click.stop="getGroupSymbols()">点击刷新</el-button>
+			</template>
+		</el-result>
 		<ul class="w-full" v-if="loading && !error">
 			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
@@ -204,14 +211,14 @@
 				</el-skeleton>
 			</li>
 		</ul>
-		<div ref="lheader" class="w-full py-2 px-4" v-else>
+		<div ref="lheader" class="w-full py-2 px-4" v-else-if="!loading && !error">
 			<ul class="grid grid-cols-4 *:flex *:items-center text-xs text-grey">
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp ref="addouName" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp ref="addouPrice" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp ref="addouChange" /></li>
 			</ul>
 		</div>
-		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar">
+		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - 1 - end) * itemHeight + 'px' }">
 				<li
 					:id="'symbol-list-id-' + item.instId"
@@ -223,7 +230,7 @@
 					<div class="col-span-2"><SymbolName :symbol="item" /></div>
 					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
-					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10 '"></div>
+					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10 transition-all transition-200 ease-in-out'"></div>
 				</li>
 			</ul>
 		</el-scrollbar>

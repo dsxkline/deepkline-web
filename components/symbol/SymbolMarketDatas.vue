@@ -42,8 +42,10 @@
 			<div class="flex flex-col items-start mt-2 mb-3 px-[16px]">
 				<b :class="'text-3xl '+(rate>=0?'text-green':'text-red')" v-if="item?.last">${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}</b>
 				<b :class="'text-3xl '+(rate>=0?'text-green':'text-red')" v-else>--</b>
-				<span :class="''+(rate>=0?'text-green':'text-red')">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
+				<span :class="''+(rate>=0?'text-green':'text-red')" v-if="change">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
+				<span :class="''+(rate>=0?'text-green':'text-red')" v-else>- (-%)</span>
 			</div>
+			
 			<ul class="grid grid-cols-2 gap-2 text-invert mb-3 px-[16px]">
 				<li>
 					<span>24H开盘</span>

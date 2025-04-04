@@ -24,6 +24,12 @@ html:root {
 
     --el-input-border-color: var(--transparent10);
     --el-input-border-color-hover: var(--transparent20);
+
+    --el-color-primary-light-3: rgb(0, 207, 114);
+    --el-color-primary-light-5: rgb(28, 207, 126);
+    --el-color-primary-light-7: rgb(65, 204, 142);
+    --el-color-primary-light-8: rgb(110, 202, 161);
+    --el-color-primary-light-9: rgb(164, 206, 187);
 }
 
 html.dark {
@@ -74,4 +80,35 @@ body {
         --el-skeleton-color: var(--transparent10);
         --el-skeleton-to-color: var(--transparent20);
     }
+
+    .el-result {
+        height: 100%;
+        .icon-error{
+            --el-result-color: var(--transparent10);
+        }
+        .el-result__title{
+            p{
+                font-size: 14px;
+                color: rgb(var(--color-text-grey));
+            }
+        }
+        .el-result__subtitle{
+            p{
+                font-size: 12px;
+                color: rgb(var(--color-text-grey));
+            }
+        }
+        .el-result__extra{
+            button{
+                background-color: var(--transparent05);
+                border: 1px solid var(--transparent05);
+                color: rgb(var(--color-text-grey));
+                &:hover{
+                    color: rgb(var(--color-text-muted));
+                    border: 1px solid var(--transparent10);
+                }
+            }
+        }
+    }
+    
 }

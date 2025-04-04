@@ -26,6 +26,8 @@ class DsxKlineChart {
 	themeConfig = new window.DsxConfig()
 	subCandleId: string = ''
 	subTickerId: string = ''
+	onError?:(err:any)=>void;
+	onLoading?:()=>void;
 	constructor(symbol: string, cycle: string,theme:string, config: DsxKlineConfig) {
 		this.theme = theme;
 		this.config = config
@@ -38,7 +40,7 @@ class DsxKlineChart {
 	 */
 	create() {
 		this.createTheme()
-		this.config.onLoading = this.onLoading.bind(this)
+		this.config.onLoading = this.startLoading.bind(this)
 		this.config.nextPage = this.onNextPage.bind(this)
 		this.kline = new window.DsxKline(this.config)
 		console.log('kline create....',new Date().getTime())
@@ -46,6 +48,10 @@ class DsxKlineChart {
 
 	tapSymbol(symbol: string) {
 		this.symbol = symbol
+		this.unsubscribe()
+		this.kline.startLoading()
+	}
+	reload(){
 		this.unsubscribe()
 		this.kline.startLoading()
 	}
@@ -110,8 +116,8 @@ class DsxKlineChart {
 		this.subscribe()
 	}
 
-	onLoading(kline: DsxKline) {
-		console.log('kline start loading....',new Date().getTime())
+	startLoading(kline?: DsxKline) {
+		this.onLoading && this.onLoading()
 		this.page = 1
 		this.after = ''
 		useKlineStore().setLoading(true)
@@ -163,8 +169,10 @@ class DsxKlineChart {
 					this.kline.scrollTheend()
 				}
 			})
-			.catch(() => {
+			.catch((err) => {
 				this.finishLoading()
+				this.kline.loadingError()
+				this.onError && this.onError(err)
 			})
 	}
 

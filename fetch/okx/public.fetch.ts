@@ -5,8 +5,8 @@ const baseUrl = "https://www.okx.com";
 const publicInstruments = "/api/v5/public/instruments";
 
 export const publicFetch = {
-	instruments: (instType: InstanceType, uly: string = "", instFamily: string = "", instld: string = "") =>
-		useGet<ApiResult>(baseUrl, publicInstruments, {
+	instruments: <T = any>(instType: InstanceType, uly: string = "", instFamily: string = "", instld: string = "") =>
+		useGet<ApiResult<T>>(baseUrl, publicInstruments, {
 			instType,
 			uly,
 			instFamily,
