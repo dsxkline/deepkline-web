@@ -25,9 +25,9 @@
 	<div class="symbol-market-datas w-full py-3 text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
 			<div class="px-3">
-				<SymbolFundFlow></SymbolFundFlow>
-				<SymbolFiveDayFundNetInFlow></SymbolFiveDayFundNetInFlow>
-				<Symbol24FundNetInFlow></Symbol24FundNetInFlow>
+				<SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
+				<SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>
+				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow>
 
 				<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
 				<LoanRatio :symbol="symbol"></LoanRatio>

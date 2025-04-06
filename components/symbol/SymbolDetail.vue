@@ -8,6 +8,7 @@
 	import SymbolMarketDatas from './SymbolMarketDatas.vue'
 	import SymbolDatas from './SymbolDatas.vue'
 	import TradeOrder from '../trade/TradeOrder.vue'
+import SymbolInfo from './SymbolInfo.vue'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -22,7 +23,7 @@
 		},
 		{
 			name: '概况',
-			contentComp: markRaw(MarketList),
+			contentComp: markRaw(SymbolInfo),
 			contentParams: {
 				symbol: props.symbol
 			}

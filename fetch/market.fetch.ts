@@ -19,5 +19,13 @@ export const marketFetch = {
             return Okx.marketFetch.booksFull(symbol,sz)
         }
         return Promise.reject('api source is not supported')
+    },
+    getTrades:(symbol:string,limit?:string)=>{
+        const state = useStore();
+        const apiSource = state.apiSource;
+        if(apiSource==ApiSource.OKX){
+            return Okx.marketFetch.trades(symbol,limit)
+        }
+        return Promise.reject('api source is not supported')
     }
 }

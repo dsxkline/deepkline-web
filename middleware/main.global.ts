@@ -1,12 +1,13 @@
 import { Okx } from "~/fetch/okx";
 import { InstanceType } from "~/fetch/okx/okx.type.d";
+import { publicFetch } from "~/fetch/public.fetch";
 import { useStore } from "~/store";
 import { useSymbolStore } from "~/store/symbol";
 import { ApiSource } from "~/types/types.d";
 
 function getDefaultInstruments() {
     const symbolStore = useSymbolStore();
-    Okx.publicFetch.instruments(InstanceType.SPOT).then(res=>{
+    publicFetch.getInstruments(InstanceType.SPOT).then(res=>{
         if (res?.data) {
             symbolStore.setSymbols(res.data);
         }

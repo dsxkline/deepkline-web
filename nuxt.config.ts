@@ -1,18 +1,18 @@
-import colorModeConfig from "./config/color.mode.config";
-import componentsConfig from "./config/components.config";
-import cssConfig from "./config/css.config";
-import headConfig from "./config/head.config";
-import modulesConfig from "./config/modules.config";
-import pluginsConfig from "./config/plugins.config";
-import postcssConfig from "./config/postcss.config";
-import tailwindNuxtConfig from "./config/tailwind.nuxt.config";
-import config from "./config/config";
-require("dotenv").config({ path: ".env." + process.env.NODE_ENV });
+import colorModeConfig from './config/color.mode.config'
+import componentsConfig from './config/components.config'
+import cssConfig from './config/css.config'
+import headConfig from './config/head.config'
+import modulesConfig from './config/modules.config'
+import pluginsConfig from './config/plugins.config'
+import postcssConfig from './config/postcss.config'
+import tailwindNuxtConfig from './config/tailwind.nuxt.config'
+import config from './config/config'
+require('dotenv').config({ path: '.env.' + process.env.NODE_ENV })
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	devServer: {
 		port: 3010,
-		host: "0.0.0.0"
+		host: '0.0.0.0'
 	},
 	runtimeConfig: config,
 	devtools: { enabled: true },
@@ -28,9 +28,12 @@ export default defineNuxtConfig({
 	plugins: pluginsConfig,
 	vite: {
 		resolve: {
-		  alias: {
-			'vue': 'vue/dist/vue.esm-bundler.js' // ✅ 让 Vue 使用 full build
-		  }
+			alias:
+				process.env.NODE_ENV === 'development'
+					? {
+							vue: 'vue/dist/vue.esm-bundler.js'
+					  }
+					: {}
 		}
-	  }
-});
+	}
+})
