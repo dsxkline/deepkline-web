@@ -70,19 +70,19 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
         headers: Object.assign(
             commonHeader("okx"),
             Object.assign(headers, {
-                path: path
+                path: path,
             }),
         ),
         query,
         method: "GET",
         baseURL: baseUrl,
         key: 'okx-request-' + Date.now()+path,
-        timeout:10000
+        timeout:10000,
     };
-    sign(options, path);
+    // sign(options, path);
     // 如果是本地转发
     const url = baseUrl.startsWith('http') ? baseUrl + path : baseUrl;
-    console.log(process.client, url)
+    console.log(process.client, url,options)
     // const fetch = $fetch.create(options as FetchOptions)
     // let { data, error, pending, status } = await fetch(baseUrl+path, options as FetchOptions);
     let { data, error, pending, status } = await useFetch(url, options);

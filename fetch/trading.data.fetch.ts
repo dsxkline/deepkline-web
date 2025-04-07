@@ -12,6 +12,14 @@ export const tradingDataFetch = {
         }
         return Promise.reject('apiSource is not supported')
     },
+    longShortAccountRatioContract:(instId:string,period:Period=Period.M5,begin:string='',end:string='')=>{
+        const state = useStore();
+        const apiSource = state.apiSource;
+        if(apiSource==ApiSource.OKX){
+            return Okx.tradingDataFetch.longShortAccountRatioContract(instId,period,begin,end)
+        }
+        return Promise.reject('apiSource is not supported')
+    },
     loanRatio:(ccy:string,period:Period=Period.M5,begin:string='',end:string='')=>{
         const state = useStore();
         const apiSource = state.apiSource;

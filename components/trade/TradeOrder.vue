@@ -20,8 +20,8 @@ function getTradeorders(){
         <div class="w-full h-full">
             <el-scrollbar :height="contentHeight + 'px'">
                 <div class="px-3">
-                    <TradeOrderForm></TradeOrderForm>
-                    <TradeOrderList></TradeOrderList>
+                    <!-- <TradeOrderForm></TradeOrderForm>
+                    <TradeOrderList></TradeOrderList> -->
                 </div>
             </el-scrollbar>
         </div>

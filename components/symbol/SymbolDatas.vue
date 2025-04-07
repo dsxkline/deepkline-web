@@ -15,20 +15,22 @@
 	})
 	const symbol = computed(() => useSymbolStore().activeSymbol)
 
-	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
+	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value])
 
 	// 监听父级组件宽度变化自适应宽度
 	onMounted(() => {})
 	onDeactivated(() => {})
 </script>
 <template>
-	<div class="symbol-market-datas w-full py-3 text-xs" ref="containerRef">
+	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
-			<div class="px-3">
-				<SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
+			<div class="px-4">
+				<!-- 需要每笔成交数据计算生成 -->
+				<!-- <SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
 				<SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>
-				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow>
+				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow> -->
 
+				<!-- 获取多空持仓人数比 -->
 				<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
 				<LoanRatio :symbol="symbol"></LoanRatio>
 				<OpenInterestVolume :symbol="symbol"></OpenInterestVolume>
