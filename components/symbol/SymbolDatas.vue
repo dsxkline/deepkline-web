@@ -9,6 +9,7 @@
 	const rate = ref<number>(0)
 	const symbolStore = useSymbolStore()
 	const containerRef = ref(null)
+	const mounted = ref(false)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
 		return props.height || 10000
@@ -16,15 +17,21 @@
 	const symbol = computed(() => useSymbolStore().activeSymbol)
 
 	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value])
-
+	
 	// 监听父级组件宽度变化自适应宽度
 	onMounted(() => {})
 	onDeactivated(() => {})
+	function update(){
+		mounted.value = true
+	}
+	defineExpose({
+		update
+	})
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
-			<div class="px-4">
+			<div class="px-4" v-if="mounted">
 				<!-- 需要每笔成交数据计算生成 -->
 				<!-- <SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
 				<SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>

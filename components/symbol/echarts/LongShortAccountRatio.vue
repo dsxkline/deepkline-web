@@ -4,6 +4,8 @@
 	import { ComposFetch } from '@/fetch'
 	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
+	import moment from 'moment'
+import type { TooltipOption } from 'echarts/types/dist/shared.js'
 	const chart = ref(null)
 	const period = ref('5m')
 	const loading = ref(true)
@@ -21,29 +23,28 @@
 	const containerRef = ref(null)
 	const width = ref<number>(0)
 	const option = {
-		// title: {
-		// 	text: 'BTC 多空持仓比',
-		// 	textStyle: {
-		// 		fontSize: 10,
-		// 		color: "#999"
-		// 	}
-		// },
 		legend: {
-			// data: ['BTC多空账户比'],
 			icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 			itemWidth: 6,
 			itemHeight: 6,
-			left: 0,
-			textStyle: {
-				fontSize: 12
-			}
+			left: 0
 		},
 		tooltip: {
-			trigger: 'axis'
+			trigger: 'axis',
+			textStyle:{
+				fontSize:12
+			},
+			formatter: function (params:any[]) {
+				// console.log('params',params);
+				const item = params[0]
+				const d = moment(parseFloat(item['axisValue'])).format('MM/DD HH:mm');
+      			return `${d}</br>${item.value}`;
+			}
+			
 		},
 		grid: {
 			containLabel: true,
-			top: '30', // 图表容器的上边距
+			top: '10', // 图表容器的上边距
 			bottom: '30', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
 			right: '0' // 图表容器的右边距
@@ -51,16 +52,19 @@
 		xAxis: {
 			type: 'category',
 			boundaryGap: true,
-			data: xAxisData
+			data: xAxisData,
+			axisLabel:{
+				show:true,
+				formatter: function (value:string, index:number) {
+					// 转成时间
+					return moment(parseFloat(value)).format('HH:mm');
+				}
+			}
 		},
 		yAxis: {
 			type: 'value',
 			boundaryGap: [0, '100%'],
-			splitLine: {
-				lineStyle: {
-					color: '#eee'
-				}
-			}
+			
 		},
 		series: [
 			{
@@ -69,9 +73,6 @@
 				smooth: true,
 				showSymbol: false,
 				sampling: 'lttb',
-				itemStyle: {
-					color: 'rgb(255, 70, 131)'
-				},
 				data: seriesData
 			}
 		]
@@ -84,7 +85,7 @@
 		error.value = ''
 		loading.value = true
 		// 现货传币种，合约传id
-		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy:props.symbol
+		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy : props.symbol
 		const request = symbolObj.value?.instType == InstanceType.SPOT ? ComposFetch.tradingDataFetch.longShortAccountRatio : ComposFetch.tradingDataFetch.longShortAccountRatioContract
 		request(symbol, p)
 			.then(res => {
@@ -96,13 +97,15 @@
 					seriesData = []
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
+					echart.dispose()
+					echart = echarts.init(chart.value, 'dark')
 					echart.setOption(option)
 					res.data.forEach(([ts, longShortAccountRatio]: any) => {
 						xAxisData.push(ts)
 						seriesData.push(longShortAccountRatio)
 					})
-					option.xAxis.data = xAxisData
-					option.series[0].data = seriesData
+					option.xAxis.data = xAxisData.reverse()
+					option.series[0].data = seriesData.reverse()
 					echart.setOption(option)
 					// console.log(xAxisData,seriesData);
 				} else {
@@ -121,11 +124,12 @@
 			fetchData(newVal as Period)
 		}
 	)
+
 	onMounted(() => {
 		console.log(props.symbol, Period?.M5, process.server)
 		nextTick(() => {
 			fetchData(period.value as Period)
-			echart = echarts.init(chart.value, 'light')
+			echart = echarts.init(chart.value, 'dark')
 			echart.setOption(option)
 		})
 
@@ -155,18 +159,21 @@
 			resizeObserver.disconnect()
 		}
 	})
+
+
+	
 </script>
 <template>
 	<div class="w-full h-full border-b border-[--border-color] py-4" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
 		<div class="flex items-center justify-between mb-2">
-		<h3 class="text-sm mb-1 flex items-center">
-			<b class="text-base">多空持仓人数比</b>
-		</h3>
-		<el-radio-group v-model="period" class="" :disabled="disabled">
-			<el-radio-button value="5m">5分钟</el-radio-button>
-			<el-radio-button value="1H">1小时</el-radio-button>
-			<el-radio-button value="1D">1天</el-radio-button>
-		</el-radio-group>
+			<h3 class="text-sm mb-1 flex items-center">
+				<b class="text-base">多空持仓人数比</b>
+			</h3>
+			<el-radio-group v-model="period" class="" :disabled="disabled">
+				<el-radio-button value="5m">5分钟</el-radio-button>
+				<el-radio-button value="1H">1小时</el-radio-button>
+				<el-radio-button value="1D">1天</el-radio-button>
+			</el-radio-group>
 		</div>
 		<div class="container" v-show="!loading && !error">
 			<div class="chart w-full h-[200px]" ref="chart"></div>

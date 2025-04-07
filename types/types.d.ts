@@ -1,5 +1,4 @@
 import type OKXWebSocket from "~/fetch/okx/okx.websocket";
-
 export enum ApiSource{
   OKX,
   BINANCE,
