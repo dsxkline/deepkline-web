@@ -2,50 +2,52 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	const props = defineProps<{
+		symbol: string
 		height: number
 	}>()
 	const item = ref<Ticker | null>(null)
 	const change = ref<number>(0)
 	const rate = ref<number>(0)
-	const symbolStore = useSymbolStore()
 	const containerRef = ref(null)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
 		return props.height || 10000
 	})
-	const symbol = computed(() => useSymbolStore().activeSymbol)
-	watchEffect(() => {
-		item.value = symbolStore.tickets[symbol.value + '']
+	watch(()=>props.symbol,(val,old)=>{
+		$ws.removeTickerHandler(old, tickerHandler)
+		$ws.addTickerHandler(val, tickerHandler)
+		item.value = null
+	})
+	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol] || {})
+	const { $wsb, $ws } = useNuxtApp()
+	const tickerHandler = (data: Ticker) => {
+		item.value = data
 		// console.log('symbol', symbol, '行情tick', item.value);
 		// 涨跌额
 		change.value = parseFloat(item.value?.last || '0') - parseFloat(item.value?.sodUtc8 || '0')
 		// 涨跌幅
 		rate.value = (change.value / parseFloat(item.value?.sodUtc8 || '0')) * 100
+	}
+	onMounted(() => {
+		$ws.addTickerHandler(props.symbol, tickerHandler)
 	})
-	// 监听行情变化
-	watch(
-		() => item.value,
-		(newSymbol, oldSymbol) => {
-			// console.log('newSymbol', newSymbol, 'oldSymbol', oldSymbol);
-		}
-	)
-
-	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value]||{})
-
-	// 监听父级组件宽度变化自适应宽度
-	onMounted(() => {})
-	onDeactivated(() => {})
+	onUnmounted(() => {
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+	})
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
 			<div class="flex flex-col items-start mt-2 mb-3 px-[16px]">
-				<b :class="'text-3xl '+(rate>=0?'text-green':'text-red')" v-if="item?.last">${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}</b>
-				<b :class="'text-3xl '+(rate>=0?'text-green':'text-red')" v-else>--</b>
-				<span :class="''+(rate>=0?'text-green':'text-red')" v-if="change">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
-				<span :class="''+(rate>=0?'text-green':'text-red')" v-else>- (-%)</span>
+				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+					<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
+					<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
+				</b>
+				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
+				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
+				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 			</div>
-			
+
 			<ul class="grid grid-cols-2 gap-2 text-invert mb-3 px-[16px]">
 				<li>
 					<span>24H开盘</span>
@@ -90,7 +92,7 @@
 			</ul>
 
 			<div class="px-4">
-				<BooksFull :symbol="symbol"/>
+				<BooksFull :symbol="symbol" />
 			</div>
 		</el-scrollbar>
 	</div>

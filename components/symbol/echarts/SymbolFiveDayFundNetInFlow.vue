@@ -95,7 +95,7 @@ const option = {
 };
 
 onMounted(() => {
-	echart = echarts.init(chart.value);
+	echart = echarts.init(chart.value ,useColorMode().value == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 });
 onDeactivated(() => {

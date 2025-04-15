@@ -6,7 +6,7 @@
 		icon?: Component
 		titleComp?: Component
 		contentComp?: Component
-		contentParams?: {}
+		contentParams?: Record<any,any>
 		onClick?: () => {}
 	}
 	const props = defineProps({

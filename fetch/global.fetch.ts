@@ -69,9 +69,9 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
     const options: UseFetchOptions<T> = {
         headers: Object.assign(
             commonHeader("okx"),
-            Object.assign(headers, {
-                path: path,
-            }),
+            // Object.assign(headers, {
+            //     path: path,
+            // }),
         ),
         query,
         method: "GET",

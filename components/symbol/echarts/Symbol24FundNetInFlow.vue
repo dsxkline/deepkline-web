@@ -30,11 +30,7 @@ const option = {
 	yAxis: {
 		type: 'value',
 		boundaryGap: [0, '100%'],
-		splitLine: {
-			lineStyle: {
-				color: "#333"
-			}
-		}
+	
 	},
 	series: [
 		{
@@ -63,7 +59,7 @@ const option = {
 };
 
 onMounted(() => {
-	echart = echarts.init(chart.value);
+	echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 });
 onDeactivated(() => {

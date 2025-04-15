@@ -8,7 +8,7 @@
 	import SymbolMarketDatas from './SymbolMarketDatas.vue'
 	import SymbolDatas from './SymbolDatas.vue'
 	import TradeOrder from '../trade/TradeOrder.vue'
-import SymbolInfo from './SymbolInfo.vue'
+	import SymbolInfo from './SymbolInfo.vue'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -43,6 +43,11 @@ import SymbolInfo from './SymbolInfo.vue'
 			}
 		}
 	])
+
+	watch(()=>props.symbol,val=>{
+		menus.value.forEach(item=>{
+			if(item.contentParams) item.contentParams.symbol=val});
+	})
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40

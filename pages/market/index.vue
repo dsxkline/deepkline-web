@@ -13,17 +13,26 @@
 						<SymbolDetail :symbol="useSymbolStore().activeSymbol" />
 					</template>
 					<template #right>
-						<SplitRowContainer>
-							<template #up>
-								<KlineHeader :symbol="useSymbolStore().getActiveSymbol()" />
+						<SplitContainer :right="90" :left="0">
+							<template #left>
+								<SplitRowContainer>
+									<template #up>
+										<KlineHeader :symbol="useSymbolStore().getActiveSymbol()" />
+									</template>
+									<template #down>
+										<div class="flex flex-col justify-between w-full h-full">
+											<div class="flex-1">
+												<KlineChart :symbol="useSymbolStore().getActiveSymbol()" />
+											</div>
+											<div><KlineFooter :symbol="useSymbolStore().getActiveSymbol()" /></div>
+										</div>
+									</template>
+								</SplitRowContainer>
 							</template>
-							<template #down>
-								<div class="flex flex-col justify-between w-full h-full">
-									<div class="flex-1"><KlineChart :symbol="useSymbolStore().getActiveSymbol()" /></div>
-									<div><KlineFooter :symbol="useSymbolStore().getActiveSymbol()" /></div>
-								</div>
+							<template #right>
+								<KlineOrderSide />
 							</template>
-						</SplitRowContainer>
+						</SplitContainer>
 					</template>
 				</SplitContainer>
 			</template>

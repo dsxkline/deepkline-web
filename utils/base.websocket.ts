@@ -12,7 +12,7 @@ export default class BaseWebSocket {
 	public subscribers: Record<string, any> = {};
 	private waitSendDatas: any = [];
 	private tickers: Record<string, Ticker> = {};
-	private tickersHandler: Record<string, any>[] = [];
+	private tickersHandler: Record<string, any[]>= {};
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
 		this.reconnectErrorCallback = reconnectErrorCallback;
@@ -153,21 +153,22 @@ export default class BaseWebSocket {
 
 	setTickers(instId:string,ticker: Ticker) {
 		this.tickers[instId] = ticker;
-		this.tickersHandler.forEach((item)=>{
-			if(item.instId === instId){
-				item.callback(ticker,null);
-			}
+		this.tickersHandler[instId].forEach((item)=>{
+			item.callback(ticker,null);
 		})
 	}
 	getTickers(instId:string) {
 		return this.tickers[instId];
 	}
 	addTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
-		this.tickersHandler.push({instId,callback});
+		if(!this.tickersHandler[instId])this.tickersHandler[instId]=[]
+		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
+		this.tickersHandler[instId].push({instId,callback});
 	}
 	removeTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
-		this.tickersHandler = this.tickersHandler.filter((item)=>{
-			return item.instId !== instId && item.callback !== callback;
-		})
+		console.log('removeTickerHandler',instId,callback)
+		if(!this.tickersHandler[instId]) return;
+		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
+		console.log('removeTickerHandler',this.tickersHandler)
 	}
 }

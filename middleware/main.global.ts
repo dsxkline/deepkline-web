@@ -10,6 +10,10 @@ function getDefaultInstruments() {
     publicFetch.getInstruments(InstanceType.SPOT).then(res=>{
         if (res?.data) {
             symbolStore.setSymbols(res.data);
+        }else{
+            setTimeout(() => {
+                getDefaultInstruments()
+            }, 5000);
         }
     }).catch(err=>{
         console.error(err);

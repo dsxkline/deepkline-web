@@ -169,7 +169,7 @@ const fetchData = ()=>{
 }
 
 onMounted(() => {
-	echart = echarts.init(chart.value);
+	echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 	fetchData()
 	if (containerRef.value) {
@@ -195,12 +195,14 @@ onDeactivated(() => {
 </script>
 <template>
 	<div class="w-full h-full mt-3 border-t border-b border-[--border-color] pb-3 " ref="containerRef">
-		<h3 class="py-2 text-sm mb-3 flex justify-between items-center">
-			资金流向
+		<div class="flex items-center justify-between mb-2">
+			<h3 class="text-sm mb-1 flex items-center">
+				<b class="text-base">资金流向</b>
+			</h3>
 			<el-select v-model="timeVal" style="width: 100px;">
 				<el-option v-for="item in timeOptions" :key="item.value" :label="item.label" :value="item.value" />
 			</el-select>
-		</h3>
+		</div>
 		<div class="container" v-show="!loading && !error">
 			<div class="chart w-full h-[260px]" ref="chart"></div>
 		</div>
