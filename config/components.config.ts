@@ -4,5 +4,6 @@ export default [
     "~/components/kline",
     "~/components/symbol",
     "~/components/symbol/echarts",
-    "~/components/app"
+    "~/components/app",
+    "~/components/trade"
 ];

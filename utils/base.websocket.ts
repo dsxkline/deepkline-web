@@ -154,7 +154,7 @@ export default class BaseWebSocket {
 	setTickers(instId:string,ticker: Ticker) {
 		this.tickers[instId] = ticker;
 		this.tickersHandler[instId].forEach((item)=>{
-			item.callback(ticker,null);
+			item(ticker,null);
 		})
 	}
 	getTickers(instId:string) {
@@ -163,12 +163,12 @@ export default class BaseWebSocket {
 	addTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
 		if(!this.tickersHandler[instId])this.tickersHandler[instId]=[]
 		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
-		this.tickersHandler[instId].push({instId,callback});
+		this.tickersHandler[instId].push(callback);
 	}
 	removeTickerHandler(instId:string,callback: (message: Ticker, error: Event | null) => void) {
-		console.log('removeTickerHandler',instId,callback)
+		// console.log('removeTickerHandler',instId,callback)
 		if(!this.tickersHandler[instId]) return;
 		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
-		console.log('removeTickerHandler',this.tickersHandler)
+		// console.log('removeTickerHandler',this.tickersHandler)
 	}
 }

@@ -169,6 +169,7 @@ export interface DsxKlineConfig {
 	nextPage?: NextPage;
 	datas?: string[];
 	page?: number;
+	decimalPoint?:number;
 }
 export declare class DsxKline {
 	constructor(config: DsxKlineConfig);
@@ -180,6 +181,7 @@ export declare class DsxKline {
 	theme: ThemeItem;
 	hideCrossLine: boolean;
 	datas: any[];
+	decimalPoint?:number;
 	update(config: DsxKlineConfig): void;
 	onLoading: OnLoading;
 	nextPage: NextPage;

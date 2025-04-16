@@ -108,10 +108,10 @@
 <template>
 	<div class="split-container w-full h-full" ref="splitContainer">
 		<div class="split-horizontal flex w-full h-full *:overflow-hidden" ref="splitHorizontal">
-			<div id="split-left" ref="splitLeft">
+			<div id="split-left" ref="splitLeft" :style="[leftWidth>0?'width:calc('+leftWidth+'px)':'',rightWidth>0?'width:calc(100% - '+rightWidth+'px - 2px)':'']">
 				<slot name="left"></slot>
 			</div>
-			<div id="split-right" ref="splitRight">
+			<div id="split-right" ref="splitRight" :style="[rightWidth>0?'width:calc('+rightWidth+'px)':'',leftWidth>0?'width:calc(100% - '+leftWidth+'px - 2px)':'']">
 				<slot name="right"></slot>
 			</div>
 		</div>

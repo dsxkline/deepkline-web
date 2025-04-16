@@ -213,6 +213,7 @@ interface BookResponse {
 }
 export interface BookMessage {
 	arg: SubArgs
+	action:string
 	data: BookResponse[]
 }
 

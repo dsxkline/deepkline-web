@@ -42,7 +42,7 @@
 		grid: {
 			containLabel: true,
 			top: '10', // 图表容器的上边距
-			bottom: '30', // 图表容器的下边距
+			bottom: '10', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
 			right: '0' // 图表容器的右边距
 		},
@@ -125,6 +125,14 @@
 			fetchData(newVal as Period)
 		}
 	)
+
+    watch(
+		()=>props.symbol,
+		val=>{
+			fetchData(period.value as Period)
+		}
+	)
+    
 	onMounted(() => {
 		nextTick(() => {
 			fetchData(period.value as Period)
@@ -156,12 +164,12 @@
 	})
 </script>
 <template>
-	<div class="w-full h-full mt-2 border-b border-[--border-color] pb-3 mb-3 min-h-[350px] flex flex-col justify-between" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
+	<div class="w-full h-full mt-2 border-b border-[--border-color] py-4 min-h-[350px] flex flex-col justify-between" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">杠杆多空比</b>
 			</h3>
-			<el-radio-group v-model="period" :disabled="disabled">
+			<el-radio-group v-model="period" :disabled="disabled" size="small">
 				<el-radio-button value="5m">5分钟</el-radio-button>
 				<el-radio-button value="1H">1小时</el-radio-button>
 				<el-radio-button value="1D">1天</el-radio-button>

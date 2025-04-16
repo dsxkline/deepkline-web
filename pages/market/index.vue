@@ -30,7 +30,7 @@
 								</SplitRowContainer>
 							</template>
 							<template #right>
-								<KlineOrderSide />
+								<KlineOrderSides :symbol="useSymbolStore().getActiveSymbol()" />
 							</template>
 						</SplitContainer>
 					</template>

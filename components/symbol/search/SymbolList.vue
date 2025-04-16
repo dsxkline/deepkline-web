@@ -165,11 +165,12 @@
 		const price = parseFloat(item.last)
 		const last = lastPrices.value[item.instId] || 0
 		const dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
+		const transparent = useSymbolStore().activeSymbol==item.instId?'transparent':'var(--transparent10)'
 		if (dom && last) {
             if(price>=last){
-                dom.style.background = "linear-gradient(to left,transparent,rgb(var(--color-green)))";
+                dom.style.background = "linear-gradient(to left,"+transparent+",rgb(var(--color-green)))";
             }else{
-                dom.style.background = "linear-gradient(to left,transparent,rgb(var(--color-red)))";
+                dom.style.background = "linear-gradient(to left,"+transparent+",rgb(var(--color-red)))";
             }
 			dom.style.opacity = '0.1'
 			setTimeout(() => {
@@ -222,12 +223,12 @@
 			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - 1 - end) * itemHeight + 'px' }">
 				<li
 					:id="'symbol-list-id-' + item.instId"
-					:class="['relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer']"
+					:class="['relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',useSymbolStore().activeSymbol==item.instId?'!bg-[--transparent10]':'']"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"
 					@click.stop="clickSymbol(item)"
 				>
-					<div class="col-span-2"><SymbolName :symbol="item" /></div>
+					<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
 					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
 					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10 transition-all transition-200 ease-in-out'"></div>

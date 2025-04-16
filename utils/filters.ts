@@ -3,7 +3,7 @@ import { number } from 'echarts'
 export const formatPrice = (value: any, precision: number, prefix: string = '') => {
 	if (!precision) return value+''
 	value = parseFloat(value.toString())
-	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : 0
+	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
 }
 
@@ -40,16 +40,33 @@ export const formatChangeRate = (value: any, precision: number = 2) => {
 	return `${prefix}${value.toFixed(point)}`
 }
 
-export const moneyFormat = (value: any, currency: string = '') => {
+export const moneyFormat = (value: any, currency: string = '',precision:number=2,m:string='m',k:string='k') => {
 	let unit = ''
-	const precision = 2
 	value = parseFloat(value.toString())
+    // const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
+    const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	if (value >= 100000000) {
-		value = value / 100000000
-		unit = '亿'
+		value = value / 100000000 * 10
+		unit = m
 	} else if (value >= 10000) {
-		value = value / 10000
-		unit = '万'
+		value = value / 10000 * 10
+		unit = k
 	}
-	return currency + value.toFixed(precision) + unit
+	return currency + value.toFixed(point) + unit
 }
+
+export function noExponents(num:number) {
+    const data = String(num).split(/[eE]/);
+    if (data.length === 1) return data[0];
+  
+    let z = '', sign = num < 0 ? '-' : '',
+        str = data[0].replace('.', ''),
+        mag = Number(data[1]) + 1;
+  
+    if (mag < 0) {
+      z = sign + '0.' + '0'.repeat(Math.abs(mag)) + str.replace('-', '');
+    } else {
+      z = str + '0'.repeat(mag - str.length);
+    }
+    return z;
+  }

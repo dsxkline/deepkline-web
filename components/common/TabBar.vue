@@ -169,6 +169,9 @@
 					&:last-child {
 						margin-right: 0;
 					}
+					&:hover{
+						color: rgb(var(--color-text-grey));
+					}
 					&.active {
 						color: rgb(var(--color-text-main));
 						font-weight: bold;

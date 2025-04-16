@@ -9,7 +9,7 @@
 		// 获取当前组件的高度
 		return props.height || 10000
 	})
-	const loading = ref(true)
+	const loading = ref(false)
 	const error = ref('')
 	const symbolInfo = ref({
 		blockBrowser: '',
@@ -48,6 +48,9 @@
 		return useSymbolStore().symbols[props.symbol]
 	})
 	const getSymbolInfo = () => {
+		if(loading.value) return;
+		loading.value = true
+		error.value = ''
 		const url = `${useRuntimeConfig().public.BASE_API_URL}/v1/symbols/detail?symbol=${props.symbol.split('-')[0]}`
 		fetch(url)
 			.then(res => res.json())
@@ -75,15 +78,16 @@
 </script>
 <template>
 	<div>
-		<div class="w-full h-full" v-if="!loading && !error && symbolInfo">
+		<div class="w-full h-full" v-if="!loading && !error && symbolInfo?.project">
 			<el-scrollbar :height="contentHeight + 'px'">
 				<div class="p-4">
-					<div class="text-sm text-main">
-						<img :src="symbolInfo?.icon" alt="" class="w-4 h-4 inline-block mr-1" />
-						<span class="font-bold">{{ symbolInfo?.project }}</span>
-						<span class="text-xs text-gray-500 ml-1">{{ symbolInfo?.fullName }}</span>
+					<div class="text-sm text-main flex items-center mb-3">
+						<img :src="symbolInfo?.icon" alt="" class="w-6 h-6 inline-block mr-1" />
+						<span class="font-bold text-[18px]">{{ symbolInfo?.project }}</span>
+						
 					</div>
-					<div class="text-sm text-gray-500 mt-2" v-html="symbolInfo?.introduce"></div>
+					<!-- <span class="text-gray-300 my-3">{{ symbolInfo?.fullName }}</span> -->
+					<div class="text-sm text-gray-500 mt-2 h-[100px] overflow-hidden text-ellipsis" v-html="symbolInfo?.introduce"></div>
 				</div>
 			</el-scrollbar>
 		</div>

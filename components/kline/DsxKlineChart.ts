@@ -26,6 +26,8 @@ class DsxKlineChart {
 	themeConfig = new window.DsxConfig()
 	subCandleId: string = ''
 	subTickerId: string = ''
+	lastVol:number = 0
+	lastAmount:number = 0
 	onError?:(err:any)=>void;
 	onLoading?:()=>void;
 	constructor(symbol: string, cycle: string,theme:string, config: DsxKlineConfig) {
@@ -110,6 +112,10 @@ class DsxKlineChart {
 		this.config.theme = this.themeConfig.theme[this.theme == 'dark' ? 'dark' : 'white']
 	}
 
+	updateDecimal(decimal:number){
+		this.kline.decimalPoint = decimal;
+	}
+
 	update(config: DsxKlineConfig) {
 		this.kline.update(config)
 		this.unsubscribe()
@@ -117,6 +123,9 @@ class DsxKlineChart {
 	}
 
 	startLoading(kline?: DsxKline) {
+		this.lastVol = 0
+		this.lastAmount = 0
+		this.lastItem = ''
 		this.onLoading && this.onLoading()
 		this.page = 1
 		this.after = ''
@@ -242,11 +251,13 @@ class DsxKlineChart {
 
 	refresh(d: string[]) {
 		if(!this.kline.datas?.length) return;
-		const [ts, o, h, l, c, v, a] = d
+		const [ts, o, h, l, c, v, a,ac,confirm] = d
 		const t = moment(parseInt(ts)).format('YYYYMMDD HH:mm:ss')
 		let date = t.split(' ')[0].replaceAll('/', '')
 		let time = t.split(' ')[1].replaceAll(':', '')
-		let item = [date, time, o, h, l, c, v, a].join(',')
+		let vol = confirm!=undefined? parseFloat(v) : this.lastVol
+		let amount = confirm!=undefined? parseFloat(a): this.lastAmount
+		let item = [date, time, o, h, l, c, vol, amount].join(',')
 		let cycle = 't'
 		if (this.cycle == '1D') cycle = 'd'
 		if (this.cycle == '1W') cycle = 'w'
@@ -261,6 +272,10 @@ class DsxKlineChart {
 			this.kline.refreshLastOneData(item, cycle)
 		}
 		this.lastItem = item
+		if(confirm!=undefined){
+			this.lastVol = parseFloat(v)
+			this.lastAmount = parseFloat(a)
+		}
 	}
 
 	destroy() {

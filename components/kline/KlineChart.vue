@@ -37,13 +37,27 @@
 	)
 
 	watch(
+		()=>useSymbolStore().symbols[useSymbolStore().activeSymbol],
+		(val)=>{
+			const symbolDetail = val
+			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
+			chart.value?.updateDecimal(point)
+			// chart.value && chart.value.create()
+		}
+	)
+
+	watch(
 		() => useSymbolStore().activeSymbol,
 		newVal => {
+			const symbolDetail = useSymbolStore().symbols[newVal]
+			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
+			chart.value?.updateDecimal(point)
 			chart.value && chart.value.tapSymbol(newVal)
 		}
 	)
 	onMounted(() => {
 		const symbol = useSymbolStore().activeSymbol
+		const symbolDetail = useSymbolStore().symbols[symbol]
 		chart.value = new DsxKlineChart(symbol, useKlineStore().cycle, useColorMode().preference, {
 			element: klineDom.value || '',
 			autoSize: true,
@@ -60,7 +74,8 @@
 			// main: ["EMA"], // 主图指标
 			// sides: ["VOL"], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
-			allMin: false
+			allMin: false,
+			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length
 		})
 		nextTick(() => {
 			chart.value && chart.value.create()
