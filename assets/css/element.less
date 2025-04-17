@@ -38,6 +38,11 @@ body {
     .el-input {
         --el-input-border-color: var(--transparent10);
         --el-input-border-color-hover: var(--transparent20);
+        --el-input-text-color:rgb(var(--color-text-main));
+        
+    }
+    .el-input-number .el-input__inner{
+        text-align: left;
     }
     .el-switch {
         --el-switch-on-color: var(--el-color-primary);
@@ -107,9 +112,40 @@ body {
             }
         }
     }
-    .el-radio-button {
-        .el-radio-button__inner{
-            font-size: 12px;
+    .el-slider {
+        --el-slider-main-bg-color: var(--el-color-primary);
+        --el-slider-runway-bg-color: var(--el-border-color-light);
+        --el-slider-stop-bg-color: var(--transparent10);
+        --el-slider-disabled-color: var(--el-text-color-placeholder);
+        --el-slider-border-radius: 3px;
+        --el-slider-height: 6px;
+        --el-slider-button-size: 20px;
+        --el-slider-button-wrapper-size: 36px;
+        --el-slider-button-wrapper-offset: -15px;
+        --el-slider-button-size:12px;
+        padding: 0 3px;
+        .el-slider__button{
+            background: var(--el-slider-main-bg-color);
+        }
+        .el-slider__stop{
+            &:first-child{
+                transform: none;
+            }
+            &:last-child{
+                transform: translateX(-100%);
+            }
+        }
+        .el-slider__marks{
+            .el-slider__marks-text{
+                font-size: 10px;
+                margin-top: 10px;
+                &:first-child{
+                    transform: translateX(-3px);
+                }
+                &:last-child{
+                    transform: translateX(-88%);
+                }
+            }
         }
     }
     

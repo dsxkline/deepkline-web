@@ -196,11 +196,11 @@ export enum Period {
 }
 
 interface BookEntry {
-	px: number; // 价格 (USDT)
-	sz: number; // 数量 (BTC)
-	total: number; // 合计 (BTC)
-	ratio:number;// 占比
-  }
+	px: number // 价格 (USDT)
+	sz: number // 数量 (BTC)
+	total: number // 合计 (BTC)
+	ratio: number // 占比
+}
 export interface Books {
 	asks: BookEntry[]
 	bids: BookEntry[]
@@ -208,20 +208,37 @@ export interface Books {
 }
 
 interface BookResponse {
-	asks: [string, string, string][];
-	bids: [string, string, string][];
+	asks: [string, string, string][]
+	bids: [string, string, string][]
 }
 export interface BookMessage {
 	arg: SubArgs
-	action:string
+	action: string
 	data: BookResponse[]
 }
 
-export interface tradesResponse{
-	instId: string,
-	side: "sell"|"buy",
-	sz: string,
-	px: string,
-	tradeId: string,
+export interface tradesResponse {
+	instId: string
+	side: 'sell' | 'buy'
+	sz: string
+	px: string
+	tradeId: string
 	ts: string
+}
+
+export enum Sides {
+	BUY = 'buy',
+	SELL = 'sell'
+}
+
+export enum OrderType {
+	// 订单类型
+	MARKET = 'market', // 市价单
+	LIMIT = 'limit', //"限价单
+	POSTONLY = 'post_only', //只做maker单
+	FOK = 'fok', //全部成交或立即取消
+	IOC = 'ioc', //立即成交并取消剩余
+	OPTIMALLIMITIOC = 'optimal_limit_ioc', //市价委托立即成交并取消剩余（仅适用交割、永续）
+	MMP = 'mmp', //做市商保护(仅适用于组合保证金账户模式下的期权订单)
+	MMPANDPOSTONLY = 'mmp_and_post_only' //做市商保护且只做maker单(仅适用于组合保证金账户模式下的期权订单)
 }
