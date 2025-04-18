@@ -50,7 +50,7 @@ export default {
 			dashedBoxBorderLineColor: "rgba(255,255,225,0.10)", // 虚线框边框颜色
 			dashedBoxSpace: 20, // 虚线框虚线间的间隔
 			gridPriceColor: "rgba(165,169,176,0.8)",
-			gridPriceBackgroundColor: "rgba(13,16,23, 1.0)",
+			gridPriceBackgroundColor: "rgba(13,16,23, .0)",
 			gridPriceDirection: 1, // 网格价格提示器方向 0:左边 1:右边
 			gridPriceWidth: 0, // 左右网格线价格提示区域的宽度
 			gridPriceLineWidth: 0.0, // 网格分割线

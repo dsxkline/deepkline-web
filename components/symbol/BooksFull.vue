@@ -53,7 +53,8 @@
 	watch(
 		() => pointLevel.value,
 		val => {
-			console.log('pointLevelpointLevel',pointLevel.value,val)
+			if (subHandle) $ws.unsubscribe(subHandle)
+			$ws.removeTickerHandler(props.symbol, tickerHandler)
 			getBooksFull()
 		}
 	)
@@ -67,8 +68,10 @@
 
 	watch(
 		() => props.symbol,
-		val => {
+		(val,old) => {
 			if(pointLevelOptions.value?.length>0) pointLevel.value = pointLevelOptions.value[0]
+			if (subHandle) $ws.unsubscribe(subHandle)
+			$ws.removeTickerHandler(old, tickerHandler)
 			getBooksFull()
 		}
 	)
@@ -92,8 +95,7 @@
 		totalBids.value = 0
 		point.value = 0
 
-		if (subHandle) $ws.unsubscribe(subHandle)
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		
 
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {

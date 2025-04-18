@@ -37,7 +37,12 @@
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			padding: 0 16px;
-      border-bottom:1px solid var(--transparent05);
+			border-bottom: 1px solid var(--transparent05);
+		}
+	}
+	:deep(.el-input){
+		.el-input__wrapper{
+			box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
 		}
 	}
 </style>

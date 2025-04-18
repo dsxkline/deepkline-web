@@ -240,5 +240,6 @@ export enum OrderType {
 	IOC = 'ioc', //立即成交并取消剩余
 	OPTIMALLIMITIOC = 'optimal_limit_ioc', //市价委托立即成交并取消剩余（仅适用交割、永续）
 	MMP = 'mmp', //做市商保护(仅适用于组合保证金账户模式下的期权订单)
-	MMPANDPOSTONLY = 'mmp_and_post_only' //做市商保护且只做maker单(仅适用于组合保证金账户模式下的期权订单)
+	MMPANDPOSTONLY = 'mmp_and_post_only', //做市商保护且只做maker单(仅适用于组合保证金账户模式下的期权订单)
+	STOP = "STOP",// 止盈止损
 }
