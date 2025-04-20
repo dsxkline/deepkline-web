@@ -9,7 +9,14 @@
 	const error = ref('')
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height || window?.innerHeight - 4 * 40
+		let h = props.height
+		if (process.client) {
+			h = props.height || window?.innerHeight - 4 * 40
+			nextTick(() => {
+				loading.value = false
+			})
+		}
+		return h
 	})
 	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
 	const point = computed(() => {
@@ -28,38 +35,9 @@
 			{
 				name: '市价单',
 				value: OrderType.MARKET
-			},
-			{
-				name: '止盈止损',
-				value: OrderType.STOP
 			}
 		]
 	})
-	const { $wsb, $ws } = useNuxtApp()
-	const ticker = ref($ws && $ws.getTickers(props.symbol))
-	const tickerHandler = (data: Ticker) => {
-		ticker.value = data
-		if (canChangePrice.value) price.value = parseFloat(data.last)
-	}
-
-	watch(
-		() => props.symbol,
-		(val, old) => {
-			price.value = 0
-			canChangePrice.value = true
-			$ws.removeTickerHandler(old, tickerHandler)
-			$ws.addTickerHandler(val, tickerHandler)
-		}
-	)
-
-	onMounted(() => {
-		$ws.addTickerHandler(props.symbol, tickerHandler)
-	})
-
-	onUnmounted(() => {
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
-	})
-
 	const side = ref<Sides>(Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.LIMIT)
 	const price = ref(0)
@@ -83,10 +61,65 @@
 	const sellText = computed(() => {
 		return symbolObj.value?.instType == InstanceType.SPOT ? '卖出' : '平仓'
 	})
+	const openStopProfitLoss = ref(false)
+	const takeProfit = ref()
+	const stopLoss = ref()
+	const buyDes = ref('')
+	const sellDes = ref('')
+
+	const { $wsb, $ws } = useNuxtApp()
+	const ticker = ref($ws && $ws.getTickers(props.symbol))
+	const tickerHandler = (data: Ticker) => {
+		ticker.value = data
+		if (canChangePrice.value) {
+			price.value = parseFloat(data.last)
+			sz.value = symbolObj.value?.lotSz
+			if (ordType.value != OrderType.MARKET){
+				buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+				sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+			}
+			
+		}
+	}
+
+	watch(
+		() => props.symbol,
+		(val, old) => {
+			price.value = 0
+			canChangePrice.value = true
+			$ws.removeTickerHandler(old, tickerHandler)
+			$ws.addTickerHandler(val, tickerHandler)
+		}
+	)
+	watch(
+		() => ordType.value,
+		(val, old) => {
+			if (val == OrderType.MARKET) {
+				price.value = 0
+				buyDes.value = 'MARKET'
+				sellDes.value = 'MARKET'
+			} else {
+				price.value = parseFloat(ticker.value?.last)
+				buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+				sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+			}
+		}
+	)
+
+	onMounted(() => {
+		$ws.addTickerHandler(props.symbol, tickerHandler)
+	})
+
+	onUnmounted(() => {
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+	})
+
 	function getTradeorders() {}
 
 	function priceChange() {
 		canChangePrice.value = false
+		buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+		sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
 	}
 	function priceFocus() {
 		canChangePrice.value = false
@@ -95,26 +128,25 @@
 <template>
 	<div>
 		<div class="w-full h-full wrapper trade-order">
-			<el-scrollbar :height="contentHeight + 'px'">
-				<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="'height:' + contentHeight + 'px'">
-					<div>
+			<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
+				<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']">
+					<div class="pb-[200px]">
 						<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full">
 							<el-radio-button :label="buyText" value="buy" class="*:w-full" />
 							<el-radio-button :label="sellText" value="sell" class="*:w-full" />
 						</el-radio-group>
 
-						<el-radio-group v-model="ordType" size="small" class="trade-type mt-3 w-full">
+						<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full">
 							<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
 							<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
-							<el-radio-button label="止盈止损" :value="OrderType.STOP" class="*:w-full" />
 						</el-radio-group>
 
-						<el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
+						<!-- <el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
 							<el-option v-for="item in ordTypeOptions" :key="item.value" :label="item.name" :value="item.value" />
-						</el-select>
+						</el-select> -->
 
-						<div class="py-3">
-							<h5 class="py-2">价格({{ symbolObj?.quoteCcy }})</h5>
+						<div class="pb-3 relative">
+							<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
 							<el-input-number
 								@change="priceChange"
 								@focus="priceFocus"
@@ -124,7 +156,13 @@
 								controls-position="right"
 								size="large"
 								class="!w-full"
+								v-if="ordType != OrderType.MARKET"
 							/>
+							<el-input placeholder="MARKET" size="large" class="!w-full"  @click="ordType=OrderType.LIMIT" v-else />
+							<div class="flex items-center justify-center py-1 trade-ordtype-small" v-if="ordType != OrderType.MARKET">
+								<span class="text-grey">Pending</span>
+								<button class="px-1 flex items-center" @click="ordType=OrderType.MARKET"><el-icon><Close class=":hover:text-main"/></el-icon></button>
+							</div>
 						</div>
 						<div class="py-3">
 							<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
@@ -146,18 +184,65 @@
 								</div>
 							</div>
 						</div>
+
+						<div>
+							<el-checkbox :label="`止盈止损`" v-model="openStopProfitLoss" />
+							<div v-show="openStopProfitLoss">
+								<h6 class="py-2">止盈触发价</h6>
+								<el-input-number
+									@change="priceChange"
+									@focus="priceFocus"
+									v-model="takeProfit"
+									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
+									:precision="point"
+									controls-position="right"
+									size="large"
+									class="!w-full"
+								/>
+								<h6 class="py-2">止损触发价</h6>
+								<el-input-number
+									@change="priceChange"
+									@focus="priceFocus"
+									v-model="stopLoss"
+									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
+									:precision="point"
+									controls-position="right"
+									size="large"
+									class="!w-full"
+								/>
+							</div>
+						</div>
 					</div>
 
-					<div class="flex flex-col trade-bts">
-						<el-button type="primary" size="large" class="w-full"
-							>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></el-button
-						>
-						<el-button type="primary" size="large" class="w-full mt-3 !ml-0 sell-bt bg-red"
-							>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></el-button
-						>
+					<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10">
+						<el-button type="primary" size="large" class="w-full !h-auto">
+							<div class="flex flex-col items-center">
+								<b class="text-base"
+									>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
+								>
+								<p class="pt-2">{{ buyDes }}</p>
+							</div>
+						</el-button>
+						<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center">
+							<div class="flex flex-col items-center">
+								<b class="text-base"
+									>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
+								>
+								<p class="pt-2">{{ sellDes }}</p>
+							</div>
+						</el-button>
 					</div>
 				</div>
 			</el-scrollbar>
+
+			<div v-show="loading || error" class="p-4">
+				<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
+					<template #extra>
+						<el-button @click.stop="getSymbolInfo()">点击刷新</el-button>
+					</template>
+				</el-result>
+				<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
+			</div>
 		</div>
 	</div>
 </template>
@@ -184,6 +269,20 @@
 	.trade-ordtype-select {
 		display: none;
 	}
+	.el-checkbox {
+		color: rgb(var(--color-text-grey));
+	}
+
+	.trade-bts{
+		button{
+			p{
+				display: none;
+			}
+		}
+	}
+	.trade-ordtype-small{
+		display: none;
+	}
 
 	@container (max-width: 200px) {
 		.trade-order {
@@ -200,26 +299,34 @@
 				}
 				.trade-bts {
 					button {
+						p{
+							display: block;
+						}
 						font-size: 12px;
 						.ccy {
 							display: none;
 						}
 					}
 				}
+				.trade-ordtype-small{
+					display: flex;
+				}
 				.sell-bt {
 					display: block;
-					padding: 0;
 				}
 				.trade-av {
 					// display: none;
 					padding-top: 5px;
-					.av-item{
+					.av-item {
 						display: flex;
 						flex-direction: column;
-						span{
+						span {
 							padding-bottom: 5px;
 						}
-						span:last-child{
+						span:last-child {
+							display: none;
+						}
+						&:last-child {
 							display: none;
 						}
 					}
@@ -228,17 +335,36 @@
 					display: block;
 					:deep(.el-select__wrapper) {
 						padding: 4px;
-						border:1px solid rgb(var(--color-green));
-						.el-select__suffix {
-							// display: none;
-						}
+						border: 1px solid rgb(var(--color-green));
 						.el-select__selected-item {
 							// text-align: center;
 							color: rgb(var(--color-green));
 						}
 					}
 				}
+				.py-3 {
+					padding-top: 3px;
+					padding-bottom: 3px;
+				}
 				:deep(.el-input-number) {
+					.el-input__inner {
+						font-size: 12px;
+						margin-right: 18px;
+					}
+
+					.el-input__wrapper {
+						padding: 0 5px;
+					}
+
+					.el-input-number__increase {
+						width: 20px;
+					}
+					.el-input-number__decrease {
+						width: 20px;
+					}
+				}
+
+				:deep(.el-input) {
 					.el-input__inner {
 						font-size: 12px;
 					}
@@ -246,6 +372,10 @@
 					.el-input__wrapper {
 						padding: 0 5px;
 					}
+				}
+
+				.el-checkbox {
+					--el-checkbox-font-size: 12px;
 				}
 			}
 		}

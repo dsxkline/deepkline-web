@@ -44,7 +44,7 @@
 					<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
 				</b>
 				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
-				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ change.toFixed(2) }} ({{ rate.toFixed(2) }}%)</span>
+				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{rate > 0?'+':''}}{{ change.toFixed(2) }} ({{rate > 0?'+':''}}{{ rate.toFixed(2) }}%)</span>
 				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 			</div>
 

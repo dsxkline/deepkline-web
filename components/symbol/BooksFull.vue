@@ -95,8 +95,6 @@
 		totalBids.value = 0
 		point.value = 0
 
-		
-
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
@@ -132,8 +130,9 @@
 			}
 			totalAsks.value = 0
 			totalBids.value = 0
+			
 		}
-		point.value = 0
+		point.value = symbolObj.value?.lotSz||0
 		
 		updates.asks.forEach(([px, sz]) => {
 			let price = parseFloat(px)
@@ -152,10 +151,10 @@
 				}
 			}
 			const size = parseFloat(sz)
-			if (sz.indexOf('.') >= 0) {
-				const p = parseFloat(sz.split('.')[1]).toString().length
-				if (p > point.value) point.value = Math.min(5, p)
-			}
+			// if (sz.indexOf('.') >= 0) {
+			// 	const p = parseFloat(sz.split('.')[1]).toString().length
+			// 	if (p > point.value) point.value = Math.min(5, p)
+			// }
 			// 大于当前价的数据不要
 			// if(price>parseFloat(ticker.value?.last))return;
 			if (size === 0) orderBook.value.asks.delete(price)
@@ -178,16 +177,16 @@
 				}
 			}
 			const size = parseFloat(sz)
-			if (sz.indexOf('.') >= 0) {
-				const p = parseFloat(sz.split('.')[1]).toString().length
-				if (p > point.value) point.value = Math.min(5, p)
-			}
+			// if (sz.indexOf('.') >= 0) {
+			// 	const p = parseFloat(sz.split('.')[1]).toString().length
+			// 	if (p > point.value) point.value = Math.min(5, p)
+			// }
 			// 小于当前价的数据不要
 			// if(price<parseFloat(ticker.value?.last))return;
 			if (size === 0) orderBook.value.bids.delete(price)
 			else orderBook.value.bids.set(price, { px: price, sz: size, total: 0, ratio: 0 })
 		})
-		point.value = 1 / 10 ** point.value
+		// point.value = 1 / 10 ** point.value
 
 		totalAsks.value = 0
 		totalBids.value = 0
@@ -209,9 +208,9 @@
 	}
 	// bid/ask
 	const calculateBuySellRatio = computed(() => {
-		const totalBids = Array.from(orderBook.value.bids.values()).reduce((sum, entry) => sum + entry.sz, 0)
-		const totalAsks = Array.from(orderBook.value.asks.values()).reduce((sum, entry) => sum + entry.sz, 0)
-		return (totalAsks / (totalBids + totalAsks)) * 100
+		const totalBids = bids.value.reduce((sum, entry) => sum + entry.sz, 0)
+		const totalAsks = asks.value.reduce((sum, entry) => sum + entry.sz, 0)
+		return (totalBids / (totalBids + totalAsks)) * 100
 	})
 
 	onMounted(() => {
@@ -242,7 +241,7 @@
 		</el-result>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[3px] *:items-center *:justify-between *:relative">
+			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative">
 				<li class="text-grey">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{symbolObj?.baseCcy}})</div>
