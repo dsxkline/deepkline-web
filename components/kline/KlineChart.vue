@@ -72,7 +72,7 @@
 			// paddingBottom: 20,
 			// paddingMiddle: 0,
 			// main: ["EMA"], // 主图指标
-			// sides: ["VOL"], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
+			sides: ['MACD','KDJ','RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
 			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length

@@ -27,7 +27,7 @@
 	<div class="left-menu flex flex-col justify-between border-r border-[--border-color] bg-[--transparent05]">
 		<div>
 			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted">
-				<li :class="menuActive==index?'bg-[var(--transparent05)] !text-main':'hover:bg-[var(--transparent02)]'+''" v-for="(menu,index) in props.menus" :key="menu.name" @click="handleOpen(menu,index)">
+				<li :class="menuActive==index?'bg-[var(--transparent05)] !text-main':'hover:bg-[var(--transparent02)]'+''" v-for="(menu,index) in props.menus" :key="menu.name" click-sound @click="handleOpen(menu,index)">
 					<component :is="menu.icon" class="w-5" v-if="menu.icon" />
 					<span v-if="menu.name" class="py-2">{{ menu.name }}</span>
 				</li>

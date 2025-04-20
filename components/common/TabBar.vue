@@ -119,7 +119,7 @@
 	<div class="tabbar-container" :style="[height ? `height:${height}px` : 'auto']">
 		<div class="tabbar-header" ref="tabbarHeader">
 			<ul>
-				<li v-for="(item, index) in menus" :key="index" @click.stop="menuHandler(item, index)" :class="{ active: index == menuActive }">
+				<li v-for="(item, index) in menus" :key="index" click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
 					<template v-if="item.titleComp">
 						<component :is="item.titleComp" />
 					</template>

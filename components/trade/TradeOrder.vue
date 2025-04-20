@@ -39,7 +39,7 @@
 		]
 	})
 	const side = ref<Sides>(Sides.BUY)
-	const ordType = ref<OrderType>(OrderType.LIMIT)
+	const ordType = ref<OrderType>(OrderType.MARKET)
 	const price = ref(0)
 	const sz = ref()
 	const szPercent = ref(0)
@@ -64,8 +64,8 @@
 	const openStopProfitLoss = ref(false)
 	const takeProfit = ref()
 	const stopLoss = ref()
-	const buyDes = ref('')
-	const sellDes = ref('')
+	const buyDes = ref('MARKET')
+	const sellDes = ref('MARKET')
 
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref($ws && $ws.getTickers(props.symbol))
@@ -74,11 +74,10 @@
 		if (canChangePrice.value) {
 			price.value = parseFloat(data.last)
 			sz.value = symbolObj.value?.lotSz
-			if (ordType.value != OrderType.MARKET){
-				buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
-				sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+			if (ordType.value != OrderType.MARKET) {
+				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
+				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
-			
 		}
 	}
 
@@ -100,8 +99,8 @@
 				sellDes.value = 'MARKET'
 			} else {
 				price.value = parseFloat(ticker.value?.last)
-				buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
-				sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
+				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
 		}
 	)
@@ -118,8 +117,8 @@
 
 	function priceChange() {
 		canChangePrice.value = false
-		buyDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
-		sellDes.value = formatPrice(price.value,symbolObj.value?.tickSz)
+		buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
+		sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 	}
 	function priceFocus() {
 		canChangePrice.value = false
@@ -131,12 +130,12 @@
 			<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
 				<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']">
 					<div class="pb-[200px]">
-						<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full">
+						<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" click-sound>
 							<el-radio-button :label="buyText" value="buy" class="*:w-full" />
 							<el-radio-button :label="sellText" value="sell" class="*:w-full" />
 						</el-radio-group>
 
-						<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full">
+						<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" click-sound>
 							<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
 							<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
 						</el-radio-group>
@@ -156,17 +155,20 @@
 								controls-position="right"
 								size="large"
 								class="!w-full"
+								click-sound
 								v-if="ordType != OrderType.MARKET"
 							/>
-							<el-input placeholder="MARKET" size="large" class="!w-full"  @click="ordType=OrderType.LIMIT" v-else />
-							<div class="flex items-center justify-center py-1 trade-ordtype-small" v-if="ordType != OrderType.MARKET">
+							<el-input placeholder="MARKET" size="large" class="!w-full" click-sound @click="ordType = OrderType.LIMIT" v-else />
+							<div class="flex items-center justify-center py-1 trade-ordtype-small" click-sound v-if="ordType != OrderType.MARKET">
 								<span class="text-grey">Pending</span>
-								<button class="px-1 flex items-center" @click="ordType=OrderType.MARKET"><el-icon><Close class=":hover:text-main"/></el-icon></button>
+								<button class="px-1 flex items-center" @click="ordType = OrderType.MARKET">
+									<el-icon><Close class=":hover:text-main" /></el-icon>
+								</button>
 							</div>
 						</div>
 						<div class="py-3">
 							<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-							<el-input v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+							<el-input click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 							<div class="slider-demo-block">
 								<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" />
 							</div>
@@ -174,7 +176,7 @@
 
 						<div class="py-3">
 							<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-							<el-input v-model="money" :placeholder="''" clearable size="large" class="w-full" />
+							<el-input click-sound v-model="money" :placeholder="''" clearable size="large" class="w-full" />
 							<div class="trade-av">
 								<div class="py-1 pt-2 av-item">
 									<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
@@ -186,36 +188,29 @@
 						</div>
 
 						<div>
-							<el-checkbox :label="`止盈止损`" v-model="openStopProfitLoss" />
-							<div v-show="openStopProfitLoss">
-								<h6 class="py-2">止盈触发价</h6>
-								<el-input-number
-									@change="priceChange"
-									@focus="priceFocus"
-									v-model="takeProfit"
-									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
-									:precision="point"
-									controls-position="right"
-									size="large"
-									class="!w-full"
-								/>
-								<h6 class="py-2">止损触发价</h6>
-								<el-input-number
-									@change="priceChange"
-									@focus="priceFocus"
-									v-model="stopLoss"
-									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
-									:precision="point"
-									controls-position="right"
-									size="large"
-									class="!w-full"
-								/>
-							</div>
+							<el-popover placement="left" trigger="click">
+								<template #reference>
+									<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<h6 class="pb-2 text-grey">止盈</h6>
+										<div>-</div>
+									</div>
+								</template>
+								<StopProfitLoss />
+							</el-popover>
+							<el-popover placement="left" trigger="click">
+								<template #reference>
+									<div click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<h6 class="pb-2 text-grey">止损</h6>
+										<div>-</div>
+									</div>
+								</template>
+								<StopProfitLoss />
+							</el-popover>
 						</div>
 					</div>
 
 					<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10">
-						<el-button type="primary" size="large" class="w-full !h-auto">
+						<el-button type="primary" size="large" class="w-full !h-auto" click-sound>
 							<div class="flex flex-col items-center">
 								<b class="text-base"
 									>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
@@ -223,7 +218,7 @@
 								<p class="pt-2">{{ buyDes }}</p>
 							</div>
 						</el-button>
-						<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center">
+						<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center" click-sound>
 							<div class="flex flex-col items-center">
 								<b class="text-base"
 									>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
@@ -273,14 +268,14 @@
 		color: rgb(var(--color-text-grey));
 	}
 
-	.trade-bts{
-		button{
-			p{
+	.trade-bts {
+		button {
+			p {
 				display: none;
 			}
 		}
 	}
-	.trade-ordtype-small{
+	.trade-ordtype-small {
 		display: none;
 	}
 
@@ -299,7 +294,7 @@
 				}
 				.trade-bts {
 					button {
-						p{
+						p {
 							display: block;
 						}
 						font-size: 12px;
@@ -308,11 +303,11 @@
 						}
 					}
 				}
-				.trade-ordtype-small{
+				.trade-ordtype-small {
 					display: flex;
 				}
 				.sell-bt {
-					display: block;
+					display: flex;
 				}
 				.trade-av {
 					// display: none;

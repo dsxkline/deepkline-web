@@ -16,7 +16,7 @@ class DsxKlineChart {
 	before?: string
 	limit: number = 300
 	theme?: string
-	sides: string[] = ['MACD']
+	sides: string[] = ['MACD','KDJ','RSI']
 	main: string[] = ['MA']
 	datas: string[] = []
 	chartType: any

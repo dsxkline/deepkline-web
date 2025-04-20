@@ -3,5 +3,6 @@ export default [
     {src: '~/plugins/push.ts', mode: 'client'},
     '~/plugins/element-plus.ts',
     {src: '~/plugins/websocket.ts', mode: 'client'},
-    {src: '~/plugins/echart.ts', mode: 'client'}
+    {src: '~/plugins/echart.ts', mode: 'client'},
+    {src: '~/plugins/event-intercept.ts', mode: 'client'}
 ] as (NuxtPlugin | string)[]

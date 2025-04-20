@@ -16,11 +16,11 @@
 <template>
 	<div class="indicator ml-1 w-max flex gap-1 *:p-1 *:rounded *:text-xs *:cursor-pointer">
 		<div class="indicator-item">指标</div>
-		<div class="indicator-item" v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main.includes(item) }" @click="onMainIndicatorChange(item)">
+		<div class="indicator-item" click-sound v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main.includes(item) }" @click="onMainIndicatorChange(item)">
 			{{ item }}
 		</div>
 		<div class="indicator-item">|</div>
-		<div class="indicator-item" v-for="(item, index) in sideIndicatorList" :key="index" :class="{ active: useKlineStore().sides.includes(item) }" @click="onSidesIndicatorChange(item)">
+		<div class="indicator-item" click-sound v-for="(item, index) in sideIndicatorList" :key="index" :class="{ active: useKlineStore().sides.includes(item) }" @click="onSidesIndicatorChange(item)">
 			{{ item }}
 		</div>
 	</div>

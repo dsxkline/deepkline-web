@@ -226,7 +226,8 @@
 					:class="['relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',useSymbolStore().activeSymbol==item.instId?'!bg-[--transparent10]':'']"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"
-					@click.stop="clickSymbol(item)"
+					@click="clickSymbol(item)"
+					click-sound
 				>
 					<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
 					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
