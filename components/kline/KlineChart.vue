@@ -3,6 +3,7 @@
 	import DsxKlineChart from './DsxKlineChart'
 	import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from './DsxKlineChart.d'
 	import { useSymbolStore } from '~/store/symbol'
+
 	declare var window: DsxWindow
 	const klineDom = ref(null)
 	const error = ref('')
@@ -75,7 +76,7 @@
 			sides: ['MACD','KDJ','RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
-			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length
+			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length,
 		})
 		nextTick(() => {
 			chart.value && chart.value.create()
@@ -87,6 +88,8 @@
 		chart.value.onError = err => {
 			error.value = '网络异常，请稍后再试'
 		}
+
+		
 	})
 </script>
 <template>

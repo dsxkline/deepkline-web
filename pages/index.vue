@@ -12,6 +12,8 @@
 	})
 	onMounted(async () => {
 		console.log('server', process.server)
+		
+		// const worker = new Worker('/js/worker.js')
 	})
 	const active = ref(0)
 	const activeMenu = computed(() => menus.value[active.value])
@@ -53,9 +55,9 @@
 <style scoped lang="less">
 	.main-container {
 		height: calc(100vh - var(--header-height) - var(--footer-height));
-		width:100vw;
-		.right-container{
-			width:calc(100vw - var(--menu-width));
+		width: 100vw;
+		.right-container {
+			width: calc(100vw - var(--menu-width));
 		}
 	}
 </style>

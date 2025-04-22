@@ -45,9 +45,9 @@
 	const szPercent = ref(0)
 	const marks = reactive<Record<number, any>>({
 		0: '0%',
-		25: '25%',
+		// 25: '25%',
 		50: '50%',
-		75: '75%',
+		// 75: '75%',
 		100: '100%'
 	})
 	const formatTooltip = function (value: number) {
@@ -144,7 +144,7 @@
 							<el-option v-for="item in ordTypeOptions" :key="item.value" :label="item.name" :value="item.value" />
 						</el-select> -->
 
-						<div class="pb-3 relative">
+						<div class="pb-3 relative price-input">
 							<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
 							<el-input-number
 								@change="priceChange"
@@ -187,7 +187,7 @@
 							</div>
 						</div>
 
-						<div>
+						<div class="pt-2">
 							<el-popover placement="left" trigger="click">
 								<template #reference>
 									<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
@@ -289,9 +289,9 @@
 				.trade-type {
 					display: none;
 				}
-				.slider-demo-block {
-					display: none;
-				}
+				// .slider-demo-block {
+				// 	display: none;
+				// }
 				.trade-bts {
 					button {
 						p {
@@ -310,7 +310,7 @@
 					display: flex;
 				}
 				.trade-av {
-					// display: none;
+					display: none;
 					padding-top: 5px;
 					.av-item {
 						display: flex;
@@ -349,6 +349,7 @@
 
 					.el-input__wrapper {
 						padding: 0 5px;
+						box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 					}
 
 					.el-input-number__increase {
@@ -366,6 +367,12 @@
 
 					.el-input__wrapper {
 						padding: 0 5px;
+					}
+				}
+
+				.price-input{
+					:deep(.el-input__wrapper){
+						box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 					}
 				}
 
