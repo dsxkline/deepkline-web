@@ -66,7 +66,8 @@
 	const stopLoss = ref()
 	const buyDes = ref('MARKET')
 	const sellDes = ref('MARKET')
-
+	const popProfit = ref()
+	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref($ws && $ws.getTickers(props.symbol))
 	const tickerHandler = (data: Ticker) => {
@@ -122,6 +123,17 @@
 	}
 	function priceFocus() {
 		canChangePrice.value = false
+	}
+
+	function confirmProfit(price:number,point:number){
+		if(point>0)takeProfit.value=price
+		else takeProfit.value = 0
+		popProfit.value.hide()
+	}
+	function confirmLoss(price:number,point:number){
+		if(point>0)stopLoss.value=price
+		else stopLoss.value = 0
+		popLoss.value.hide()
 	}
 </script>
 <template>
@@ -188,23 +200,25 @@
 						</div>
 
 						<div class="pt-2">
-							<el-popover placement="left" trigger="click">
+							<el-popover placement="left" trigger="click" ref="popProfit">
 								<template #reference>
 									<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
 										<h6 class="pb-2 text-grey">止盈</h6>
-										<div>-</div>
+										<div v-if="!takeProfit">-</div>
+										<div v-else>{{ formatPrice(takeProfit,symbolObj?.tickSz) }}</div>
 									</div>
 								</template>
-								<StopProfitLoss />
+								<StopProfitLoss :type="0" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmProfit" v-if="!loading"/>
 							</el-popover>
-							<el-popover placement="left" trigger="click">
+							<el-popover placement="left" trigger="click" ref="popLoss">
 								<template #reference>
 									<div click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
 										<h6 class="pb-2 text-grey">止损</h6>
-										<div>-</div>
+										<div v-if="!stopLoss">-</div>
+										<div v-else>{{ formatPrice(stopLoss,symbolObj?.tickSz) }}</div>
 									</div>
 								</template>
-								<StopProfitLoss />
+								<StopProfitLoss :type="1" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmLoss" v-if="!loading"/>
 							</el-popover>
 						</div>
 					</div>

@@ -168,6 +168,8 @@ class DsxKlineChart {
 					this.datas = datas.concat(this.datas)
 				}
 
+				console.log('data',this.datas);
+
 				this.kline.update({
 					datas: this.datas,
 					page: this.page
