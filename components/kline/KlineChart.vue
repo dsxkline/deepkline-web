@@ -3,7 +3,10 @@
 	import DsxKlineChart from './DsxKlineChart'
 	import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from './DsxKlineChart.d'
 	import { useSymbolStore } from '~/store/symbol'
-
+	const props = defineProps<{
+		symbol: string
+	}>()
+	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol])
 	declare var window: DsxWindow
 	const klineDom = ref(null)
 	const error = ref('')
@@ -38,7 +41,7 @@
 	)
 
 	watch(
-		()=>useSymbolStore().symbols[useSymbolStore().activeSymbol],
+		()=>useSymbolStore().symbols[props.symbol],
 		(val)=>{
 			const symbolDetail = val
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
@@ -48,7 +51,7 @@
 	)
 
 	watch(
-		() => useSymbolStore().activeSymbol,
+		() => props.symbol,
 		newVal => {
 			const symbolDetail = useSymbolStore().symbols[newVal]
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
@@ -57,7 +60,7 @@
 		}
 	)
 	onMounted(() => {
-		const symbol = useSymbolStore().activeSymbol
+		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
 		chart.value = new DsxKlineChart(symbol, useKlineStore().cycle, useColorMode().preference, {
 			element: klineDom.value || '',

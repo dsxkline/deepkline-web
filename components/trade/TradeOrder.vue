@@ -141,7 +141,7 @@
 		<div class="w-full h-full wrapper trade-order">
 			<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
 				<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']">
-					<div class="pb-[200px]">
+					<div class="pb-[200px]" v-if="!loading">
 						<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" click-sound>
 							<el-radio-button :label="buyText" value="buy" class="*:w-full" />
 							<el-radio-button :label="sellText" value="sell" class="*:w-full" />
@@ -182,7 +182,7 @@
 							<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
 							<el-input click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 							<div class="slider-demo-block">
-								<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" />
+								<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip"  v-if="!loading"/>
 							</div>
 						</div>
 
@@ -223,7 +223,7 @@
 						</div>
 					</div>
 
-					<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10">
+					<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
 						<el-button type="primary" size="large" class="w-full !h-auto" click-sound>
 							<div class="flex flex-col items-center">
 								<b class="text-base"

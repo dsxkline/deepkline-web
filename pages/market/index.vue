@@ -22,7 +22,7 @@
 									<div class="flex-1">
 										<SplitContainer :right="120" :left="0">
 											<template #left>
-												<KlineChart :symbol="useSymbolStore().getActiveSymbol()" />
+												<KlineChart :symbol="useSymbolStore().activeSymbol" />
 											</template>
 											<template #right>
 												<TradeOrder :symbol="useSymbolStore().activeSymbol" />

@@ -230,7 +230,7 @@
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">订单表</b>
 			</h3>
-			<el-select v-model="pointLevel" style="width: 100px;">
+			<el-select v-model="pointLevel" style="width: 100px;" v-if="!loading">
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" />
 			</el-select>
 		</div>

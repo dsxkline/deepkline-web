@@ -13,7 +13,7 @@
 		() => props.price,
 		() => {
 			if (!price.value) {
-				price.value = props.price
+				initPrice.value = props.price
 			}
 		}
 	)
@@ -21,7 +21,7 @@
 	// 初始值
 	const initPrice = ref(0)
 	// 价格
-	const price = ref()
+	const price = ref(0)
 	const point = computed(() => {
 		let p = String(symbolObj.value?.tickSz).split('.')
 		if (p.length > 1) {
@@ -32,11 +32,11 @@
 	// 点数
 	const amount = ref(0)
 	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
-	function priceChange() {
-		
+	function priceChange(currentValue:number,oldValue:number) {
+		if (!amount.value) amount.value = 0
+        if (price.value - symbolObj.value.tickSz<=0) price.value = initPrice.value
 		// 价格变化，点数跟着变化
 		nextTick(() => {
-            if (!amount.value) amount.value = 0
 			if (!props.type) {
 				amount.value = Math.floor((price.value - initPrice.value) / symbolObj.value.tickSz)
 			} else {
@@ -47,10 +47,11 @@
 	}
 	function priceFocus() {}
 	function amountChange() {
-		
+		if (!amount.value) amount.value = 0
+        if (price.value - symbolObj.value.tickSz<=0) price.value = initPrice.value
 		// 点数变化，价格跟着变化
 		nextTick(() => {
-            if (!amount.value) amount.value = 0
+            
 			if (!props.type) {
 				price.value = initPrice.value + amount.value * symbolObj.value.tickSz
 			} else {
@@ -64,7 +65,7 @@
 		emit('onClose', price.value, amount.value)
 	}
 	onMounted(() => {
-		price.value = props.price
+		// price.value = props.price
 		initPrice.value = props.price
 		priceInput.value.focus()
 	})
@@ -75,7 +76,6 @@
 		<div class="py-2">
 			<el-input-number
 				ref="priceInput"
-				@change="priceChange"
 				@focus="priceFocus"
 				@input="priceChange"
 				v-model="price"
