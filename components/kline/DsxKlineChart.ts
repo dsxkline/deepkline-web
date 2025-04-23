@@ -10,7 +10,7 @@ declare var window: DsxWindow
 class DsxKlineChart {
 	kline!: DsxKline
 	config: DsxKlineConfig
-	symbol?: string
+	symbol: string
 	cycle?: string
 	after?: string
 	before?: string
@@ -45,11 +45,15 @@ class DsxKlineChart {
 		this.config.onLoading = this.startLoading.bind(this)
 		this.config.nextPage = this.onNextPage.bind(this)
 		this.kline = new window.DsxKline(this.config)
+		useKlineStore().main[this.symbol] = this.config.main|| this.main
+		useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
 		console.log('kline create....',new Date().getTime())
 	}
 
 	tapSymbol(symbol: string) {
 		this.symbol = symbol
+		if(!useKlineStore().main[this.symbol])useKlineStore().main[this.symbol] = this.config.main|| this.main
+		if(!useKlineStore().sides[this.symbol])useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
 		this.unsubscribe()
 		this.kline.startLoading()
 	}
@@ -129,10 +133,9 @@ class DsxKlineChart {
 		this.onLoading && this.onLoading()
 		this.page = 1
 		this.after = ''
-		useKlineStore().setLoading(true)
-		this.getKlineData()
+		useKlineStore().setLoading(this.symbol,true)
 		this.unsubscribe()
-		this.subscribe()
+		this.getKlineData()
 	}
 
 	onNextPage(data: any[], index: number) {
@@ -164,6 +167,7 @@ class DsxKlineChart {
 				if (datas.length > 0) this.after = res?.data[res?.data.length - 1][0]
 				if (this.page == 1) {
 					this.datas = datas
+					this.subscribe()
 				} else {
 					this.datas = datas.concat(this.datas)
 				}
@@ -186,7 +190,7 @@ class DsxKlineChart {
 	}
 
 	finishLoading() {
-		useKlineStore().setLoading(false)
+		useKlineStore().setLoading(this.symbol,false)
 		this.kline.finishLoading()
 	}
 

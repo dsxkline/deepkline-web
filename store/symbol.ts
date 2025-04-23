@@ -58,7 +58,7 @@ export const useSymbolStore = defineStore({
       if(this.favoriteSymbols.find(item=>item.instId==symbol.instId)){
         this.favoriteSymbols = this.favoriteSymbols.filter(item=>item.instId!=symbol.instId)
       }else{
-        this.favoriteSymbols.push(symbol)
+        this.favoriteSymbols.unshift(symbol)
       }
       // 保存到localStore
       localStorage.setItem('favoriteSymbols',JSON.stringify(this.favoriteSymbols))

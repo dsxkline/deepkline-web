@@ -2,33 +2,35 @@ import { defineStore } from 'pinia'
 export const useKlineStore = defineStore({
   id: 'kline',
   state: () => ({
-    cycle:'1m',
-    main:['MA'],
-    sides:['MACD'],
-    loading:false
+    cycle:{} as Record<string,string>,
+    main:{} as Record<string,string[]>,
+    sides:{} as Record<string,string[]>,
+    loading:{} as Record<string,boolean>
   }),
   actions: {
-    setLoading(loading:boolean){
-      this.loading = loading
+    setLoading(symbol:string,loading:boolean){
+      this.loading[symbol] = loading
     },
-    setCycle(cycle:string) {
-      this.cycle = cycle
+    setCycle(symbol:string,cycle:string) {
+      this.cycle[symbol] = cycle
     },
-    setMain(index:string) {
-        if(this.main.includes(index)) {
-            this.main = this.main.filter(item => item !== index)
+    setMain(symbol:string,index:string) {
+      let main = this.main[symbol]
+        if(main.includes(index)) {
+            main = main.filter(item => item !== index)
         } else {
-            this.main.push(index)
+            main.push(index)
         }
-        this.main = JSON.parse(JSON.stringify(this.main));
+        this.main[symbol] = main
     },
-    setSides(index:string) {
-        if(this.sides.includes(index)) {
-            this.sides = this.sides.filter(item => item !== index)
+    setSides(symbol:string,index:string) {
+      let sides = this.sides[symbol]
+        if(sides.includes(index)) {
+            sides = sides.filter(item => item !== index)
         } else {
-            this.sides.push(index)
+            sides.push(index)
         }
-        this.sides = JSON.parse(JSON.stringify(this.sides));
+        this.sides[symbol] = sides;
     }
   }
 })

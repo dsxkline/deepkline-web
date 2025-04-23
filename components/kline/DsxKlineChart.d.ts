@@ -161,8 +161,8 @@ export interface DsxKlineConfig {
 	paddingMiddle?: number;
 	autoSize?: Boolean;
 	debug?: Boolean;
-	main?: String[];
-	sides?: String[];
+	main?: string[];
+	sides?: string[];
 	isShowTips?: Boolean;
 	allMin?: Boolean;
 	onLoading?: OnLoading;

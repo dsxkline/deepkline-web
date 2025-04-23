@@ -5,5 +5,7 @@ export default [
     "~/components/symbol",
     "~/components/symbol/echarts",
     "~/components/app",
-    "~/components/trade"
+    "~/components/trade",
+    "~/components/icons/",
+    "~/components/icons/trade"
 ];

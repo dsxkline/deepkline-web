@@ -49,6 +49,7 @@
 		return []
 	})
 	const pricePoint = ref(symbolObj.value?.tickSz||0);
+	const activeBook = ref(0)
 
 	watch(
 		() => pointLevel.value,
@@ -191,7 +192,9 @@
 		totalAsks.value = 0
 		totalBids.value = 0
 		// 倒序排列
-		let ask = Array.from(orderBook.value.asks.values()).sort((a, b) => a.px - b.px).filter(item=>item.px>parseFloat(ticker.value.last)).slice(0,9).reverse()
+		let ask = Array.from(orderBook.value.asks.values()).sort((a, b) => a.px - b.px).filter(item=>item.px>parseFloat(ticker.value.last))
+		if(activeBook.value==0) ask = ask.slice(0,9).reverse()
+		else ask = ask.slice(0,20).reverse()
 		for (let index = ask.length-1; index >=0; index--) {
 			const item = ask[index]
 			item.total = totalAsks.value += item.sz
@@ -199,12 +202,14 @@
 		asks.value = ask
 
 		// 倒序排列
-		let bid = Array.from(orderBook.value.bids.values()).sort((a, b) => b.px - a.px).filter(item=>item.px<parseFloat(ticker.value.last)).slice(0,9)
+		let bid = Array.from(orderBook.value.bids.values()).sort((a, b) => b.px - a.px).filter(item=>item.px<parseFloat(ticker.value.last))
+		if(activeBook.value==0) bid = bid.slice(0,9)
+		else bid = bid.slice(0,20)
 		for (let index = 0; index < bid.length; index++) {
 			const item = bid[index]
 			item.total = totalBids.value += item.sz
 		}
-		bids.value = bid.slice(0,9)
+		bids.value = bid
 	}
 	// bid/ask
 	const calculateBuySellRatio = computed(() => {
@@ -229,9 +234,14 @@
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">订单表</b>
+				<div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
+					<button :class="['hover:opacity-80',activeBook==0?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=0" click-sound><BooksListIcon/></button>
+					<button :class="['hover:opacity-80',activeBook==1?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=1" click-sound><BooksBuyListIcon/></button>
+					<button :class="['hover:opacity-80',activeBook==2?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=2" click-sound><BooksSellListIcon/></button>
+				</div>
 			</h3>
-			<el-select v-model="pointLevel" style="width: 100px;" v-if="!loading">
-				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" />
+			<el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" click-sound>
+				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  click-sound/>
 			</el-select>
 		</div>
 		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
@@ -247,14 +257,14 @@
 					<div class="text-right">数量({{symbolObj?.baseCcy}})</div>
 					<div class="text-right">合计({{symbolObj?.baseCcy}})</div>
 				</li>
-				<li v-for="(item, index) in asks">
+				<li v-for="(item, index) in asks" v-if="activeBook==0 || activeBook==2">
 					<div class="text-red">{{ formatPrice(item.px, pricePoint) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point),'',point) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point),'',point) }}</div>
 					<div class="absolute top-0 right-0 h-full bg-red/20 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
 				</li>
 
-				<li class="" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio)">
+				<li class="" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook==0">
 					<div class="col-span-3 w-full h-5 flex justify-between text-xs text-white rounded-sm">
 						<div
 							class="bg-green/50 flex justify-start items-center"
@@ -271,7 +281,7 @@
 					</div>
 				</li>
 
-				<li v-for="(item, index) in bids">
+				<li v-for="(item, index) in bids" v-if="activeBook==0 || activeBook==1">
 					<div class="text-green">{{ formatPrice(item.px, pricePoint) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point),'',point) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point),'',point) }}</div>

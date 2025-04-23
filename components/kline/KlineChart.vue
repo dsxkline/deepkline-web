@@ -15,7 +15,7 @@
 		chart.value && chart.value.reload()
 	}
 	watch(
-		() => useKlineStore().cycle,
+		() => useKlineStore().cycle[props.symbol],
 		(newVal, oldVal) => {
 			chart.value && chart.value.updateCycle(newVal)
 		}
@@ -27,14 +27,14 @@
 		}
 	)
 	watch(
-		() => useKlineStore().main,
+		() => useKlineStore().main[props.symbol],
 		newVal => {
 			console.log('newVal useKlineStore().main=', newVal)
 			chart.value && chart.value.selectMain(newVal)
 		}
 	)
 	watch(
-		() => useKlineStore().sides,
+		() => useKlineStore().sides[props.symbol],
 		newVal => {
 			chart.value && chart.value.selectSides(newVal)
 		}
@@ -62,7 +62,7 @@
 	onMounted(() => {
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
-		chart.value = new DsxKlineChart(symbol, useKlineStore().cycle, useColorMode().preference, {
+		chart.value = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useColorMode().preference, {
 			element: klineDom.value || '',
 			autoSize: true,
 			chartType: ChartType.candle,
@@ -75,7 +75,7 @@
 			// sideHeight: 80,
 			// paddingBottom: 20,
 			// paddingMiddle: 0,
-			// main: ["EMA"], // 主图指标
+			main: ["MA"], // 主图指标
 			sides: ['MACD','KDJ','RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
