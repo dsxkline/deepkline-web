@@ -19,6 +19,7 @@ declare module '#app' {
     $pushLeft:(comp: any, params: {}, size: string)=>void,
     $pushUp:(comp: any, params: {}, size: string)=>void,
     $pushDown:(comp: any, params: {}, size: string)=>void
-    $clickSound:()=>void
+    $clickSound:()=>void,
+    $windowEvent:WindowsEvent
   }
 }

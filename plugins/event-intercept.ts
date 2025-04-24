@@ -1,6 +1,174 @@
+interface WindowsEvent{
+    quiescentTimeout:number
+    quiescentTime:number,
+    checkBrowserTimer:any,
+    isBrowserDelay:boolean,
+    events:(()=>void)[]
+}
+class WindowsEvent{
+    quiescentTimeout:number
+    quiescentTime:number
+    checkBrowserTimer:any
+    isBrowserDelay:boolean
+    events:(()=>void)[] = []
+    isLeave:boolean
+    constructor(){
+        // 静止时间，行情停止刷新超过2分钟，显现时自动刷新一次
+		this.quiescentTimeout = 1 * 60 * 1000
+		this.quiescentTime = 0
+        this.checkBrowserTimer = null
+        this.isBrowserDelay = false
+        this.isLeave = false
+        this.windowEvents()
+    }
+
+    addEvent(fn:()=>void){
+        this.events = this.events.filter(item=>item!==fn)
+        this.events.push(fn)
+    }
+
+    removeEvent(fn:()=>void){
+        this.events = this.events.filter(item=>item!==fn)
+    }
+
+    removeAllEvent(){
+        this.events = []
+    }
+
+    windowEvents() {
+		// blur 事件 - 当窗口失去焦点时触发
+		window.addEventListener('blur', this.blurHandler)
+		// pagehide 事件 - 当页面隐藏时触发
+		window.addEventListener('pagehide', this.pagehideHandler)
+		// freeze 事件 - 当应用冻结时触发
+		document.addEventListener('freeze', this.freezeHandler)
+		// 切换网页标签栏事件
+		document.addEventListener('visibilitychange', this.visibilityChangeHandler)
+		// app 回到前台 focus 事件 - 当窗口获得焦点时触发
+		window.addEventListener('focus', this.focusHandler)
+		//pageshow 事件 - 当页面重新显示时触发 event.persisted 表示页面是否从缓存加载
+		window.addEventListener('pageshow', this.pageshowHandler)
+		// resume 事件 - 当应用从后台恢复时触发
+		document.addEventListener('resume', this.resumeHandler)
+		// 定时器限流检测
+		this.checkBrowserHeart()
+	}
+
+	// 浏览器限流检测，一般是标签被隐藏或浏览器回到后台，或熄屏后
+	checkBrowserHeart() {
+		let lastTime = Date.now()
+		this.checkBrowserTimer = setInterval(() => {
+			const now = Date.now()
+			const delta = now - lastTime
+
+			if (delta > 1500) {
+				// 超过预期时间间隔，可能被限流
+				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`)
+				if (!this.isBrowserDelay) {
+					this.leaveForeground()
+					this.isBrowserDelay = true
+				}
+			} else {
+				// 当浏览器限流后恢复到正常定时器频率
+				if (this.isBrowserDelay) {
+					this.resumeForeground()
+				}
+				this.isBrowserDelay = false
+			}
+
+			lastTime = now
+		}, 1000)
+	}
+
+	clearCheckBrowserHeart() {
+		if (this.checkBrowserTimer) clearInterval(this.checkBrowserTimer)
+	}
+
+	leaveForeground() {
+        if(this.isLeave) return
+		console.log('leaveForeground',new Date())
+		// 离开前台
+		// 窗口失去焦点时的处理
+		this.quiescentTime = new Date().getTime()
+        this.isLeave = true
+	}
+	// 恢复前台
+	resumeForeground() {
+        this.isLeave = false
+		// 恢复前台
+		const t = new Date().getTime() - this.quiescentTime
+		if (t > this.quiescentTimeout) {
+			// 刷新k线自动刷新时间
+			this.quiescentTime = new Date().getTime()
+			// 超过2分钟，刷新K线图
+			// 回调
+            this.events.forEach(fn=>fn())
+		}
+	}
+
+	// 处理程序
+	blurHandler = () => {
+		console.log('blurHandler')
+		this.leaveForeground()
+	}
+
+	pagehideHandler = () => {
+		console.log('pagehideHandler')
+		this.leaveForeground()
+	}
+
+	freezeHandler = () => {
+		console.log('freezeHandler')
+		this.leaveForeground()
+	}
+
+	visibilityChangeHandler = () => {
+		console.log('visibilityChangeHandler',document.visibilityState,new Date())
+		if (document.visibilityState === 'hidden') {
+			// 页面不可见时执行的操作
+			this.leaveForeground()
+		} else {
+			// 页面可见时执行的操作
+			this.resumeForeground()
+		}
+	}
+
+	focusHandler = () => {
+		console.log('focusHandler')
+		this.resumeForeground()
+	}
+
+	pageshowHandler = () => {
+		console.log('pageshowHandler')
+		this.resumeForeground()
+	}
+	resumeHandler = () => {
+		console.log('resumeHandler')
+		this.resumeForeground()
+	}
+
+	destroy() {
+		this.clearCheckBrowserHeart()
+		document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
+		// 移除后台事件监听
+		window.removeEventListener('blur', this.blurHandler)
+		window.removeEventListener('pagehide', this.pagehideHandler)
+		document.removeEventListener('freeze', this.freezeHandler)
+		// 移除恢复前台事件
+		document.removeEventListener('resume', this.resumeHandler)
+		window.removeEventListener('focus', this.focusHandler)
+		window.removeEventListener('pageshow', this.pageshowHandler)
+	}
+}
 export default defineNuxtPlugin(({ vueApp }) => {
     const nuxtApp = useNuxtApp()
 	if (process.client) {
+        // 注入浏览器激活事件
+        nuxtApp.provide('windowEvent',new WindowsEvent())
+        nuxtApp.$windowEvent.addEvent(()=>{
+            nuxtApp.$ws.close()
+            nuxtApp.$wsb.close()
+        })
 		const audio = new Audio('/sounds/click.mov')
 		const soundHandle = () => {
 			// 播放音效

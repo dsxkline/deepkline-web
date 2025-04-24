@@ -218,7 +218,16 @@
 		return (totalBids / (totalBids + totalAsks)) * 100
 	})
 
+	const whenBrowserActive = ()=>{
+		console.log('浏览器重新激活')
+		$ws.unsubscribe(subHandle)
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		getBooksFull()
+	}
+
+	const {$windowEvent} = useNuxtApp()
 	onMounted(() => {
+		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz;
 		setTimeout(() => {
 			getBooksFull()
@@ -227,6 +236,7 @@
 	onUnmounted(() => {
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		$windowEvent.removeEvent(whenBrowserActive)
 	})
 </script>
 <template>

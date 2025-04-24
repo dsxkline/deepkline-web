@@ -36,6 +36,11 @@ class DsxKlineChart {
 		this.symbol = symbol
 		this.cycle = cycle
 	}
+	
+	whenBrowserActive=()=>{
+		console.log('浏览器重新激活')
+		this.reload()
+	}
 
 	/**
 	 * 创建K线图
@@ -48,6 +53,8 @@ class DsxKlineChart {
 		useKlineStore().main[this.symbol] = this.config.main|| this.main
 		useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
 		console.log('kline create....',new Date().getTime())
+		const {$windowEvent} = useNuxtApp()
+		$windowEvent.addEvent(this.whenBrowserActive)
 	}
 
 	tapSymbol(symbol: string) {
@@ -262,7 +269,7 @@ class DsxKlineChart {
 		let vol = confirm!=undefined? parseFloat(v) : this.lastVol
 		let amount = confirm!=undefined? parseFloat(a): this.lastAmount
 		let item = [date, time, o, h, l, c, vol, amount].join(',')
-		let cycle = 't'
+		let cycle = 'm1'
 		if (this.cycle == '1D') cycle = 'd'
 		if (this.cycle == '1W') cycle = 'w'
 		if (this.cycle == '1M') cycle = 'm'
@@ -285,6 +292,8 @@ class DsxKlineChart {
 	destroy() {
 		this.kline.destroy()
 		this.unsubscribe()
+		const {$windowEvent} = useNuxtApp()
+		$windowEvent.removeEvent(this.whenBrowserActive)
 	}
 }
 

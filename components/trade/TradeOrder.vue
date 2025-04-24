@@ -125,13 +125,13 @@
 		canChangePrice.value = false
 	}
 
-	function confirmProfit(price:number,point:number){
-		if(point>0)takeProfit.value=price
+	function confirmProfit(price: number, point: number) {
+		if (point > 0) takeProfit.value = price
 		else takeProfit.value = 0
 		popProfit.value.hide()
 	}
-	function confirmLoss(price:number,point:number){
-		if(point>0)stopLoss.value=price
+	function confirmLoss(price: number, point: number) {
+		if (point > 0) stopLoss.value = price
 		else stopLoss.value = 0
 		popLoss.value.hide()
 	}
@@ -139,111 +139,112 @@
 <template>
 	<div>
 		<div class="w-full h-full wrapper trade-order">
-			<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
-				<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']">
-					<div class="pb-[200px]" v-if="!loading">
-						<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" click-sound>
-							<el-radio-button :label="buyText" value="buy" class="*:w-full" />
-							<el-radio-button :label="sellText" value="sell" class="*:w-full" />
-						</el-radio-group>
+			<client-only>
+				<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
+					<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']" v-if="contentHeight">
+						<div class="pb-[200px]" v-if="!loading">
+							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" click-sound>
+								<el-radio-button :label="buyText" value="buy" class="*:w-full" />
+								<el-radio-button :label="sellText" value="sell" class="*:w-full" />
+							</el-radio-group>
 
-						<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" click-sound>
-							<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
-							<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
-						</el-radio-group>
+							<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" click-sound>
+								<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
+								<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
+							</el-radio-group>
 
-						<!-- <el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
+							<!-- <el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
 							<el-option v-for="item in ordTypeOptions" :key="item.value" :label="item.name" :value="item.value" />
 						</el-select> -->
 
-						<div class="pb-3 relative price-input">
-							<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
-							<el-input-number
-								@change="priceChange"
-								@focus="priceFocus"
-								v-model="price"
-								:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
-								:precision="point"
-								controls-position="right"
-								size="large"
-								class="!w-full"
-								click-sound
-								v-if="ordType != OrderType.MARKET"
-							/>
-							<el-input placeholder="MARKET" size="large" class="!w-full" click-sound @click="ordType = OrderType.LIMIT" v-else />
-							<div class="flex items-center justify-center py-1 trade-ordtype-small" click-sound v-if="ordType != OrderType.MARKET">
-								<span class="text-grey">Pending</span>
-								<button class="px-1 flex items-center" @click="ordType = OrderType.MARKET">
-									<el-icon><Close class=":hover:text-main" /></el-icon>
-								</button>
-							</div>
-						</div>
-						<div class="py-3">
-							<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-							<el-input click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
-							<div class="slider-demo-block">
-								<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip"  v-if="!loading"/>
-							</div>
-						</div>
-
-						<div class="py-3">
-							<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-							<el-input click-sound v-model="money" :placeholder="''" clearable size="large" class="w-full" />
-							<div class="trade-av">
-								<div class="py-1 pt-2 av-item">
-									<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
-								</div>
-								<div class="py-1 av-item">
-									<span class="text-grey">可买</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
+							<div class="pb-3 relative price-input">
+								<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
+								<el-input-number
+									@change="priceChange"
+									@focus="priceFocus"
+									v-model="price"
+									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
+									:precision="point"
+									controls-position="right"
+									size="large"
+									class="!w-full"
+									click-sound
+									v-if="ordType != OrderType.MARKET"
+								/>
+								<el-input placeholder="MARKET" size="large" class="!w-full" click-sound @click="ordType = OrderType.LIMIT" v-else />
+								<div class="flex items-center justify-center py-1 trade-ordtype-small" click-sound v-if="ordType != OrderType.MARKET">
+									<span class="text-grey">Pending</span>
+									<button class="px-1 flex items-center" @click="ordType = OrderType.MARKET">
+										<el-icon><Close class=":hover:text-main" /></el-icon>
+									</button>
 								</div>
 							</div>
+							<div class="py-3">
+								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
+								<el-input click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+								<div class="slider-demo-block">
+									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
+								</div>
+							</div>
+
+							<div class="py-3">
+								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
+								<el-input click-sound v-model="money" :placeholder="''" clearable size="large" class="w-full" />
+								<div class="trade-av">
+									<div class="py-1 pt-2 av-item">
+										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
+									</div>
+									<div class="py-1 av-item">
+										<span class="text-grey">可买</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="pt-2">
+								<el-popover placement="left" trigger="click" ref="popProfit">
+									<template #reference>
+										<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+											<h6 class="pb-2 text-grey">止盈</h6>
+											<div v-if="!takeProfit">-</div>
+											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
+										</div>
+									</template>
+									<StopProfitLoss :type="0" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmProfit" v-if="!loading" />
+								</el-popover>
+								<el-popover placement="left" trigger="click" ref="popLoss">
+									<template #reference>
+										<div click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+											<h6 class="pb-2 text-grey">止损</h6>
+											<div v-if="!stopLoss">-</div>
+											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
+										</div>
+									</template>
+									<StopProfitLoss :type="1" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmLoss" v-if="!loading" />
+								</el-popover>
+							</div>
 						</div>
 
-						<div class="pt-2">
-							<el-popover placement="left" trigger="click" ref="popProfit">
-								<template #reference>
-									<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
-										<h6 class="pb-2 text-grey">止盈</h6>
-										<div v-if="!takeProfit">-</div>
-										<div v-else>{{ formatPrice(takeProfit,symbolObj?.tickSz) }}</div>
-									</div>
-								</template>
-								<StopProfitLoss :type="0" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmProfit" v-if="!loading"/>
-							</el-popover>
-							<el-popover placement="left" trigger="click" ref="popLoss">
-								<template #reference>
-									<div click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
-										<h6 class="pb-2 text-grey">止损</h6>
-										<div v-if="!stopLoss">-</div>
-										<div v-else>{{ formatPrice(stopLoss,symbolObj?.tickSz) }}</div>
-									</div>
-								</template>
-								<StopProfitLoss :type="1" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmLoss" v-if="!loading"/>
-							</el-popover>
+						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
+							<el-button type="primary" size="large" class="w-full !h-auto" click-sound>
+								<div class="flex flex-col items-center">
+									<b class="text-base"
+										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
+									>
+									<p class="pt-2">{{ buyDes }}</p>
+								</div>
+							</el-button>
+							<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center" click-sound>
+								<div class="flex flex-col items-center">
+									<b class="text-base"
+										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
+									>
+									<p class="pt-2">{{ sellDes }}</p>
+								</div>
+							</el-button>
 						</div>
 					</div>
-
-					<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
-						<el-button type="primary" size="large" class="w-full !h-auto" click-sound>
-							<div class="flex flex-col items-center">
-								<b class="text-base"
-									>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
-								>
-								<p class="pt-2">{{ buyDes }}</p>
-							</div>
-						</el-button>
-						<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center" click-sound>
-							<div class="flex flex-col items-center">
-								<b class="text-base"
-									>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
-								>
-								<p class="pt-2">{{ sellDes }}</p>
-							</div>
-						</el-button>
-					</div>
-				</div>
-			</el-scrollbar>
-
+				</el-scrollbar>
+			</client-only>
 			<div v-show="loading || error" class="p-4">
 				<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
 					<template #extra>
@@ -384,8 +385,8 @@
 					}
 				}
 
-				.price-input{
-					:deep(.el-input__wrapper){
+				.price-input {
+					:deep(.el-input__wrapper) {
 						box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 					}
 				}

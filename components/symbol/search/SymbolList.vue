@@ -180,9 +180,21 @@
 
 		lastPrices.value[item.instId] = parseFloat(item.last)
 	}
+	const whenBrowserActive = ()=>{
+		console.log('浏览器重新激活')
+		unSubSymbols()
+		subSymbols()
+	}
+
+	const {$windowEvent} = useNuxtApp()
     onUnmounted(()=>{
         unSubSymbols()
+		$windowEvent.removeEvent(whenBrowserActive)
     })
+	onMounted(()=>{
+		
+		$windowEvent.addEvent(whenBrowserActive)
+	})
 	// 暴露给父组件的方法
 	defineExpose({ update, leave })
 </script>
