@@ -42,7 +42,7 @@
 	const end = ref(visibleCount.value)
 	// 虚拟列表
 	const virtualList = computed<Instruments[]>(() => {
-		// console.log('virtualList', start.value, end.value)
+		// console.log('virtualList', symbols.value?.slice(start.value, end.value))
 		return symbols.value?.slice(start.value, end.value)
 	})
 	// 记录滚动位置
@@ -180,19 +180,71 @@
 
 		lastPrices.value[item.instId] = parseFloat(item.last)
 	}
+
+	// 排序
+	const symbolOrderNameHandle = (val:number)=>{
+		addouPrice.value.reset()
+		addouChange.value.reset()
+		// 根据名称排序
+		if(val==0) getGroupSymbols()
+		if(val==1) symbols.value.sort((a,b)=>a.instId.localeCompare(b.instId, 'en', { sensitivity: 'base' }))
+		if(val==2) symbols.value.sort((a,b)=>b.instId.localeCompare(a.instId, 'en', { sensitivity: 'base' }))
+		
+	}
+	const symbolOrderPriceHandle = (val:number)=>{
+		addouName.value.reset()
+		addouChange.value.reset()
+		const { $wsb, $ws } = useNuxtApp()
+		// 根据价格排序
+		if(val==0) getGroupSymbols()
+		if(val==1) symbols.value.sort((a,b)=>{
+			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
+			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
+			return ap - bp
+		})
+		if(val==2) symbols.value.sort((a,b)=>{
+			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
+			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
+			return bp - ap
+		})
+		
+	}
+
+	const symbolOrderChangeHandle = (val:number)=>{
+		addouName.value.reset()
+		addouPrice.value.reset()
+		const { $wsb, $ws } = useNuxtApp()
+		// 根据涨跌幅排序
+		if(val==0) getGroupSymbols()
+		if(val==1) symbols.value.sort((a,b)=>{
+			const aticker = $ws.getTickers(a.instId)
+			const bticker = $ws.getTickers(b.instId)
+			const ap = aticker?.last&&aticker?.sodUtc8?(parseFloat(aticker?.last)-parseFloat(aticker?.sodUtc8))/parseFloat(aticker?.sodUtc8)*100:0
+			const bp = bticker?.last&&aticker?.sodUtc8?(parseFloat(bticker?.last)-parseFloat(bticker?.sodUtc8))/parseFloat(bticker?.sodUtc8)*100:0
+			return ap - bp
+		})
+		if(val==2) symbols.value.sort((a,b)=>{
+			const aticker = $ws.getTickers(a.instId)
+			const bticker = $ws.getTickers(b.instId)
+			const ap = aticker?.last&&aticker?.sodUtc8?(parseFloat(aticker?.last)-parseFloat(aticker?.sodUtc8))/parseFloat(aticker?.sodUtc8)*100:0
+			const bp = bticker?.last&&aticker?.sodUtc8?(parseFloat(bticker?.last)-parseFloat(bticker?.sodUtc8))/parseFloat(bticker?.sodUtc8)*100:0
+			return bp - ap
+		})
+		
+	}
+
+
 	const whenBrowserActive = ()=>{
 		console.log('浏览器重新激活')
 		unSubSymbols()
 		subSymbols()
 	}
-
 	const {$windowEvent} = useNuxtApp()
     onUnmounted(()=>{
         unSubSymbols()
 		$windowEvent.removeEvent(whenBrowserActive)
     })
 	onMounted(()=>{
-		
 		$windowEvent.addEvent(whenBrowserActive)
 	})
 	// 暴露给父组件的方法
@@ -226,9 +278,9 @@
 		</ul>
 		<div ref="lheader" class="w-full py-2 px-4" v-else-if="!loading && !error">
 			<ul class="grid grid-cols-4 *:flex *:items-center text-xs text-grey">
-				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp ref="addouName" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp ref="addouPrice" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp ref="addouChange" /></li>
+				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
+				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle"  ref="addouPrice" /></li>
+				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
