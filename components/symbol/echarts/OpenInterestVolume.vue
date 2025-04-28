@@ -148,9 +148,9 @@
 						seriesData.push(volume)
 						seriesData2.push(position)
 					})
-					option.xAxis[0].data = xAxisData
-					option.series[0].data = seriesData
-					option.series[1].data = seriesData2
+					option.xAxis[0].data = xAxisData.reverse()
+					option.series[0].data = seriesData.reverse()
+					option.series[1].data = seriesData2.reverse()
 					createEchart()
 					// console.log(xAxisData,seriesData);
 				} else {

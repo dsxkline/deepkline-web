@@ -105,8 +105,8 @@
 						xAxisData.push(ts)
 						seriesData.push(longShortAccountRatio)
 					})
-					option.xAxis.data = xAxisData
-					option.series[0].data = seriesData
+					option.xAxis.data = xAxisData.reverse()
+					option.series[0].data = seriesData.reverse()
 					createEchart()
 					// console.log(xAxisData,seriesData);
 				} else {

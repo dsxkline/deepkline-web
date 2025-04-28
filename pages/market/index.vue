@@ -5,7 +5,7 @@
 	<div class="w-full h-full">
 		<SplitContainer>
 			<template #left>
-				<SymbolSearch />
+				<SymbolMarket />
 			</template>
 			<template #right>
 				<SplitContainer>

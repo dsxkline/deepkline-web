@@ -7,12 +7,12 @@
 <template>
 	<div class="header border-b border-[--border-color] w-full flex items-center justify-between">
 		<!-- logo -->
-		<div class="flex items-center w-[400px] px-2">
+		<div class="flex items-center w-[100px] px-2">
 			<b class="logo-text">BitKline.com</b>
 		</div>
-		<!-- 品种卡片 -->
-		<div class="flex items-center flex-1">
-			<SymbolCards></SymbolCards>
+		<!-- 品种搜索 -->
+		<div class="flex items-center justify-center flex-1">
+			<SymbolSearch/>
 		</div>
 		<!-- 工具栏 -->
 		<div class="flex items-center w-[100px] px-2 justify-end">

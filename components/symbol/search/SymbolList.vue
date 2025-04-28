@@ -94,6 +94,9 @@
 		}
 		// 从store中获取
 		symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
+		// set 去重
+		console.log('获取到数据',symbols.value.filter(item=>item.baseCcy=="BTC"))
+		
 		if (symbols.value?.length) {
 			loading.value = false
 			nextTick(() => {
@@ -186,7 +189,7 @@
 		addouPrice.value.reset()
 		addouChange.value.reset()
 		// 根据名称排序
-		if(val==0) getGroupSymbols()
+		getGroupSymbols()
 		if(val==1) symbols.value.sort((a,b)=>a.instId.localeCompare(b.instId, 'en', { sensitivity: 'base' }))
 		if(val==2) symbols.value.sort((a,b)=>b.instId.localeCompare(a.instId, 'en', { sensitivity: 'base' }))
 		
@@ -196,17 +199,20 @@
 		addouChange.value.reset()
 		const { $wsb, $ws } = useNuxtApp()
 		// 根据价格排序
-		if(val==0) getGroupSymbols()
+		getGroupSymbols()
+		console.log('排序前',symbols.value.filter(item=>item.baseCcy=="BTC").length)
 		if(val==1) symbols.value.sort((a,b)=>{
 			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
 			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
 			return ap - bp
 		})
+		
 		if(val==2) symbols.value.sort((a,b)=>{
 			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
 			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
 			return bp - ap
 		})
+		console.log('排序后',symbols.value.filter(item=>item.baseCcy=="BTC").length)
 		
 	}
 
@@ -215,7 +221,7 @@
 		addouPrice.value.reset()
 		const { $wsb, $ws } = useNuxtApp()
 		// 根据涨跌幅排序
-		if(val==0) getGroupSymbols()
+		getGroupSymbols()
 		if(val==1) symbols.value.sort((a,b)=>{
 			const aticker = $ws.getTickers(a.instId)
 			const bticker = $ws.getTickers(b.instId)
