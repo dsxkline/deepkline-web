@@ -36,7 +36,7 @@ class DsxKlineChart {
 		this.symbol = symbol
 		this.cycle = cycle
 	}
-	
+
 	whenBrowserActive=()=>{
 		console.log('浏览器重新激活')
 		this.reload()

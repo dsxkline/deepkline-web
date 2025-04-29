@@ -6,7 +6,7 @@
 		icon?: Component
 		titleComp?: Component
 		contentComp?: Component
-		contentParams?: Record<any,any>
+		contentParams?: Record<any, any>
 		onClick?: () => {}
 	}
 	const props = defineProps({
@@ -26,18 +26,18 @@
 			type: Number,
 			default: 0
 		},
-        lineWidth:{
-            type:Number,
-            default:6
-        }
+		lineWidth: {
+			type: Number,
+			default: 6
+		}
 	})
 	const menuActive = ref(0)
 	const tabbarContent = ref()
 	const bottomLine = ref()
 	const tabbarHeader = ref()
 	interface ComponentWithUpdate {
-		update?: () => void,
-        leave?: () => void
+		update?: () => void
+		leave?: () => void
 	}
 	const componentRefs = ref<ComponentWithUpdate[]>([]) // 存储组件实例
 	const emit = defineEmits<{
@@ -47,13 +47,14 @@
 	watch(
 		() => menuActive.value,
 		(n, o) => {
+			console.log('menuActive.value', n)
 			emit('update:active', n)
 		}
 	)
 
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height - tabbarHeader.value?.clientHeight||0
+		return props.height - tabbarHeader.value?.clientHeight || 0
 	})
 
 	function menuHandler(item: MenuModel, index: number) {
@@ -65,12 +66,12 @@
 		if (content && content.update) {
 			content.update()
 		}
-        // 其他组件执行离开方法
-        componentRefs.value.forEach((item, i) => {
-            if (i !== index && item.leave) {
-                item.leave()
-            }
-        })
+		// 其他组件执行离开方法
+		componentRefs.value.forEach((item, i) => {
+			if (i !== index && item.leave) {
+				item.leave()
+			}
+		})
 		// 执行点击事件
 		if (item.onClick) {
 			item.onClick()
@@ -88,19 +89,29 @@
 			const li = tabbarHeader.value.querySelector('li.active')
 			if (li && line) {
 				const w = li.clientWidth
-				if(props.lineWidth<=0) line.style.width = w + 'px'
-                else line.style.width = props.lineWidth + 'px'
+				if (props.lineWidth <= 0) line.style.width = w + 'px'
+				else line.style.width = props.lineWidth + 'px'
 				// 计算菜单的位置
-				const offsetLeft = li.offsetLeft + (props.lineWidth>0?(w-props.lineWidth)/2:0)
+				const offsetLeft = li.offsetLeft + (props.lineWidth > 0 ? (w - props.lineWidth) / 2 : 0)
 				line.style.left = offsetLeft + 'px'
 			}
 		})
 	}
 
-	function update(index: number = 0) {
+	function update(index: number) {
+		
 		// 默认点击某个菜单
 		const menu = props.menus[index]
 		if (menu) menuHandler(menu, index)
+	}
+
+	function updateAll() {
+		componentRefs.value.forEach(content => {
+			// 判断组件是否暴露update方法
+			if (content && content.update) {
+				content.update()
+			}
+		})
 	}
 
 	onMounted(() => {
@@ -111,7 +122,8 @@
 	})
 
 	defineExpose({
-		update
+		update,
+		updateAll
 	})
 </script>
 
@@ -154,22 +166,22 @@
 				display: flex;
 				flex-direction: row;
 				padding: 5px 0;
-                height: 100%;
+				height: 100%;
 				li {
 					cursor: pointer;
 					margin: 0 10px;
 					color: rgb(var(--color-text-muted));
 					font-size: 18px;
 					user-select: none;
-                    display:flex;
-                    align-items: center;
+					display: flex;
+					align-items: center;
 					&:first-child {
 						margin-left: 0;
 					}
 					&:last-child {
 						margin-right: 0;
 					}
-					&:hover{
+					&:hover {
 						color: rgb(var(--color-text-grey));
 					}
 					&.active {

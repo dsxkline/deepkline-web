@@ -18,7 +18,7 @@
 	])
 	const cycle = ref('1m')
 	const onCycleChange = async (value: string) => {
-		if (useKlineStore().loading) return
+		if (useKlineStore().loading[props.symbol.instId]) return
 		cycle.value = value
 		useKlineStore().setCycle(props.symbol.instId,value)
 	}

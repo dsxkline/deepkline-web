@@ -171,7 +171,9 @@ export interface DsxKlineConfig {
 	page?: number;
 	decimalPoint?:number;
 	worker?:Worker;
-	workerPath?:string
+	workerPath?:string,
+	loadMain?: string[];
+	loadSides?: string[];
 }
 export declare class DsxKline {
 	constructor(config: DsxKlineConfig);

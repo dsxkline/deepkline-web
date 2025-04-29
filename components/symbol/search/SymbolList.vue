@@ -12,6 +12,12 @@
 		symbolCategory: InstanceType
 		height: number
 		favorite?: boolean
+		start?: boolean
+		keyword?: string
+		clickHandle?: (item?: Instruments) => void
+	}>()
+	const emit = defineEmits<{
+		(event: 'clickHandle', symbol?: Instruments): void
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -20,7 +26,7 @@
 	const addouChange = ref()
 	const lheader = ref()
 	const symbols = ref<Instruments[]>([])
-    const symbolDom = ref()
+	const symbolDom = ref()
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
 		return props.height - lheader.value?.clientHeight || 0
@@ -61,7 +67,7 @@
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
 		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
-		// console.log('scrollHandler', start.value, end.value, symbols.value.length,visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
@@ -76,6 +82,12 @@
 		},
 		{ deep: true }
 	)
+	watch(
+		() => props.keyword,
+		(val, old) => {
+			getGroupSymbols()
+		}
+	)
 
 	function getGroupSymbols() {
 		error.value = ''
@@ -83,20 +95,22 @@
 		if (props.favorite) {
 			symbols.value = useSymbolStore().favoriteSymbols || []
 			symbols.value = symbols.value.filter(item => item.instType === props.symbolCategory) || []
+			if (props.keyword) {
+				symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+			}
 			if (symbols.value?.length) {
 				nextTick(() => {
 					scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
 				})
 			}
 			loading.value = false
-			console.log('symbols', symbols.value, props.symbolCategory)
 			return
 		}
 		// 从store中获取
 		symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
-		// set 去重
-		console.log('获取到数据',symbols.value.filter(item=>item.baseCcy=="BTC"))
-		
+		if (props.keyword) {
+			symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+		}
 		if (symbols.value?.length) {
 			loading.value = false
 			nextTick(() => {
@@ -109,15 +123,17 @@
 		publicFetch
 			.getInstruments(props.symbolCategory)
 			.then(res => {
-				console.log('getInstruments', res)
 				loading.value = false
 				if (res?.code === 0) {
 					useSymbolStore().setSymbols(res.data)
 					symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
+					if (props.keyword) {
+						symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+					}
 					nextTick(() => {
 						scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
 					})
-				}else{
+				} else {
 					error.value = res?.msg
 				}
 			})
@@ -128,13 +144,12 @@
 			})
 	}
 	function update() {
-		console.log('update', props.favorite)
 		useSymbolStore().loadFavoriteSymbols()
 		getGroupSymbols()
+		
 	}
 
 	function leave() {
-		console.log('leave')
 		unSubSymbols()
 	}
 
@@ -161,20 +176,22 @@
 	}
 	function clickSymbol(item?: Instruments) {
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
+		emit('clickHandle', item)
+		props.clickHandle && props.clickHandle(item)
 	}
 
 	function bgFlicker(item: Ticker) {
-        if(!symbolDom.value) return
+		if (!symbolDom.value) return
 		const price = parseFloat(item.last)
 		const last = lastPrices.value[item.instId] || 0
 		const dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
-		const transparent = useSymbolStore().activeSymbol==item.instId?'transparent':'var(--transparent10)'
+		const transparent = useSymbolStore().activeSymbol == item.instId ? 'transparent' : 'var(--transparent10)'
 		if (dom && last) {
-            if(price>=last){
-                dom.style.background = "linear-gradient(to left,"+transparent+",rgb(var(--color-green)))";
-            }else{
-                dom.style.background = "linear-gradient(to left,"+transparent+",rgb(var(--color-red)))";
-            }
+			if (price >= last) {
+				dom.style.background = 'linear-gradient(to left,' + transparent + ',rgb(var(--color-green)))'
+			} else {
+				dom.style.background = 'linear-gradient(to left,' + transparent + ',rgb(var(--color-red)))'
+			}
 			dom.style.opacity = '0.1'
 			setTimeout(() => {
 				dom.style.opacity = '0'
@@ -185,72 +202,71 @@
 	}
 
 	// 排序
-	const symbolOrderNameHandle = (val:number)=>{
+	const symbolOrderNameHandle = (val: number) => {
 		addouPrice.value.reset()
 		addouChange.value.reset()
 		// 根据名称排序
 		getGroupSymbols()
-		if(val==1) symbols.value.sort((a,b)=>a.instId.localeCompare(b.instId, 'en', { sensitivity: 'base' }))
-		if(val==2) symbols.value.sort((a,b)=>b.instId.localeCompare(a.instId, 'en', { sensitivity: 'base' }))
-		
+		if (val == 1) symbols.value.sort((a, b) => a.instId.localeCompare(b.instId, 'en', { sensitivity: 'base' }))
+		if (val == 2) symbols.value.sort((a, b) => b.instId.localeCompare(a.instId, 'en', { sensitivity: 'base' }))
 	}
-	const symbolOrderPriceHandle = (val:number)=>{
+	const symbolOrderPriceHandle = (val: number) => {
 		addouName.value.reset()
 		addouChange.value.reset()
 		const { $wsb, $ws } = useNuxtApp()
 		// 根据价格排序
 		getGroupSymbols()
-		console.log('排序前',symbols.value.filter(item=>item.baseCcy=="BTC").length)
-		if(val==1) symbols.value.sort((a,b)=>{
-			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
-			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
-			return ap - bp
-		})
-		
-		if(val==2) symbols.value.sort((a,b)=>{
-			const ap = parseFloat($ws.getTickers(a.instId)?.last || "0")
-			const bp = parseFloat($ws.getTickers(b.instId)?.last || "0")
-			return bp - ap
-		})
-		console.log('排序后',symbols.value.filter(item=>item.baseCcy=="BTC").length)
-		
+		if (val == 1)
+			symbols.value.sort((a, b) => {
+				const ap = parseFloat($ws.getTickers(a.instId)?.last || '0')
+				const bp = parseFloat($ws.getTickers(b.instId)?.last || '0')
+				return ap - bp
+			})
+
+		if (val == 2)
+			symbols.value.sort((a, b) => {
+				const ap = parseFloat($ws.getTickers(a.instId)?.last || '0')
+				const bp = parseFloat($ws.getTickers(b.instId)?.last || '0')
+				return bp - ap
+			})
 	}
 
-	const symbolOrderChangeHandle = (val:number)=>{
+	const symbolOrderChangeHandle = (val: number) => {
 		addouName.value.reset()
 		addouPrice.value.reset()
 		const { $wsb, $ws } = useNuxtApp()
 		// 根据涨跌幅排序
 		getGroupSymbols()
-		if(val==1) symbols.value.sort((a,b)=>{
-			const aticker = $ws.getTickers(a.instId)
-			const bticker = $ws.getTickers(b.instId)
-			const ap = aticker?.last&&aticker?.sodUtc8?(parseFloat(aticker?.last)-parseFloat(aticker?.sodUtc8))/parseFloat(aticker?.sodUtc8)*100:0
-			const bp = bticker?.last&&aticker?.sodUtc8?(parseFloat(bticker?.last)-parseFloat(bticker?.sodUtc8))/parseFloat(bticker?.sodUtc8)*100:0
-			return ap - bp
-		})
-		if(val==2) symbols.value.sort((a,b)=>{
-			const aticker = $ws.getTickers(a.instId)
-			const bticker = $ws.getTickers(b.instId)
-			const ap = aticker?.last&&aticker?.sodUtc8?(parseFloat(aticker?.last)-parseFloat(aticker?.sodUtc8))/parseFloat(aticker?.sodUtc8)*100:0
-			const bp = bticker?.last&&aticker?.sodUtc8?(parseFloat(bticker?.last)-parseFloat(bticker?.sodUtc8))/parseFloat(bticker?.sodUtc8)*100:0
-			return bp - ap
-		})
-		
+		if (val == 1)
+			symbols.value.sort((a, b) => {
+				const aticker = $ws.getTickers(a.instId)
+				const bticker = $ws.getTickers(b.instId)
+				const ap = aticker?.last && aticker?.sodUtc8 ? ((parseFloat(aticker?.last) - parseFloat(aticker?.sodUtc8)) / parseFloat(aticker?.sodUtc8)) * 100 : 0
+				const bp = bticker?.last && aticker?.sodUtc8 ? ((parseFloat(bticker?.last) - parseFloat(bticker?.sodUtc8)) / parseFloat(bticker?.sodUtc8)) * 100 : 0
+				return ap - bp
+			})
+		if (val == 2)
+			symbols.value.sort((a, b) => {
+				const aticker = $ws.getTickers(a.instId)
+				const bticker = $ws.getTickers(b.instId)
+				const ap = aticker?.last && aticker?.sodUtc8 ? ((parseFloat(aticker?.last) - parseFloat(aticker?.sodUtc8)) / parseFloat(aticker?.sodUtc8)) * 100 : 0
+				const bp = bticker?.last && aticker?.sodUtc8 ? ((parseFloat(bticker?.last) - parseFloat(bticker?.sodUtc8)) / parseFloat(bticker?.sodUtc8)) * 100 : 0
+				return bp - ap
+			})
 	}
 
-
-	const whenBrowserActive = ()=>{
+	const whenBrowserActive = () => {
 		console.log('浏览器重新激活')
 		unSubSymbols()
 		subSymbols()
 	}
-	const {$windowEvent} = useNuxtApp()
-    onUnmounted(()=>{
-        unSubSymbols()
+	const { $windowEvent } = useNuxtApp()
+	onUnmounted(() => {
+		unSubSymbols()
 		$windowEvent.removeEvent(whenBrowserActive)
-    })
-	onMounted(()=>{
+	})
+	onMounted(() => {
+		if (props.start) update()
 		$windowEvent.addEvent(whenBrowserActive)
 	})
 	// 暴露给父组件的方法
@@ -285,15 +301,18 @@
 		<div ref="lheader" class="w-full py-2 px-4" v-else-if="!loading && !error">
 			<ul class="grid grid-cols-4 *:flex *:items-center text-xs text-grey">
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle"  ref="addouPrice" /></li>
+				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
-			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - 1 - end) * itemHeight + 'px' }">
+			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }">
 				<li
 					:id="'symbol-list-id-' + item.instId"
-					:class="['relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',useSymbolStore().activeSymbol==item.instId?'!bg-[--transparent10]':'']"
+					:class="[
+						'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
+						useSymbolStore().activeSymbol == item.instId ? '!bg-[--transparent10]' : ''
+					]"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"
 					@click="clickSymbol(item)"
@@ -316,7 +335,7 @@
 	}
 	// 背景闪烁
 	.bg-red {
-		background:linear-gradient(to left,transparent,rgb(var(--color-green)));
+		background: linear-gradient(to left, transparent, rgb(var(--color-green)));
 	}
 	.bg-green {
 		background: rgb(var(--color-green));

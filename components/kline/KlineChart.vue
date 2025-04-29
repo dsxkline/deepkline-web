@@ -31,12 +31,17 @@
 		newVal => {
 			console.log('newVal useKlineStore().main=', newVal)
 			chart.value && chart.value.selectMain(newVal)
+		},{
+			deep:true
 		}
 	)
 	watch(
 		() => useKlineStore().sides[props.symbol],
 		newVal => {
+			console.log('newVal useKlineStore().sides=', newVal)
 			chart.value && chart.value.selectSides(newVal)
+		},{
+			deep:true
 		}
 	)
 

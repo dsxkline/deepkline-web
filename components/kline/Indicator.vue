@@ -5,7 +5,7 @@
 		symbol: Instruments
 	}>()
 	const mainIndicatorList = ref(['MA', 'EMA', 'BOLL', 'SAR', 'ZIG'])
-	const sideIndicatorList = ref(['VOL', 'OBV', 'MACD', 'KDJ', 'RSI', 'BIAS', 'WR', 'DMA', 'MTM', 'CCI', 'PSY'])
+	const sideIndicatorList = ref(['VOL', 'MACD', 'KDJ', 'RSI', 'BIAS', 'WR', 'DMA', 'MTM', 'CCI', 'PSY'])
 	function onMainIndicatorChange(value: string) {
 		useKlineStore().setMain(props.symbol?.instId,value)
 	}
