@@ -41,7 +41,7 @@
 		return Math.ceil(contentHeight.value / itemHeight)
 	})
 	// 上下偏移量
-	const offset = computed(() => Math.max(1, Math.floor(visibleCount.value)))
+	const offset = computed(() => Math.max(1, 2*Math.floor(visibleCount.value)))
 	// 虚拟列表的起始索引
 	const start = ref(0)
 	// 虚拟列表的结束索引
@@ -279,6 +279,7 @@
 				<el-button @click.stop="getGroupSymbols()">点击刷新</el-button>
 			</template>
 		</el-result>
+		
 		<ul class="w-full" v-if="loading && !error">
 			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
@@ -306,12 +307,13 @@
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
-			<ul class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }">
+			<Empty  v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }"/>
+			<ul v-else class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }">
 				<li
 					:id="'symbol-list-id-' + item.instId"
 					:class="[
 						'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-						useSymbolStore().activeSymbol == item.instId ? '!bg-[--transparent10]' : ''
+						useSymbolStore().activeSymbol == item.instId ? 'border-l-[2px] !border-[--transparent30]' : ''
 					]"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"

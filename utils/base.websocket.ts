@@ -13,10 +13,19 @@ export default class BaseWebSocket {
 	private waitSendDatas: any = [];
 	private tickers: Record<string, Ticker> = {};
 	private tickersHandler: Record<string, any[]>= {};
+	private connectLevel = 0; // 连接速度等级 0-4 五格信号 10毫秒一个等级
+	private connectLevelTime = 0; // 连接速度时间
+	private connectLevelFn?: (stateLevel:number) => void = () => { };
+	private heatTimer:NodeJS.Timeout | null = null;
+	private heatInterval = 10000;
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
 		this.reconnectErrorCallback = reconnectErrorCallback;
 		this.reconnectSuccessCallback = reconnectSuccessCallback;
+	}
+	getSignalState(fn?:(stateLevel:number) => void) {
+		this.connectLevelFn = fn;
+		return this.connectLevel;
 	}
 	connect() {
 		this.ws = new WebSocket(this.url);
@@ -27,17 +36,30 @@ export default class BaseWebSocket {
 				this.send(data);
 			});
 			this.waitSendDatas = [];
+			this.heatTimer = setInterval(() => {
+				this.heart();
+			}, this.heatInterval);
 		};
 		this.ws.onmessage = (event) => {
 			this.notifySubscribers(event.data, null);
 		};
 		this.ws.onerror = (event) => {
+			if (this.heatTimer) {
+				clearInterval(this.heatTimer);
+				this.heatTimer = null;
+			}
 			this.reconnectErrorCallback && this.reconnectErrorCallback(event);
 			this.notifySubscribers(null, event);
+			this.connectLevel = -1;
 		};
 		this.ws.onclose = (event) => {
+			if (this.heatTimer) {
+				clearInterval(this.heatTimer);
+				this.heatTimer = null;
+			}
 			this.notifySubscribers(null, event);
 			this.reconnect();
+			this.connectLevel = -1;
 		};
 	}
 	reconnect() {
@@ -58,7 +80,8 @@ export default class BaseWebSocket {
 			this.waitSendDatas.push(data);
 			return;
 		}
-		this.ws && this.ws.send(JSON.stringify(data));
+		this.connectLevelTime = new Date().getTime();
+		this.ws && this.ws.send(typeof data=='string'?data:JSON.stringify(data));
 	}
 
 	destroy() {
@@ -128,7 +151,25 @@ export default class BaseWebSocket {
 	}
 
 	notifySubscribers(message: any, error: Event | null) {
-		if(typeof message === 'string') message = JSON.parse(message);
+		// 这里判断信号等级
+		if (this.connectLevelTime) {
+			const now = new Date().getTime();
+			const diff = now - this.connectLevelTime;
+			if (diff < 20) {
+				this.connectLevel = 4;
+			} else if (diff < 50) {
+				this.connectLevel = 3;
+			} else if (diff < 80) {
+				this.connectLevel = 2;
+			} else if (diff < 100) {
+				this.connectLevel = 1;
+			} else {
+				this.connectLevel = 0;
+			}
+			this.connectLevelFn && this.connectLevelFn(this.connectLevel);
+			this.connectLevelTime = 0;
+		}
+		if(typeof message === 'string' && message.startsWith('{')) message = JSON.parse(message);
 		Object.values(this.subscribers).forEach(({ tag, callback }) => {
 			const isMatch = this.routerWithTag(tag, message)
 			if (!isMatch) return;
@@ -170,5 +211,8 @@ export default class BaseWebSocket {
 		if(!this.tickersHandler[instId]) return;
 		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
 		// console.log('removeTickerHandler',this.tickersHandler)
+	}
+	heart(){
+
 	}
 }

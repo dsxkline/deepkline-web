@@ -1,6 +1,10 @@
 <template>
-    <div class="status-bar border-t border-[--border-color] w-full flex items-center text-xs">
-        状态栏
+    <div class="status-bar border-t border-[--border-color] w-full flex items-center justify-between text-xs">
+        <div></div>
+        <div></div>
+        <div>
+            <SignalState />
+        </div>
     </div>
 </template>
 <style lang="less" scoped>

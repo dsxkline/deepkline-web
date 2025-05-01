@@ -5,15 +5,16 @@
 	import Options from './search/Options.vue'
 	import SymbolList from './search/SymbolList.vue'
 	import MarketList from './search/MarketList.vue'
-	const keyword = ref('')
-
+	import { useSymbolStore } from '~/store/symbol'
+	const tabbar = ref()
+	const active = ref(0)
 	const tabbarHeight = ref(0)
 	const menus = ref<MenuModel[]>([
 		{
 			name: '自选',
 			contentComp: markRaw(Options),
 			contentParams: {
-				title: '测试'
+				
 			}
 		},
 		{
@@ -24,12 +25,19 @@
 	const search = () => {}
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - 40 - 30
+		tabbarHeight.value = window?.innerHeight - 40 - 40
+		useSymbolStore().loadFavoriteSymbols()
+		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
+		if(!favoriteSymbols?.length) {
+			active.value = 1
+			tabbar.value.update(active.value)
+		}
 	})
 </script>
 <template>
 	<div>
-		<TabBar :menus="menus" :hideLine="true" :height="tabbarHeight" />
+		<TabBar ref="tabbar" :menus="menus" :hideLine="true" :height="tabbarHeight" :active="active" />
+		
 	</div>
 </template>
 <style lang="less" scoped>

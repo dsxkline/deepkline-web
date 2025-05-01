@@ -254,6 +254,7 @@ class DsxKlineChart {
 	}
 
 	updateTheme(theme: string) {
+		if(!this.kline) return;
 		this.theme = theme
 		// console.log(this.themeConfig);
 		this.kline.theme = this.themeConfig.theme[this.theme == 'dark' ? 'dark' : 'white']

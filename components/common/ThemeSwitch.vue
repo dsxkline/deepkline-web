@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	const colorMode = useColorMode();
-    const colorCookie = useCookie('nuxt-color-mode',{default:()=>colorMode.preference});
+    let colorCookie = useCookie('nuxt-color-mode',{default:()=>colorMode.preference});
 	const theme = ref("dark" !== colorCookie.value);
 	watch(
 		() => colorMode.preference,
@@ -13,13 +13,34 @@
 		colorMode.preference = theme.value ? 'light' : 'dark'
 	}
 
+	onMounted(()=>{
+		colorCookie = useCookie('nuxt-color-mode',{default:()=>colorMode.preference});
+		theme.value = 'dark' !== colorCookie.value;
+		changeTheme()
+	})
+
 </script>
 <template>
 	<el-switch
 		v-model="theme"
-        width="50" 
-		inline-prompt
-		:active-icon="ElIconSunny"
-		:inactive-icon="ElIconMoon"
+        width="30"
+		:active-action-icon="ElIconSunny"
+		:inactive-action-icon="ElIconMoon"
 		@change="changeTheme" />
 </template>
+
+<style lang="less" scoped>
+	.el-switch {
+		--el-switch-on-color: var(--transparent10);
+    	--el-switch-off-color: var(--transparent10);
+		:deep(.el-switch__core){
+			min-width: 30px;
+			.el-switch__action{
+				background-color: black;
+				.el-icon{
+					color: rgb(var(--color-text-main));
+				}
+			}
+		}
+	}
+</style>

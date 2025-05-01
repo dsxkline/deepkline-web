@@ -250,9 +250,9 @@
 					<button :class="['hover:opacity-80',activeBook==2?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=2" click-sound><BooksSellListIcon/></button>
 				</div>
 			</h3>
-			<el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" click-sound>
+			<!-- <el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" click-sound>
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  click-sound/>
-			</el-select>
+			</el-select> -->
 		</div>
 		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
 			<template #extra>

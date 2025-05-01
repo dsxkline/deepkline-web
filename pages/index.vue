@@ -5,7 +5,8 @@
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { House, Monitor } from '@element-plus/icons-vue'
+	import { Histogram, House, Monitor } from '@element-plus/icons-vue'
+import { useStore } from '~/store'
 	// 使用默认布局
 	definePageMeta({
 		layout: 'main'
@@ -21,9 +22,10 @@
 	const menus = ref<MenuModel[]>([
 		{
 			name: '行情',
-			icon: markRaw(House),
+			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
-			contentParams: {}
+			contentParams: {},
+			
 		},
 		{
 			name: '交易',
@@ -34,7 +36,11 @@
 	])
 	const menuHandler = (item: MenuModel, index: number) => {
 		console.log('menuHandler', item, index)
+		if(index==0 && active.value == index) {
+			useStore().setSplitLeft(!useStore().hideSplitLeft)
+		}
 		active.value = index
+		
 	}
 	const update = () => {
 		console.log('update')

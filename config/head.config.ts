@@ -1,5 +1,5 @@
 export default {
-    title: "BitKline",
+    title: "DeepKline is the most silky cryptocurrency trading system.",
     htmlAttrs: {
         lang: "zh-CN",
     },

@@ -80,4 +80,8 @@ export default class OKXWebSocket extends BaseWebSocket {
         super.unsubscribe(subId,sendDatas);
     }
 
+    heart(): void {
+        this.send('ping');
+    }
+
 }

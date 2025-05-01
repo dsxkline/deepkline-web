@@ -189,7 +189,7 @@
 
 							<div class="py-3">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input click-sound v-model="money" :placeholder="''" clearable size="large" class="w-full" />
+								<el-input click-sound v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
