@@ -1,30 +1,33 @@
 <script setup lang="ts">
 	import Split from 'split.js'
+	import { useStore } from '~/store'
+	// 当前vue实例
+	const instance = getCurrentInstance()
 	const props = defineProps({
-		left:{
-			type:Number,
-			default:360
+		left: {
+			type: Number,
+			default: 360
 		},
-		right:{
-			type:Number,
-			default:0
+		right: {
+			type: Number,
+			default: 0
 		},
-		pushLeft:{
-			type:Boolean,
-			default:false
-		},
+		pushLeft: {
+			type: Boolean,
+			default: false
+		}
 	})
 	const splitHorizontal = ref(null)
-	const splitLeft = ref<HTMLElement>()
-	const splitRight = ref<HTMLElement>()
+	const splitLeft = ref()
+	const splitRight = ref()
 	let leftWidth = props.left
 	let rightWidth = props.right
 	const windowWidth = ref(window?.innerWidth)
 	const splitContainer = ref()
 	const hideSplitRight = ref(false)
 	const hideSplitLeft = ref(false)
-	const updateWindowWidth = (animation:boolean=true) => {
-		windowWidth.value = splitContainer.value.clientWidth;
+	const updateWindowWidth = (animation: boolean = true) => {
+		windowWidth.value = splitContainer.value.clientWidth
 		setAutoSplit()
 		split && split.setSizes([left, right])
 		split && hideSplit(animation)
@@ -33,6 +36,7 @@
 	let right = 100 - left
 	let split: Split.Instance
 	onMounted(() => {
+		// useStore().addSplitScreen(instance)
 		// window.addEventListener('resize', updateWindowWidth)
 		updateWindowWidth()
 		split = Split([splitContainer.value.querySelector('#split-left'), splitContainer.value.querySelector('#split-right')], {
@@ -46,10 +50,9 @@
 			},
 			onDrag: () => {
 				console.log('onDrag')
-				if(split.getSizes()[0] > 0){
+				if (split.getSizes()[0] > 0) {
 					hideSplitLeft.value = false
 				}
-				
 			},
 			onDragEnd: () => {
 				console.log('onDragEnd')
@@ -57,7 +60,6 @@
 		})
 
 		// 监听元素宽高变化
-
 		const resizeObserver = new ResizeObserver(entries => {
 			for (const entry of entries) {
 				if (entry.target === splitContainer.value) {
@@ -70,18 +72,17 @@
 		onBeforeUnmount(() => {
 			resizeObserver.unobserve(splitContainer.value)
 		})
-
 	})
 	onUnmounted(() => {
 		// window.removeEventListener('resize', updateWindowWidth)
 	})
 	function setAutoSplit() {
-		if(leftWidth>0){
-			left = ((leftWidth) / (windowWidth.value-2)) * 100.0
+		if (leftWidth > 0) {
+			left = (leftWidth / (windowWidth.value - 2)) * 100.0
 			right = 100 - left
 		}
-		if(rightWidth>0){
-			right = ((rightWidth) / (windowWidth.value-2)) * 100.0
+		if (rightWidth > 0) {
+			right = (rightWidth / (windowWidth.value - 2)) * 100.0
 			left = 100 - right
 		}
 	}
@@ -98,29 +99,34 @@
 		}, 200)
 	}
 
-	function hideSplit(animation:boolean=true) {
+	function hideSplit(animation: boolean = true) {
 		setAutoSplit()
-		if(animation){
+		if (animation) {
 			addAnimation(splitRight.value)
 			addAnimation(splitLeft.value)
 		}
-		
-		if (hideSplitLeft.value||hideSplitRight.value) {
+
+		if (hideSplitLeft.value || hideSplitRight.value) {
 			leftWidth = 0
 			rightWidth = 0
-			if(hideSplitLeft.value) {
+			if (hideSplitLeft.value) {
 				split.setSizes([0, 100])
-				if(splitLeft.value) splitLeft.value.style.width = '0'
-				if(splitRight.value) splitRight.value.style.width = '100%'
-			}
-			else if(hideSplitRight.value) {
+				if(splitLeft.value) {
+					splitLeft.value.style.width = '0'
+				}
+				if(splitRight.value) {
+					splitRight.value.style.width = '100%'
+				}
+			} else if (hideSplitRight.value) {
 				split.setSizes([100, 0])
-				if(splitLeft.value) splitLeft.value.style.width = '100%'
-				if(splitRight.value) splitRight.value.style.width = '0'
+				if(splitLeft.value) {
+					splitLeft.value.style.width = '100%'
+				}
+				if(splitRight.value) {
+					splitRight.value.style.width = '0'
+				}
 			}
-			
-		}
-		else {
+		} else {
 			leftWidth = props.left
 			rightWidth = props.right
 			setAutoSplit()
@@ -139,32 +145,58 @@
 	watch(
 		() => hideSplitLeft.value,
 		val => {
+			
 			hideSplit()
 		}
 	)
 
-	function toggleLeft(){
-		hideSplitLeft.value = !hideSplitLeft.value
+	function toggleLeft(val?:boolean|undefined) {
+		if(val!=undefined) {
+			hideSplitLeft.value = val
+			hideSplit()
+		} else {
+			hideSplitLeft.value = !hideSplitLeft.value
+		}
+		useStore().updateSplitScreen()
 	}
-	function toggleRight(){
-		hideSplitRight.value = !hideSplitRight.value
+	function toggleRight(val?:boolean|undefined) {
+		if(val!=undefined) {
+			hideSplitRight.value = val
+			hideSplit()
+		}else{
+			hideSplitRight.value = !hideSplitRight.value
+		}
+		useStore().updateSplitScreen()
 	}
 
 	defineExpose({
 		toggleLeft,
 		toggleRight,
+		hideSplitLeft,
+		hideSplitRight,
 	})
 </script>
 <template>
 	<div class="split-container w-full h-full" ref="splitContainer">
 		<div class="split-horizontal flex w-full h-full *:overflow-hidden" ref="splitHorizontal">
-			<div class="relative" id="split-left" ref="splitLeft" :style="[hideSplitLeft?'width:0':leftWidth>0?'width:calc('+leftWidth+'px)':'',rightWidth>0?'width:calc(100% - '+rightWidth+'px - 2px)':'']">
-				
+			<div
+				class="relative"
+				id="split-left"
+				ref="splitLeft"
+				:style="[hideSplitLeft ? 'width:0' : leftWidth > 0 ? 'width:calc(' + leftWidth + 'px)' : '', rightWidth > 0 ? 'width:calc(100% - ' + rightWidth + 'px - 2px)' : '']"
+			>
 				<slot name="left"></slot>
 			</div>
-			<div class="relative" id="split-right" ref="splitRight" :style="[rightWidth>0?'width:calc('+rightWidth+'px)':'',hideSplitLeft?'width:100%':leftWidth>0?'width:calc(100% - '+leftWidth+'px - 2px)':'']">
+			<div
+				class="relative"
+				id="split-right"
+				ref="splitRight"
+				:style="[rightWidth > 0 ? 'width:calc(' + rightWidth + 'px)' : '', hideSplitLeft ? 'width:100%' : leftWidth > 0 ? 'width:calc(100% - ' + leftWidth + 'px - 2px)' : '']"
+			>
 				<!-- <div class="flex items-center absolute left-[-10px] top-0" v-if="hideSplitLeft" @click="toggleLeft"><ContractionIcon/></div> -->
-				<button class="flex items-center absolute left-2 top-3" v-if="pushLeft" click-sound @click="toggleLeft"><el-icon><Fold v-if="!hideSplitLeft" /><Expand v-else /></el-icon></button>
+				<button class="flex items-center absolute left-2 top-3" v-if="pushLeft" click-sound @click="toggleLeft()">
+					<el-icon><Fold v-if="!hideSplitLeft" /><Expand v-else /></el-icon>
+				</button>
 				<slot name="right"></slot>
 			</div>
 		</div>
@@ -174,7 +206,7 @@
 <style lang="less" scoped>
 	.split-container {
 		height: calc(100%);
-		width:100%;
+		width: 100%;
 		.split-horizontal {
 			#split-left {
 				width: calc(360px);

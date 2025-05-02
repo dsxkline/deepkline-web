@@ -8,6 +8,8 @@ $ws?.getSignalState((stateLevel:number) => {
 
 const signalStateText = computed(() => {
     switch (signalState.value) {
+        case -2:
+            return '连接失败'
         case -1:
             return '重连中...'
         case 0:

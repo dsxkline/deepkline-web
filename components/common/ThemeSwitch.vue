@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	const colorMode = useColorMode();
-    let colorCookie = useCookie('nuxt-color-mode',{default:()=>colorMode.preference});
+    let colorCookie = useCookie('nuxt-color-mode',{default:()=>"dark"});
 	const theme = ref("dark" !== colorCookie.value);
 	watch(
 		() => colorMode.preference,

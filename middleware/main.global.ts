@@ -24,7 +24,14 @@ function getDefaultInstruments() {
 }
 
 export default defineNuxtRouteMiddleware((to, from) => {
-    // console.log(to,from);
+    // 服务端渲染主题
+    const colorMode = useCookie('nuxt-color-mode', { default: () => 'dark' })
+    useHead({
+        htmlAttrs: {
+          class:colorMode.value,
+        },
+      })
+      
     if (process.client) {
         const state = useStore();
         if (state.apiSource == ApiSource.OKX) {

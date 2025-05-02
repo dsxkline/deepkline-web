@@ -7,15 +7,16 @@
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { Histogram, House, Monitor } from '@element-plus/icons-vue'
 import { useStore } from '~/store'
+
 	// 使用默认布局
 	definePageMeta({
 		layout: 'main'
 	})
 	onMounted(async () => {
 		console.log('server', process.server)
-		
 		// const worker = new Worker('/js/worker.js')
 	})
+	const addScreenType = ref(false)
 	const active = ref(0)
 	const activeMenu = computed(() => menus.value[active.value])
 	// 定义菜单及对应的组件
@@ -37,11 +38,12 @@ import { useStore } from '~/store'
 	const menuHandler = (item: MenuModel, index: number) => {
 		console.log('menuHandler', item, index)
 		if(index==0 && active.value == index) {
-			useStore().setSplitLeft(!useStore().hideSplitLeft)
+			useStore().setSplitLeft(0,!useStore().screenDoms[0].hideSplitLeft)
 		}
 		active.value = index
 		
 	}
+
 	const update = () => {
 		console.log('update')
 	}

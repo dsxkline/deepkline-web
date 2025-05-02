@@ -2,20 +2,42 @@
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const mainSplit = ref()
+	const twoSplit = ref()
 	watch(
 		() => useStore().hideSplitLeft,
 		newVal => {
-			if(mainSplit.value) mainSplit.value?.toggleLeft(newVal)
+			if (mainSplit.value) mainSplit.value?.toggleLeft(newVal)
 		}
 	)
 	watch(
 		() => useStore().hideSplitRight,
 		newVal => {
-			if(mainSplit.value) mainSplit.value?.toggleRight(newVal)
+			if (mainSplit.value) mainSplit.value?.toggleRight(newVal)
 		}
-		
 	)
 
+	watch(
+		() => useStore().splitScreen,
+		newVal => {
+			if (newVal == 1) {
+				// if (mainSplit.value) mainSplit.value?.toggleLeft(true)
+				// if (twoSplit.value) twoSplit.value?.toggleLeft(true)
+			}
+			if (newVal == 2) {
+				// if (mainSplit.value) mainSplit.value?.toggleLeft(true)
+				// if (twoSplit.value) twoSplit.value?.toggleLeft(false)
+				// useStore().setSplitLeft(true)
+			}
+			if (newVal == 3) {
+				// if (mainSplit.value) mainSplit.value?.toggleLeft(false)
+				// if (twoSplit.value) twoSplit.value?.toggleLeft(false)
+			}
+		}
+	)
+	onMounted(() => {
+		useStore().addSplitScreen(mainSplit.value)
+		useStore().addSplitScreen(twoSplit.value)
+	})
 </script>
 <template>
 	<div class="w-full h-full">
@@ -24,7 +46,7 @@
 				<SymbolMarket />
 			</template>
 			<template #right>
-				<SplitContainer :pushLeft="true">
+				<SplitContainer :pushLeft="true" ref="twoSplit">
 					<template #left>
 						<SymbolDetail :symbol="useSymbolStore().activeSymbol" />
 					</template>

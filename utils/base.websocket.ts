@@ -13,7 +13,7 @@ export default class BaseWebSocket {
 	private waitSendDatas: any = [];
 	private tickers: Record<string, Ticker> = {};
 	private tickersHandler: Record<string, any[]>= {};
-	private connectLevel = 0; // 连接速度等级 0-4 五格信号 10毫秒一个等级
+	private connectLevel = 0; // 连接速度等级 0-4 五格信号 10毫秒一个等级 -1 连接中  -2 无连接/连接失败
 	private connectLevelTime = 0; // 连接速度时间
 	private connectLevelFn?: (stateLevel:number) => void = () => { };
 	private heatTimer:NodeJS.Timeout | null = null;
@@ -28,8 +28,10 @@ export default class BaseWebSocket {
 		return this.connectLevel;
 	}
 	connect() {
+		this.connectLevel = -1
 		this.ws = new WebSocket(this.url);
 		this.ws.onopen = () => {
+			this.connectLevel = 0
 			this.reconnectCount = 0;
 			this.reconnectSuccessCallback && this.reconnectSuccessCallback();
 			this.waitSendDatas.forEach((data: any) => {
@@ -50,19 +52,21 @@ export default class BaseWebSocket {
 			}
 			this.reconnectErrorCallback && this.reconnectErrorCallback(event);
 			this.notifySubscribers(null, event);
-			this.connectLevel = -1;
+			this.connectLevel = -2;
 		};
 		this.ws.onclose = (event) => {
+			this.connectLevel = -2;
 			if (this.heatTimer) {
 				clearInterval(this.heatTimer);
 				this.heatTimer = null;
 			}
 			this.notifySubscribers(null, event);
 			this.reconnect();
-			this.connectLevel = -1;
+			
 		};
 	}
 	reconnect() {
+		this.connectLevel = -1
 		if (this.reconnectCount < this.reconnectMax) {
 			this.reconnectCount++;
 			this.reconnectTimer = setTimeout(() => {
