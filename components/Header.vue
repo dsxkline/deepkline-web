@@ -2,6 +2,7 @@
 	import { useStore } from '~/store'
 	import SymbolCards from './symbol/SymbolCards.vue'
 	import OneScreenIcon from './icons/OneScreenIcon.vue'
+	import Languages from './common/Languages.vue'
 	// const store = useStore();
 	// store.increment();
 	function clickSplitScreen(num: number) {
@@ -27,12 +28,22 @@
 			<SymbolSearch />
 		</div>
 		<!-- 工具栏 -->
-		<div class="flex items-center w-[100px] px-2 justify-end">
-			<ThemeSwitch></ThemeSwitch>
-			<div class="split-screen flex items-center justify-center *:mx-1 ml-3">
+		<div class="flex items-center px-2 justify-end">
+			<ThemeSwitch class="mx-2"></ThemeSwitch>
+			<Languages />
+			<el-divider direction="vertical" class="mx-1"></el-divider>
+			<div class="split-screen flex items-center justify-center *:mx-1">
+				
 				<button :class="{ active: useStore().splitScreen == 3 }" @click="clickSplitScreen(3)" click-sound><ThreeScreenIcon /></button>
 				<button :class="{ active: useStore().splitScreen == 2 }" @click="clickSplitScreen(2)" click-sound><TwoScreenIcon /></button>
 				<button :class="{ active: useStore().splitScreen == 1 }" @click="clickSplitScreen(1)" click-sound><OneScreenIcon /></button>
+				
+			</div>
+			<el-divider direction="vertical" class="mx-1"></el-divider>
+			<div class="flex items-center justify-center">
+				<button class="py-1 px-3 bg-[--transparent10] rounded text-xs mx-1 hover:bg-[--transparent20]">登录</button>
+				<button class="py-1 px-3 bg-green text-main rounded text-xs mx-1 hover:bg-[rgb(var(--color-green)/0.9)]">注册</button>
+				
 			</div>
 		</div>
 	</div>
@@ -47,11 +58,11 @@
 				&.active {
 					:deep(svg) {
 						path {
-							fill: var(--transparent50);
+							fill: var(--transparent80);
 						}
 					}
 				}
-				&:hover {
+				&:hover:not(.active) {
 					:deep(svg) {
 						path {
 							fill: var(--transparent50);

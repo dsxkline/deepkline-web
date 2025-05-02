@@ -9,9 +9,18 @@ export const useStore = defineStore({
 		hideSplitLeft: false,
 		hideSplitRight: false,
 		screenDoms: [] as any[],
-		splitScreen: 3 // 1=单屏 2=分屏 3=三屏
+		splitScreen: 3, // 1=单屏 2=分屏 3=三屏
+    bodyHeight: 0,
+    bodyWidth: 0,
 	}),
 	actions: {
+    setBodyHeight(height: number) {
+      this.bodyHeight = height
+      console.log('body height',height)
+    },
+    setBodyWidth(width: number) {
+      this.bodyWidth = width
+    },
 		setApiSource(source: ApiSource) {
 			this.apiSource = source
 		},

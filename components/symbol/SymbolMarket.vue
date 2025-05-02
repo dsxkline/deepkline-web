@@ -6,6 +6,7 @@
 	import SymbolList from './search/SymbolList.vue'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
+import { useStore } from '~/store'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -23,6 +24,13 @@
 		}
 	])
 	const search = () => {}
+
+	watch(
+		() => useStore().bodyHeight,
+		(n, o) => {
+			tabbarHeight.value = n - 40 - 40
+		}
+	)	
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
