@@ -19,9 +19,7 @@
 			<div class="flex items-center justify-center w-[22px] h-[22px] mr-1 rounded-full bg-white border border-green-500" v-else>
 				<img src="~/assets/images/logo.png" alt="logo" class="w-[14px] h-[14px]" />
 			</div>
-			<b class="logo-text mr-2 font-mono text-sm text-green"> DeepKline </b>
-
-			
+			<b class="logo-text mr-2 font-mono text-sm text-main"> DeepKline </b>
 		</div>
 		<!-- 品种搜索 -->
 		<div class="flex items-center justify-center flex-1">
@@ -41,8 +39,8 @@
 			</div>
 			<el-divider direction="vertical" class="mx-1"></el-divider>
 			<div class="flex items-center justify-center">
-				<button class="py-1 px-3 bg-[--transparent10] rounded text-xs mx-1 hover:bg-[--transparent20]">登录</button>
-				<button class="py-1 px-3 bg-green text-main rounded text-xs mx-1 hover:bg-[rgb(var(--color-green)/0.9)]">注册</button>
+				<button class="bt-default mx-1">登录</button>
+				<button class="bt-primary mx-1">注册</button>
 				
 			</div>
 		</div>
@@ -53,6 +51,23 @@
 	.header {
 		height: var(--header-height);
 		background-color: var(--transparent05);
+		position: relative;
+		&::before {
+			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
+			background-image: linear-gradient(90deg, #c0ffe5, #a8fffa, #82a9ff);
+			filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.6;
+			transition: all 0.3s ease;
+		}
+		
+
 		.split-screen {
 			button {
 				&.active {

@@ -17,6 +17,7 @@
 		colorCookie = useCookie('nuxt-color-mode',{default:()=>colorMode.preference});
 		theme.value = 'dark' !== colorCookie.value;
 		changeTheme()
+
 	})
 
 </script>
@@ -26,6 +27,7 @@
         width="30"
 		:active-action-icon="ElIconSunny"
 		:inactive-action-icon="ElIconMoon"
+		click-sound
 		@change="changeTheme" />
 </template>
 

@@ -274,11 +274,11 @@
 </script>
 <template>
 	<div class="w-full h-full" ref="symbolDom">
-		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
-			<template #extra>
+		<Error :content="error" v-if="!loading && error">
+			<template #default>
 				<el-button @click.stop="getGroupSymbols()">点击刷新</el-button>
 			</template>
-		</el-result>
+		</Error>
 		
 		<ul class="w-full" v-if="loading && !error">
 			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">

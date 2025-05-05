@@ -100,6 +100,7 @@
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			loading.value = false
+			error.value = ''
 			if (!loading.value && !error.value && message.data) updateBookList(message)
 		})
 	
@@ -225,8 +226,16 @@
 		getBooksFull()
 	}
 
+	const wsError = (state:number)=>{
+		if(state<0){
+			loading.value = false
+			error.value = '网络异常，连接错误'
+		}
+	}
+
 	const {$windowEvent} = useNuxtApp()
 	onMounted(() => {
+		$ws.getSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz;
 		setTimeout(() => {
@@ -254,11 +263,11 @@
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  click-sound/>
 			</el-select> -->
 		</div>
-		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
-			<template #extra>
+		<Error :content="error" v-if="!loading && error" class="min-h-[400px]">
+			<!-- <template #default>
 				<el-button @click.stop="getBooksFull()">点击刷新</el-button>
-			</template>
-		</el-result>
+			</template> -->
+		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative">

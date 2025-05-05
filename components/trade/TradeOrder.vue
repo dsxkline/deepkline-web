@@ -1,5 +1,6 @@
 <script setup lang="ts">
 	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+import { useStore } from '~/store';
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		height?: number
@@ -11,13 +12,14 @@
 		// 获取当前组件的高度
 		let h = props.height
 		if (process.client) {
-			h = props.height || window?.innerHeight - 4 * 40
+			h = props.height || useStore().bodyHeight - 4 * 40
 			nextTick(() => {
 				loading.value = false
 			})
 		}
 		return h
 	})
+	
 	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
 	const point = computed(() => {
 		let p = String(symbolObj.value?.tickSz).split('.')
@@ -201,7 +203,7 @@
 							</div>
 
 							<div class="pt-2">
-								<el-popover placement="left" trigger="click" ref="popProfit">
+								<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
 										<div click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
@@ -211,7 +213,7 @@
 									</template>
 									<StopProfitLoss :type="0" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmProfit" v-if="!loading" />
 								</el-popover>
-								<el-popover placement="left" trigger="click" ref="popLoss">
+								<el-popover placement="left" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
 										<div click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
@@ -246,11 +248,11 @@
 				</el-scrollbar>
 			</client-only>
 			<div v-show="loading || error" class="p-4">
-				<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
-					<template #extra>
+				<Error :content="error" v-if="!loading && error">
+					<template #default>
 						<el-button @click.stop="getSymbolInfo()">点击刷新</el-button>
 					</template>
-				</el-result>
+				</Error>
 				<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 			</div>
 		</div>

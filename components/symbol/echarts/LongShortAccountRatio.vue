@@ -185,11 +185,11 @@ import { _borderWidth } from '#tailwind-config/theme'
 			<div class="chart w-full h-[285px]" ref="chart"></div>
 		</div>
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
-		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
-			<template #extra>
+		<Error :content="error" v-if="!loading && error">
+			<template #default>
 				<el-button type="primary" @click.stop="fetchData(Period.M5)">点击刷新</el-button>
 			</template>
-		</el-result>
+		</Error>
 	</div>
 </template>
 <style lang="less" scoped></style>

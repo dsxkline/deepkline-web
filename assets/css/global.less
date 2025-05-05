@@ -7,3 +7,28 @@ html,body{
 .wrapper {
     container-type: inline-size;
 }
+
+.bt-default {
+    background-color: var(--transparent05);
+    border: 1px solid var(--transparent05);
+    color: var(--color-text-main);
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    &:hover {
+        background-color: var(--transparent08);
+        color: var(--color-text-main);
+    }
+}
+
+.bt-primary {
+    background-color: rgb(var(--color-green));
+    border: 1px solid rgb(var(--color-green));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 3px;
+    font-size: 12px;
+    &:hover {
+        background-color: rgb(var(--color-green)/0.9);
+    }
+}

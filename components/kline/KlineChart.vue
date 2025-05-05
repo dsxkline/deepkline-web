@@ -102,11 +102,11 @@
 </script>
 <template>
 	<div class="kline-chart-container w-full h-full">
-		<el-result icon="error" title="错误提示" :sub-title="error" v-if="error">
-			<template #extra>
+		<Error :content="error" v-if="error">
+			<template #default>
 				<el-button type="info" @click.stop="reloadChart">点击刷新</el-button>
 			</template>
-		</el-result>
+		</Error>
 		<div class="kline w-full h-full" ref="klineDom" v-show="!error"></div>
 	</div>
 </template>
