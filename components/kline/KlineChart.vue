@@ -10,6 +10,7 @@
 	declare var window: DsxWindow
 	const klineDom = ref(null)
 	const error = ref('')
+	const loading = ref(true)
 	const chart = ref<DsxKlineChart>()
 	function reloadChart() {
 		chart.value && chart.value.reload()
@@ -92,6 +93,7 @@
 
 		chart.value.onLoading = () => {
 			error.value = ''
+			loading.value = false
 		}
 		chart.value.onError = err => {
 			error.value = '网络异常，请稍后再试'
@@ -107,6 +109,7 @@
 				<el-button type="info" @click.stop="reloadChart">点击刷新</el-button>
 			</template>
 		</Error>
+		<el-skeleton :rows="10" animated v-if="loading && !error" class="p-3" />
 		<div class="kline w-full h-full" ref="klineDom" v-show="!error"></div>
 	</div>
 </template>
