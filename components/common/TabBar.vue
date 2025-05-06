@@ -158,7 +158,7 @@
 		flex-direction: column;
 		.tabbar-header {
 			width: 100%;
-			overflow-x: scroll;
+			overflow-x: auto;
 			position: relative;
 			padding: 0px 16px;
 			ul {
@@ -171,7 +171,7 @@
 					cursor: pointer;
 					margin: 0 10px;
 					color: rgb(var(--color-text-muted));
-					font-size: 18px;
+					font-size: 16px;
 					user-select: none;
 					display: flex;
 					align-items: center;

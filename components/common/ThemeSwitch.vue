@@ -37,6 +37,9 @@
     	--el-switch-off-color: var(--transparent10);
 		:deep(.el-switch__core){
 			min-width: 30px;
+			&:hover{
+				border-color: var(--transparent50);
+			}
 			.el-switch__action{
 				background-color: black;
 				.el-icon{

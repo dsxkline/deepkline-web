@@ -6,7 +6,7 @@
 	import SymbolList from './search/SymbolList.vue'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -14,9 +14,7 @@ import { useStore } from '~/store'
 		{
 			name: '自选',
 			contentComp: markRaw(Options),
-			contentParams: {
-				
-			}
+			contentParams: {}
 		},
 		{
 			name: '市场',
@@ -30,13 +28,13 @@ import { useStore } from '~/store'
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
 		}
-	)	
+	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
-		if(!favoriteSymbols?.length) {
+		if (!favoriteSymbols?.length) {
 			active.value = 1
 			tabbar.value.update(active.value)
 		}
@@ -45,15 +43,12 @@ import { useStore } from '~/store'
 <template>
 	<div>
 		<TabBar ref="tabbar" :menus="menus" :hideLine="true" :height="tabbarHeight" :active="active" />
-		
 	</div>
 </template>
 <style lang="less" scoped>
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			@apply px-4;
-			border-bottom: 1px solid var(--transparent05);
-			overflow-x: unset;
 			height: var(--header-height);
 			ul {
 				li {

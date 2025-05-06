@@ -9,7 +9,7 @@
 	import SymbolDatas from './SymbolDatas.vue'
 	import TradeOrder from '../trade/TradeOrder.vue'
 	import SymbolInfo from './SymbolInfo.vue'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -45,17 +45,21 @@ import { useStore } from '~/store'
 		}
 	])
 
-	watch(()=>props.symbol,val=>{
-		menus.value.forEach(item=>{
-			if(item.contentParams) item.contentParams.symbol=val});
-	})
+	watch(
+		() => props.symbol,
+		val => {
+			menus.value.forEach(item => {
+				if (item.contentParams) item.contentParams.symbol = val
+			})
+		}
+	)
 
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
 		}
-	)	
+	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
@@ -70,7 +74,6 @@ import { useStore } from '~/store'
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			padding: 0px 16px;
-			border-bottom: 1px solid var(--transparent05);
 			overflow-x: unset;
 			height: var(--header-height);
 			ul {

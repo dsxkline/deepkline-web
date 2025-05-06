@@ -21,6 +21,7 @@
     "moment": "^2.30.1",
     "nuxt": "^3.11.2",
     "nuxt-proxy": "^0.4.1",
+    "nvm": "^0.0.4",
     "pinia": "^2.1.7",
     "single-spa": "^6.0.1",
     "single-spa-vue": "^3.0.0",
@@ -35,6 +36,7 @@
     "@types/crypto-js": "^4.2.2",
     "autoprefixer": "^10.4.19",
     "dotenv": "^16.4.5",
-    "postcss": "^8.4.38"
+    "postcss": "^8.4.38",
+    "typescript": "^5.8.3"
   }
 }

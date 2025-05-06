@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
-import { useStore } from '~/store';
+	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		height?: number
@@ -19,7 +19,7 @@ import { useStore } from '~/store';
 		}
 		return h
 	})
-	
+
 	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
 	const point = computed(() => {
 		let p = String(symbolObj.value?.tickSz).split('.')
@@ -227,22 +227,22 @@ import { useStore } from '~/store';
 						</div>
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
-							<el-button type="primary" size="large" class="w-full !h-auto" click-sound>
+							<button size="large" :class="['w-full !h-auto !py-3',side==Sides.SELL?'bt-red':'bt-green']" click-sound>
 								<div class="flex flex-col items-center">
 									<b class="text-base"
 										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
 									>
 									<p class="pt-2">{{ buyDes }}</p>
 								</div>
-							</el-button>
-							<el-button type="primary" size="large" class="w-full !h-auto mt-3 !ml-0 sell-bt bg-red flex flex-row items-center" click-sound>
+							</button>
+							<button size="large" class="w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" click-sound>
 								<div class="flex flex-col items-center">
 									<b class="text-base"
 										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
 									>
 									<p class="pt-2">{{ sellDes }}</p>
 								</div>
-							</el-button>
+							</button>
 						</div>
 					</div>
 				</el-scrollbar>
@@ -275,8 +275,6 @@ import { useStore } from '~/store';
 	}
 	.sell-bt {
 		display: none;
-		background-color: rgb(var(--color-red));
-		border-color: rgb(var(--color-red));
 	}
 	.trade-ordtype-select {
 		display: none;

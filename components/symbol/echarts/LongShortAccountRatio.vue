@@ -5,7 +5,7 @@
 	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import moment from 'moment'
-import { _borderWidth } from '#tailwind-config/theme'
+	import { _borderWidth } from '#tailwind-config/theme'
 	const chart = ref(null)
 	const period = ref('5m')
 	const loading = ref(true)
@@ -46,7 +46,7 @@ import { _borderWidth } from '#tailwind-config/theme'
 			top: '10', // 图表容器的上边距
 			bottom: '10', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
-			right: '0', // 图表容器的右边距
+			right: '0' // 图表容器的右边距
 			// show: true,
 			// borderColor: '#333',
 			// borderWidth:1
@@ -123,15 +123,15 @@ import { _borderWidth } from '#tailwind-config/theme'
 		}
 	)
 	watch(
-		()=>props.symbol,
-		val=>{
+		() => props.symbol,
+		val => {
 			fetchData(period.value as Period)
 		}
 	)
 
-	function createEchart(){
+	function createEchart() {
 		echart && echart.dispose()
-		echart = echarts.init(chart.value,useColorMode().value == 'dark' ? 'dark' : 'light')
+		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
 		echart && echart.resize()
 	}
@@ -149,7 +149,7 @@ import { _borderWidth } from '#tailwind-config/theme'
 					const parentWidth = (parentElement.parentNode as HTMLElement).clientWidth
 					const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
 					width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
-					echart && echart.resize({width: width.value})
+					echart && echart.resize({ width: width.value })
 				}
 			})
 			// 监听父级元素宽度变化
@@ -185,7 +185,7 @@ import { _borderWidth } from '#tailwind-config/theme'
 			<div class="chart w-full h-[285px]" ref="chart"></div>
 		</div>
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
-		<Error :content="error" v-if="!loading && error">
+		<Error :content="error" v-if="!loading && error" class="flex-1">
 			<template #default>
 				<el-button type="primary" @click.stop="fetchData(Period.M5)">点击刷新</el-button>
 			</template>

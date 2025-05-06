@@ -313,7 +313,7 @@
 					:id="'symbol-list-id-' + item.instId"
 					:class="[
 						'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-						useSymbolStore().activeSymbol == item.instId ? 'border-l-[2px] !border-[--transparent30]' : ''
+						useSymbolStore().activeSymbol == item.instId ? 'border-l !border-green-500' : ''
 					]"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"

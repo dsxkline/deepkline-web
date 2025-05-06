@@ -99,6 +99,7 @@
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
+			// if(window.dsxKlineScrolling) return;
 			loading.value = false
 			error.value = ''
 			if (!loading.value && !error.value && message.data) updateBookList(message)

@@ -14,6 +14,9 @@ export default defineNuxtConfig({
 		port: 3010,
 		host: '0.0.0.0'
 	},
+	typescript:{
+		shim:true
+	},
 	runtimeConfig: config,
 	devtools: { enabled: true },
 	modules: modulesConfig,

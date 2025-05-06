@@ -86,7 +86,7 @@
 				height: calc(100% - var(--footer-height));
 			}
 			&:deep(.gutter) {
-				background-color: var(--border-color);
+				background-color: transparent;
 				background-repeat: no-repeat;
 				background-position: 50%;
 				&:hover {

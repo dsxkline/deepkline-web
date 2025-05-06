@@ -222,7 +222,7 @@
 			<div class="chart w-full h-[285px]" ref="chart"></div>
 		</div>
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
-		<Error :content="error" v-if="!loading && error">
+		<Error :content="error" v-if="!loading && error" class="flex-1">
 			<template #default>
 				<el-button type="primary" @click.stop="fetchData(Period.M5)">点击刷新</el-button>
 			</template>

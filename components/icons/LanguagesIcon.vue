@@ -9,11 +9,11 @@
 <style lang="less" scoped>
 	svg {
 		path {
-			fill: var(--transparent60);
+			fill: var(--transparent80);
 		}
         &:hover {
             path {
-                fill: var(--transparent90);
+                fill: rgb(var(--color-text-main));
             }
         }
 	}

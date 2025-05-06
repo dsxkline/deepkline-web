@@ -26,11 +26,14 @@
 	const splitContainer = ref()
 	const hideSplitRight = ref(false)
 	const hideSplitLeft = ref(false)
+	const loading = ref(true)
 	const updateWindowWidth = (animation: boolean = true) => {
 		windowWidth.value = splitContainer.value.clientWidth
+		if(windowWidth.value>0) loading.value = false
 		setAutoSplit()
 		split && split.setSizes([left, right])
 		split && hideSplit(animation)
+		setGutter(left)
 	}
 	let left = 20
 	let right = 100 - left
@@ -39,23 +42,31 @@
 		// useStore().addSplitScreen(instance)
 		// window.addEventListener('resize', updateWindowWidth)
 		updateWindowWidth()
+		
 		split = Split([splitContainer.value.querySelector('#split-left'), splitContainer.value.querySelector('#split-right')], {
 			sizes: [left, right],
 			minSize: [leftWidth, rightWidth],
 			// maxSize: [leftWidth,0],
 			direction: 'horizontal',
-			gutterSize: 2,
+			gutterSize: 1,
 			onDragStart: () => {
 				console.log('onDragStart')
 			},
 			onDrag: () => {
-				console.log('onDrag')
-				if (split.getSizes()[0] > 0) {
+				const left = split.getSizes()[0]
+				if (left > 0) {
 					hideSplitLeft.value = false
 				}
+				console.log('onDrag',left)
+				setGutter(left)
 			},
 			onDragEnd: () => {
-				console.log('onDragEnd')
+				// console.log('onDragEnd')
+				// const left = split.getSizes()[0]
+				// if (left > 0) {
+				// 	hideSplitLeft.value = false
+				// }
+				// setGutter(left)
 			}
 		})
 
@@ -76,15 +87,23 @@
 	onUnmounted(() => {
 		// window.removeEventListener('resize', updateWindowWidth)
 	})
+	function setGutter(left:number,width:number=4){
+		const gutter = splitContainer.value.querySelector('.gutter')
+		if(gutter) {
+			gutter.style.left=`calc(${left+"%"} + 0.5px)`
+			// gutter.style.width = width+"px";
+		}
+	}
 	function setAutoSplit() {
 		if (leftWidth > 0) {
-			left = (leftWidth / (windowWidth.value - 2)) * 100.0
+			left = (leftWidth / (windowWidth.value - 1)) * 100.0
 			right = 100 - left
 		}
 		if (rightWidth > 0) {
-			right = (rightWidth / (windowWidth.value - 2)) * 100.0
+			right = (rightWidth / (windowWidth.value - 1)) * 100.0
 			left = 100 - right
 		}
+		
 	}
 	function addAnimation(dom?: HTMLElement) {
 		if (dom) {
@@ -187,6 +206,7 @@
 			>
 				<slot name="left"></slot>
 			</div>
+			<div class="h-full bg-[--border-color]" style="width: 1px;"></div>
 			<div
 				class="relative"
 				id="split-right"
@@ -208,19 +228,29 @@
 		height: calc(100%);
 		width: 100%;
 		.split-horizontal {
+			position: relative;
 			#split-left {
 				width: calc(360px);
 			}
 			#split-right {
-				width: calc(100% - 360px - 2px);
+				width: calc(100% - 360px - 1px);
 				overflow-x: hidden;
 			}
 			&:deep(.gutter) {
-				background-color: var(--border-color);
+				position: absolute;
+				height: 100%;
+				top: 0;
+				left: calc(360px);
+				z-index: 1;
+				background-color: transparent;
 				background-repeat: no-repeat;
 				background-position: 50%;
+				width: 1px;
 				&:hover {
 					cursor: col-resize;
+					width: 4px!important;
+					transform: translateX(-2px);
+					background-color: rgb(var(--color-green)/0.5);
 				}
 				.gutter-horizontal {
 					background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==');
