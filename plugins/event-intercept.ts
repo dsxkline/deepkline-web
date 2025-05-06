@@ -14,7 +14,7 @@ class WindowsEvent{
     isLeave:boolean
     constructor(){
         // 静止时间，行情停止刷新超过2分钟，显现时自动刷新一次
-		this.quiescentTimeout = 1 * 60 * 1000
+		this.quiescentTimeout = 5 * 60 * 1000
 		this.quiescentTime = 0
         this.checkBrowserTimer = null
         this.isBrowserDelay = false
