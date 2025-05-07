@@ -60,10 +60,10 @@
 
 <style scoped lang="less">
 	.main-container {
-		height: calc(100vh - var(--header-height) - var(--footer-height));
-		width: 100vw;
+		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height));
+		width: var(--body-width);
 		.right-container {
-			width: calc(100vw - var(--menu-width));
+			width: calc(var(--body-width) - var(--menu-width));
 		}
 	}
 </style>

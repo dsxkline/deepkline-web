@@ -1,5 +1,5 @@
 <template>
-    <div class="app-container flex flex-col justify-between">
+    <div class="app-container flex flex-col justify-between w-full h-full">
         <Header></Header>
         <slot />
         <StatusBar></StatusBar>
