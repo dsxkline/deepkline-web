@@ -364,7 +364,9 @@
 
 					.el-input__wrapper {
 						padding: 0 5px;
-						box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
+						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
+						box-shadow: none;
+						border: 1px solid rgb(var(--color-green));
 					}
 
 					.el-input-number__increase {
@@ -387,7 +389,9 @@
 
 				.price-input {
 					:deep(.el-input__wrapper) {
-						box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
+						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
+						box-shadow: none;
+						border: 1px solid rgb(var(--color-green));
 					}
 				}
 

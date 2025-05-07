@@ -54,7 +54,7 @@
 		position: relative;
 		&::before {
 			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-			background-image: linear-gradient(90deg, #c0ffe5, #a8fffa, #82a9ff);
+			background-image: linear-gradient(90deg, #1e6f4d, #309993, #112d6b);
 			filter: blur(60px);
 			position: absolute;
 			top: 0;
@@ -64,7 +64,7 @@
 			content: '';
 			z-index: -1;
 			opacity: 0.6;
-			transition: all 0.3s ease;
+			// transition: all 0.3s ease;
 		}
 		
 

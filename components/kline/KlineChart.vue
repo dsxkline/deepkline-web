@@ -11,27 +11,27 @@
 	const klineDom = ref(null)
 	const error = ref('')
 	const loading = ref(true)
-	const chart = ref<DsxKlineChart>()
+	let chart:DsxKlineChart = null
 	function reloadChart() {
-		chart.value && chart.value.reload()
+		chart && chart.reload()
 	}
 	watch(
 		() => useKlineStore().cycle[props.symbol],
 		(newVal, oldVal) => {
-			chart.value && chart.value.updateCycle(newVal)
+			chart && chart.updateCycle(newVal)
 		}
 	)
 	watch(
 		() => useColorMode().preference,
 		newVal => {
-			chart.value && chart.value.updateTheme(newVal)
+			chart && chart.updateTheme(newVal)
 		}
 	)
 	watch(
 		() => useKlineStore().main[props.symbol],
 		newVal => {
 			console.log('newVal useKlineStore().main=', newVal)
-			chart.value && chart.value.selectMain(newVal)
+			chart && chart.selectMain(newVal)
 		},{
 			deep:true
 		}
@@ -40,7 +40,7 @@
 		() => useKlineStore().sides[props.symbol],
 		newVal => {
 			console.log('newVal useKlineStore().sides=', newVal)
-			chart.value && chart.value.selectSides(newVal)
+			chart && chart.selectSides(newVal)
 		},{
 			deep:true
 		}
@@ -49,9 +49,10 @@
 	watch(
 		()=>useSymbolStore().symbols[props.symbol],
 		(val)=>{
+			console.log('useSymbolStore().symbols[props.symbol] =', val)
 			const symbolDetail = val
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
-			chart.value?.updateDecimal(point)
+			chart && chart.updateDecimal(point)
 			// chart.value && chart.value.create()
 		}
 	)
@@ -59,24 +60,25 @@
 	watch(
 		() => props.symbol,
 		newVal => {
+			console.log('props.symbol =', newVal)
 			const symbolDetail = useSymbolStore().symbols[newVal]
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
-			chart.value?.updateDecimal(point)
-			chart.value && chart.value.tapSymbol(newVal)
+			chart && chart.updateDecimal(point)
+			chart && chart.tapSymbol(newVal)
 		}
 	)
 	onMounted(() => {
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
-		chart.value = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useColorMode().preference, {
-			element: klineDom.value || '',
+		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useColorMode().preference, {
+			element: '.kline-chart-container .kline',
 			autoSize: true,
 			chartType: ChartType.candle,
 			// klineWidth: 1,
 			candleType: CandleType.solid,
 			zoomLockType: ZoomLockType.follow,
 			crossModel: CrossModel.mouseOver,
-			// transformers: true,
+			transformers: false,
 			// isShowKlineTipPannel: true,
 			// sideHeight: 80,
 			// paddingBottom: 20,
@@ -88,28 +90,28 @@
 			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length,
 		})
 		nextTick(() => {
-			chart.value && chart.value.create()
+			chart.create()
 		})
 
-		chart.value.onLoading = () => {
+		chart.onLoading = () => {
 			error.value = ''
 			loading.value = false
 		}
-		chart.value.onError = err => {
+		chart.onError = err => {
 			error.value = '网络异常，请稍后再试'
 		}
 
-		
 	})
 </script>
 <template>
-	<div class="kline-chart-container w-full h-full">
+	<div class="kline-chart-container w-full h-full" ref="klineDom">
 		<Error :content="error" v-if="error">
 			<template #default>
 				<el-button type="info" @click.stop="reloadChart">点击刷新</el-button>
 			</template>
 		</Error>
 		<el-skeleton :rows="10" animated v-if="loading && !error" class="p-3" />
-		<div class="kline w-full h-full" ref="klineDom" v-show="!error"></div>
+		<div class="kline w-full h-full" v-show="!error"></div>
+		
 	</div>
 </template>

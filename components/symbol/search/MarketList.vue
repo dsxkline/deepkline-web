@@ -44,7 +44,7 @@
 		() => props.keyword,
 		(n, o) => {
 			if (n !== o) {
-				console.log('active',active.value,tabbar.value)
+				console.log('props.keyword active',active.value,tabbar.value)
 				if(menus.value[0].contentParams)menus.value[0].contentParams.keyword = n
 				if(menus.value[1].contentParams)menus.value[1].contentParams.keyword = n
 				update()

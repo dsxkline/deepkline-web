@@ -2,7 +2,7 @@
 import { useSymbolStore } from '~/store/symbol';
 import type { Instruments } from '~/fetch/okx/okx.type.d';
 const props = defineProps<{
-    symbol: Instruments
+    symbol: string
 }>()
 
 </script>
@@ -12,7 +12,7 @@ const props = defineProps<{
         <SymbolTitle :symbol="symbol" />
         <SymbolTools  :symbol="symbol"/>
         <el-divider direction="vertical"></el-divider>
-        <CycleBar  :symbol="symbol"/>
+        <CycleBar :symbol="symbol"/>
     </div>
 </template>
 <style lang="less" scoped>

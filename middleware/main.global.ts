@@ -5,20 +5,20 @@ import { useStore } from "~/store";
 import { useSymbolStore } from "~/store/symbol";
 import { ApiSource } from "~/types/types.d";
 
-function getDefaultInstruments() {
+function getDefaultInstruments(InstanceType:InstanceType) {
     const symbolStore = useSymbolStore();
-    publicFetch.getInstruments(InstanceType.SPOT).then(res=>{
+    publicFetch.getInstruments(InstanceType).then(res=>{
         if (res?.data) {
             symbolStore.setSymbols(res.data);
         }else{
             setTimeout(() => {
-                getDefaultInstruments()
+                getDefaultInstruments(InstanceType)
             }, 5000);
         }
     }).catch(err=>{
         console.error(err);
         setTimeout(() => {
-            getDefaultInstruments()
+            getDefaultInstruments(InstanceType)
         }, 5000);
     })
 }
@@ -35,7 +35,8 @@ export default defineNuxtRouteMiddleware((to, from) => {
     if (process.client) {
         const state = useStore();
         if (state.apiSource == ApiSource.OKX) {
-            getDefaultInstruments()
+            getDefaultInstruments(InstanceType.SPOT)
+            getDefaultInstruments(InstanceType.SWAP)
         }
     }
 })

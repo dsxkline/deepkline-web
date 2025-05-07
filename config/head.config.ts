@@ -18,6 +18,12 @@ export default {
     script: [
         {
             src:'/js/dsx.kline_v_3_1_0.js'
+        },
+        {
+            src:'/js/qq.hq_v_3_1_0.js'
+        },
+        {
+            src:'/kline.js'
         }
     ]
 }

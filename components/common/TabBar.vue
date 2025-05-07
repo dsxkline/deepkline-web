@@ -29,6 +29,10 @@
 		lineWidth: {
 			type: Number,
 			default: 6
+		},
+		autoLoad:{
+			type:Boolean,
+			default:true
 		}
 	})
 	const menuActive = ref(0)
@@ -99,7 +103,6 @@
 	}
 
 	function update(index: number) {
-		
 		// 默认点击某个菜单
 		const menu = props.menus[index]
 		if (menu) menuHandler(menu, index)
@@ -117,7 +120,7 @@
 	onMounted(() => {
 		menuActive.value = props.active
 		nextTick(() => {
-			update(menuActive.value)
+			props.autoLoad && update(menuActive.value)
 		})
 	})
 

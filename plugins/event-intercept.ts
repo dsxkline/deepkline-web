@@ -52,6 +52,47 @@ class WindowsEvent{
 		document.addEventListener('resume', this.resumeHandler)
 		// 定时器限流检测
 		this.checkBrowserHeart()
+
+		this.clearWindowEvent()
+
+	}
+
+	clearWindowEvent(){
+		// 禁用双指放大
+		document.body.addEventListener('dblclick', function (event) {
+			event.preventDefault()
+		})
+		document.documentElement.addEventListener(
+			'touchstart',
+			function (event) {
+				if (event.touches.length > 1) {
+					event.preventDefault()
+				}
+			},
+			false
+		)
+
+		var lastTouchEnd = 0
+		document.documentElement.addEventListener(
+			'touchend',
+			function (event) {
+				var now = Date.now()
+				if (now - lastTouchEnd <= 300) {
+					event.preventDefault()
+				}
+				lastTouchEnd = now
+			},
+			false
+		)
+
+		document.addEventListener('gesturestart', function (event) {
+			event.preventDefault()
+		})
+
+		// 禁止右键点击
+		// document.addEventListener('contextmenu', function (event) {
+		// 	event.preventDefault(); // 取消默认右键菜单
+		// });
 	}
 
 	// 浏览器限流检测，一般是标签被隐藏或浏览器回到后台，或熄屏后
@@ -60,13 +101,13 @@ class WindowsEvent{
 		this.checkBrowserTimer = setInterval(() => {
 			const now = Date.now()
 			const delta = now - lastTime
-
+			
 			if (delta > 1500) {
 				// 超过预期时间间隔，可能被限流
 				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`)
 				if (!this.isBrowserDelay) {
-					this.leaveForeground()
 					this.isBrowserDelay = true
+					this.leaveForeground()
 				}
 			} else {
 				// 当浏览器限流后恢复到正常定时器频率
@@ -97,7 +138,7 @@ class WindowsEvent{
         this.isLeave = false
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
-		if (t > this.quiescentTimeout) {
+		if (t > this.quiescentTimeout && this.isBrowserDelay) {
 			// 刷新k线自动刷新时间
 			this.quiescentTime = new Date().getTime()
 			// 超过2分钟，刷新K线图

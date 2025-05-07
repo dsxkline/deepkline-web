@@ -17,8 +17,8 @@ export default class BaseWebSocket {
 	// 监听属性set
 	public set connectLevel(v : number) {
 		this._connectLevel = v;
-		console.log('connectLevel',this.connectLevel)
-		if(this.connectLevelFn) this.connectLevelFn(v)
+		// console.log('connectLevel',this.connectLevel)
+		this.connectLevelFns.forEach(fn=>fn(this.connectLevel));
 	}
 	
 	public get connectLevel() : number {
@@ -27,7 +27,7 @@ export default class BaseWebSocket {
 	
 	
 	private connectLevelTime = 0; // 连接速度时间
-	private connectLevelFn?: (stateLevel:number) => void = () => { };
+	private connectLevelFns: ((stateLevel:number) => void)[] = [];
 	private heatTimer:NodeJS.Timeout | null = null;
 	private heatInterval = 10000;
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
@@ -35,8 +35,8 @@ export default class BaseWebSocket {
 		this.reconnectErrorCallback = reconnectErrorCallback;
 		this.reconnectSuccessCallback = reconnectSuccessCallback;
 	}
-	getSignalState(fn?:(stateLevel:number) => void) {
-		this.connectLevelFn = fn;
+	getSignalState(fn:(stateLevel:number) => void) {
+		if(!this.connectLevelFns.includes(fn))this.connectLevelFns.push(fn);
 		return this.connectLevel;
 	}
 	
@@ -177,17 +177,18 @@ export default class BaseWebSocket {
 			const diff = now - this.connectLevelTime;
 			if (diff < 20) {
 				this.connectLevel = 4;
-			} else if (diff < 50) {
-				this.connectLevel = 3;
 			} else if (diff < 80) {
+				this.connectLevel = 3;
+			} else if (diff < 120) {
 				this.connectLevel = 2;
-			} else if (diff < 100) {
+			} else if (diff < 200) {
 				this.connectLevel = 1;
 			} else {
 				this.connectLevel = 0;
 			}
-			this.connectLevelFn && this.connectLevelFn(this.connectLevel);
+			this.connectLevelFns.forEach(fn=>fn(this.connectLevel));
 			this.connectLevelTime = 0;
+			// console.log('this.connectLevel',this.connectLevel,diff)
 		}
 		if(typeof message === 'string' && message.startsWith('{')) message = JSON.parse(message);
 		Object.values(this.subscribers).forEach(({ tag, callback }) => {

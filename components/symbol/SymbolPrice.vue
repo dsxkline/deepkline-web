@@ -11,6 +11,7 @@ const emit = defineEmits<{
 const { $wsb, $ws } = useNuxtApp()
 const ticker = ref($ws.getTickers(props.symbol.instId))
 const tickerHandler = (data: Ticker) => {
+    // console.log('tickerHandler',props.symbol.instId,data)
     ticker.value = data
     emit('update:price',props.symbol.instId+"@"+data.last)
 }

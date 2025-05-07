@@ -39,6 +39,16 @@ export enum Candle{
     VOL="VOL", 
     AMOUNT="AMOUNT"
 }
+export interface CandleModel{
+    DATE:string,
+    TIME:string,
+    OPEN:number, 
+    HIGH:number, 
+    LOW:number, 
+    CLOSE:number, 
+    VOL:number, 
+    AMOUNT:number
+}
 export enum TimeSharing{
     DATE="DATE",
     TIME="TIME",
@@ -174,6 +184,7 @@ export interface DsxKlineConfig {
 	workerPath?:string,
 	loadMain?: string[];
 	loadSides?: string[];
+	
 }
 export declare class DsxKline {
 	constructor(config: DsxKlineConfig);
@@ -185,6 +196,7 @@ export declare class DsxKline {
 	theme: ThemeItem;
 	hideCrossLine: boolean;
 	datas: any[];
+	showDatas:CandleModel[]
 	decimalPoint?:number;
 	update(config: DsxKlineConfig): void;
 	onLoading: OnLoading;

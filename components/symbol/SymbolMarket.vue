@@ -68,7 +68,9 @@
 	}
 	:deep(.el-input) {
 		.el-input__wrapper {
-			box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+			// box-shadow: 0 0 0 1px var(--el-input-focus-border-color) inset;
+			box-shadow: none;
+			border: 1px solid var(--el-input-focus-border-color);
 		}
 	}
 </style>

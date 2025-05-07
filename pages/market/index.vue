@@ -23,7 +23,7 @@
 					<template #right>
 						<SplitRowContainer>
 							<template #up>
-								<KlineHeader :symbol="useSymbolStore().getActiveSymbol()" />
+								<KlineHeader :symbol="useSymbolStore().activeSymbol" />
 							</template>
 							<template #down>
 								<div class="flex flex-col justify-between w-full h-full">
@@ -37,7 +37,7 @@
 											</template>
 										</SplitContainer>
 									</div>
-									<div><KlineFooter :symbol="useSymbolStore().getActiveSymbol()" /></div>
+									<div><KlineFooter :symbol="useSymbolStore().activeSymbol" /></div>
 								</div>
 							</template>
 						</SplitRowContainer>

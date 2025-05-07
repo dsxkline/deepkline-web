@@ -1,9 +1,13 @@
 <script setup lang="ts">
 	import type { Instruments } from '~/fetch/okx/okx.type.d'
 	import { useKlineStore } from '~/store/kline'
+	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
-		symbol: Instruments
+		symbol: string
 	}>()
+	const symbolObj = computed(() => {
+		return useSymbolStore().symbols[props.symbol]
+	})
 	const cycleList = ref([
 		{ label: '1分', value: '1m' },
 		{ label: '5分', value: '5m' },
@@ -18,9 +22,9 @@
 	])
 	const cycle = ref('1m')
 	const onCycleChange = async (value: string) => {
-		if (useKlineStore().loading[props.symbol.instId]) return
+		if (useKlineStore().loading[symbolObj.value.instId]) return
 		cycle.value = value
-		useKlineStore().setCycle(props.symbol.instId,value)
+		useKlineStore().setCycle(symbolObj.value.instId,value)
 	}
 </script>
 <template>

@@ -33,7 +33,7 @@
 		setAutoSplit()
 		split && split.setSizes([left, right])
 		split && hideSplit(animation)
-		setGutter(left)
+		
 	}
 	let left = 20
 	let right = 100 - left
@@ -136,6 +136,7 @@
 				if(splitRight.value) {
 					splitRight.value.style.width = '100%'
 				}
+				setGutter(0)
 			} else if (hideSplitRight.value) {
 				split.setSizes([100, 0])
 				if(splitLeft.value) {
@@ -144,15 +145,19 @@
 				if(splitRight.value) {
 					splitRight.value.style.width = '0'
 				}
+				setGutter(100)
 			}
 		} else {
 			leftWidth = props.left
 			rightWidth = props.right
 			setAutoSplit()
 			split.setSizes([left, right])
+			setGutter(split.getSizes()[0])
 		}
 		removeAnimation(splitRight.value)
 		removeAnimation(splitLeft.value)
+		
+		
 	}
 
 	watch(

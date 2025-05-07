@@ -54,7 +54,11 @@
 	// 记录滚动位置
 	const mainScrollTop = ref(0)
 	// 订阅品种code列表
-	const subSymbolCodes = computed(() => virtualList.value.map(item => item.instId))
+	const subSymbolCodes = computed(() => {
+		const start = Math.max(0,offset.value)
+		const end = start + visibleCount.value
+		return virtualList.value.map(item => item.instId)
+	})
 	// 订阅句柄
 	let subHandle = ''
 	// 滚动订阅限频
@@ -78,7 +82,7 @@
 	watch(
 		() => useSymbolStore().favoriteSymbols,
 		(n, o) => {
-			getGroupSymbols()
+			props.favorite && getGroupSymbols()
 		},
 		{ deep: true }
 	)
@@ -144,6 +148,7 @@
 			})
 	}
 	function update() {
+		console.log('symbolCategory',props.symbolCategory,props.favorite)
 		useSymbolStore().loadFavoriteSymbols()
 		getGroupSymbols()
 		
@@ -155,11 +160,13 @@
 
 	function subSymbols() {
 		const { $wsb, $ws } = useNuxtApp()
+		if(!subSymbolCodes.value?.length) return;
 		useSymbolStore().setSubSymbols(subSymbolCodes.value)
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
 			// console.log("subTickers", message.data, error);
 			if (message.data)
 				message.data.forEach(item => {
+					// console.log('subitem',item.instId,item)
 					// 同步到store
 					// useSymbolStore().setTickets(item.instId, item)
 					$ws.setTickers(item.instId, item)

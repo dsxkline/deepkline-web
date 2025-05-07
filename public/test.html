@@ -1,0 +1,382 @@
+<!DOCTYPE html><html>
+	<head>
+		<meta charset="utf-8" />
+		<!-- 不允许放大缩小 -->
+		<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=no" />
+		<title>大师兄K线图</title>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+				-webkit-touch-callout: none; /*系统默认菜单被禁用*/
+				-webkit-user-select: none; /*webkit浏览器*/
+				-moz-user-select: none; /*火狐*/
+				-ms-user-select: none; /*IE10*/
+				user-select: none;
+				font-family: "微软雅黑";
+			}
+
+			body {
+				background-color: #fff;
+			}
+			.green {
+				color: "green";
+			}
+			.red {
+				color: "red";
+			}
+			.tab {
+				overflow: hidden;
+				clear: both;
+				height: 35px;
+				width: 100%;
+				border-top: 1px solid #eeeeee;
+				border-bottom: 1px solid #eeeeee;
+				ul {
+					display: flex;
+					justify-content: space-between;
+				}
+			}
+			.tab li {
+				flex: 1;
+				list-style: none;
+				height: 35px;
+				line-height: 35px;
+				text-align: center;
+			}
+			.newtab li {
+				float: left;
+				list-style: none;
+				width: 20%;
+				height: 35px;
+				line-height: 35px;
+				text-align: center;
+			}
+			.list li {
+				overflow: hidden;
+				padding: 10px;
+				border-bottom: 1px solid #eeeeee;
+			}
+			.list .listitem .itemimage image {
+				float: left;
+			}
+			.list .listitem .itemimage span {
+				font-size: 12px;
+				color: #666;
+			}
+			.list .listitem p {
+				padding: 10px 0;
+			}
+			.main {
+				max-width: 1000px;
+				margin: 0 auto;
+				/* height: 100%; */
+				/* overflow: hidden; */
+			}
+			.navbar {
+				padding: 5px 0;
+				overflow: hidden;
+				text-align: center;
+				font-size: 18px;
+				line-height: 18px;
+				border-bottom: 1px solid #eeeeee;
+			}
+			.navbar b {
+				display: block;
+			}
+			.navbar span {
+				font-size: 10px;
+				line-height: 10px;
+				color: #666;
+			}
+			.head {
+				overflow: hidden;
+				padding: 5px 10px 5px 10px;
+			}
+			.head .title {
+				padding-bottom: 5px;
+			}
+			.head .title span:last-child {
+				font-size: 15px;
+			}
+			.big {
+				font-size: 35px;
+				line-height: 35px;
+				padding-right: 10px;
+				font-weight: bold;
+			}
+			.head .intro ul li {
+				float: left;
+				width: 25%;
+				list-style: none;
+				font-size: 12px;
+				padding-bottom: 2px;
+			}
+			.head .intro ul li span {
+				color: #666;
+				padding-right: 5px;
+			}
+			.head .intro ul li b {
+				color: #666;
+				font-weight: normal;
+			}
+			.klinebox {
+				/* width: 100%; */
+				height: 600px;
+				clear: both;
+				overflow: hidden;
+				/* border-left: 1px solid #eeeeee;
+            border-right: 1px solid #eeeeee; */
+			}
+		</style>
+		<script src="js/dsx.kline_v_3_1_0.js"></script>
+		<script src="js/dsx.views_v_3_1_0.js"></script>
+		<script src="js/qq.hq_v_3_1_0.js"></script>
+	</head>
+	<body>
+		<div class="main">
+			<div class="navbar">
+				<b>-</b>
+				<span>-</span>
+			</div>
+			<div class="head">
+				<div class="title">
+					<span class="big price">-</span>
+					<span class="changeRatio">-</span>
+				</div>
+				<div class="intro">
+					<ul>
+						<li class="open">
+							<span>开</span>
+							<b></b>
+						</li>
+						<li class="lastClose">
+							<span>昨收</span>
+							<b></b>
+						</li>
+						<li class="vol">
+							<span>总手</span>
+							<b></b>
+						</li>
+						<li class="volAmount">
+							<span>金额</span>
+							<b></b>
+						</li>
+
+						<li class="high">
+							<span>高</span>
+							<b></b>
+						</li>
+						<li class="turnoverRate">
+							<span>换手</span>
+							<b></b>
+						</li>
+						<li class="swing">
+							<span>振幅</span>
+							<b></b>
+						</li>
+						<li class="peRatio">
+							<span>市盈</span>
+							<b></b>
+						</li>
+
+						<li class="low">
+							<span>低</span>
+							<b></b>
+						</li>
+						<li class="cityNetRate">
+							<span>市净</span>
+							<b></b>
+						</li>
+						<li class="totalValue">
+							<span>市值</span>
+							<b></b>
+						</li>
+						<li class="circulationValue">
+							<span>流通</span>
+							<b></b>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="tab">
+				<ul>
+					<li onclick="tab(0)">分时</li>
+					<li onclick="tab(1)">五日</li>
+					<li onclick="tab(2)">日K</li>
+					<li onclick="tab(3)">周K</li>
+					<li onclick="tab(4)">月K</li>
+					<li onclick="tab(5)">分钟</li>
+					<li onclick="createLine()">画线</li>
+				</ul>
+			</div>
+			<div class="klinebox">
+				<div id="kline" style="display: block"></div>
+			</div>
+
+			<div class="tab newtab">
+				<ul>
+					<li>资讯</li>
+					<li>成分股</li>
+					<li>异动</li>
+					<li>公告</li>
+					<li>相关ETF</li>
+				</ul>
+			</div>
+			<div class="list">
+				<ul>
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+
+					<li class="listitem">
+						<div class="itemimage">
+							<img src="" />
+							<h3>新闻资讯标题</h3>
+							<span>3小时前 来自 xgd.xianggangug.com</span>
+						</div>
+						<p>东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机东风快递快放假的咖啡机</p>
+						<p><img src="" /></p>
+						<div class="itembottom">
+							<button>转发</button>
+							<button>点赞</button>
+							<button>关注</button>
+							<button>更多</button>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>
+
+<script src="kline.js"></script>
+<script>
+	const kline = new DsxKlineChart({
+		el: "#kline"
+	});
+	kline.create();
+
+	function tab(i) {
+		kline.tab(i);
+	}
+
+	function createLine() {
+		// 趋势线
+		// const dsxTrendLine = new DsxTrendLine(kline.kline, {horizontal:true});
+		// 延伸趋势线
+		// const dsxTrendLine = new DsxTrendLine(kline.kline, {extended: true,extendedHead:false,extendedFoot:false});
+		// 射线
+		// const rayLine = new DsxRayLine(kline.kline, {});
+		// 带箭头的线
+		const dsxTrendLine = new DsxTrendLine(kline.kline, {arrow:true});
+	}
+</script>

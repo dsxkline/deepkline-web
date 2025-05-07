@@ -18,7 +18,7 @@ class DsxKlineChart {
 	theme?: string
 	sides: string[] = ['MACD','KDJ','RSI']
 	main: string[] = ['MA']
-	datas: string[] = []
+	datas: Array<string> = []
 	chartType: any
 	page: number = 1
 	lastItem: string = ''
@@ -34,7 +34,7 @@ class DsxKlineChart {
 		this.theme = theme;
 		this.config = config
 		this.symbol = symbol
-		this.cycle = cycle
+		this.cycle = cycle||'1m'
 	}
 
 	whenBrowserActive=()=>{
@@ -85,7 +85,7 @@ class DsxKlineChart {
 		}
 
 		this.subCandleId = $wsb.subCandle(candleCycle[this.cycle + ''], [this.symbol + ''], (message, error) => {
-			// console.log(candleCycle[this.cycle + ""], message.data, error);
+			console.log(candleCycle[this.cycle + ""], message.data, error);
 			if (message.data)
 				message.data.forEach(item => {
 					// console.log(candleCycle[this.cycle+""],item, error);
@@ -93,21 +93,21 @@ class DsxKlineChart {
 				})
 		})
 		let lastTikerClose = ''
-		useSymbolStore().setSubSymbols(this.symbol + '')
-		this.subTickerId = $ws.subTickers([this.symbol + ''], (message, error) => {
-			// console.log("subTickers", message.data, error);
-			if (message.data)
-				message.data.forEach(item => {
-					if (item.last !== lastTikerClose) {
-						lastTikerClose = item.last
-						// console.log("subTickers", item, error);
-						const amount = parseFloat(item.last) * parseFloat(item.lastSz)
-						this.refresh([item.ts.toString(), item.last, item.last, item.last, item.last, item.lastSz, amount.toString()])
-						// 同步到store
-						useSymbolStore().setTickets(this.symbol + '', item)
-					}
-				})
-		})
+		// useSymbolStore().setSubSymbols(this.symbol + '')
+		// this.subTickerId = $ws.subTickers([this.symbol + ''], (message, error) => {
+		// 	console.log("subTickers", message.data, error);
+		// 	if (message.data)
+		// 		message.data.forEach(item => {
+		// 			if (item.last !== lastTikerClose && item.instId==this.symbol) {
+		// 				lastTikerClose = item.last
+		// 				// console.log("subTickers", item, error);
+		// 				const amount = parseFloat(item.last) * parseFloat(item.lastSz)
+		// 				this.refresh([item.ts.toString(), item.last, item.last, item.last, item.last, item.lastSz, amount.toString()])
+		// 				// 同步到store
+		// 				useSymbolStore().setTickets(this.symbol + '', item)
+		// 			}
+		// 		})
+		// })
 	}
 
 	unsubscribe() {
@@ -178,11 +178,12 @@ class DsxKlineChart {
 				} else {
 					this.datas = datas.concat(this.datas)
 				}
-
+				
 				this.kline.update({
 					datas: this.datas,
-					page: this.page
+					page: this.page,
 				})
+				this.heartFollowKline()
 				this.page++
 				this.finishLoading()
 				if (datas.length < this.limit) {
@@ -261,6 +262,32 @@ class DsxKlineChart {
 		this.kline.updateIndex(this.main, this.sides)
 	}
 
+	// 呼吸灯跟随K线颜色
+	heartFollowKline(){
+		if(!this.kline.showDatas.length) return;
+		const lastKline = this.kline.showDatas[this.kline.showDatas.length-1];
+		if(lastKline){
+			// 绿色呼吸灯
+			let cricleColor = 'rgba(25, 200, 59, 1)'
+			let cricleColorStart = 'rgba(25, 200, 59, 0.5)'
+			let cricleColorStop = this.theme == 'white' ? 'rgba(255,255,255, 0.0)' : 'rgba(13,16,23, 0.0)'
+			// 红色呼吸灯
+			let cricleColorRed = 'rgba(255, 55, 55, 1)'
+			let cricleColorStartRed = 'rgba(254, 53, 53, 0.5)'
+			let cricleColorStopRed = this.theme == 'white' ? 'rgba(255,255,255, 0.0)' : 'rgba(13,16,23, 0.0)'
+			// 空 红色
+			if(lastKline.OPEN>lastKline.CLOSE){
+				this.kline.theme.cricleColor = cricleColorRed
+				this.kline.theme.cricleColorStart = cricleColorStartRed
+				this.kline.theme.cricleColorStop = cricleColorStopRed
+			}else{
+				this.kline.theme.cricleColor = cricleColor
+				this.kline.theme.cricleColorStart = cricleColorStart
+				this.kline.theme.cricleColorStop = cricleColorStop
+			}
+		}
+	}
+
 	refresh(d: string[]) {
 		if(!this.kline.datas?.length) return;
 		const [ts, o, h, l, c, v, a,ac,confirm] = d
@@ -283,6 +310,7 @@ class DsxKlineChart {
 		if (this.kline && this.lastItem != item) {
 			this.kline.refreshLastOneData(item, cycle)
 		}
+		this.heartFollowKline()
 		this.lastItem = item
 		if(confirm!=undefined){
 			this.lastVol = parseFloat(v)
