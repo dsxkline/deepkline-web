@@ -85,7 +85,7 @@ class DsxKlineChart {
 		}
 
 		this.subCandleId = $wsb.subCandle(candleCycle[this.cycle + ''], [this.symbol + ''], (message, error) => {
-			console.log(candleCycle[this.cycle + ""], message.data, error);
+			// console.log(candleCycle[this.cycle + ""], message.data, error);
 			if (message.data)
 				message.data.forEach(item => {
 					// console.log(candleCycle[this.cycle+""],item, error);

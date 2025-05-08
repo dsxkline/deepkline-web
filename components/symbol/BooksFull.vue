@@ -18,6 +18,7 @@
 	let totalBids = ref(0)
 	// 小数点
 	const point = ref(0)
+	const showNumber = 8
 
 	const loading = ref(true)
 	const error = ref('')
@@ -105,23 +106,23 @@
 			if (!loading.value && !error.value && message.data) updateBookList(message)
 		})
 	
-		// marketFetch
-		// 	.booksFull(props.symbol, 10)
-		// 	.then(res => {
-		// 		loading.value = false
-		// 		if (res?.code == 0 && res.data) {
-		// 			const data = res.data[0]
-		// 			updateOrderBook(data)
+		marketFetch
+			.booksFull(props.symbol, 100)
+			.then(res => {
+				loading.value = false
+				if (res?.code == 0 && res.data) {
+					const data = res.data[0]
+					updateOrderBook(data,'')
 					
-		// 		} else {
-		// 			error.value = res?.msg
-		// 		}
-		// 	})
-		// 	.catch(err => {
-		// 		console.log('err', err)
-		// 		loading.value = false
-		// 		error.value = '网络异常，请稍后再试'
-		// 	})
+				} else {
+					error.value = res?.msg
+				}
+			})
+			.catch(err => {
+				console.log('err', err)
+				loading.value = false
+				error.value = '网络异常，请稍后再试'
+			})
 	}
 
 	function updateOrderBook(updates: BookResponse,action:string) {
@@ -195,8 +196,8 @@
 		totalBids.value = 0
 		// 倒序排列
 		let ask = Array.from(orderBook.value.asks.values()).sort((a, b) => a.px - b.px).filter(item=>item.px>parseFloat(ticker.value.last))
-		if(activeBook.value==0) ask = ask.slice(0,9).reverse()
-		else ask = ask.slice(0,20).reverse()
+		if(activeBook.value==0) ask = ask.slice(0,showNumber).reverse()
+		else ask = ask.slice(0,2*showNumber+1).reverse()
 		for (let index = ask.length-1; index >=0; index--) {
 			const item = ask[index]
 			item.total = totalAsks.value += item.sz
@@ -205,8 +206,8 @@
 
 		// 倒序排列
 		let bid = Array.from(orderBook.value.bids.values()).sort((a, b) => b.px - a.px).filter(item=>item.px<parseFloat(ticker.value.last))
-		if(activeBook.value==0) bid = bid.slice(0,9)
-		else bid = bid.slice(0,20)
+		if(activeBook.value==0) bid = bid.slice(0,showNumber)
+		else bid = bid.slice(0,2*showNumber+1)
 		for (let index = 0; index < bid.length; index++) {
 			const item = bid[index]
 			item.total = totalBids.value += item.sz
@@ -228,7 +229,7 @@
 	}
 
 	const wsError = (state:number)=>{
-		if(state<0){
+		if(state==-2){
 			loading.value = false
 			error.value = '网络异常，连接错误'
 		}
@@ -236,7 +237,7 @@
 
 	const {$windowEvent} = useNuxtApp()
 	onMounted(() => {
-		$ws.getSignalState(wsError)
+		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz;
 		setTimeout(() => {
@@ -250,7 +251,7 @@
 	})
 </script>
 <template>
-	<div class="w-full h-full">
+	<div class="w-full h-full min-h-[450px] ">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">订单表</b>

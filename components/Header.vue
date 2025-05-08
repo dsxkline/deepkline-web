@@ -48,6 +48,13 @@
 </template>
 
 <style lang="less" scoped>
+[class=light]{
+	.header{
+		&::before{
+			opacity: 0.3;
+		}
+	}
+}
 	.header {
 		height: var(--header-height);
 		background-color: var(--transparent05);

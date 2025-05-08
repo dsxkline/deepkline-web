@@ -20,7 +20,7 @@ export const marketFetch = {
         }
         return Promise.reject('api source is not supported')
     },
-    getTrades:(symbol:string,limit?:string)=>{
+    getTrades:(symbol:string,limit?:number)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         if(apiSource==ApiSource.OKX){

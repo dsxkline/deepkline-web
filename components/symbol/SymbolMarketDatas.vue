@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
+import Trades from './Trades.vue';
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -93,6 +94,9 @@
 
 			<div class="px-4">
 				<BooksFull :symbol="symbol" />
+			</div>
+			<div class="px-4 py-3">
+				<Trades :symbol="symbol" />
 			</div>
 		</el-scrollbar>
 	</div>

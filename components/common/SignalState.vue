@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const {$ws} = useNuxtApp()
 const signalState = ref(0)
-$ws?.getSignalState((stateLevel:number) => {
+$ws?.onSignalState((stateLevel:number) => {
     // console.log('signalState',stateLevel)
     signalState.value = stateLevel
 })

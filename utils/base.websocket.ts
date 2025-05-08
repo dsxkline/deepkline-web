@@ -35,7 +35,7 @@ export default class BaseWebSocket {
 		this.reconnectErrorCallback = reconnectErrorCallback;
 		this.reconnectSuccessCallback = reconnectSuccessCallback;
 	}
-	getSignalState(fn:(stateLevel:number) => void) {
+	onSignalState(fn:(stateLevel:number) => void) {
 		if(!this.connectLevelFns.includes(fn))this.connectLevelFns.push(fn);
 		return this.connectLevel;
 	}

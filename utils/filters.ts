@@ -1,4 +1,5 @@
 import { number } from 'echarts'
+import moment from 'moment'
 
 export const formatPrice = (value: any, precision: number, prefix: string = '') => {
 	if (!precision) return value+''
@@ -77,4 +78,8 @@ export function noExponents(num:number) {
 	  clearTimeout(timer)
 	  timer = setTimeout(() => fn(...args), delay)
 	}
+  }
+
+  export function formatDate(t:number,format:string){
+	return moment(t).format(format)
   }

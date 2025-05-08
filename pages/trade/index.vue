@@ -8,7 +8,7 @@
 	})
 </script>
 <template>
-	<div class="w-full h-[800px]">
+	<div class="w-full h-full">
 		<KlineChart :symbol="useSymbolStore().activeSymbol" />
 		
 	</div>

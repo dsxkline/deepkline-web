@@ -61,12 +61,13 @@
 				setGutter(left)
 			},
 			onDragEnd: () => {
-				// console.log('onDragEnd')
+				console.log('onDragEnd')
 				// const left = split.getSizes()[0]
 				// if (left > 0) {
 				// 	hideSplitLeft.value = false
 				// }
 				// setGutter(left)
+				useStore().updateSplitScreen()
 			}
 		})
 

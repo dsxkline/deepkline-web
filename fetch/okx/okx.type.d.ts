@@ -217,7 +217,13 @@ export interface BookMessage {
 	data: BookResponse[]
 }
 
-export interface tradesResponse {
+export interface TradesMessage {
+	arg: SubArgs
+	action: string
+	data: TradesResponse[]
+}
+
+export interface TradesResponse {
 	instId: string
 	side: 'sell' | 'buy'
 	sz: string
