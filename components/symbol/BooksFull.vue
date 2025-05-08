@@ -232,6 +232,8 @@
 		if(state==-2){
 			loading.value = false
 			error.value = '网络异常，连接错误'
+		}else{
+			error.value = ""
 		}
 	}
 
