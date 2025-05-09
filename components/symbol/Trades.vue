@@ -115,6 +115,7 @@
 
 	function updateOrderBook(updates: TradesResponse, action?: string) {
 		point.value = symbolObj.value?.lotSz || 0
+		pricePoint.value = symbolObj.value?.tickSz || 0
 		if (tradesList.value.length > 30) {
 			// 删除最后的数据
 			lastTrade.value = JSON.parse(JSON.stringify(tradesList.value[tradesList.value.length - 1]))
