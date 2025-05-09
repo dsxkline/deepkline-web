@@ -41,16 +41,16 @@ export const formatChangeRate = (value: any, precision: number = 2) => {
 	return `${prefix}${value.toFixed(point)}`
 }
 
-export const moneyFormat = (value: any, currency: string = '',precision:number=2,m:string='m',k:string='k') => {
+export const moneyFormat = (value: any, currency: string = '',precision:number=2,m:string='亿',k:string='万') => {
 	let unit = ''
 	value = parseFloat(value.toString())
     // const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
     const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	if (value >= 100000000) {
-		value = value / 100000000 * 10
+		value = value / 100000000
 		unit = m
 	} else if (value >= 10000) {
-		value = value / 10000 * 10
+		value = value / 10000
 		unit = k
 	}
 	return currency + value.toFixed(point) + unit
