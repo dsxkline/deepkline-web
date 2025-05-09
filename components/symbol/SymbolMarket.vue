@@ -26,12 +26,12 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = n - 40 - 40
+			tabbarHeight.value = n - 40 - 30
 		}
 	)
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - 40 - 40
+		tabbarHeight.value = window?.innerHeight - 40 - 30
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
 		if (!favoriteSymbols?.length) {

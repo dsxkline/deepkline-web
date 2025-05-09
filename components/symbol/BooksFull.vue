@@ -41,7 +41,7 @@
 		const tickSz = symbolObj.value?.tickSz
 		// if (!pointLevel.value) pointLevel.value = tickSz
 		if (tickSz) {
-			const rs:any[] = [tickSz]
+			const rs: any[] = [tickSz]
 			for (let i = 1; i <= 3; i++) {
 				rs.push(noExponents(tickSz * 10 ** i))
 			}
@@ -49,7 +49,7 @@
 		}
 		return []
 	})
-	const pricePoint = ref(symbolObj.value?.tickSz||0);
+	const pricePoint = ref(symbolObj.value?.tickSz || 0)
 	const activeBook = ref(0)
 
 	watch(
@@ -62,16 +62,16 @@
 	)
 
 	watch(
-		()=>symbolObj.value,
-		val=>{
-			if(pointLevelOptions.value?.length>0) pointLevel.value = pointLevelOptions.value[0]
+		() => symbolObj.value,
+		val => {
+			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
 		}
 	)
 
 	watch(
 		() => props.symbol,
-		(val,old) => {
-			if(pointLevelOptions.value?.length>0) pointLevel.value = pointLevelOptions.value[0]
+		(val, old) => {
+			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
 			if (subHandle) $ws.unsubscribe(subHandle)
 			$ws.removeTickerHandler(old, tickerHandler)
 			getBooksFull()
@@ -82,7 +82,7 @@
 		if (message.data && message.data.length > 0) {
 			const data = message.data[0]
 			const action = message.action
-			updateOrderBook(data,action)
+			updateOrderBook(data, action)
 		}
 	}, 10)
 
@@ -101,21 +101,27 @@
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
-			loading.value = false
-			error.value = ''
-			if (!loading.value && !error.value && message.data) updateBookList(message)
+
+			if (message.data) updateBookList(message)
+			if (asks.value?.length || bids.value?.length) {
+				loading.value = false
+				error.value = ''
+			}
 		})
-	
+
 		marketFetch
 			.booksFull(props.symbol, 100)
 			.then(res => {
-				loading.value = false
 				if (res?.code == 0 && res.data) {
-					const data = res.data[0]
-					updateOrderBook(data,'')
+					const datas = res.data
+					datas.forEach(data=>updateOrderBook(data, ''))
 					
 				} else {
 					error.value = res?.msg
+				}
+				if (asks.value?.length || bids.value?.length) {
+					loading.value = false
+					error.value = ''
 				}
 			})
 			.catch(err => {
@@ -125,8 +131,8 @@
 			})
 	}
 
-	function updateOrderBook(updates: BookResponse,action:string) {
-		if(action=='snapshot'){
+	function updateOrderBook(updates: BookResponse, action: string) {
+		if (action == 'snapshot') {
 			// 全量
 			orderBook.value = {
 				asks: new Map<number, BookEntry>(),
@@ -134,10 +140,9 @@
 			}
 			totalAsks.value = 0
 			totalBids.value = 0
-			
 		}
-		point.value = symbolObj.value?.lotSz||0
-		
+		point.value = symbolObj.value?.lotSz || 0
+
 		updates.asks.forEach(([px, sz]) => {
 			let price = parseFloat(px)
 
@@ -195,19 +200,23 @@
 		totalAsks.value = 0
 		totalBids.value = 0
 		// 倒序排列
-		let ask = Array.from(orderBook.value.asks.values()).sort((a, b) => a.px - b.px).filter(item=>item.px>parseFloat(ticker.value.last))
-		if(activeBook.value==0) ask = ask.slice(0,showNumber).reverse()
-		else ask = ask.slice(0,2*showNumber+1).reverse()
-		for (let index = ask.length-1; index >=0; index--) {
+		let ask = Array.from(orderBook.value.asks.values())
+			.sort((a, b) => a.px - b.px)
+			.filter(item => item.px > parseFloat(ticker.value.last))
+		if (activeBook.value == 0) ask = ask.slice(0, showNumber).reverse()
+		else ask = ask.slice(0, 2 * showNumber + 1).reverse()
+		for (let index = ask.length - 1; index >= 0; index--) {
 			const item = ask[index]
 			item.total = totalAsks.value += item.sz
 		}
 		asks.value = ask
 
 		// 倒序排列
-		let bid = Array.from(orderBook.value.bids.values()).sort((a, b) => b.px - a.px).filter(item=>item.px<parseFloat(ticker.value.last))
-		if(activeBook.value==0) bid = bid.slice(0,showNumber)
-		else bid = bid.slice(0,2*showNumber+1)
+		let bid = Array.from(orderBook.value.bids.values())
+			.sort((a, b) => b.px - a.px)
+			.filter(item => item.px < parseFloat(ticker.value.last))
+		if (activeBook.value == 0) bid = bid.slice(0, showNumber)
+		else bid = bid.slice(0, 2 * showNumber + 1)
 		for (let index = 0; index < bid.length; index++) {
 			const item = bid[index]
 			item.total = totalBids.value += item.sz
@@ -221,27 +230,27 @@
 		return (totalBids / (totalBids + totalAsks)) * 100
 	})
 
-	const whenBrowserActive = ()=>{
+	const whenBrowserActive = () => {
 		console.log('浏览器重新激活')
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		getBooksFull()
 	}
 
-	const wsError = (state:number)=>{
-		if(state==-2){
+	const wsError = (state: number) => {
+		if (state == -2) {
 			loading.value = false
 			error.value = '网络异常，连接错误'
-		}else{
-			error.value = ""
+		} else {
+			error.value = ''
 		}
 	}
 
-	const {$windowEvent} = useNuxtApp()
+	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
-		pointLevel.value = symbolObj.value?.tickSz;
+		pointLevel.value = symbolObj.value?.tickSz
 		setTimeout(() => {
 			getBooksFull()
 		}, 0)
@@ -253,14 +262,14 @@
 	})
 </script>
 <template>
-	<div class="w-full h-full min-h-[450px] ">
+	<div class="w-full h-full min-h-[450px]">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">订单表</b>
 				<div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
-					<button :class="['hover:opacity-80',activeBook==0?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=0" click-sound><BooksListIcon/></button>
-					<button :class="['hover:opacity-80',activeBook==1?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=1" click-sound><BooksBuyListIcon/></button>
-					<button :class="['hover:opacity-80',activeBook==2?'!opacity-100 !border-[var(--transparent30)]':'']" @click="activeBook=2" click-sound><BooksSellListIcon/></button>
+					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" click-sound><BooksListIcon /></button>
+					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" click-sound><BooksBuyListIcon /></button>
+					<button :class="['hover:opacity-80', activeBook == 2 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 2" click-sound><BooksSellListIcon /></button>
 				</div>
 			</h3>
 			<!-- <el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" click-sound>
@@ -277,17 +286,17 @@
 			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative">
 				<li class="text-grey">
 					<div>价格(USDT)</div>
-					<div class="text-right">数量({{symbolObj?.baseCcy}})</div>
-					<div class="text-right">合计({{symbolObj?.baseCcy}})</div>
+					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
 				</li>
-				<li v-for="(item, index) in asks" v-if="activeBook==0 || activeBook==2">
+				<li v-for="(item, index) in asks" v-if="activeBook == 0 || activeBook == 2">
 					<div class="text-red">{{ formatPrice(item.px, pricePoint) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point),'',point) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point),'',point) }}</div>
+					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
+					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point), '', point) }}</div>
 					<div class="absolute top-0 right-0 h-full bg-red/20 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
 				</li>
 
-				<li class="" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook==0">
+				<li class="" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
 					<div class="col-span-3 w-full h-5 flex justify-between text-xs text-white rounded-sm">
 						<div
 							class="bg-green/50 flex justify-start items-center"
@@ -304,10 +313,10 @@
 					</div>
 				</li>
 
-				<li v-for="(item, index) in bids" v-if="activeBook==0 || activeBook==1">
+				<li v-for="(item, index) in bids" v-if="activeBook == 0 || activeBook == 1">
 					<div class="text-green">{{ formatPrice(item.px, pricePoint) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point),'',point) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point),'',point) }}</div>
+					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
+					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point), '', point) }}</div>
 					<div class="absolute top-0 right-0 h-full bg-green/20 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
 				</li>
 			</ul>

@@ -13,11 +13,11 @@
 	<div class="header border-b border-[--border-color] w-full flex items-center justify-between">
 		<!-- logo -->
 		<div class="flex items-center px-2">
-			<div class="flex items-center justify-center w-[18px] h-[18px] mr-1 rounded-full bg-[rgb(var(--color-text-main))] border border-green-500" v-if="useColorMode().preference == 'dark'">
-				<img src="~/assets/images/logo.png" alt="logo" class="w-[14px] h-[14px]" />
+			<div class="flex items-center justify-center w-[18px] h-[18px] mr-1" v-if="useColorMode().preference == 'dark'">
+				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px] rounded-full" />
 			</div>
-			<div class="flex items-center justify-center w-[22px] h-[22px] mr-1 rounded-full bg-white border border-green-500" v-else>
-				<img src="~/assets/images/logo.png" alt="logo" class="w-[14px] h-[14px]" />
+			<div class="flex items-center justify-center w-[22px] h-[22px] mr-1" v-else>
+				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px]  rounded-full" />
 			</div>
 			<b class="logo-text mr-2 font-mono text-sm text-main"> DeepKline </b>
 		</div>
