@@ -269,7 +269,7 @@
 	})
 </script>
 <template>
-	<div class="w-full h-full min-h-[450px]">
+	<div class="w-full h-full min-h-[400px]">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="text-base">订单表</b>
@@ -290,7 +290,7 @@
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative *:overflow-hidden">
+			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 				<li class="text-grey">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>

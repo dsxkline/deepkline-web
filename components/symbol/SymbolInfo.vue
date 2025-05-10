@@ -71,7 +71,7 @@
 		vol: 0
 	})
 	const symbolCoinInfo = ref({
-		agency: [],
+		agency: [{ logo: '', name: '' }],
 		coinAllot: [{ name: '', percent: '' }],
 		hisHighPrice: 0,
 		hisHighPriceTs: 0,
@@ -102,6 +102,7 @@
 
 	const getSymbolDetail = () => {
 		const url = `${useRuntimeConfig().public.BASE_API_URL}/v1/symbols/detail?symbol=${props.symbol.split('-')[0]}`
+		console.log('getSymbolDetail', useRuntimeConfig().public.BASE_API_URL, useRuntimeConfig().public, process.env.BASE_API_URL)
 		return fetch(url)
 	}
 
@@ -177,7 +178,7 @@
 					<button @click="visibleDetail = !visibleDetail" click-sound>
 						<el-icon><el-icon-more /></el-icon>
 					</button>
-
+					<h3>基本信息</h3>
 					<ul class="my-3 text-grey *:flex *:justify-between *:py-1 text-xs [&_b]:text-main [&_b]:font-normal">
 						<li>
 							<span>市值</span><b>${{ thousandUnit(moneyFormat(symbolDataInfo.marketCap)) }}</b>
@@ -210,6 +211,9 @@
 							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
+					<div class="w-full" v-if="symbolCoinInfo.coinAllot?.length > 0">
+						<CoinAllot />
+					</div>
 					<div class="w-full">
 						<h3>官方链接</h3>
 						<div class="w-full my-3 text-main flex items-center *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_i]:ml-1">
@@ -224,6 +228,16 @@
 							</a>
 						</div>
 					</div>
+
+					<div class="w-full" v-if="symbolCoinInfo.agency?.length > 0">
+						<h3>投资机构</h3>
+						<div
+							class="w-full my-3 text-main flex items-center flex-wrap *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_img]:ml-1 [&_img]:w-[20px] [&_img]:rounded-full *:mb-1"
+						>
+							<span class="hover:bg-[--transparent20]" v-for="(item, index) in symbolCoinInfo.agency"> {{ item.name }} <img :src="item.logo" /> </span>
+						</div>
+					</div>
+
 					<div class="w-full">
 						<h3>社交媒体</h3>
 						<div class="w-full my-3 text-grey flex items-center *:flex *:items-center *:justify-center text-xs [&_b]:text-main [&_b]:font-normal [&_svg]:w-[20px] [&_svg]:h-[20px] [&_svg]:mr-2">
