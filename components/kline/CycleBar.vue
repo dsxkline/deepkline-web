@@ -42,7 +42,7 @@
 		}
 		.active {
 			background-color: rgb(var(--color-green));
-			color: rgb(var(--color-bg-base));
+			color: white;
 		}
 	}
 </style>
