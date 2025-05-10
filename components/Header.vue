@@ -14,10 +14,10 @@
 		<!-- logo -->
 		<div class="flex items-center px-2">
 			<div class="flex items-center justify-center w-[18px] h-[18px] mr-1" v-if="useColorMode().preference == 'dark'">
-				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px] rounded-full" />
+				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px] rounded-md" />
 			</div>
 			<div class="flex items-center justify-center w-[22px] h-[22px] mr-1" v-else>
-				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px]  rounded-full" />
+				<img src="~/assets/images/logo.png" alt="logo" class="w-[18px] h-[18px]  rounded-md" />
 			</div>
 			<b class="logo-text mr-2 font-mono text-sm text-main"> DeepKline </b>
 		</div>

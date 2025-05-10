@@ -207,7 +207,7 @@
 							<span>最大供应市值</span> <b>${{ thousandUnit(moneyFormat(symbolDataInfo.fullyDilutedValuation)) }}</b>
 						</li>
 						<li>
-							<span>流通率</span> <b>{{ thousandUnit(((symbolDataInfo.flowTotal / symbolDataInfo.maxFlowTotal) * 100).toFixed(2)) }}%</b>
+							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
 					<div class="w-full">

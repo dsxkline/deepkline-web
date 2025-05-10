@@ -24,7 +24,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div class="*:text-white *:px-2 *:w-[70px] *:h-[25px] *:rounded *:text-xs">
-        <button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate">-</button>
+        <button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
         <button :class="{'bg-[rgb(var(--color-green))]':changeRate>0,'bg-[rgb(var(--color-red))]':changeRate<0}" v-else>{{formatChangeRate(changeRate,2)}}%</button>
     </div>
 </template>

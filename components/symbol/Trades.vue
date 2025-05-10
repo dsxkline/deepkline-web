@@ -77,6 +77,7 @@
 	}, 10)
 
 	function getTradeList() {
+		if(updateTimer) clearTimeout(updateTimer)
 		loading.value = true
 		error.value = ''
 		point.value = 0
@@ -113,7 +114,9 @@
 			})
 	}
 
+	let updateTimer:NodeJS.Timeout;
 	function updateOrderBook(updates: TradesResponse, action?: string) {
+		if(updateTimer) clearTimeout(updateTimer)
 		point.value = symbolObj.value?.lotSz || 0
 		pricePoint.value = symbolObj.value?.tickSz || 0
 		if (tradesList.value.length > 30) {
@@ -123,7 +126,7 @@
 		}
 		tradesList.value?.unshift(updates)
 		animation.value = true
-		setTimeout(() => {
+		updateTimer = setTimeout(() => {
 			animation.value = false
 		}, 300)
 	}
@@ -136,7 +139,7 @@
 	}
 
 	const wsError = (state: number) => {
-		if (state == -2) {
+		if (state == -2 && !tradesList.value?.length) {
 			loading.value = false
 			error.value = '网络异常，连接错误'
 		} else {
@@ -157,6 +160,7 @@
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)
+		if(updateTimer) clearTimeout(updateTimer)
 	})
 </script>
 <template>

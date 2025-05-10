@@ -41,7 +41,7 @@
 		return Math.ceil(contentHeight.value / itemHeight)
 	})
 	// 上下偏移量
-	const offset = computed(() => Math.max(1, 2*Math.floor(visibleCount.value)))
+	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))
 	// 虚拟列表的起始索引
 	const start = ref(0)
 	// 虚拟列表的结束索引
@@ -55,7 +55,7 @@
 	const mainScrollTop = ref(0)
 	// 订阅品种code列表
 	const subSymbolCodes = computed(() => {
-		const start = Math.max(0,offset.value)
+		const start = Math.max(0, offset.value)
 		const end = start + visibleCount.value
 		return virtualList.value.map(item => item.instId)
 	})
@@ -65,7 +65,12 @@
 	let scrollTimer: any = null
 	// 价格变动
 	const lastPrices = ref<Record<string, number>>({})
-
+	// 保存item
+	let priceDoms: Record<string, HTMLElement> = {}
+	// 背景动画防抖
+	let flickerTimers: Record<string, any> = {}
+	// 选中的品种左边的颜色线
+	const activeBorderColors = ref<Record<string, string>>({})
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		mainScrollTop.value = params.scrollTop
@@ -148,10 +153,9 @@
 			})
 	}
 	function update() {
-		console.log('symbolCategory',props.symbolCategory,props.favorite)
+		console.log('symbolCategory', props.symbolCategory, props.favorite)
 		useSymbolStore().loadFavoriteSymbols()
 		getGroupSymbols()
-		
 	}
 
 	function leave() {
@@ -160,7 +164,7 @@
 
 	function subSymbols() {
 		const { $wsb, $ws } = useNuxtApp()
-		if(!subSymbolCodes.value?.length) return;
+		if (!subSymbolCodes.value?.length) return
 		useSymbolStore().setSubSymbols(subSymbolCodes.value)
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
 			// console.log("subTickers", message.data, error);
@@ -179,6 +183,10 @@
 		const { $wsb, $ws } = useNuxtApp()
 		if (subHandle) {
 			$ws.unsubscribe(subHandle)
+			lastPrices.value = {}
+			priceDoms = {}
+			flickerTimers = {}
+			activeBorderColors.value = {}
 		}
 	}
 	function clickSymbol(item?: Instruments) {
@@ -189,23 +197,39 @@
 
 	function bgFlicker(item: Ticker) {
 		if (!symbolDom.value) return
+		
 		const price = parseFloat(item.last)
+		const open = parseFloat(item.sodUtc8)
 		const last = lastPrices.value[item.instId] || 0
-		const dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
-		const transparent = useSymbolStore().activeSymbol == item.instId ? 'transparent' : 'var(--transparent10)'
-		if (dom && last) {
-			if (price >= last) {
-				dom.style.background = 'linear-gradient(to left,' + transparent + ',rgb(var(--color-green)))'
-			} else {
-				dom.style.background = 'linear-gradient(to left,' + transparent + ',rgb(var(--color-red)))'
-			}
-			dom.style.opacity = '0.1'
-			setTimeout(() => {
-				dom.style.opacity = '0'
-			}, 500)
+
+		let dom = priceDoms[item.instId]
+		if (!dom) {
+			dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
+			if (dom) priceDoms[item.instId] = dom
 		}
 
-		lastPrices.value[item.instId] = parseFloat(item.last)
+		activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+		if (flickerTimers[item.instId]) {
+			return
+		}
+		if (dom && last) {
+			// 只更新 background 如果价格变化了
+			if (price !== last) {
+				dom.classList.remove('bg-green') // 触发重放动画
+				dom.classList.remove('bg-red') 
+				dom.classList.add(`${price >= last ? 'bg-green' : 'bg-red'}`) // 触发重放动画
+				/// dom.style.background = `linear-gradient(to left, transparent, rgb(var(--color-${price >= last ? 'green' : 'red'})))`
+				dom.style.opacity = '0.1'
+				
+
+				flickerTimers[item.instId] = setTimeout(() => {
+					dom.style.opacity = '0'
+					flickerTimers[item.instId] = null
+				}, 200)
+			}
+		}
+
+		lastPrices.value[item.instId] = price
 	}
 
 	// 排序
@@ -286,7 +310,7 @@
 				<el-button @click.stop="getGroupSymbols()">点击刷新</el-button>
 			</template>
 		</Error>
-		
+
 		<ul class="w-full" v-if="loading && !error">
 			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
@@ -314,13 +338,13 @@
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
-			<Empty  v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }"/>
+			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<ul v-else class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }">
 				<li
 					:id="'symbol-list-id-' + item.instId"
 					:class="[
 						'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-						useSymbolStore().activeSymbol == item.instId ? 'border-l !border-green-500' : ''
+						useSymbolStore().activeSymbol == item.instId ? 'border-l-2 '+activeBorderColors[item.instId] : ''
 					]"
 					v-for="item in virtualList"
 					:key="item.instId + '-' + start + '-' + end"
@@ -340,13 +364,12 @@
 <style lang="less" scoped>
 	.bg {
 		opacity: 0;
-		transition: 0.5s opacity ease-in-out;
 	}
 	// 背景闪烁
 	.bg-red {
-		background: linear-gradient(to left, transparent, rgb(var(--color-green)));
+		background: linear-gradient(to left, transparent, rgb(var(--color-red)));
 	}
 	.bg-green {
-		background: rgb(var(--color-green));
+		background: linear-gradient(to left, transparent, rgb(var(--color-green)));
 	}
 </style>

@@ -114,8 +114,7 @@
 			.then(res => {
 				if (res?.code == 0 && res.data) {
 					const datas = res.data
-					datas.forEach(data=>updateOrderBook(data, ''))
-					
+					datas.forEach(data => updateOrderBook(data, ''))
 				} else {
 					error.value = res?.msg
 				}
@@ -197,6 +196,10 @@
 		})
 		// point.value = 1 / 10 ** point.value
 
+		throttleAskBid()
+		// console.log('Array.from(orderBook.value.bids.values())',Array.from(orderBook.value.bids.values()).length)
+	}
+	const throttleAskBid = throttle(() => {
 		totalAsks.value = 0
 		totalBids.value = 0
 		// 倒序排列
@@ -222,7 +225,11 @@
 			item.total = totalBids.value += item.sz
 		}
 		bids.value = bid
-	}
+
+		trimMap(orderBook.value.asks, 100)
+		trimMap(orderBook.value.bids, 100)
+	}, 300)
+
 	// bid/ask
 	const calculateBuySellRatio = computed(() => {
 		const totalBids = bids.value.reduce((sum, entry) => sum + entry.sz, 0)
@@ -238,7 +245,7 @@
 	}
 
 	const wsError = (state: number) => {
-		if (state == -2) {
+		if (state == -2 && !asks.value?.length && !bids.value?.length) {
 			loading.value = false
 			error.value = '网络异常，连接错误'
 		} else {
@@ -283,41 +290,60 @@
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative">
+			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative *:overflow-hidden">
 				<li class="text-grey">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
 				</li>
-				<li v-for="(item, index) in asks" v-if="activeBook == 0 || activeBook == 2">
+				<li v-for="(item, index) in asks" v-if="activeBook == 0 || activeBook == 2" :key="index">
 					<div class="text-red">{{ formatPrice(item.px, pricePoint) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point), '', point) }}</div>
-					<div class="absolute top-0 right-0 h-full bg-red/20 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
+					<div
+						class="absolute top-0 right-0 h-full w-full bg-red/20 transition-all transition-300 ease-in-out origin-right"
+						:style="{
+							transform: `scaleX(${((item.total / (totalBids + totalAsks))*100)+'%'})`
+						}"
+					></div>
 				</li>
 
-				<li class="" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
-					<div class="col-span-3 w-full h-5 flex justify-between text-xs text-white rounded-sm">
+				<li class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
+					<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
 						<div
-							class="bg-green/50 flex justify-start items-center"
-							:style="{ width: 'calc(' + calculateBuySellRatio + '% + 5px)', transition: 'all 0.3s', 'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)' }"
+							class="bg-green/50 flex justify-start items-center w-full h-full transition-all transition-100 ease-in-out absolute left-0 top-0 origin-left"
+							:style="{ 
+								'transform': `translate3d(calc(-${(100 - calculateBuySellRatio)}% + 5px),0,0)`, 
+								'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)' 
+								}"
 						>
-							<b class="px-2">B</b><span>{{ calculateBuySellRatio.toFixed(2) }}%</span>
+							
 						</div>
 						<div
-							class="bg-red/50 flex justify-end items-center"
-							:style="{ width: 'calc(' + (100 - calculateBuySellRatio) + '% + 5px)', transition: 'all 0.3s', 'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)' }"
+							class="bg-red/50 flex justify-end items-center w-full h-full transition-all transition-100 ease-in-out absolute right-0 top-0 origin-right"
+							:style="{ 
+								'transform': `translate3d(calc(${(calculateBuySellRatio)}% + 5px),0,0)`, 
+								'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)' 
+								}"
 						>
-							<span>{{ (100 - calculateBuySellRatio).toFixed(2) }}%</span><b class="px-2">S</b>
+							
+							
 						</div>
+						<div class="absolute left-0 top-0 h-full flex items-center"><b class="px-2">B</b><span>{{ calculateBuySellRatio.toFixed(2) }}%</span></div>
+						<div class="absolute right-0 top-0 h-full flex items-center"><span>{{ (100 - calculateBuySellRatio).toFixed(2) }}%</span><b class="px-2">S</b></div>
 					</div>
 				</li>
 
-				<li v-for="(item, index) in bids" v-if="activeBook == 0 || activeBook == 1">
+				<li v-for="(item, index) in bids" v-if="activeBook == 0 || activeBook == 1" :key="index">
 					<div class="text-green">{{ formatPrice(item.px, pricePoint) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.total, point), '', point) }}</div>
-					<div class="absolute top-0 right-0 h-full bg-green/20 transition-all transition-100 ease-in-out" :style="{ width: (item.total / (totalBids + totalAsks)) * 100 + '%' }"></div>
+					<div
+						class="absolute top-0 right-0 h-full w-full bg-green/20 transition-all transition-300 ease-in-out origin-right"
+						:style="{
+							transform: `scaleX(${((item.total / (totalBids + totalAsks))*100)+'%'})`
+						}"
+					></div>
 				</li>
 			</ul>
 		</template>

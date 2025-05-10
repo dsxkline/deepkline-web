@@ -2,7 +2,7 @@ import { number } from 'echarts'
 import moment from 'moment'
 
 export const formatPrice = (value: any, precision: number, prefix: string = '') => {
-	if (!precision) return value+''
+	if (!precision) return value + ''
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
@@ -12,7 +12,7 @@ export const thousandUnit = (num: any) => {
 	num = num + ''
 	const [intPart, decimalPart] = num.toString().split('.')
 	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-	return decimalPart!=undefined ? `${formattedInt}.${decimalPart}` : formattedInt
+	return decimalPart != undefined ? `${formattedInt}.${decimalPart}` : formattedInt
 }
 
 export const formatChangeRate = (value: any, precision: number = 2) => {
@@ -41,11 +41,11 @@ export const formatChangeRate = (value: any, precision: number = 2) => {
 	return `${prefix}${value.toFixed(point)}`
 }
 
-export const moneyFormat = (value: any, currency: string = '',precision:number=2,m:string='亿',k:string='万') => {
+export const moneyFormat = (value: any, currency: string = '', precision: number = 2, m: string = '亿', k: string = '万') => {
 	let unit = ''
 	value = parseFloat(value.toString())
-    // const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
-    const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
+	// const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
+	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	if (value >= 100000000) {
 		value = value / 100000000
 		unit = m
@@ -56,30 +56,40 @@ export const moneyFormat = (value: any, currency: string = '',precision:number=2
 	return currency + value.toFixed(point) + unit
 }
 
-export function noExponents(num:number) {
-    const data = String(num).split(/[eE]/);
-    if (data.length === 1) return data[0];
-  
-    let z = '', sign = num < 0 ? '-' : '',
-        str = data[0].replace('.', ''),
-        mag = Number(data[1]) + 1;
-  
-    if (mag < 0) {
-      z = sign + '0.' + '0'.repeat(Math.abs(mag)) + str.replace('-', '');
-    } else {
-      z = str + '0'.repeat(mag - str.length);
-    }
-    return z;
-  }
+export function noExponents(num: number) {
+	const data = String(num).split(/[eE]/)
+	if (data.length === 1) return data[0]
 
-  export function debounce(fn:(...args:any[])=>void, delay:number) {
-	let timer:NodeJS.Timeout
-	return (...args:any[]) => {
-	  clearTimeout(timer)
-	  timer = setTimeout(() => fn(...args), delay)
+	let z = '',
+		sign = num < 0 ? '-' : '',
+		str = data[0].replace('.', ''),
+		mag = Number(data[1]) + 1
+
+	if (mag < 0) {
+		z = sign + '0.' + '0'.repeat(Math.abs(mag)) + str.replace('-', '')
+	} else {
+		z = str + '0'.repeat(mag - str.length)
 	}
-  }
+	return z
+}
 
-  export function formatDate(t:number,format:string){
+export function debounce(fn: (...args: any[]) => void, delay: number) {
+	let timer: NodeJS.Timeout
+	return (...args: any[]) => {
+		clearTimeout(timer)
+		timer = setTimeout(() => fn(...args), delay)
+	}
+}
+
+export function formatDate(t: number, format: string) {
 	return moment(t).format(format)
-  }
+}
+
+export function trimMap(map: Map<any, any>, MAX_ORDER_DEPTH: number) {
+	const sorted = Array.from(map.entries())
+	if (sorted.length > MAX_ORDER_DEPTH) {
+		const trimmed = sorted.slice(0, MAX_ORDER_DEPTH)
+		map.clear()
+		trimmed.forEach(([price, entry]) => map.set(price, entry))
+	}
+}
