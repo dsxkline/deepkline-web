@@ -23,3 +23,7 @@ declare module '#app' {
     $windowEvent:WindowsEvent
   }
 }
+
+interface window {
+  __NUXT__:{}
+} 

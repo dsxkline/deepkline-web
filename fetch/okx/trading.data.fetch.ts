@@ -1,7 +1,10 @@
 import type { ApiResult } from "~/types/types";
 import { useGet, usePost } from "../global.fetch";
 import { Period, type Instruments } from "./okx.type.d";
-const baseUrl = "http://127.0.0.1:3002/v1" ;// "/api/okx";
+let config:any = await import('../../config/config')
+// console.log('__NUXT__',config,process.server)
+if(process.client) config = window.__NUXT__?.config.public;
+const baseUrl = config.BASE_API_URL+"/v1" ;// "/api/okx";
 const baseUrlOkx = "https://www.okx.com";
 // 获取支持的币种
 const apiSupportCoin = "/api/v5/rubik/stat/contracts/support-coin";

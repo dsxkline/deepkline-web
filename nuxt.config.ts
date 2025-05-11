@@ -7,9 +7,9 @@ import modulesConfig from './config/modules.config'
 import pluginsConfig from './config/plugins.config'
 import postcssConfig from './config/postcss.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
-const config = require('./config/config')
+import config from './config/config'
 // https://nuxt.com/docs/api/configuration/nuxt-config
-// console.log('config',config.default)
+console.log('config',config)
 export default defineNuxtConfig({
 	devServer: {
 		port: 3010,
@@ -18,7 +18,9 @@ export default defineNuxtConfig({
 	typescript:{
 		shim:true
 	},
-	runtimeConfig: config.default,
+	runtimeConfig: {
+		public:config
+	},
 	devtools: { enabled: true },
 	modules: modulesConfig,
 	tailwindcss: tailwindNuxtConfig,
