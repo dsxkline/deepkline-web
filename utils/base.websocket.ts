@@ -8,6 +8,7 @@ export default class BaseWebSocket {
 	private reconnectInterval = 5000;
 	private reconnectErrorCallback: (error: Event | null) => void;
 	private reconnectSuccessCallback: any = null;
+	private reconnectSuccessFns:(()=>void)[] = [];
 	private url: string = "";
 	public subscribers: Record<string, any> = {};
 	private waitSendDatas: any = [];
@@ -41,6 +42,21 @@ export default class BaseWebSocket {
 		return this.connectLevel;
 	}
 	
+	// 重连成功执行一次hook
+	onReconnectSuccess(fn:()=>void){
+		if(!this.reconnectSuccessFns.includes(fn)){
+			this.reconnectSuccessFns.push(fn)
+		}
+	}
+	removeReconnectSuccess(fn:()=>void){
+		const index = this.reconnectSuccessFns.indexOf(fn)
+		if(index>=0){
+			this.reconnectSuccessFns.splice(index,1)
+		}
+	}
+	removeReconnectSuccessAll(){
+		this.reconnectSuccessFns = []
+	}
 	
 
 	connect(reset=false) {
@@ -52,6 +68,7 @@ export default class BaseWebSocket {
 			this.reconnectCount = 0;
 			// 重连重新订阅
 			if(reset) this.resubscribeAll()
+			reset && this.reconnectSuccessFns.forEach(fn=>fn && fn());
 			this.reconnectSuccessCallback && this.reconnectSuccessCallback();
 			// 没连接成功之前发送的订阅请求
 			!reset && this.waitSendDatas.forEach((data: any) => {
@@ -65,6 +82,7 @@ export default class BaseWebSocket {
 				const now = new Date().getTime()
 				const diff = now - this.connectStateTime;
 				if(diff>=this.connectStateTimeout){
+					console.log('主动触发重连...')
 					this.close()
 				}
 			}, this.heatInterval);
@@ -83,6 +101,7 @@ export default class BaseWebSocket {
 			this.connectLevel = -2;
 		};
 		this.ws.onclose = (event) => {
+			console.log('主动触发重连... onclose')
 			this.connectLevel = -2;
 			if (this.heatTimer) {
 				clearInterval(this.heatTimer);

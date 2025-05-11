@@ -42,6 +42,11 @@ class DsxKlineChart {
 		this.reload()
 	}
 
+	// ws 重连后重新请求k线和订阅k线
+	wsReconnect=()=>{
+		this.reload()
+	}
+
 	/**
 	 * 创建K线图
 	 */
@@ -53,8 +58,9 @@ class DsxKlineChart {
 		useKlineStore().main[this.symbol] = this.config.main|| this.main
 		useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
 		console.log('kline create....',new Date().getTime())
-		const {$windowEvent} = useNuxtApp()
+		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.addEvent(this.whenBrowserActive)
+		$wsb.onReconnectSuccess(this.wsReconnect)
 	}
 
 	tapSymbol(symbol: string) {

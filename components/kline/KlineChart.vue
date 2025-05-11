@@ -11,7 +11,7 @@
 	const klineDom = ref(null)
 	const error = ref('')
 	const loading = ref(true)
-	let chart:DsxKlineChart = null
+	let chart: DsxKlineChart
 	function reloadChart() {
 		chart && chart.reload()
 	}
@@ -32,8 +32,9 @@
 		newVal => {
 			console.log('newVal useKlineStore().main=', newVal)
 			chart && chart.selectMain(newVal)
-		},{
-			deep:true
+		},
+		{
+			deep: true
 		}
 	)
 	watch(
@@ -41,14 +42,15 @@
 		newVal => {
 			console.log('newVal useKlineStore().sides=', newVal)
 			chart && chart.selectSides(newVal)
-		},{
-			deep:true
+		},
+		{
+			deep: true
 		}
 	)
 
 	watch(
-		()=>useSymbolStore().symbols[props.symbol],
-		(val)=>{
+		() => useSymbolStore().symbols[props.symbol],
+		val => {
 			console.log('useSymbolStore().symbols[props.symbol] =', val)
 			const symbolDetail = val
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
@@ -83,11 +85,11 @@
 			// sideHeight: 80,
 			// paddingBottom: 20,
 			// paddingMiddle: 0,
-			main: ["MA"], // 主图指标
-			sides: ['MACD','KDJ','RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
+			main: ['MA'], // 主图指标
+			sides: ['MACD', 'KDJ', 'RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
-			decimalPoint:String(symbolDetail?.tickSz).split('.')[1]?.length,
+			decimalPoint: String(symbolDetail?.tickSz).split('.')[1]?.length
 		})
 		nextTick(() => {
 			chart.create()
@@ -100,7 +102,6 @@
 		chart.onError = err => {
 			error.value = '网络异常，请稍后再试'
 		}
-
 	})
 </script>
 <template>
@@ -112,6 +113,5 @@
 		</Error>
 		<el-skeleton :rows="10" animated v-if="loading && !error" class="p-3" />
 		<div class="kline w-full h-full" v-show="!error"></div>
-		
 	</div>
 </template>
