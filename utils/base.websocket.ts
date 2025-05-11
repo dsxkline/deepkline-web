@@ -25,7 +25,8 @@ export default class BaseWebSocket {
 		return this._connectLevel;
 	}
 	
-	
+	private connectStateTime = 0; // 连接状态时间，超过多少秒超时主动触发重连
+	private connectStateTimeout = 30000
 	private connectLevelTime = 0; // 连接速度时间
 	private connectLevelFns: ((stateLevel:number) => void)[] = [];
 	private heatTimer:NodeJS.Timeout | null = null;
@@ -57,11 +58,19 @@ export default class BaseWebSocket {
 				this.send(data);
 			});
 			this.waitSendDatas = [];
+			this.connectStateTime = new Date().getTime()
 			this.heatTimer = setInterval(() => {
 				this.heart();
+				// 检查是否超时
+				const now = new Date().getTime()
+				const diff = now - this.connectStateTime;
+				if(diff>=this.connectStateTimeout){
+					this.close()
+				}
 			}, this.heatInterval);
 		};
 		this.ws.onmessage = (event) => {
+			this.connectStateTime = new Date().getTime()
 			this.notifySubscribers(event.data, null);
 		};
 		this.ws.onerror = (event) => {
