@@ -48,7 +48,9 @@ export default class BaseWebSocket {
 		this.ws.onopen = () => {
 			this.connectLevel = 0
 			this.reconnectCount = 0;
+			this.unsubscribeAll()
 			this.reconnectSuccessCallback && this.reconnectSuccessCallback();
+			// 没连接成功之前发送的订阅请求
 			this.waitSendDatas.forEach((data: any) => {
 				this.send(data);
 			});
@@ -140,7 +142,7 @@ export default class BaseWebSocket {
 	unsubscribe(subId: string,sendDatas: any) {
 		if (this.subscribers[subId]) {
 			delete this.subscribers[subId];
-			this.send(sendDatas);
+			if(sendDatas)this.send(sendDatas);
 		}
 	}
 
@@ -163,9 +165,9 @@ export default class BaseWebSocket {
 	 * 由上层业务构造取消订阅数据
 	 * @param getSendData 上层业务构造器
 	 */
-	unsubscribeAll(getSendData: (subscriber: any) => any) {
+	unsubscribeAll(getSendData?: (subscriber: any) => any) {
 		Object.values(this.subscribers).forEach((subscriber: any) => {
-			this.unsubscribe(subscriber.subId,getSendData(subscriber));
+			this.unsubscribe(subscriber.subId,getSendData && getSendData(subscriber));
 		});
 		this.subscribers = {};
 	}
