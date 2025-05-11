@@ -18,7 +18,7 @@
 	watch(
 		() => useKlineStore().cycle[props.symbol],
 		(newVal, oldVal) => {
-			chart && chart.updateCycle(newVal)
+			newVal && chart && chart.updateCycle(newVal)
 		}
 	)
 	watch(

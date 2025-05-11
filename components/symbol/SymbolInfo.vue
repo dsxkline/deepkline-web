@@ -95,7 +95,7 @@
 	watch(
 		() => props.symbol,
 		() => {
-			symbolInfo.value.project = ''
+			if(symbolInfo.value)symbolInfo.value.project = ''
 			getSymbolInfo()
 		}
 	)
@@ -211,7 +211,7 @@
 							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
-					<div class="w-full" v-if="symbolCoinInfo.supportTokenUnlock">
+					<div class="w-full" v-if="symbolCoinInfo?.supportTokenUnlock">
 						<CoinAllot :symbol="symbol" />
 					</div>
 					<div class="w-full">

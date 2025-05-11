@@ -216,7 +216,7 @@
 					})
 				})
 				datas[0].push({ name: 'Untracked', value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),itemStyle: { color: 'rgba(255,255,255,0.2)' }})
-				datas[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)) ,itemStyle: { color: '#f5625c' }})
+				datas[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)) ,itemStyle: { color: 'rgba(255,255,255,0.10)' }})
 
 				createEchart()
 			})
@@ -250,7 +250,7 @@
 					const parentWidth = (parentElement.parentNode?.parentNode as HTMLElement).clientWidth
 					const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
 					width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
-					echart.resize()
+					echart && echart.resize()
 				}
 			})
 			// 监听父级元素宽度变化

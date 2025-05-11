@@ -17,12 +17,7 @@
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[props.symbol]
 	})
-
 	const { $wsb, $ws } = useNuxtApp()
-	const ticker = ref($ws?.getTickers(props.symbol) || {})
-	const tickerHandler = (data: Ticker) => {
-		ticker.value = data
-	}
 	// 订阅句柄
 	let subHandle = ''
 	const pointLevel = ref(0)
@@ -46,7 +41,6 @@
 		() => pointLevel.value,
 		val => {
 			if (subHandle) $ws.unsubscribe(subHandle)
-			$ws.removeTickerHandler(props.symbol, tickerHandler)
 			getTradeList()
 		}
 	)
@@ -63,7 +57,6 @@
 		(val, old) => {
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
 			if (subHandle) $ws.unsubscribe(subHandle)
-			$ws.removeTickerHandler(old, tickerHandler)
 			getTradeList()
 		}
 	)
@@ -82,7 +75,6 @@
 		error.value = ''
 		point.value = 0
 		tradesList.value = []
-		$ws.addTickerHandler(props.symbol, tickerHandler)
 		subHandle = $ws.subTrades(symbolObj.value?.instId || props.symbol, (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
@@ -134,7 +126,6 @@
 	const whenBrowserActive = () => {
 		console.log('浏览器重新激活')
 		$ws.unsubscribe(subHandle)
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		getTradeList()
 	}
 
@@ -158,7 +149,6 @@
 	})
 	onUnmounted(() => {
 		$ws.unsubscribe(subHandle)
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)
 		if(updateTimer) clearTimeout(updateTimer)
 	})
@@ -181,7 +171,7 @@
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<ul
-				class="w-full h-full relative *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[2.6px] *:items-center *:justify-between *:relative"
+				class="w-full h-full relative *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative"
 				:style="{ height: (tradesList.length + 3) * 21.19 + 'px' }"
 			>
 				<li class="text-grey bg-base !absolute top-0 left-0 z-10">

@@ -63,11 +63,12 @@ class DsxKlineChart {
 		$wsb.onReconnectSuccess(this.wsReconnect)
 	}
 
-	tapSymbol(symbol: string) {
+	tapSymbol(symbol: string,cycle?:string) {
 		this.symbol = symbol
 		if(!useKlineStore().main[this.symbol])useKlineStore().main[this.symbol] = this.config.main|| this.main
 		if(!useKlineStore().sides[this.symbol])useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
 		this.unsubscribe()
+		if(cycle) this.cycle = cycle
 		this.kline.startLoading()
 	}
 	reload(){
