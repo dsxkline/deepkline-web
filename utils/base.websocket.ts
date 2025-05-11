@@ -4,8 +4,8 @@ export default class BaseWebSocket {
 	private ws: WebSocket | null = null;
 	private reconnectTimer: any = null;
 	private reconnectCount = 0;
-	private reconnectMax = 300;
-	private reconnectInterval = 3000;
+	private reconnectMax = 30000;
+	private reconnectInterval = 5000;
 	private reconnectErrorCallback: (error: Event | null) => void;
 	private reconnectSuccessCallback: any = null;
 	private url: string = "";
@@ -90,7 +90,7 @@ export default class BaseWebSocket {
 			this.reconnectCount++;
 			this.reconnectTimer = setTimeout(() => {
 				this.connectLevel = -1
-				this.connect();
+				this.connect(true);
 			}, this.reconnectInterval);
 		} else {
 			this.reconnectErrorCallback && this.reconnectErrorCallback(null);
