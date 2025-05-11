@@ -7,7 +7,7 @@ import modulesConfig from './config/modules.config'
 import pluginsConfig from './config/plugins.config'
 import postcssConfig from './config/postcss.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
-import config from './config/config'
+const config = require('./config/config')
 // https://nuxt.com/docs/api/configuration/nuxt-config
 console.log('config',config)
 export default defineNuxtConfig({
