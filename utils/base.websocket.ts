@@ -42,16 +42,18 @@ export default class BaseWebSocket {
 	
 	
 
-	connect() {
+	connect(reset=false) {
 		this.connectLevel = -1
 		this.ws = new WebSocket(this.url);
+		
 		this.ws.onopen = () => {
 			this.connectLevel = 0
 			this.reconnectCount = 0;
-			this.unsubscribeAll()
+			// 重连重新订阅
+			if(reset) this.resubscribeAll()
 			this.reconnectSuccessCallback && this.reconnectSuccessCallback();
 			// 没连接成功之前发送的订阅请求
-			this.waitSendDatas.forEach((data: any) => {
+			!reset && this.waitSendDatas.forEach((data: any) => {
 				this.send(data);
 			});
 			this.waitSendDatas = [];
@@ -139,12 +141,21 @@ export default class BaseWebSocket {
 		return subId;
 	}
 
+	
 	unsubscribe(subId: string,sendDatas: any) {
 		if (this.subscribers[subId]) {
 			delete this.subscribers[subId];
 			if(sendDatas)this.send(sendDatas);
 		}
 	}
+
+	// 用于重连后重新订阅
+	resubscribeAll(){
+		Object.values(this.subscribers).forEach((subscriber: any) => {
+			this.send(subscriber.sendDatas);
+		});
+	}
+
 
 	unsubscribeWithCallBack(callback: (data: any, error: Event | null) => void,sendDatas: any) {
 		Object.values(this.subscribers).forEach((subscriber: any) => {
