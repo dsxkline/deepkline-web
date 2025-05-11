@@ -2,9 +2,10 @@ import type { ApiResult } from "~/types/types";
 import { useGet, usePost } from "../global.fetch";
 import { Period, type Instruments } from "./okx.type.d";
 import config from '../../config/config'
-// console.log('__NUXT__',config,process.server)
+
 let baseApi = config.BASE_API_URL
 if(process.client && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL;
+console.log('__NUXT__',config,process.client,baseApi)
 const baseUrl = baseApi+"/v1" ;// "/api/okx";
 const baseUrlOkx = "https://www.okx.com";
 // 获取支持的币种
