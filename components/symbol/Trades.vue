@@ -167,7 +167,7 @@
 	<div class="w-full h-full min-h-[750px]">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b class="text-base">最新成交</b>
+				<b>最新成交</b>
 			</h3>
 			<!-- <el-select v-model="pointLevel" style="width: 100px" v-if="!loading" click-sound>
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" click-sound />

@@ -272,7 +272,7 @@
 	<div class="w-full h-full min-h-[400px]">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b class="text-base">订单表</b>
+				<b>订单表</b>
 				<div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
 					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" click-sound><BooksListIcon /></button>
 					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" click-sound><BooksBuyListIcon /></button>

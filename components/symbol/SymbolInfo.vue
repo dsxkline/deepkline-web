@@ -211,8 +211,8 @@
 							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
-					<div class="w-full" v-if="symbolCoinInfo.coinAllot?.length > 0">
-						<CoinAllot />
+					<div class="w-full" v-if="symbolCoinInfo.supportTokenUnlock">
+						<CoinAllot :symbol="symbol" />
 					</div>
 					<div class="w-full">
 						<h3>官方链接</h3>

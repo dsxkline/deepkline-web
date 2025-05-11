@@ -327,8 +327,9 @@ class DsxKlineChart {
 	destroy() {
 		this.kline.destroy()
 		this.unsubscribe()
-		const {$windowEvent} = useNuxtApp()
+		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.removeEvent(this.whenBrowserActive)
+		$wsb.removeReconnectSuccess(this.wsReconnect)
 	}
 }
 
