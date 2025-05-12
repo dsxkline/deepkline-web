@@ -124,7 +124,7 @@
 		error.value = ''
 		if (load) loading.value = true
 		ComposFetch.tradingDataFetch
-			.loanRatio(symbolObj.value.baseCcy, p)
+			.loanRatio(symbolObj.value.baseCcy||symbolObj.value.ctValCcy, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false

@@ -142,7 +142,7 @@
 						if (p == Period.M5) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1) xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
-						seriesData.push(longShortAccountRatio)
+						seriesData.push(parseFloat(parseFloat(longShortAccountRatio).toFixed(2)))
 					})
 					option.xAxis.data = xAxisData.reverse()
 					option.series[0].data = seriesData.reverse()

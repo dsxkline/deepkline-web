@@ -33,7 +33,7 @@ export const tradingDataFetch = {
      * @param end 结束时间 如 1597026383011
      * @returns 
      */
-    longShortAccountRatio: <T = any>(ccy: string, period: Period = Period.M5, begin: string = "", end: string = "") =>
+    longShortAccountRatio: <T = any>(ccy: string, period: Period = Period.M5, begin?: string, end?: string) =>
         useGet<ApiResult<T>>(baseUrl, apiLongShortAccountRatio, {
             ccy,
             begin,
@@ -51,7 +51,7 @@ export const tradingDataFetch = {
      * @param limit 分页返回的结果集数量，最大为100，不填默认返回100条
      * @returns 
      */
-    longShortAccountRatioContract: <T = any>(instId: string, period: Period = Period.M5, begin: string = "", end: string = "", limit: number = 100) =>
+    longShortAccountRatioContract: <T = any>(instId: string, period: Period = Period.M5, begin?: string, end?: string, limit: number = 100) =>
         useGet<ApiResult<T>>(baseUrl, apiLongShortAccountRatioContract, {
             instId,
             begin,
@@ -67,7 +67,7 @@ export const tradingDataFetch = {
      * @param end 结束时间 如 1597026383011
      * @returns 
      */
-    loanRatio: (ccy: string, period: Period = Period.M5, begin: string = "", end: string = "") => useGet<ApiResult>(baseUrl, apiLoanRatio, {
+    loanRatio: (ccy: string, period: Period = Period.M5, begin?: string, end?: string) => useGet<ApiResult>(baseUrl, apiLoanRatio, {
         ccy,
         begin,
         end,
@@ -82,7 +82,7 @@ export const tradingDataFetch = {
      * @param end 结束时间 如 1597026383011
      * @returns 
      */
-    openInterestVolume: (ccy: string, period: Period = Period.M5, begin: string = "", end: string = "") => useGet<ApiResult>(baseUrl, apiOpenInterestVolume, {
+    openInterestVolume: (ccy: string, period: Period = Period.M5, begin?: string, end?: string) => useGet<ApiResult>(baseUrl, apiOpenInterestVolume, {
         ccy,
         begin,
         end,

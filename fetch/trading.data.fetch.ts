@@ -4,7 +4,7 @@ import { useStore } from "~/store";
 import { Period } from "./okx/okx.type.d";
 
 export const tradingDataFetch = {
-    longShortAccountRatio:(ccy:string,period:Period=Period.M5,begin:string='',end:string='')=>{
+    longShortAccountRatio:(ccy:string,period:Period=Period.M5,begin?:string,end?:string)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         if(apiSource==ApiSource.OKX){
@@ -12,7 +12,7 @@ export const tradingDataFetch = {
         }
         return Promise.reject('apiSource is not supported')
     },
-    longShortAccountRatioContract:(instId:string,period:Period=Period.M5,begin:string='',end:string='')=>{
+    longShortAccountRatioContract:(instId:string,period:Period=Period.M5,begin?:string,end?:string)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         if(apiSource==ApiSource.OKX){
@@ -20,7 +20,7 @@ export const tradingDataFetch = {
         }
         return Promise.reject('apiSource is not supported')
     },
-    loanRatio:(ccy:string,period:Period=Period.M5,begin:string='',end:string='')=>{
+    loanRatio:(ccy:string,period:Period=Period.M5,begin?:string,end?:string)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         if(apiSource==ApiSource.OKX){
@@ -28,7 +28,7 @@ export const tradingDataFetch = {
         }
         return Promise.reject('apiSource is not supported')
     },
-    openInterestVolume:(ccy:string,period:Period=Period.M5,begin:string='',end:string='')=>{
+    openInterestVolume:(ccy:string,period:Period=Period.M5,begin?:string,end?:string)=>{
         const state = useStore();
         const apiSource = state.apiSource;
         if(apiSource==ApiSource.OKX){

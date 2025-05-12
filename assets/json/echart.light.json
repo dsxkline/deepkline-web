@@ -5,45 +5,55 @@
 	"logAxis": {},
 	"valueAxis": {
 		"axisLine": {
-      "show": true,
+			"show": false,
 			"lineStyle": {
 				"color": "rgba(0,0,0,0.08)"
 			}
 		},
 		"axisLabel": {
-      "show": true,
+			"show": true,
 			"textStyle": {
 				"color": "rgba(150,150,150,1)"
 			}
 		},
 		"splitLine": {
-			"show": true,
-			"lineStyle": {
-				"color": "rgba(0,0,0,0.08)"
-			}
-		}
-  },
-	"categoryAxis": {
-		"axisLine": {
-      "show": true,
-			"lineStyle": {
-				"color": "rgba(0,0,0,0.08)"
-			}
-		},
-		"axisLabel": {
-      "show": true,
-			"textStyle": {
-				"color": "rgba(150,150,150,1)"
-			}
-		},
-		"splitLine": {
-			"show": true,
+			"show": false,
 			"lineStyle": {
 				"color": "rgba(0,0,0,0.08)"
 			}
 		}
 	},
-  
+	"categoryAxis": {
+		"axisLine": {
+			"show": false,
+			"lineStyle": {
+				"color": "rgba(0,0,0,0.08)"
+			}
+		},
+		"axisLabel": {
+			"show": true,
+			"textStyle": {
+				"color": "rgba(150,150,150,1)"
+			}
+		},
+		"splitLine": {
+			"show": false,
+			"lineStyle": {
+				"color": "rgba(0,0,0,0.08)"
+			}
+		}
+	},
+	"tooltip": {
+		"backgroundColor": "rgba(255,255,255,1)",
+		"borderColor": "rgba(0,0,0,0.2)",
+		"borderWidth": 1,
+		"textStyle": { "fontSize": 12, "color": "rgb(31,41,55)" }
+	},
+	"legend": {
+		"textStyle": {
+			"color": "rgb(31,41,55)"
+		}
+	},
 	"toolboxColor": "#ffffff",
 	"textColor": "rgba(150,150,150,1)"
 }

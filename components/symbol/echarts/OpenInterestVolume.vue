@@ -25,7 +25,10 @@
 	const disabled = ref(false)
 	const option = {
 		tooltip: {
-			trigger: 'axis'
+			trigger: 'axis',
+			textStyle: {
+				fontSize: 12
+			}
 		},
 		legend: [
 			{
@@ -39,9 +42,6 @@
 						icon: 'rect', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 					}
 				],
-				textStyle: {
-					color: '#ffffff'
-				},
 
 				itemWidth: 6,
 				itemHeight: 6
@@ -158,7 +158,7 @@
 		period.value = p
 		error.value = ''
 		ComposFetch.tradingDataFetch
-			.openInterestVolume(symbolObj.value.baseCcy, p)
+			.openInterestVolume(symbolObj.value.baseCcy||symbolObj.value.ctValCcy, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false

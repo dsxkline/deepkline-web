@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
-	import { type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, type Ticker } from '~/fetch/okx/okx.type.d'
 	const props = defineProps<{
 		height: number
 	}>()
@@ -37,10 +37,12 @@
 				<SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>
 				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow> -->
 
-				<!-- 获取多空持仓人数比 -->
+				<!-- 获取多空持仓人数比，支持合约和现货 -->
 				<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
+				<!-- 获取杠杠多空比 -->
 				<LoanRatio :symbol="symbol"></LoanRatio>
-				<OpenInterestVolume :symbol="symbol"></OpenInterestVolume>
+				<!-- 获取合约持仓量和成交量 -->
+				<OpenInterestVolume :symbol="symbol" v-if="symbolObj.instType==InstanceType.SWAP"></OpenInterestVolume>
 			</div>
 		</el-scrollbar>
 	</div>

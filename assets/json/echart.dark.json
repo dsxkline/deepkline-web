@@ -11,7 +11,7 @@
 			}
 		},
 		"axisLabel": {
-			"fontSize":10,
+			"fontSize": 10,
 			"show": true,
 			"textStyle": {
 				"color": "rgba(165,165,165,1)"
@@ -33,10 +33,9 @@
 		},
 		"axisLabel": {
 			"show": true,
-			"fontSize":10,
+			"fontSize": 10,
 			"textStyle": {
 				"color": "rgba(165,165,165,1)"
-				
 			}
 		},
 		"splitLine": {
@@ -46,7 +45,17 @@
 			}
 		}
 	},
-
+	"tooltip": {
+		"backgroundColor": "rgba(0,0,0,1)",
+		"borderColor": "rgba(255,255,255,0.2)",
+		"borderWidth":1,
+		"textStyle": { "fontSize": 12, "color": "#fff" }
+	},
+	"legend": {
+		"textStyle": {
+			"color": "rgba(165,165,165,1)"
+		}
+	},
 	"toolboxColor": "rgba(255,255,255,0.2)",
 	"textColor": "rgba(165,165,165,1)"
 }
