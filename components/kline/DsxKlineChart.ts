@@ -60,7 +60,7 @@ class DsxKlineChart {
 		console.log('kline create....',new Date().getTime())
 		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.addEvent(this.whenBrowserActive)
-		$wsb.onReconnectSuccess(this.wsReconnect)
+		// $wsb.onReconnectSuccess(this.wsReconnect)
 	}
 
 	tapSymbol(symbol: string,cycle?:string) {

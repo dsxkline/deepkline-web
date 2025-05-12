@@ -95,7 +95,7 @@
 	watch(
 		() => props.symbol,
 		() => {
-			if(symbolInfo.value)symbolInfo.value.project = ''
+			if (symbolInfo.value) symbolInfo.value.project = ''
 			getSymbolInfo()
 		}
 	)
@@ -134,18 +134,16 @@
 				error.value = ''
 				console.log(datas) // 这里是请求的结果数据
 				const [detail, dataInfo, coinInfo] = datas
-				if (detail?.code === 0) {
+				if (!detail?.data || !dataInfo?.data || !coinInfo?.data) {
+					error.value = '数据错误，请稍后再试'
+				}else{
 					symbolInfo.value = detail.data
-				}
-				if (dataInfo?.code === 0) {
 					symbolDataInfo.value = dataInfo.data
-				}
-				if (coinInfo?.code === 0) {
 					symbolCoinInfo.value = coinInfo.data
 				}
 			})
-			.catch(error => {
-				console.error('一个请求失败:', error)
+			.catch(err => {
+				console.error('一个请求失败:', err)
 				loading.value = false
 				error.value = '网络异常，请稍后再试'
 			})
@@ -255,12 +253,10 @@
 				</div>
 			</el-scrollbar>
 		</div>
-		<div v-else class="p-4">
-			<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
-				<template #extra>
-					<el-button @click.stop="getSymbolInfo()">点击刷新</el-button>
-				</template>
-			</el-result>
+		<div v-else class="p-4" :style="{height:contentHeight + 'px'}">
+			<Error :content="error" v-if="!loading && error">
+				<button @click.stop="getSymbolInfo()">点击刷新</button>
+			</Error>
 			<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		</div>
 	</div>

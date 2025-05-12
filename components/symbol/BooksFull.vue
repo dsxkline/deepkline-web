@@ -245,7 +245,7 @@
 	}
 
 	const wsError = (state: number) => {
-		if (state == -2 && !asks.value?.length && !bids.value?.length) {
+		if (state <= -1 && !asks.value?.length && !bids.value?.length) {
 			loading.value = false
 			error.value = '网络异常，连接错误'
 		} else {

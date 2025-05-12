@@ -1,3 +1,4 @@
+import {version} from '../package.json'
 export default {
     title: "DeepKline is the most silky cryptocurrency trading system.",
     htmlAttrs: {
@@ -17,13 +18,13 @@ export default {
     ],
     script: [
         {
-            src:'/js/dsx.kline_v_3_1_0.js'
+            src:'/js/dsx.kline_v_3_1_0.js?v='+version
         },
         {
-            src:'/js/qq.hq_v_3_1_0.js'
+            src:'/js/qq.hq_v_3_1_0.js?v='+version
         },
         {
-            src:'/kline.js'
+            src:'/kline.js?v='+version
         }
     ]
 }

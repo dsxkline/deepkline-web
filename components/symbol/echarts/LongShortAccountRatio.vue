@@ -7,7 +7,7 @@
 	import moment from 'moment'
 	import { _borderWidth } from '#tailwind-config/theme'
 	const chart = ref(null)
-	const period = ref('5m')
+	const period = ref('1H')
 	const loading = ref(true)
 	const error = ref('')
 	const disabled = ref(false)
@@ -33,58 +33,98 @@
 			trigger: 'axis',
 			textStyle: {
 				fontSize: 12
-			},
-			formatter: function (params: any[]) {
-				// console.log('params',params);
-				const item = params[0]
-				const d = moment(parseFloat(item['axisValue'])).format('MM/DD HH:mm')
-				return `${d}</br>${item.value}`
 			}
+			// formatter: function (params: any[]) {
+			// 	// console.log('params',params);
+			// 	const item = params[0]
+			// 	const d = moment(parseFloat(item['axisValue'])).format('MM/DD HH:mm')
+			// 	return `${d}</br>${item.value}`
+			// }
 		},
 		grid: {
 			containLabel: true,
 			top: '10', // 图表容器的上边距
 			bottom: '10', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
-			right: '0' // 图表容器的右边距
+			right: '5' // 图表容器的右边距
 			// show: true,
 			// borderColor: '#333',
 			// borderWidth:1
 		},
+		// dataZoom: [
+		// 	{
+		// 		type: 'slider', // 拖动条
+		// 	},
+		// 	{
+		// 		type: 'inside' // 鼠标滚轮
+		// 	}
+		// ],
 		xAxis: {
 			type: 'category',
-			boundaryGap: true,
+			boundaryGap: false,
 			data: xAxisData,
 			axisLabel: {
 				show: true,
+				interval: function (index: number, value: string) {
+					// 显示固定三个刻度
+					const total = xAxisData.length // 总共数据长度
+					const showIndex = [0, Math.floor(total / 2), total - 1]
+					return showIndex.includes(index)
+				},
+				rich: {
+					l: {
+						padding: [0, -70, 0, 0] // 偏移量可根据label文字长度计算
+					},
+					r: {
+						padding: [0, 70, 0, 0] // 偏移量可根据label文字长度计算
+					}
+				},
 				formatter: function (value: string, index: number) {
-					// 转成时间
-					return moment(parseFloat(value)).format('HH:mm')
+					if (index === 0) {
+						return `{l|${value}}`
+					}
+					if (index === xAxisData.length - 1) {
+						return `{r|${value}}`
+					}
+					return value
 				}
 			}
 		},
 		yAxis: {
 			type: 'value',
-			boundaryGap: [0, '100%']
+			boundaryGap: [0, '50%']
 		},
 		series: [
 			{
 				name: '',
 				type: 'line',
-				// smooth: true,
+				smooth: true,
 				showSymbol: false,
-				// sampling: 'lttb',
+				sampling: 'lttb',
+				// symbol:"none",
+				areaStyle: {
+					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+						{
+							offset: 0,
+							color: 'rgba(255, 158, 68,0.3)'
+						},
+						{
+							offset: 1,
+							color: 'rgba(255, 70, 131,0.0)'
+						}
+					])
+				},
 				data: seriesData
 			}
 		]
 	}
 
-	function fetchData(p: Period) {
+	function fetchData(p: Period, load = false) {
 		if (disabled.value) return
 		period.value = p
 		disabled.value = true
 		error.value = ''
-		loading.value = true
+		if (load) loading.value = true
 		// 现货传币种，合约传id
 		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy : props.symbol
 		const request = symbolObj.value?.instType == InstanceType.SPOT ? ComposFetch.tradingDataFetch.longShortAccountRatio : ComposFetch.tradingDataFetch.longShortAccountRatioContract
@@ -99,7 +139,9 @@
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
 					res.data.forEach(([ts, longShortAccountRatio]: any) => {
-						xAxisData.push(ts)
+						if (p == Period.M5) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.H1) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.D1) xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
 						seriesData.push(longShortAccountRatio)
 					})
 					option.xAxis.data = xAxisData.reverse()
@@ -125,7 +167,7 @@
 	watch(
 		() => props.symbol,
 		val => {
-			fetchData(period.value as Period)
+			fetchData(period.value as Period, true)
 		}
 	)
 
@@ -133,7 +175,18 @@
 		echart && echart.dispose()
 		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
-		echart && echart.resize()
+		resetSize()
+	}
+
+	function resetSize() {
+		// 获取父级的宽度和内边距paddingLeft
+		if (containerRef.value) {
+			const parentElement = containerRef.value as HTMLElement
+			const parentWidth = (parentElement.parentNode as HTMLElement).clientWidth
+			const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
+			width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
+			echart && echart.resize({ width: width.value })
+		}
 	}
 
 	onMounted(() => {
@@ -145,11 +198,7 @@
 		if (containerRef.value) {
 			resizeObserver = new ResizeObserver(entries => {
 				for (let entry of entries) {
-					// 获取父级的宽度和内边距paddingLeft
-					const parentWidth = (parentElement.parentNode as HTMLElement).clientWidth
-					const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
-					width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
-					echart && echart.resize({ width: width.value })
+					 resetSize()
 				}
 			})
 			// 监听父级元素宽度变化
@@ -172,7 +221,7 @@
 <template>
 	<div class="w-full h-full border-b border-[--border-color] py-4 min-h-[350px] flex flex-col justify-between" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
 		<div class="flex items-center justify-between mb-2">
-			<h3 class="text-sm mb-1 flex items-center">
+			<h3 class="text-sm flex items-center">
 				<b class="text-base">多空持仓人数比</b>
 			</h3>
 			<el-radio-group v-model="period" class="" :disabled="disabled" size="small" click-sound>
@@ -187,7 +236,7 @@
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
 		<Error :content="error" v-if="!loading && error" class="flex-1">
 			<template #default>
-				<el-button type="primary" @click.stop="fetchData(Period.M5)">点击刷新</el-button>
+				<el-button type="primary" @click.stop="fetchData(Period.M5, true)">点击刷新</el-button>
 			</template>
 		</Error>
 	</div>

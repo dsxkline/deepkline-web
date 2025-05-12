@@ -5,45 +5,48 @@
 	"logAxis": {},
 	"valueAxis": {
 		"axisLine": {
-      "show": true,
+			"show": false,
 			"lineStyle": {
 				"color": "rgba(255,255,255,0.08)"
 			}
 		},
 		"axisLabel": {
-      "show": true,
+			"fontSize":10,
+			"show": true,
 			"textStyle": {
 				"color": "rgba(165,165,165,1)"
 			}
 		},
 		"splitLine": {
-			"show": true,
-			"lineStyle": {
-				"color": "rgba(255,255,255,0.08)"
-			}
-		}
-  },
-	"categoryAxis": {
-		"axisLine": {
-      "show": true,
-			"lineStyle": {
-				"color": "rgba(255,255,255,0.08)"
-			}
-		},
-		"axisLabel": {
-      "show": true,
-			"textStyle": {
-				"color": "rgba(165,165,165,1)"
-			}
-		},
-		"splitLine": {
-			"show": true,
+			"show": false,
 			"lineStyle": {
 				"color": "rgba(255,255,255,0.08)"
 			}
 		}
 	},
-  
+	"categoryAxis": {
+		"axisLine": {
+			"show": false,
+			"lineStyle": {
+				"color": "rgba(255,255,255,0.08)"
+			}
+		},
+		"axisLabel": {
+			"show": true,
+			"fontSize":10,
+			"textStyle": {
+				"color": "rgba(165,165,165,1)"
+				
+			}
+		},
+		"splitLine": {
+			"show": false,
+			"lineStyle": {
+				"color": "rgba(255,255,255,0.08)"
+			}
+		}
+	},
+
 	"toolboxColor": "rgba(255,255,255,0.2)",
 	"textColor": "rgba(165,165,165,1)"
 }

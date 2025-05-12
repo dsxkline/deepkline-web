@@ -130,7 +130,7 @@
 	}
 
 	const wsError = (state: number) => {
-		if (state == -2 && !tradesList.value?.length) {
+		if (state <= -1 && !tradesList.value?.length) {
 			loading.value = false
 			error.value = '网络异常，连接错误'
 		} else {

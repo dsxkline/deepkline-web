@@ -3,15 +3,17 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { Period } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
+	import { useSymbolStore } from '~/store/symbol'
 	const chart = ref(null)
-	const period = ref('5m')
+	const period = ref('1H')
 	const loading = ref(true)
 	const error = ref('')
 	const props = defineProps<{
-		symbol: string | null
+		symbol: string
 	}>()
+	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts
 	let xAxisData: string[] = []
 	let seriesData: number[] = []
@@ -23,31 +25,32 @@
 	const disabled = ref(false)
 	const option = {
 		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'cross',
-				crossStyle: {
-					color: '#999'
-				},
-				label: {
-					formatter: function (params:any) {
-                        console.log('moneyFormat(value)',params)
-						return params.axisDimension=="x"?moment(parseFloat(params.value)).format('MM/DD HH:mm'):moneyFormat(params.value) // 这里可以自定义格式
+			trigger: 'axis'
+		},
+		legend: [
+			{
+				data: [
+					{
+						name: '交易量',
+						icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
+					},
+					{
+						name: '持仓量',
+						icon: 'rect', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 					}
-				}
+				],
+				textStyle: {
+					color: '#ffffff'
+				},
+
+				itemWidth: 6,
+				itemHeight: 6
+				// left: 0
 			}
-		},
-		legend: {
-			// data: ['交易量', '持仓量'],
-			// data: ['BTC多空账户比'],
-			icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
-			itemWidth: 6,
-			itemHeight: 6,
-			left: 0
-		},
+		],
 		grid: {
 			containLabel: true,
-			top: '10', // 图表容器的上边距
+			top: '40', // 图表容器的上边距
 			bottom: '10', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
 			right: '0' // 图表容器的右边距
@@ -56,14 +59,36 @@
 			{
 				type: 'category',
 				data: xAxisData,
+				splitLine: {
+					show: false
+				},
 				axisPointer: {
 					type: 'shadow'
 				},
 				axisLabel: {
 					show: true,
+					interval: function (index: number, value: string) {
+						// 显示固定三个刻度
+						const total = xAxisData.length // 总共数据长度
+						const showIndex = [0, Math.floor(total / 2), total - 1]
+						return showIndex.includes(index)
+					},
+					rich: {
+						l: {
+							padding: [0, -20, 0, 0] // 偏移量可根据label文字长度计算
+						},
+						r: {
+							padding: [0, 20, 0, 0] // 偏移量可根据label文字长度计算
+						}
+					},
 					formatter: function (value: string, index: number) {
-						// 转成时间
-						return moment(parseFloat(value)).format('MM/DD HH:mm')
+						if (index === 0) {
+							return `{l|${value}}`
+						}
+						if (index === xAxisData.length - 1) {
+							return `{r|${value}}`
+						}
+						return value
 					}
 				}
 			}
@@ -75,26 +100,27 @@
 				axisLabel: {
 					show: true,
 					formatter: function (value: string, index: number) {
-						return moneyFormat(value)
+						return moneyFormat(value, '', 0)
 					}
 				}
 			},
 			{
 				type: 'value',
-				boundaryGap: [0, '100%'],
+				boundaryGap: [0, '200%'],
 				axisLabel: {
 					show: true,
 					formatter: function (value: string, index: number) {
-						return moneyFormat(value)
+						return moneyFormat(value, '', 0)
 					}
 				}
 			}
 		],
 		series: [
 			{
-				name: '',
+				name: '持仓量',
 				type: 'bar',
 				smooth: true,
+				showSymbol: false,
 				tooltip: {
 					valueFormatter: function (value: any) {
 						return moneyFormat(value)
@@ -103,9 +129,10 @@
 				data: seriesData
 			},
 			{
-				name: '',
+				name: '交易量',
 				type: 'line',
 				smooth: true,
+				showSymbol: false,
 				yAxisIndex: 1,
 				tooltip: {
 					valueFormatter: function (value: any) {
@@ -121,17 +148,17 @@
 		echart && echart.dispose()
 		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
-		echart && echart.resize()
+		resetSize()
 	}
 
-	function fetchData(p: Period) {
+	function fetchData(p: Period, load = false) {
 		if (disabled.value) return
+		if (load) loading.value = true
 		disabled.value = true
 		period.value = p
 		error.value = ''
-		// loading.value = true;
 		ComposFetch.tradingDataFetch
-			.openInterestVolume('BTC', p)
+			.openInterestVolume(symbolObj.value.baseCcy, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false
@@ -143,8 +170,10 @@
 					option.xAxis[0].data = xAxisData
 					option.series[0].data = seriesData
 					option.series[1].data = seriesData2
-					res.data.forEach(([ts, position, volume]: any) => {
-						xAxisData.push(ts)
+					res.data.slice(0, 50).forEach(([ts, position, volume]: any) => {
+						if (p == Period.M5) xAxisData.push(moment(parseFloat(ts)).format('HH:mm'))
+						if (p == Period.H1) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.D1) xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
 						seriesData.push(volume)
 						seriesData2.push(position)
 					})
@@ -169,12 +198,24 @@
 			fetchData(newVal as Period)
 		}
 	)
-    watch(
-		()=>props.symbol,
-		val=>{
-			fetchData(period.value as Period)
+	watch(
+		() => props.symbol,
+		val => {
+			fetchData(period.value as Period,true)
 		}
 	)
+
+	function resetSize() {
+		// 获取父级的宽度和内边距paddingLeft
+		if (containerRef.value) {
+			const parentElement = containerRef.value as HTMLElement
+			const parentWidth = (parentElement.parentNode as HTMLElement).clientWidth
+			const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
+			width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
+			echart && echart.resize({ width: width.value })
+		}
+	}
+
 	onMounted(() => {
 		nextTick(() => {
 			fetchData(period.value as Period)
@@ -182,11 +223,7 @@
 		if (containerRef.value) {
 			resizeObserver = new ResizeObserver(entries => {
 				for (let entry of entries) {
-					// 获取父级的宽度和内边距paddingLeft
-					const parentWidth = (parentElement.parentNode as HTMLElement).clientWidth
-					const parentPaddingLeft = (parentElement.parentNode as HTMLElement).getBoundingClientRect().left - parentElement.getBoundingClientRect().left
-					width.value = parentWidth - 2 * Math.abs(parentPaddingLeft)
-					echart && echart.resize({ width: width.value })
+					resetSize()
 				}
 			})
 			// 监听父级元素宽度变化
@@ -224,7 +261,7 @@
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
 		<Error :content="error" v-if="!loading && error" class="flex-1">
 			<template #default>
-				<el-button type="primary" @click.stop="fetchData(Period.M5)">点击刷新</el-button>
+				<el-button type="primary" @click.stop="fetchData(Period.M5, true)">点击刷新</el-button>
 			</template>
 		</Error>
 	</div>
