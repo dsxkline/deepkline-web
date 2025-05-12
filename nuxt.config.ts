@@ -19,7 +19,7 @@ export default defineNuxtConfig({
 		shim:true
 	},
 	runtimeConfig: {
-		public:config
+		public:config,
 	},
 	devtools: { enabled: true },
 	modules: modulesConfig,
