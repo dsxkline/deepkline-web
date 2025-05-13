@@ -6,7 +6,7 @@ export default class BaseWebSocket {
 	private reconnectCount = 0;
 	private reconnectMax = 30000;
 	private reconnectInterval = 5000;
-	private reconnectErrorCallback: (error: Event | null) => void;
+	private reconnectErrorCallback: ((error: Event | null) => void) | null = null;
 	private reconnectSuccessCallback: any = null;
 	private reconnectSuccessFns:(()=>void)[] = [];
 	private url: string = "";
@@ -33,7 +33,7 @@ export default class BaseWebSocket {
 	private heatTimer:NodeJS.Timeout | null = null;
 	private heatInterval = 10000;
 	private destroied = false
-	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
+	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
 		this.reconnectErrorCallback = reconnectErrorCallback;
 		this.reconnectSuccessCallback = reconnectSuccessCallback;
@@ -283,9 +283,12 @@ export default class BaseWebSocket {
 
 	destroy() {
 		this.destroied = true;
+		this.connectLevelFns= []
 		this.removeReconnectSuccessAll()
 		this.unsubscribeAll()
 		this.removeAllTickerHandler()
+		this.reconnectErrorCallback = null
+		this.reconnectSuccessCallback = null
 		this.ws && this.ws.close();
 		this.ws = null;
 		this.reconnectTimer && clearTimeout(this.reconnectTimer);
