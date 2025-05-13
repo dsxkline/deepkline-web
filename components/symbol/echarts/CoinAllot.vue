@@ -133,7 +133,7 @@
 						maxSurfaceAngle: 80
 					},
 					labelLayout: function (params: { labelRect: { x: number; width: any }; labelLinePoints: any }) {
-						console.log('paramssss', params)
+						// console.log('paramssss', params)
 						const isLeft = params.labelRect.x < echart.getWidth() / 2
 						const points = params.labelLinePoints
 						// Update the end point.

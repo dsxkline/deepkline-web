@@ -40,7 +40,6 @@
 	watch(
 		() => pointLevel.value,
 		val => {
-			if (subHandle) $ws.unsubscribe(subHandle)
 			getTradeList()
 		}
 	)
@@ -56,7 +55,7 @@
 		() => props.symbol,
 		(val, old) => {
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
-			if (subHandle) $ws.unsubscribe(subHandle)
+			
 			getTradeList()
 		}
 	)
@@ -75,6 +74,7 @@
 		error.value = ''
 		point.value = 0
 		tradesList.value = []
+		if (subHandle) $ws.unsubscribe(subHandle)
 		subHandle = $ws.subTrades(symbolObj.value?.instId || props.symbol, (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
@@ -88,7 +88,8 @@
 		marketFetch
 			.getTrades(props.symbol, 50)
 			.then(res => {
-				if (res?.code == 0 && res.data) {
+				console.log('trades....',res)
+				if (res?.code === 0 && res?.data) {
 					const datas = res.data
 					datas.forEach(data => updateOrderBook(data))
 				} else {

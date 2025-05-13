@@ -72,7 +72,6 @@
 		() => props.symbol,
 		(val, old) => {
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
-			if (subHandle) $ws.unsubscribe(subHandle)
 			$ws.removeTickerHandler(old, tickerHandler)
 			getBooksFull()
 		}
@@ -93,10 +92,13 @@
 			asks: new Map<number, BookEntry>(),
 			bids: new Map<number, BookEntry>()
 		}
+		asks.value = []
+		bids.value = []
 		totalAsks.value = 0
 		totalBids.value = 0
 		point.value = 0
 
+		if (subHandle) $ws.unsubscribe(subHandle)
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
@@ -112,7 +114,8 @@
 		marketFetch
 			.booksFull(props.symbol, 100)
 			.then(res => {
-				if (res?.code == 0 && res.data) {
+				console.log('booksfull....',res)
+				if (res?.code === 0 && res?.data) {
 					const datas = res.data
 					datas.forEach(data => updateOrderBook(data, ''))
 				} else {
