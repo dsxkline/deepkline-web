@@ -87,13 +87,17 @@
 				digWidth: 0,
 				width: 0,
 				textHeight: 0,
-				inited:false
+				inited:false,
+				timer:null
 			}
+		},
+		beforeUnmount(){
+			if(this.timer) clearTimeout(this.timer);
 		},
 		mounted() {
 			//console.log("this.value", this.value);
 			this.setDefaultDisplay()
-			setTimeout(()=>{
+			this.timer = setTimeout(()=>{
 				this.inited = true;
 			},this.time*1000)
 		},

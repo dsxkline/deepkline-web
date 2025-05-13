@@ -224,6 +224,7 @@
 
 				flickerTimers[item.instId] = setTimeout(() => {
 					dom.style.opacity = '0'
+					clearTimeout(flickerTimers[item.instId])
 					flickerTimers[item.instId] = null
 				}, 200)
 			}
@@ -294,7 +295,8 @@
 	const { $windowEvent } = useNuxtApp()
 	onUnmounted(() => {
 		unSubSymbols()
-		$windowEvent.removeEvent(whenBrowserActive)
+		$windowEvent.removeEvent(whenBrowserActive);
+		symbols.value.forEach(symbol=>flickerTimers[symbol.instId] && clearTimeout(flickerTimers[symbol.instId]))
 	})
 	onMounted(() => {
 		if (props.start) update()
