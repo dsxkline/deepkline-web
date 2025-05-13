@@ -193,6 +193,7 @@ class WindowsEvent {
 	}
 
 	destroy() {
+		this.removeAllEvent()
 		this.clearCheckBrowserHeart()
 		document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
 		// 移除后台事件监听
@@ -231,10 +232,12 @@ function clickSoundHandle(audio: HTMLAudioElement) {
 function beforeunload(){
 	// 页面离开或者刷新的时候注销组件释放内存等
 	console.log('beforeunload')
+	useNuxtApp().$windowEvent.destroy()
 	useStore().unload = true;
 	useNuxtApp().$ws.destroy()
 	useNuxtApp().$wsb.destroy()
 	window.removeEventListener('beforeunload',beforeunload)
+	console.log('beforeunload success')
 }
 export default defineNuxtPlugin(({ vueApp }) => {
 	const nuxtApp = useNuxtApp()
