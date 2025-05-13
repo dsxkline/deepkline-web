@@ -1,41 +1,43 @@
-interface WindowsEvent{
-    quiescentTimeout:number
-    quiescentTime:number,
-    checkBrowserTimer:any,
-    isBrowserDelay:boolean,
-    events:(()=>void)[]
+import { useStore } from "~/store"
+
+interface WindowsEvent {
+	quiescentTimeout: number
+	quiescentTime: number
+	checkBrowserTimer: any
+	isBrowserDelay: boolean
+	events: (() => void)[]
 }
-class WindowsEvent{
-    quiescentTimeout:number
-    quiescentTime:number
-    checkBrowserTimer:any
-    isBrowserDelay:boolean
-    events:(()=>void)[] = []
-    isLeave:boolean
-    constructor(){
-        // 静止时间，行情停止刷新超过2分钟，显现时自动刷新一次
+class WindowsEvent {
+	quiescentTimeout: number
+	quiescentTime: number
+	checkBrowserTimer: any
+	isBrowserDelay: boolean
+	events: (() => void)[] = []
+	isLeave: boolean
+	constructor() {
+		// 静止时间，行情停止刷新超过2分钟，显现时自动刷新一次
 		this.quiescentTimeout = 10 * 1000
 		this.quiescentTime = 0
-        this.checkBrowserTimer = null
-        this.isBrowserDelay = false
-        this.isLeave = false
-        this.windowEvents()
-    }
+		this.checkBrowserTimer = null
+		this.isBrowserDelay = false
+		this.isLeave = false
+		this.windowEvents()
+	}
 
-    addEvent(fn:()=>void){
-        this.events = this.events.filter(item=>item!==fn)
-        this.events.push(fn)
-    }
+	addEvent(fn: () => void) {
+		this.events = this.events.filter(item => item !== fn)
+		this.events.push(fn)
+	}
 
-    removeEvent(fn:()=>void){
-        this.events = this.events.filter(item=>item!==fn)
-    }
+	removeEvent(fn: () => void) {
+		this.events = this.events.filter(item => item !== fn)
+	}
 
-    removeAllEvent(){
-        this.events = []
-    }
+	removeAllEvent() {
+		this.events = []
+	}
 
-    windowEvents() {
+	windowEvents() {
 		// blur 事件 - 当窗口失去焦点时触发
 		window.addEventListener('blur', this.blurHandler)
 		// pagehide 事件 - 当页面隐藏时触发
@@ -54,10 +56,9 @@ class WindowsEvent{
 		this.checkBrowserHeart()
 
 		this.clearWindowEvent()
-
 	}
 
-	clearWindowEvent(){
+	clearWindowEvent() {
 		// 禁用双指放大
 		document.body.addEventListener('dblclick', function (event) {
 			event.preventDefault()
@@ -101,15 +102,15 @@ class WindowsEvent{
 		this.checkBrowserTimer = setInterval(() => {
 			const now = Date.now()
 			const delta = now - lastTime
-			
+
 			if (delta > 1500) {
 				// 超过预期时间间隔，可能被限流
-				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`,new Date())
+				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`, new Date())
 				if (!this.isBrowserDelay) {
 					this.isBrowserDelay = true
 					this.leaveForeground()
 				}
-			} 
+			}
 			// else {
 			// 	// 当浏览器限流后恢复到正常定时器频率
 			// 	if (this.isBrowserDelay) {
@@ -127,25 +128,25 @@ class WindowsEvent{
 	}
 
 	leaveForeground() {
-        if(this.isLeave) return
-		console.log('leaveForeground',new Date())
+		if (this.isLeave) return
+		console.log('leaveForeground', new Date())
 		// 离开前台
 		// 窗口失去焦点时的处理
 		this.quiescentTime = new Date().getTime()
-        this.isLeave = true
+		this.isLeave = true
 	}
 	// 恢复前台
 	resumeForeground() {
-        this.isLeave = false
+		this.isLeave = false
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
-		console.log('resumeForeground',t,this.isBrowserDelay,this.quiescentTimeout,new Date())
+		console.log('resumeForeground', t, this.isBrowserDelay, this.quiescentTimeout, new Date())
 		if (t > this.quiescentTimeout && this.isBrowserDelay) {
 			// 刷新k线自动刷新时间
 			this.quiescentTime = new Date().getTime()
 			// 超过2分钟，刷新K线图
 			// 回调
-            this.events.forEach(fn=>fn())
+			this.events.forEach(fn => fn())
 		}
 		this.isBrowserDelay = false
 	}
@@ -167,7 +168,7 @@ class WindowsEvent{
 	}
 
 	visibilityChangeHandler = () => {
-		console.log('visibilityChangeHandler',document.visibilityState,new Date())
+		console.log('visibilityChangeHandler', document.visibilityState, new Date())
 		if (document.visibilityState === 'hidden') {
 			// 页面不可见时执行的操作
 			this.leaveForeground()
@@ -204,36 +205,44 @@ class WindowsEvent{
 		window.removeEventListener('pageshow', this.pageshowHandler)
 	}
 }
-export default defineNuxtPlugin(({ vueApp }) => {
-    const nuxtApp = useNuxtApp()
-	if (process.client) {
-        // 注入浏览器激活事件
-        nuxtApp.provide('windowEvent',new WindowsEvent())
-        // nuxtApp.$windowEvent.addEvent(()=>{
-        //     nuxtApp.$ws.close()
-        //     nuxtApp.$wsb.close()
-        // })
-		const audio = new Audio('/sounds/click.mov')
-		const soundHandle = () => {
-			// 播放音效
-			audio.currentTime = 0
-			audio.play().catch(() => {})
-		}
-		nuxtApp.provide('clickSound', soundHandle)
-		document.addEventListener('click', event => {
-			const path = event.composedPath?.() || [] // 获取事件传播路径
-			for (const el of path) {
-				if (!(el instanceof HTMLElement)) continue
-				// 判断原生 onclick 或 Vue 绑定过的 click 事件
-				if (
-					typeof el.onclick === 'function' || // 原生 DOM
-					el.getAttributeNames().some(attr => attr.startsWith('@click') || attr === 'v-on:click' || attr == 'click-sound') // Vue 模板
-				) {
-					// 播放音效
-					soundHandle()
-					break
-				}
+const soundHandle = (audio: HTMLAudioElement) => () => {
+	// 播放音效
+	audio.currentTime = 0
+	audio.play().catch(() => {})
+}
+function clickSoundHandle(audio: HTMLAudioElement) {
+	return (event: MouseEvent) => {
+		const path = event.composedPath?.() || [] // 获取事件传播路径
+		for (const el of path) {
+			if (!(el instanceof HTMLElement)) continue
+			// 判断原生 onclick 或 Vue 绑定过的 click 事件
+			if (
+				typeof el.onclick === 'function' || // 原生 DOM
+				el.getAttributeNames().some(attr => attr.startsWith('@click') || attr === 'v-on:click' || attr == 'click-sound') // Vue 模板
+			) {
+				// 播放音效
+				soundHandle(audio)
+				break
 			}
-		})
+		}
+	}
+}
+
+function beforeunload(){
+	// 页面离开或者刷新的时候注销组件释放内存等
+	console.log('beforeunload')
+	useStore().unload = true;
+	window.removeEventListener('beforeunload',beforeunload)
+}
+export default defineNuxtPlugin(({ vueApp }) => {
+	const nuxtApp = useNuxtApp()
+	if (process.client) {
+		// 注入浏览器激活事件
+		nuxtApp.provide('windowEvent', new WindowsEvent())
+		const audio = new Audio('/sounds/click.mov')
+		nuxtApp.provide('clickSound', soundHandle(audio))
+		document.addEventListener('click', clickSoundHandle(audio))
+		console.log('beforeunload');
+		window.addEventListener('beforeunload',beforeunload)
 	}
 })

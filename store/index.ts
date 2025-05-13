@@ -5,6 +5,7 @@ import { ApiSource } from '~/types/types.d'
 export const useStore = defineStore({
 	id: 'main',
 	state: () => ({
+    unload:false, // 页面是否卸载，如果卸载需要清理vue实例
 		apiSource: ApiSource.OKX,
 		hideSplitLeft: false,
 		hideSplitRight: false,

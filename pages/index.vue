@@ -45,6 +45,15 @@
 	const update = () => {
 		console.log('update')
 	}
+
+	// // 刷新页面卸载
+	// watch(()=>useStore().unload,()=>{
+	// 	console.log('onBeforeUnmount 123.............................')
+	// })
+
+	onBeforeUnmount(()=>{
+		console.log('onBeforeUnmount.............................')
+	})
 </script>
 <template>
 	<div class="main-container flex justify-between flex-row w-full h-full">
