@@ -59,12 +59,12 @@
 				top: '85px',
 				itemGap: 3,
 				textStyle: {
-					color: 'rgb(249 250 251)',
+					color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
 					fontWeight: 'normal',
 					fontSize: 12
 				},
 				subtextStyle: {
-					color: 'rgb(249 250 251)',
+					color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
 					fontSize: 12
 				}
 			},
@@ -88,7 +88,7 @@
 					left: '0',
 					width: '100%',
 					itemStyle: {
-						borderColor: 'rgb(0 0 0,0)',
+						borderColor: useColorMode().value == 'dark' ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
 						borderWidth: 1
 					},
 					label: {
@@ -104,7 +104,8 @@
 							},
 							time: {
 								fontSize: 10,
-								color: '#fff'
+								textBorderWidth:0,
+								color:useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
 							}
 						}
 					},
@@ -186,23 +187,6 @@
 					symbolAllocationData.value = allocation.data
 				}
 
-				symbolAllocationData.value.list.forEach(item => {
-					console.log('data item', item)
-					datas.value[0].push({
-						name: item.label,
-						value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
-						progress: parseFloat(item.progress)
-					})
-				})
-				const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
-				datas.value[0].push({
-					name: 'Untracked',
-					value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
-					progress: 1,
-					itemStyle: { color: itemColor }
-				})
-				datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
-
 				createEchart()
 			})
 			.catch(error => {
@@ -213,6 +197,24 @@
 	}
 
 	function createEchart() {
+		datas.value[0] = []
+		symbolAllocationData.value.list.forEach(item => {
+			console.log('data item', item)
+			datas.value[0].push({
+				name: item.label,
+				value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
+				progress: parseFloat(item.progress)
+			})
+		})
+		const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+		datas.value[0].push({
+			name: 'Untracked',
+			value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
+			progress: 1,
+			itemStyle: { color: itemColor }
+		})
+		datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
+
 		echart && echart.dispose()
 		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
 		echart.setOption(option())
@@ -246,6 +248,12 @@
 		() => props.symbol,
 		val => {
 			fetchData()
+		}
+	)
+	watch(
+		() => useColorMode().value,
+		() => {
+			createEchart()
 		}
 	)
 

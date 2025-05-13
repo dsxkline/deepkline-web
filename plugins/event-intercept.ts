@@ -14,7 +14,7 @@ class WindowsEvent{
     isLeave:boolean
     constructor(){
         // 静止时间，行情停止刷新超过2分钟，显现时自动刷新一次
-		this.quiescentTimeout = 5 * 60 * 1000
+		this.quiescentTimeout = 10 * 1000
 		this.quiescentTime = 0
         this.checkBrowserTimer = null
         this.isBrowserDelay = false
@@ -104,18 +104,19 @@ class WindowsEvent{
 			
 			if (delta > 1500) {
 				// 超过预期时间间隔，可能被限流
-				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`)
+				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`,new Date())
 				if (!this.isBrowserDelay) {
 					this.isBrowserDelay = true
 					this.leaveForeground()
 				}
-			} else {
-				// 当浏览器限流后恢复到正常定时器频率
-				if (this.isBrowserDelay) {
-					this.resumeForeground()
-				}
-				this.isBrowserDelay = false
-			}
+			} 
+			// else {
+			// 	// 当浏览器限流后恢复到正常定时器频率
+			// 	if (this.isBrowserDelay) {
+			// 		this.resumeForeground()
+			// 	}
+			// 	this.isBrowserDelay = false
+			// }
 
 			lastTime = now
 		}, 1000)
@@ -138,6 +139,7 @@ class WindowsEvent{
         this.isLeave = false
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
+		console.log('resumeForeground',t,this.isBrowserDelay,this.quiescentTimeout,new Date())
 		if (t > this.quiescentTimeout && this.isBrowserDelay) {
 			// 刷新k线自动刷新时间
 			this.quiescentTime = new Date().getTime()
@@ -145,6 +147,7 @@ class WindowsEvent{
 			// 回调
             this.events.forEach(fn=>fn())
 		}
+		this.isBrowserDelay = false
 	}
 
 	// 处理程序
