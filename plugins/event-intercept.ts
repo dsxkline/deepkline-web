@@ -209,10 +209,10 @@ export default defineNuxtPlugin(({ vueApp }) => {
 	if (process.client) {
         // 注入浏览器激活事件
         nuxtApp.provide('windowEvent',new WindowsEvent())
-        nuxtApp.$windowEvent.addEvent(()=>{
-            nuxtApp.$ws.close()
-            nuxtApp.$wsb.close()
-        })
+        // nuxtApp.$windowEvent.addEvent(()=>{
+        //     nuxtApp.$ws.close()
+        //     nuxtApp.$wsb.close()
+        // })
 		const audio = new Audio('/sounds/click.mov')
 		const soundHandle = () => {
 			// 播放音效
