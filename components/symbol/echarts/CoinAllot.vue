@@ -41,42 +41,15 @@
 				label: '',
 				percOfLabel: '',
 				percOfUnlocked: '',
-				progress: ''
-			},
-			{
-				label: '',
-				percOfLabel: '',
-				percOfUnlocked: '',
-				progress: ''
-			},
-			{
-				label: '',
-				percOfLabel: '',
-				percOfUnlocked: '',
-				progress: ''
-			},
-			{
-				label: '',
-				percOfLabel: '',
-				percOfUnlocked: '',
-				progress: ''
+				progress: '',
+				color: ''
 			}
 		],
 		maxSupply: '',
 		unlockedTs: ''
 	})
 
-	const datas: { name: string; value: number ,itemStyle?:{color:string}}[][] = [
-		////////////////////////////////////////
-		[
-			// { name: '团队', value: 21.51 },
-			// { name: '投资者', value: 17.8 },
-			// { name: '社区', value: 15.0 },
-			// { name: '顾问', value: 0.69 },
-			// { name: '未追踪', value: 45.0 },
-			// { name: '已锁定', value: 0.0 }
-		]
-	]
+	const datas = ref<{ name: string; value: number; progress: number; itemStyle?: { color: string } }[][]>([[]])
 	const option = () => {
 		return {
 			title: {
@@ -102,22 +75,9 @@
 				right: '0' // 图表容器的右边距
 			},
 			legend: {
-				bottom: '0',
-				left: '0',
-				right: '0',
-				itemWidth: 10,
-				itemHeight: 10,
-				padding: 0,
-				itemStyle: {
-					borderWidth: 0,
-					left: 0
-				},
-				textStyle: {
-					color: 'rgb(143 144 154)',
-					fontSize: 12
-				}
+				show: false
 			},
-			series: datas.map(function (data, idx) {
+			series: datas.value.map(function (data, idx) {
 				var top = 0
 				return {
 					type: 'pie',
@@ -128,7 +88,7 @@
 					left: '0',
 					width: '100%',
 					itemStyle: {
-						borderColor: 'rgb(0 0 0)',
+						borderColor: 'rgb(0 0 0,0)',
 						borderWidth: 1
 					},
 					label: {
@@ -148,22 +108,39 @@
 							}
 						}
 					},
+					emphasis: {
+						label: {
+							rich: {
+								name: {
+									fontWeight: 'bold'
+								},
+								time: {
+									fontSize: 12,
+									fontWeight: 'bold'
+								}
+							}
+						},
+						labelLine: {
+							lineStyle: {
+								width: 2
+							}
+						}
+					},
 					labelLine: {
 						length: 15,
 						length2: 0,
 						maxSurfaceAngle: 80
 					},
 					labelLayout: function (params: { labelRect: { x: number; width: any }; labelLinePoints: any }) {
+						console.log('paramssss', params)
 						const isLeft = params.labelRect.x < echart.getWidth() / 2
 						const points = params.labelLinePoints
 						// Update the end point.
 						points[2][0] = isLeft ? params.labelRect.x : params.labelRect.x + params.labelRect.width
-						console.log('points',points)
-						points.forEach((p:[x:number,y:number]) => {
-							maxY.value = Math.max(maxY.value,p[1])
-							console.log('maxY',maxY.value,p[1])
-						});
-						
+						points.forEach((p: [x: number, y: number]) => {
+							maxY.value = Math.max(maxY.value, p[1])
+						})
+
 						return {
 							labelLinePoints: points
 						}
@@ -208,15 +185,23 @@
 				if (allocation?.code === 0) {
 					symbolAllocationData.value = allocation.data
 				}
+
 				symbolAllocationData.value.list.forEach(item => {
 					console.log('data item', item)
-					datas[0].push({
+					datas.value[0].push({
 						name: item.label,
-						value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2))
+						value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
+						progress: parseFloat(item.progress)
 					})
 				})
-				datas[0].push({ name: 'Untracked', value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),itemStyle: { color: 'rgba(255,255,255,0.2)' }})
-				datas[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)) ,itemStyle: { color: 'rgba(255,255,255,0.10)' }})
+				const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+				datas.value[0].push({
+					name: 'Untracked',
+					value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
+					progress: 1,
+					itemStyle: { color: itemColor }
+				})
+				datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
 
 				createEchart()
 			})
@@ -232,11 +217,34 @@
 		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
 		echart.setOption(option())
 		echart && echart.resize()
+
+		const ops = echart.getOption()
+		const colorPalette = ops.color as echarts.Color[]
+		datas.value[0].forEach((item, index) => {
+			const color = item.itemStyle?.color || colorPalette[index % colorPalette.length]
+			console.log(`${item.name} 实际颜色为: ${color}`)
+			if (item.itemStyle) item.itemStyle.color = color as string
+			else
+				item.itemStyle = {
+					color: color as string
+				}
+		})
+	}
+
+	const dispatchAction = (index: number, type: 'highlight' | 'downplay') => {
+		if (echart) {
+			if (type == 'highlight') useNuxtApp().$clickSound()
+			echart.dispatchAction({
+				type: type,
+				seriesIndex: 0,
+				dataIndex: index
+			})
+		}
 	}
 
 	watch(
-		()=>props.symbol,
-		val=>{
+		() => props.symbol,
+		val => {
 			fetchData()
 		}
 	)
@@ -273,11 +281,29 @@
 			<h3 class="mb-1 flex items-center">代币解锁</h3>
 		</div>
 		<div class="container min-h-[260px] relative" v-show="!loading && !error">
-			<div class="chart w-full h-full absolute top-0 left-0" ref="chart"></div>
-			<div :style="'height:'+maxY+'px'"></div>
-			<ul class="flex flex-wrap invisible mt-3" >
-				<li v-for="item in symbolAllocationData.list" class="flex items-center mr-2 mb-3">
-					<i class="w-[10px] h-[10px] rounded-sm flex bg-red mr-1"></i><span class="text-xs text-grey">{{ item.label }}</span>
+			<div class="chart w-full h-full absolute top-0 left-0 overflow-hidden" :style="'height:' + (maxY + 50) + 'px'" ref="chart"></div>
+			<div :style="'height:' + maxY + 'px'"></div>
+			<ul class="w-full mt-7">
+				<li class="flex items-center justify-between mb-2 text-xs w-full text-grey">
+					<div class="w-[40%]">代币配置</div>
+					<div class="w-[40px]">总量</div>
+					<div class="w-[40px]">已解锁</div>
+					<div class="w-[80px] text-right">进度</div>
+				</li>
+				<li
+					v-for="(item, index) in datas[0]"
+					class="flex items-center justify-between mb-2 text-[10px] hover:bg-[--transparent20] w-full"
+					@mouseover="dispatchAction(index, 'highlight')"
+					@mouseleave="dispatchAction(index, 'downplay')"
+				>
+					<div class="flex items-center w-[40%]">
+						<i class="w-[10px] h-[10px] rounded-sm flex mr-1" :style="{ background: item.itemStyle?.color }"></i><span class="text-main truncate" :title="item?.name">{{ item.name }}</span>
+					</div>
+					<span class="w-[40px]">{{ parseFloat(item.value.toFixed(2)) }}%</span>
+					<span class="w-[40px]">{{ parseFloat((item.progress * 100).toFixed(2)) }}%</span>
+					<div class="flex justify-between items-center">
+						<div class="w-[80px]"><el-progress :percentage="parseFloat((item.progress * 100).toFixed(2))" :show-text="false" :color="item.itemStyle?.color" /></div>
+					</div>
 				</li>
 			</ul>
 		</div>

@@ -313,7 +313,6 @@ class DsxKlineChart {
 		if (this.cycle == '15m') cycle = 'm15'
 		if (this.cycle == '30m') cycle = 'm30'
 		if (this.cycle == '60m') cycle = 'm60'
-		// console.log(t, this.cycle, item);
 		if (this.kline && this.lastItem != item) {
 			this.kline.refreshLastOneData(item, cycle)
 		}
