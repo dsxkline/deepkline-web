@@ -32,6 +32,7 @@ export default class BaseWebSocket {
 	private connectLevelFns: ((stateLevel:number) => void)[] = [];
 	private heatTimer:NodeJS.Timeout | null = null;
 	private heatInterval = 10000;
+	private destroied = false
 	constructor(url: string, reconnectErrorCallback: (error: Event | null) => void = () => { }, reconnectSuccessCallback: any | null = null) {
 		this.url = url;
 		this.reconnectErrorCallback = reconnectErrorCallback;
@@ -60,6 +61,7 @@ export default class BaseWebSocket {
 	
 
 	connect(reset=false) {
+		if(this.destroied) return;
 		this.connectLevel = -1
 		this.ws = new WebSocket(this.url);
 		
@@ -113,7 +115,8 @@ export default class BaseWebSocket {
 		};
 	}
 	reconnect() {
-		
+		if(this.reconnectTimer) clearTimeout(this.reconnectTimer)
+		if(this.destroied) return;
 		if (this.reconnectCount < this.reconnectMax) {
 			this.reconnectCount++;
 			this.reconnectTimer = setTimeout(() => {
@@ -136,11 +139,7 @@ export default class BaseWebSocket {
 		this.ws && this.ws.send(typeof data=='string'?data:JSON.stringify(data));
 	}
 
-	destroy() {
-		this.ws && this.ws.close();
-		this.ws = null;
-		this.reconnectTimer && clearTimeout(this.reconnectTimer);
-	}
+	
 	get isConnected() {
 		return this.ws && this.ws.readyState === WebSocket.OPEN;
 	}
@@ -274,7 +273,21 @@ export default class BaseWebSocket {
 		this.tickersHandler[instId] = this.tickersHandler[instId].filter(item=>item!=callback)
 		// console.log('removeTickerHandler',this.tickersHandler)
 	}
+	removeAllTickerHandler(){
+		this.tickersHandler = {};
+	}
+	
 	heart(){
 
+	}
+
+	destroy() {
+		this.destroied = true;
+		this.removeReconnectSuccessAll()
+		this.unsubscribeAll()
+		this.removeAllTickerHandler()
+		this.ws && this.ws.close();
+		this.ws = null;
+		this.reconnectTimer && clearTimeout(this.reconnectTimer);
 	}
 }

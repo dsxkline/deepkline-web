@@ -232,6 +232,8 @@ function beforeunload(){
 	// 页面离开或者刷新的时候注销组件释放内存等
 	console.log('beforeunload')
 	useStore().unload = true;
+	useNuxtApp().$ws.destroy()
+	useNuxtApp().$wsb.destroy()
 	window.removeEventListener('beforeunload',beforeunload)
 }
 export default defineNuxtPlugin(({ vueApp }) => {
@@ -242,7 +244,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		const audio = new Audio('/sounds/click.mov')
 		nuxtApp.provide('clickSound', soundHandle(audio))
 		document.addEventListener('click', clickSoundHandle(audio))
-		console.log('beforeunload');
 		window.addEventListener('beforeunload',beforeunload)
 	}
 })

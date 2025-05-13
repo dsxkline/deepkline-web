@@ -17,12 +17,11 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		setBodyHeight()
 		window.addEventListener('resize', setBodyHeight)
 		// 监听页面加载完成事件
-		window.addEventListener('load', () => {
-			setBodyHeight()
-		})
+		window.addEventListener('load', setBodyHeight)
 		// 监听页面卸载事件
 		window.addEventListener('beforeunload', () => {
 			window.removeEventListener('resize', setBodyHeight)
+			window.removeEventListener('load', setBodyHeight)
 		})
 	}
 })
