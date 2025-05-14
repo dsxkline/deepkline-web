@@ -3,7 +3,7 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
 	import { useSymbolStore } from '~/store/symbol'
 	const chart = ref(null)
@@ -14,9 +14,10 @@
 		symbol: string
 	}>()
 	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
-	let echart: echarts.ECharts|null
-	let xAxisData: string[]|null = []
-	let seriesData: number[]|null = []
+	let echart: echarts.ECharts | null
+	let xAxisData: string[] | null = []
+	let seriesData: number[] | null = []
+	let seriesData2: number[] | null = []
 	// 在组件顶部声明 resizeObserver
 	let resizeObserver: ResizeObserver | null = null
 	const containerRef = ref(null)
@@ -27,24 +28,15 @@
 			icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 			itemWidth: 6,
 			itemHeight: 6,
-			left: 0
+			bottom: '0'
 		},
 		tooltip: {
-			trigger: 'axis',
-			textStyle: {
-				fontSize: 12
-			}
-			// formatter: function (params: any[]) {
-			// 	// console.log('params',params);
-			// 	const item = params[0]
-			// 	const d = moment(parseFloat(item['axisValue'])).format('MM/DD HH:mm')
-			// 	return `${d}</br>${item.value}`
-			// }
+			trigger: 'axis'
 		},
 		grid: {
 			containLabel: true,
 			top: '10', // 图表容器的上边距
-			bottom: '10', // 图表容器的下边距
+			bottom: '40', // 图表容器的下边距
 			left: '0', // 图表容器的左边距
 			right: '0' // 图表容器的右边距
 		},
@@ -56,7 +48,7 @@
 				show: true,
 				interval: function (index: number, value: string) {
 					// 显示固定三个刻度
-					const total = xAxisData?.length||0 // 总共数据长度
+					const total = xAxisData?.length || 0 // 总共数据长度
 					const showIndex = [0, Math.floor(total / 2), total - 1]
 					return showIndex.includes(index)
 				},
@@ -81,31 +73,52 @@
 		},
 		yAxis: {
 			type: 'value',
-			boundaryGap: [0, '50%']
+			boundaryGap: [0, 0],
+			axisLabel: {
+				show: true,
+				formatter: function (value: number) {
+					return moneyFormat(value,'', 0)
+				}
+			},
 		},
 		series: [
 			{
-				name: '',
+				name: '主动买入量',
 				type: 'line',
-				smooth: true,
 				showSymbol: false,
-				sampling: 'lttb',
-				itemStyle: {
-					color: 'rgb(255, 70, 131)'
+				lineStyle: {
+					color: 'rgb(245 70 92)'
 				},
-				areaStyle: {
-					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-						{
-							offset: 0,
-							color: 'rgba(255, 70, 131,0.3)'
-						},
-						{
-							offset: 1,
-							color: 'rgba(255, 70, 131,0.0)'
-						}
-					])
+				emphasis: {
+					lineStyle: {
+						color: 'rgb(245, 70, 92)' // ✅ 鼠标悬停时保持线颜色
+					}
+				},
+				tooltip: {
+					valueFormatter: function (value: any) {
+						return moneyFormat(value)
+					}
 				},
 				data: seriesData
+			},
+			{
+				name: '主动卖出量',
+				type: 'line',
+				showSymbol: false,
+				lineStyle: {
+					color: 'rgb(45 189 133)'
+				},
+				emphasis: {
+					lineStyle: {
+						color: 'rgb(45 189 133)' // ✅ 鼠标悬停时保持线颜色
+					}
+				},
+				tooltip: {
+					valueFormatter: function (value: any) {
+						return moneyFormat(value)
+					}
+				},
+				data: seriesData2
 			}
 		]
 	}
@@ -123,8 +136,10 @@
 		period.value = p
 		error.value = ''
 		if (load) loading.value = true
-		ComposFetch.tradingDataFetch
-			.loanRatio(symbolObj.value.baseCcy||symbolObj.value.ctValCcy, p)
+		// 现货传币种，合约传id
+		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy : props.symbol
+		const request = symbolObj.value?.instType == InstanceType.SPOT ? ComposFetch.tradingDataFetch.takerVolumne : ComposFetch.tradingDataFetch.takerVolumeContract
+		request(symbol, symbolObj.value?.instType, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false
@@ -132,16 +147,17 @@
 				if (res?.code == 0) {
 					xAxisData = []
 					seriesData = []
-					option.xAxis.data = xAxisData
-					option.series[0].data = seriesData
-					res.data.forEach(([ts, longShortAccountRatio]: any) => {
+					seriesData2 = []
+					res.data.slice(0, 50).forEach(([ts, buyVol, sellVol]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
-						seriesData && seriesData.push(longShortAccountRatio)
+						seriesData && seriesData.push(buyVol)
+						seriesData2 && seriesData2.push(sellVol)
 					})
 					option.xAxis.data = xAxisData.reverse()
 					option.series[0].data = seriesData.reverse()
+					option.series[1].data = seriesData2.reverse()
 					createEchart()
 					// console.log(xAxisData,seriesData);
 				} else {
@@ -164,7 +180,7 @@
 	watch(
 		() => props.symbol,
 		val => {
-			fetchData(period.value as Period,true)
+			fetchData(period.value as Period, true)
 		}
 	)
 
@@ -204,7 +220,7 @@
 			resizeObserver.disconnect()
 		}
 	})
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		chart.value = null
 		echart && echart.dispose()
 		echart = null
@@ -221,7 +237,7 @@
 	<div class="w-full h-full mt-2 border-b border-[--border-color] py-4 min-h-[350px] flex flex-col justify-between" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm flex items-center">
-				<b class="text-base">杠杆多空比</b>
+				<b class="text-base">主动买入/卖出量</b>
 			</h3>
 			<el-radio-group v-model="period" :disabled="disabled" size="small" click-sound>
 				<el-radio-button value="5m">5分钟</el-radio-button>

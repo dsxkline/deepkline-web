@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
 	import { InstanceType, type Ticker } from '~/fetch/okx/okx.type.d'
+import TakerVolumn from './echarts/TakerVolume.vue';
 	const props = defineProps<{
 		height: number
 	}>()
@@ -35,11 +36,13 @@
 				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow> -->
 
 				<!-- 获取多空持仓人数比，支持合约和现货 -->
-				<LongShortAccountRatio :symbol="symbol"></LongShortAccountRatio>
+				<LongShortAccountRatio :symbol="symbol" />
 				<!-- 获取杠杠多空比 -->
-				<LoanRatio :symbol="symbol"></LoanRatio>
+				<LoanRatio :symbol="symbol" />
 				<!-- 获取合约持仓量和成交量 -->
-				<OpenInterestVolume :symbol="symbol" v-if="symbolObj.instType==InstanceType.SWAP"></OpenInterestVolume>
+				<OpenInterestVolume :symbol="symbol" v-if="symbolObj.instType==InstanceType.SWAP" />
+				<!-- 主动买入/卖出情况 -->
+				<TakerVolume :symbol="symbol" />
 			</div>
 		</el-scrollbar>
 	</div>

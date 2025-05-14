@@ -7,6 +7,7 @@
 	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { publicFetch } from '~/fetch/public.fetch'
 	import { useSymbolStore } from '~/store/symbol'
+	import { throttle } from 'lodash-es'
 
 	const props = defineProps<{
 		symbolCategory: InstanceType
@@ -32,7 +33,7 @@
 		return props.height - lheader.value?.clientHeight || 0
 	})
 	// 虚拟化
-	const scrollbar = ref<HTMLElement|null>()
+	const scrollbar = ref<HTMLElement | null>()
 	// 每个元素的高度
 	const itemHeight = 54
 	// 可视区域的数量
@@ -70,7 +71,7 @@
 	// 背景动画防抖
 	let flickerTimers: Record<string, any> = {}
 	// 选中的品种左边的颜色线
-	const activeBorderColors = ref<Record<string, string>|null>({})
+	const activeBorderColors = ref<Record<string, string> | null>({})
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		mainScrollTop.value = params.scrollTop
@@ -166,6 +167,7 @@
 		const { $wsb, $ws } = useNuxtApp()
 		if (!subSymbolCodes.value?.length) return
 		useSymbolStore().setSubSymbols(subSymbolCodes.value)
+
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
 			// console.log("subTickers", message.data, error);
 			if (message.data)
@@ -194,44 +196,58 @@
 		emit('clickHandle', item)
 		props.clickHandle && props.clickHandle(item)
 	}
+	let bgThrottleMap: Record<string, (...args: any[]) => void> = {}
+
+	function getThrottledFn(instId: string) {
+		if (!bgThrottleMap[instId]) {
+			bgThrottleMap[instId] = throttle(
+				(item: Ticker) => {
+					bgFlicker(item)
+				},
+				300,
+				{ trailing: false }
+			)
+		}
+		return bgThrottleMap[instId]
+	}
 
 	function bgFlicker(item: Ticker) {
 		if (!symbolDom.value) return
-		
+
 		const price = parseFloat(item.last)
 		const open = parseFloat(item.sodUtc8)
 		const last = lastPrices.value[item.instId] || 0
 
-		if(!priceDoms) return
-		let dom = priceDoms[item.instId]
-		if (!dom) {
-			dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
-			if (dom) priceDoms[item.instId] = dom
-		}
+		const domIndex = virtualList.value.findIndex(i => i.instId === item.instId)
+		let dom: HTMLElement | null = symbolDom.value.querySelectorAll('ul li')[domIndex] as HTMLElement
+		if (dom) dom = dom.querySelector('.bg') as HTMLElement
 
-		if(activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
-		if (flickerTimers[item.instId]) {
-			return
-		}
+		if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+
 		if (dom && last) {
+			// 插入前，先移除已有的 flash 背景层
+			dom.classList.remove('bg-green-flash')
+			dom.classList.remove('bg-red-flash')
 			// 只更新 background 如果价格变化了
 			if (price !== last) {
-				dom.classList.remove('bg-green') // 触发重放动画
-				dom.classList.remove('bg-red') 
-				dom.classList.add(`${price >= last ? 'bg-green' : 'bg-red'}`) // 触发重放动画
-				/// dom.style.background = `linear-gradient(to left, transparent, rgb(var(--color-${price >= last ? 'green' : 'red'})))`
-				dom.style.opacity = '0.1'
-				
-
-				flickerTimers[item.instId] = setTimeout(() => {
-					dom.style.opacity = '0'
-					clearTimeout(flickerTimers[item.instId])
-					flickerTimers[item.instId] = null
-				}, 200)
+				void dom.offsetWidth // 强制 reflow
+				if (price > last) {
+					dom.classList.add('bg-green-flash')
+				} else {
+					dom.classList.add('bg-red-flash')
+				}
+				// const handleAnimationEnd = () => {
+				// 	dom && dom.classList.remove('bg-green-flash')
+				// 	dom && dom.classList.remove('bg-red-flash')
+				// 	dom && dom.removeEventListener('animationend', handleAnimationEnd)
+				// 	dom = null
+				// }
+				// dom.addEventListener('animationend', handleAnimationEnd)
 			}
 		}
 
 		lastPrices.value[item.instId] = price
+		dom = null
 	}
 
 	// 排序
@@ -295,14 +311,15 @@
 	}
 	const { $windowEvent } = useNuxtApp()
 	onUnmounted(() => {
+		bgThrottleMap = {}
 		unSubSymbols()
-		$windowEvent.removeEvent(whenBrowserActive);
+		$windowEvent.removeEvent(whenBrowserActive)
 		scrollbar.value = null
 		priceDoms = null
 		activeBorderColors.value = null
 		lastPrices.value = {}
-		if(scrollTimer) clearTimeout(scrollTimer)
-		symbols.value.forEach(symbol=>flickerTimers[symbol.instId] && clearTimeout(flickerTimers[symbol.instId]))
+		if (scrollTimer) clearTimeout(scrollTimer)
+		symbols.value.forEach(symbol => flickerTimers[symbol.instId] && clearTimeout(flickerTimers[symbol.instId]))
 		symbols.value = []
 		lheader.value = null
 		symbolDom.value = null
@@ -353,7 +370,11 @@
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
-			<ul v-else class="w-full" :style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }">
+			<ul
+				v-else
+				class="w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer"
+				:style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }"
+			>
 				<li
 					:id="'symbol-list-id-' + item.instId"
 					:class="[
@@ -368,7 +389,7 @@
 					<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
 					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
-					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10 transition-all transition-200 ease-in-out'"></div>
+					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
 				</li>
 			</ul>
 		</el-scrollbar>
@@ -376,14 +397,31 @@
 </template>
 
 <style lang="less" scoped>
-	.bg {
-		opacity: 0;
+	@keyframes bgFlash {
+		0% {
+			opacity: 0;
+		}
+		50% {
+			opacity: 0.1;
+		}
+		100% {
+			opacity: 0;
+		}
 	}
-	// 背景闪烁
-	.bg-red {
-		background: linear-gradient(to left, transparent, rgb(var(--color-red)));
-	}
-	.bg-green {
-		background: linear-gradient(to left, transparent, rgb(var(--color-green)));
+	:deep(ul) {
+		li {
+			.bg {
+				opacity: 0;
+			}
+			// 背景闪烁
+			.bg-red-flash {
+				background: linear-gradient(to left, transparent, rgb(var(--color-red)));
+				animation: bgFlash 0.2s ease-in-out;
+			}
+			.bg-green-flash {
+				background: linear-gradient(to left, transparent, rgb(var(--color-green)));
+				animation: bgFlash 0.2s ease-in-out;
+			}
+		}
 	}
 </style>

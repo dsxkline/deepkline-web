@@ -290,6 +290,7 @@ export default class BaseWebSocket {
 		this.removeAllTickerHandler()
 		this.reconnectErrorCallback = null
 		this.reconnectSuccessCallback = null
+		this.tickers = {}
 		this.ws && this.ws.close();
 		this.ws = null;
 		this.reconnectTimer && clearTimeout(this.reconnectTimer);

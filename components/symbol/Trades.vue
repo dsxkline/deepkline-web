@@ -8,8 +8,8 @@
 		symbol: string
 	}>()
 
-	const tradesList = ref<TradesResponse[]|null>([])
-	const lastTrade = ref<TradesResponse|null>()
+	const tradesList = ref<TradesResponse[] | null>([])
+	const lastTrade = ref<TradesResponse | null>()
 	// 小数点
 	const point = ref(0)
 	const loading = ref(true)
@@ -55,21 +55,21 @@
 		() => props.symbol,
 		(val, old) => {
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
-			
+
 			getTradeList()
 		}
 	)
 
-	const updateTradeList = throttle((message: TradesMessage) => {
+	const updateTradeList = (message: TradesMessage) => {
 		if (message.data && message.data.length > 0) {
 			const data = message.data[0]
 			const action = message.action
 			updateOrderBook(data, action)
 		}
-	}, 10)
+	}
 
 	function getTradeList() {
-		if(updateTimer) clearTimeout(updateTimer)
+		if (updateTimer) clearTimeout(updateTimer)
 		loading.value = true
 		error.value = ''
 		point.value = 0
@@ -88,7 +88,7 @@
 		marketFetch
 			.getTrades(props.symbol, 50)
 			.then(res => {
-				console.log('trades....',res)
+				console.log('trades....', res)
 				if (res?.code === 0 && res?.data) {
 					const datas = res.data
 					datas.forEach(data => updateOrderBook(data))
@@ -107,9 +107,9 @@
 			})
 	}
 
-	let updateTimer:NodeJS.Timeout;
+	let updateTimer: NodeJS.Timeout
 	function updateOrderBook(updates: TradesResponse, action?: string) {
-		if(updateTimer) clearTimeout(updateTimer)
+		if (updateTimer) clearTimeout(updateTimer)
 		point.value = symbolObj.value?.lotSz || 0
 		pricePoint.value = symbolObj.value?.tickSz || 0
 		if (tradesList.value && tradesList.value.length > 30) {
@@ -153,7 +153,7 @@
 		lastTrade.value = null
 		$ws.unsubscribe(subHandle)
 		$windowEvent.removeEvent(whenBrowserActive)
-		if(updateTimer) clearTimeout(updateTimer)
+		if (updateTimer) clearTimeout(updateTimer)
 	})
 </script>
 <template>
@@ -173,37 +173,25 @@
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
+			<div class="w-full h-full relative">
+			<div class="w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px]">
+				<div>价格(USDT)</div>
+				<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+				<div class="text-right">时间</div>
+			</div>
 			<ul
-				class="w-full h-full relative *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
-				:style="{ height: (tradesList.length) * 20 + 'px' }"
+				class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
 				v-if="tradesList"
 			>
-				<li class="text-grey bg-base !absolute top-0 left-0 z-10">
-					<div>价格(USDT)</div>
-					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
-					<div class="text-right">时间</div>
+				<li v-for="(n, index) in tradesList.length" :key="index">
+					<template v-if="tradesList[index]">
+					<div :class="tradesList[index].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[index].px, pricePoint) }}</div>
+					<div class="text-right">{{ moneyFormat(formatPrice(tradesList[index].sz, point), '', point) }}</div>
+					<div class="text-right">{{ formatDate(parseInt(tradesList[index].ts), 'HH:mm:ss') }}</div>
+					</template>
 				</li>
-				<li
-					v-for="(item, index) in tradesList.slice(0, 1)"
-					:key="'trade-' + index"
-					class="duration-300 overflow-hidden"
-					:style="['margin-top:0px', animation ? 'margin-top:20px' : 'transition:none;']"
-				>
-					<div :class="item.side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(item.px, pricePoint) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
-					<div class="text-right">{{ formatDate(parseInt(item.ts), 'HH:mm:ss') }}</div>
-				</li>
-				<li v-for="(item, index) in tradesList.slice(0, tradesList.length - 1)" :key="'trades-' + index" v-show="(index == 0 && !animation) || index > 0">
-					<div :class="item.side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(item.px, pricePoint) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
-					<div class="text-right">{{ formatDate(parseInt(item.ts), 'HH:mm:ss') }}</div>
-				</li>
-				<li
-					v-for="(item, index) in tradesList.slice(tradesList.length - 1, tradesList.length)"
-					:key="'tradelast-' + index"
-					class="duration-300 overflow-hidden !absolute bottom-0 left-0 bg-base z-10 h-[20px]"
-				></li>
 			</ul>
+			</div>
 		</template>
 	</div>
 </template>
