@@ -26,6 +26,9 @@
         langPopover.value?.hide()
     }
 
+	onBeforeUnmount(()=>{
+		langPopover.value = null
+	})
 
 </script>
 <template>

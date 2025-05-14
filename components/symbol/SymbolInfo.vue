@@ -215,7 +215,7 @@
 					</div>
 					<div class="w-full">
 						<h3>官方链接</h3>
-						<div class="w-full my-3 text-main flex items-center *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_i]:ml-1">
+						<div class="w-full my-3 text-main flex items-center flex-wrap *:mb-2 *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_i]:ml-1">
 							<a :href="symbolInfo?.officialUrl" target="_blank" v-if="symbolInfo?.officialUrl" class="hover:bg-[--transparent20]">
 								官网 <el-icon><Link /></el-icon>
 							</a>

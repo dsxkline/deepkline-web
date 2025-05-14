@@ -76,6 +76,7 @@ onBeforeUnmount(() => {
     //         parent = parent.parent;
     //     }
     // }
+    drawer.value = null
     console.log('onBeforeUnmount')
     setTimeout(() => {
         usePushStore().setPushState(false);
@@ -96,7 +97,7 @@ onMounted(() => {
             :class="{ pushup: direction == 'btt' && size != '100%' }"
         >
             <template #default>
-                <div class="drawer_body w-full" ref="drawerBody">
+                <div class="drawer_body w-full">
                     <!-- <SafeArea></SafeArea>
                     <template v-if="direction == 'btt' && size != '100%'">
                         <DrawLine @click="hide" />

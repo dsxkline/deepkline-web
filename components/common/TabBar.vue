@@ -30,9 +30,9 @@
 			type: Number,
 			default: 6
 		},
-		autoLoad:{
-			type:Boolean,
-			default:true
+		autoLoad: {
+			type: Boolean,
+			default: true
 		}
 	})
 	const menuActive = ref(0)
@@ -43,7 +43,7 @@
 		update?: () => void
 		leave?: () => void
 	}
-	const componentRefs = ref<ComponentWithUpdate[]>([]) // 存储组件实例
+	const componentRefs = ref<ComponentWithUpdate[]|null>([]) // 存储组件实例
 	const emit = defineEmits<{
 		(event: 'update:active', value: number): void
 	}>()
@@ -64,6 +64,7 @@
 	function menuHandler(item: MenuModel, index: number) {
 		menuActive.value = index
 		moveContent(index)
+		if(!componentRefs.value) return;
 		// 执行内容组件的更新方法 , 例如: this.$refs['tabbarContent-'+index].update()
 		const content = componentRefs.value[index]
 		// 判断组件是否暴露update方法
@@ -109,7 +110,7 @@
 	}
 
 	function updateAll() {
-		componentRefs.value.forEach(content => {
+		componentRefs.value && componentRefs.value.forEach(content => {
 			// 判断组件是否暴露update方法
 			if (content && content.update) {
 				content.update()
@@ -122,6 +123,13 @@
 		nextTick(() => {
 			props.autoLoad && update(menuActive.value)
 		})
+	})
+
+	onBeforeUnmount(() => {
+		tabbarContent.value = null
+		bottomLine.value = null
+		tabbarHeader.value = null
+		componentRefs.value = null
 	})
 
 	defineExpose({

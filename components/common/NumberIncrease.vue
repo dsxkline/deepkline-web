@@ -3,7 +3,7 @@
 		<ul v-show="fontWidth <= 0">
 			<li>{{ unit }}{{ value }}</li>
 		</ul>
-		<ul class="number-container" ref="numberContainer" v-show="fontWidth > 0">
+		<ul class="number-container" v-show="fontWidth > 0">
 			<li
 				:style="{
 					height: fontHeight + 'px'
@@ -12,8 +12,7 @@
 				<span
 					:style="{
 						height: fontHeight + 'px',
-						transform: 'translateY(0%)',
-						
+						transform: 'translateY(0%)'
 					}"
 				>
 					<i>{{ unit }}</i>
@@ -23,10 +22,10 @@
 				:class="{ 'number-item': !isNaN(item), 'mark-item': isNaN(item) }"
 				v-for="(item, index) in orderNum"
 				:style="{
-					height: fontHeight + 'px',
+					height: fontHeight + 'px'
 				}"
 			>
-				<span :class="'numdom-'+index" ref="numdom" v-if="!isNaN(item)" :data-index="index" :data-number="item">
+				<span :class="'numdom-' + index" ref="numdom" v-if="!isNaN(item)" :data-index="index" :data-number="item">
 					<i
 						v-for="(i, index) in 10"
 						:style="{
@@ -36,7 +35,7 @@
 						{{ index }}
 					</i>
 				</span>
-				<span :class="'comma numdom-'+index"  ref="numdom" v-else>
+				<span :class="'comma numdom-' + index" ref="numdom" v-else>
 					<i>{{ item }}</i>
 				</span>
 			</li>
@@ -87,19 +86,22 @@
 				digWidth: 0,
 				width: 0,
 				textHeight: 0,
-				inited:false,
-				timer:null
+				inited: false,
+				timer: null
 			}
 		},
-		beforeUnmount(){
-			if(this.timer) clearTimeout(this.timer);
+		beforeUnmount() {
+			Object.keys(this.$refs).forEach(key => {
+				this.$refs[key] = null
+			})
+			if (this.timer) clearTimeout(this.timer)
 		},
 		mounted() {
 			//console.log("this.value", this.value);
 			this.setDefaultDisplay()
-			this.timer = setTimeout(()=>{
-				this.inited = true;
-			},this.time*1000)
+			this.timer = setTimeout(() => {
+				this.inited = true
+			}, this.time * 1000)
 		},
 		methods: {
 			setDefaultDisplay() {
@@ -119,16 +121,16 @@
 				})
 			},
 			setNumberList() {
-				this.orderNum = (this.value+'').split('')||''
+				this.orderNum = (this.value + '').split('') || ''
 			},
 			resetNumbers() {
 				this.textHeight = this.fontSize * 10
 				// 重置每个数字的位置
 				this.orderNum.forEach((n, i) => {
-					const ndom = this.$el.querySelector('.numdom-'+i)
+					const ndom = this.$el.querySelector('.numdom-' + i)
 					if (ndom) {
 						ndom.style.transition = `all ${this.time}s ease`
-						if (!isNaN(n) && n!='.' && n!=',') {
+						if (!isNaN(n) && n != '.' && n != ',') {
 							const translateY = this.getNumberY(n, ndom)
 							ndom.style.transform = translateY
 							//ndom.style.transition = `all ${this.time}s ease`
