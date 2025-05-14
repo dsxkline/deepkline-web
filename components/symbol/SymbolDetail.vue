@@ -64,6 +64,7 @@
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
 	})
+	
 </script>
 <template>
 	<div class="w-full h-full">

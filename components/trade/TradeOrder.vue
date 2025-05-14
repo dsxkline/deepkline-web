@@ -71,7 +71,7 @@
 	const popProfit = ref()
 	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
-	const ticker = ref($ws && $ws.getTickers(props.symbol))
+	const ticker = ref<Ticker|null>($ws && $ws.getTickers(props.symbol))
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 		if (canChangePrice.value) {
@@ -101,7 +101,7 @@
 				buyDes.value = 'MARKET'
 				sellDes.value = 'MARKET'
 			} else {
-				price.value = parseFloat(ticker.value?.last)
+				if(ticker.value)price.value = parseFloat(ticker.value?.last)
 				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
@@ -113,6 +113,9 @@
 	})
 
 	onUnmounted(() => {
+		popLoss.value = null
+		popProfit.value = null
+		ticker.value = null
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 	})
 

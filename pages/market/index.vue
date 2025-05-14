@@ -8,6 +8,10 @@
 		useStore().addSplitScreen(mainSplit.value)
 		useStore().addSplitScreen(twoSplit.value)
 	})
+	onBeforeUnmount(()=>{
+		mainSplit.value = null
+		twoSplit.value = null
+	})
 </script>
 <template>
 	<div class="w-full h-full">

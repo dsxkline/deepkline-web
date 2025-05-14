@@ -3,7 +3,7 @@
 	import { type MenuModel } from '../../common/TabBar.vue'
 	import TabBar from '../../common/TabBar.vue'
 	import SymbolList from './SymbolList.vue'
-import { useSymbolStore } from '~/store/symbol';
+	import { useSymbolStore } from '~/store/symbol'
 
 	const props = defineProps<{
 		height: number
@@ -17,7 +17,7 @@ import { useSymbolStore } from '~/store/symbol';
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: InstanceType.SPOT,
-                favorite: true
+				favorite: true
 			}
 		},
 		{
@@ -25,13 +25,13 @@ import { useSymbolStore } from '~/store/symbol';
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: InstanceType.SWAP,
-                favorite: true
+				favorite: true
 			}
 		}
 	])
 
 	function update() {
-		console.log('update',active.value)
+		console.log('update', active.value)
 		tabbar.value.update(active.value)
 	}
 
@@ -42,12 +42,14 @@ import { useSymbolStore } from '~/store/symbol';
 		let favoriteSymbolsSWAP = favoriteSymbols.filter(item => item.instType === InstanceType.SWAP) || []
 		let favoriteSymbolsSPOT = favoriteSymbols.filter(item => item.instType === InstanceType.SPOT) || []
 		// 有合约没有现货的自选，自动切过去
-		if(favoriteSymbolsSWAP?.length>0 && !favoriteSymbolsSPOT?.length){
+		if (favoriteSymbolsSWAP?.length > 0 && !favoriteSymbolsSPOT?.length) {
 			active.value = 1
 			update()
 		}
 	})
-
+	onBeforeUnmount(() => {
+		tabbar.value = null
+	})
 	// 暴露给父组件的方法
 	defineExpose({ update })
 </script>
@@ -60,7 +62,7 @@ import { useSymbolStore } from '~/store/symbol';
 <style lang="less" scoped>
 	:deep(.tabbar-container) {
 		.tabbar-header {
-            border-bottom: none;
+			border-bottom: none;
 			ul {
 				li {
 					@apply text-sm;

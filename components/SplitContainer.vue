@@ -1,8 +1,6 @@
 <script setup lang="ts">
 	import Split from 'split.js'
 	import { useStore } from '~/store'
-	// 当前vue实例
-	const instance = getCurrentInstance()
 	const props = defineProps({
 		left: {
 			type: Number,
@@ -193,6 +191,14 @@
 		}
 		useStore().updateSplitScreen()
 	}
+
+	onBeforeUnmount(()=>{
+		splitHorizontal.value = null
+		splitContainer.value = null
+		splitLeft.value = null
+		splitRight.value = null
+		split.destroy()
+	})
 
 	defineExpose({
 		toggleLeft,

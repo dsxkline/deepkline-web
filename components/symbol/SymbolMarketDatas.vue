@@ -33,6 +33,8 @@ import Trades from './Trades.vue';
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 	})
 	onUnmounted(() => {
+		containerRef.value = null
+		item.value = null
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 	})
 </script>

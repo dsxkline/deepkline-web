@@ -10,7 +10,7 @@
 	const loading = ref(false)
 	const error = ref('')
 	const chart = ref(null)
-	let echart: echarts.ECharts
+	let echart: echarts.ECharts|null
 	const timeVal = ref('15')
 	let xAxisData: string[] = []
 	let seriesData: number[] = []
@@ -49,7 +49,7 @@
 		unlockedTs: ''
 	})
 
-	const datas = ref<{ name: string; value: number; progress: number; itemStyle?: { color: string } }[][]>([[]])
+	const datas = ref<{ name: string; value: number; progress: number; itemStyle?: { color: string } }[][] | null>([[]])
 	const option = () => {
 		return {
 			title: {
@@ -77,7 +77,7 @@
 			legend: {
 				show: false
 			},
-			series: datas.value.map(function (data, idx) {
+			series: datas.value && datas.value.map(function (data, idx) {
 				var top = 0
 				return {
 					type: 'pie',
@@ -134,6 +134,7 @@
 					},
 					labelLayout: function (params: { labelRect: { x: number; width: any }; labelLinePoints: any }) {
 						// console.log('paramssss', params)
+						if(!echart) return;
 						const isLeft = params.labelRect.x < echart.getWidth() / 2
 						const points = params.labelLinePoints
 						// Update the end point.
@@ -197,10 +198,11 @@
 	}
 
 	function createEchart() {
+		if(!datas.value) return;
 		datas.value[0] = []
 		symbolAllocationData.value.list.forEach(item => {
 			console.log('data item', item)
-			datas.value[0].push({
+			datas.value && datas.value[0].push({
 				name: item.label,
 				value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
 				progress: parseFloat(item.progress)
@@ -277,10 +279,22 @@
 		}
 	})
 	onDeactivated(() => {
-		echart.dispose()
+		echart && echart.dispose()
 		if (resizeObserver) {
 			resizeObserver.disconnect()
 		}
+	})
+
+	onBeforeUnmount(()=>{
+		chart.value = null
+		echart && echart.dispose()
+		echart = null
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+		resizeObserver = null
+		containerRef.value = null
+		datas.value = null
 	})
 </script>
 <template>
@@ -299,6 +313,7 @@
 					<div class="w-[80px] text-right">进度</div>
 				</li>
 				<li
+					v-if="datas"
 					v-for="(item, index) in datas[0]"
 					class="flex items-center justify-between mb-2 text-[10px] hover:bg-[--transparent20] w-full"
 					@mouseover="dispatchAction(index, 'highlight')"

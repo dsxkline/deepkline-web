@@ -72,6 +72,9 @@
 			})
 		}
 	})
+	onBeforeUnmount(()=>{
+		tabbar.value = null
+	})
 	// 暴露给父组件的方法
 	defineExpose({ update,leave })
 </script>

@@ -14,9 +14,9 @@
 		symbol: string
 	}>()
 	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
-	let echart: echarts.ECharts
-	let xAxisData: string[] = []
-	let seriesData: number[] = []
+	let echart: echarts.ECharts|null
+	let xAxisData: string[]|null = []
+	let seriesData: number[]|null = []
 	// 在组件顶部声明 resizeObserver
 	let resizeObserver: ResizeObserver | null = null
 	const containerRef = ref(null)
@@ -56,7 +56,7 @@
 				show: true,
 				interval: function (index: number, value: string) {
 					// 显示固定三个刻度
-					const total = xAxisData.length // 总共数据长度
+					const total = xAxisData?.length||0 // 总共数据长度
 					const showIndex = [0, Math.floor(total / 2), total - 1]
 					return showIndex.includes(index)
 				},
@@ -72,7 +72,7 @@
 					if (index === 0) {
 						return `{l|${value}}`
 					}
-					if (index === xAxisData.length - 1) {
+					if (xAxisData && index === xAxisData.length - 1) {
 						return `{r|${value}}`
 					}
 					return value
@@ -135,10 +135,10 @@
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
 					res.data.forEach(([ts, longShortAccountRatio]: any) => {
-						if (p == Period.M5) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
-						if (p == Period.H1) xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
-						if (p == Period.D1) xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
-						seriesData.push(longShortAccountRatio)
+						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
+						seriesData && seriesData.push(longShortAccountRatio)
 					})
 					option.xAxis.data = xAxisData.reverse()
 					option.series[0].data = seriesData.reverse()
@@ -203,6 +203,18 @@
 		if (resizeObserver) {
 			resizeObserver.disconnect()
 		}
+	})
+	onBeforeUnmount(()=>{
+		chart.value = null
+		echart && echart.dispose()
+		echart = null
+		if (resizeObserver) {
+			resizeObserver.disconnect()
+		}
+		resizeObserver = null
+		containerRef.value = null
+		xAxisData = null
+		seriesData = null
 	})
 </script>
 <template>

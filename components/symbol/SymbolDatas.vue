@@ -5,9 +5,6 @@
 		height: number
 	}>()
 	const item = ref<Ticker | null>(null)
-	const change = ref<number>(0)
-	const rate = ref<number>(0)
-	const symbolStore = useSymbolStore()
 	const containerRef = ref(null)
 	const mounted = ref(false)
 	const contentHeight = computed(() => {
@@ -15,15 +12,15 @@
 		return props.height || 10000
 	})
 	const symbol = computed(() => useSymbolStore().activeSymbol)
-
 	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value])
-	
-	// 监听父级组件宽度变化自适应宽度
-	onMounted(() => {})
-	onDeactivated(() => {})
+
 	function update(){
 		mounted.value = true
 	}
+	onBeforeUnmount(() => {
+		containerRef.value = null
+		item.value = null
+	})
 	defineExpose({
 		update
 	})

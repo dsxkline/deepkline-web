@@ -8,12 +8,12 @@
 		symbol: string
 	}>()
 
-	const orderBook = ref<{ asks: Map<number, BookEntry>; bids: Map<number, BookEntry> }>({
+	const orderBook = ref<{ asks: Map<number, BookEntry>; bids: Map<number, BookEntry> }|null>({
 		asks: new Map<number, BookEntry>(),
 		bids: new Map<number, BookEntry>()
 	})
-	const asks = ref<BookEntry[]>([])
-	const bids = ref<BookEntry[]>([])
+	const asks = ref<BookEntry[]|null>([])
+	const bids = ref<BookEntry[]|null>([])
 	let totalAsks = ref(0)
 	let totalBids = ref(0)
 	// 小数点
@@ -27,7 +27,7 @@
 	})
 
 	const { $wsb, $ws } = useNuxtApp()
-	const ticker = ref($ws?.getTickers(props.symbol) || {})
+	const ticker = ref<Ticker|null>($ws?.getTickers(props.symbol) || {})
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 	}
@@ -168,6 +168,7 @@
 			// }
 			// 大于当前价的数据不要
 			// if(price>parseFloat(ticker.value?.last))return;
+			if(!orderBook.value) return
 			if (size === 0) orderBook.value.asks.delete(price)
 			else orderBook.value.asks.set(price, { px: price, sz: size, total: 0, ratio: 0 })
 		})
@@ -194,6 +195,7 @@
 			// }
 			// 小于当前价的数据不要
 			// if(price<parseFloat(ticker.value?.last))return;
+			if(!orderBook.value) return
 			if (size === 0) orderBook.value.bids.delete(price)
 			else orderBook.value.bids.set(price, { px: price, sz: size, total: 0, ratio: 0 })
 		})
@@ -205,10 +207,11 @@
 	const throttleAskBid = throttle(() => {
 		totalAsks.value = 0
 		totalBids.value = 0
+		if(!orderBook.value) return
 		// 倒序排列
 		let ask = Array.from(orderBook.value.asks.values())
 			.sort((a, b) => a.px - b.px)
-			.filter(item => item.px > parseFloat(ticker.value.last))
+			.filter(item => ticker.value && item.px > parseFloat(ticker.value.last))
 		if (activeBook.value == 0) ask = ask.slice(0, showNumber).reverse()
 		else ask = ask.slice(0, 2 * showNumber + 1).reverse()
 		for (let index = ask.length - 1; index >= 0; index--) {
@@ -220,7 +223,7 @@
 		// 倒序排列
 		let bid = Array.from(orderBook.value.bids.values())
 			.sort((a, b) => b.px - a.px)
-			.filter(item => item.px < parseFloat(ticker.value.last))
+			.filter(item => ticker.value && item.px < parseFloat(ticker.value.last))
 		if (activeBook.value == 0) bid = bid.slice(0, showNumber)
 		else bid = bid.slice(0, 2 * showNumber + 1)
 		for (let index = 0; index < bid.length; index++) {
@@ -235,8 +238,8 @@
 
 	// bid/ask
 	const calculateBuySellRatio = computed(() => {
-		const totalBids = bids.value.reduce((sum, entry) => sum + entry.sz, 0)
-		const totalAsks = asks.value.reduce((sum, entry) => sum + entry.sz, 0)
+		const totalBids = bids.value && bids.value.reduce((sum, entry) => sum + entry.sz, 0)||1
+		const totalAsks = asks.value && asks.value.reduce((sum, entry) => sum + entry.sz, 0)||1
 		return (totalBids / (totalBids + totalAsks)) * 100
 	})
 
@@ -266,6 +269,10 @@
 		}, 0)
 	})
 	onUnmounted(() => {
+		orderBook.value = null
+		asks.value = null
+		bids.value = null
+		ticker.value = null
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)

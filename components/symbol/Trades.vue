@@ -8,8 +8,8 @@
 		symbol: string
 	}>()
 
-	const tradesList = ref<TradesResponse[]>([])
-	const lastTrade = ref<TradesResponse>()
+	const tradesList = ref<TradesResponse[]|null>([])
+	const lastTrade = ref<TradesResponse|null>()
 	// 小数点
 	const point = ref(0)
 	const loading = ref(true)
@@ -112,7 +112,7 @@
 		if(updateTimer) clearTimeout(updateTimer)
 		point.value = symbolObj.value?.lotSz || 0
 		pricePoint.value = symbolObj.value?.tickSz || 0
-		if (tradesList.value.length > 30) {
+		if (tradesList.value && tradesList.value.length > 30) {
 			// 删除最后的数据
 			lastTrade.value = JSON.parse(JSON.stringify(tradesList.value[tradesList.value.length - 1]))
 			tradesList.value.splice(tradesList.value.length - 1, 1)[0]
@@ -149,13 +149,15 @@
 		}, 0)
 	})
 	onUnmounted(() => {
+		tradesList.value = null
+		lastTrade.value = null
 		$ws.unsubscribe(subHandle)
 		$windowEvent.removeEvent(whenBrowserActive)
 		if(updateTimer) clearTimeout(updateTimer)
 	})
 </script>
 <template>
-	<div class="w-full h-full min-h-[750px]">
+	<div class="w-full h-full min-h-[650px]">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b>最新成交</b>
@@ -172,8 +174,9 @@
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<ul
-				class="w-full h-full relative *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative"
-				:style="{ height: (tradesList.length + 3) * 21.19 + 'px' }"
+				class="w-full h-full relative *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
+				:style="{ height: (tradesList.length) * 20 + 'px' }"
+				v-if="tradesList"
 			>
 				<li class="text-grey bg-base !absolute top-0 left-0 z-10">
 					<div>价格(USDT)</div>
@@ -184,7 +187,7 @@
 					v-for="(item, index) in tradesList.slice(0, 1)"
 					:key="'trade-' + index"
 					class="duration-300 overflow-hidden"
-					:style="['margin-top:0px', animation ? 'margin-top:21px' : 'transition:none;']"
+					:style="['margin-top:0px', animation ? 'margin-top:20px' : 'transition:none;']"
 				>
 					<div :class="item.side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(item.px, pricePoint) }}</div>
 					<div class="text-right">{{ moneyFormat(formatPrice(item.sz, point), '', point) }}</div>
@@ -198,7 +201,7 @@
 				<li
 					v-for="(item, index) in tradesList.slice(tradesList.length - 1, tradesList.length)"
 					:key="'tradelast-' + index"
-					class="duration-300 overflow-hidden !absolute bottom-0 left-0 bg-base z-10 h-[21.2px]"
+					class="duration-300 overflow-hidden !absolute bottom-0 left-0 bg-base z-10 h-[20px]"
 				></li>
 			</ul>
 		</template>

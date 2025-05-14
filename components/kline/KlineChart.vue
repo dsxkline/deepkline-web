@@ -11,7 +11,7 @@
 	const klineDom = ref(null)
 	const error = ref('')
 	const loading = ref(true)
-	let chart: DsxKlineChart
+	let chart: DsxKlineChart|null
 	function reloadChart() {
 		chart && chart.reload()
 	}
@@ -92,7 +92,7 @@
 			decimalPoint: String(symbolDetail?.tickSz).split('.')[1]?.length
 		})
 		nextTick(() => {
-			chart.create()
+			chart && chart.create()
 		})
 
 		chart.onLoading = () => {
@@ -102,6 +102,11 @@
 		chart.onError = err => {
 			error.value = '网络异常，请稍后再试'
 		}
+	})
+	onBeforeUnmount(()=>{
+		klineDom.value = null
+		chart && chart.destroy()
+		chart = null
 	})
 </script>
 <template>

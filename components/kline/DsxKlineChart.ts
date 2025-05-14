@@ -15,21 +15,21 @@ class DsxKlineChart {
 	after?: string
 	before?: string
 	limit: number = 300
-	theme?: string
+	theme?: string|null
 	sides: string[] = ['MACD','KDJ','RSI']
 	main: string[] = ['MA']
-	datas: Array<string> = []
+	datas: Array<string>|null = []
 	chartType: any
 	page: number = 1
-	lastItem: string = ''
+	lastItem: string|null = ''
 	// 主题配置
 	themeConfig = new window.DsxConfig()
 	subCandleId: string = ''
 	subTickerId: string = ''
 	lastVol:number = 0
 	lastAmount:number = 0
-	onError?:(err:any)=>void;
-	onLoading?:()=>void;
+	onError?:((err:any)=>void) | null;
+	onLoading?:(()=>void)|null;
 	constructor(symbol: string, cycle: string,theme:string, config: DsxKlineConfig) {
 		this.theme = theme;
 		this.config = config
@@ -57,7 +57,6 @@ class DsxKlineChart {
 		this.kline = new window.DsxKline(this.config)
 		useKlineStore().main[this.symbol] = this.config.main|| this.main
 		useKlineStore().sides[this.symbol] = this.config.sides|| this.sides
-		console.log('kline create....',new Date().getTime())
 		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.addEvent(this.whenBrowserActive)
 		// $wsb.onReconnectSuccess(this.wsReconnect)
@@ -183,7 +182,7 @@ class DsxKlineChart {
 					this.datas = datas
 					this.subscribe()
 				} else {
-					this.datas = datas.concat(this.datas)
+					this.datas = datas.concat(this.datas||[])
 				}
 				
 				this.kline.update({
@@ -226,7 +225,7 @@ class DsxKlineChart {
 	 * @param {string} index 指标名称代码
 	 */
 	selectMain(index: string[]) {
-		if (this.datas.length <= 0) return
+		if (!this.datas?.length) return
 		this.main = index
 		this.kline.updateIndex(this.main, this.sides)
 	}
@@ -236,20 +235,20 @@ class DsxKlineChart {
 	 * @param {string} index 指标名称代码
 	 */
 	selectSides(index: string[]) {
-		if (this.datas.length <= 0) return
+		if (!this.datas?.length) return
 		this.sides = index
 		this.kline.updateIndex(this.main, this.sides)
 	}
 	// 切换线型图 2=蜡烛图 3=线性图
 	selectChartType(chartType: any) {
-		if (this.datas.length <= 0) return
+		if (!this.datas?.length) return
 		// 切换指标
 		this.chartType = chartType
 		this.kline.updateChartType(chartType)
 	}
 	// 缩放
 	zoom(n: number) {
-		if (this.datas.length <= 0) return
+		if (!this.datas?.length) return
 		n = n * this.kline.dpr
 		const x = this.kline.lockRightKlineX > 0 ? this.kline.lockRightKlineX : this.kline.width / 2
 		this.kline._setMiddleKlineLineIndex(x)
@@ -325,11 +324,17 @@ class DsxKlineChart {
 	}
 
 	destroy() {
+		this.theme = null
+		this.config = {}
 		this.kline.destroy()
 		this.unsubscribe()
 		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.removeEvent(this.whenBrowserActive)
 		$wsb.removeReconnectSuccess(this.wsReconnect)
+		this.datas = null
+		this.lastItem = null
+		this.onError = null
+		this.onLoading = null
 	}
 }
 

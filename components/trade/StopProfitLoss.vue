@@ -69,6 +69,10 @@
 		initPrice.value = props.price
 		priceInput.value.focus()
 	})
+
+	onBeforeUnmount(()=>{
+		priceInput.value = null
+	})
 </script>
 <template>
 	<div class="pt-1">

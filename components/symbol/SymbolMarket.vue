@@ -21,7 +21,6 @@
 			contentComp: markRaw(MarketList)
 		}
 	])
-	const search = () => {}
 
 	watch(
 		() => useStore().bodyHeight,
@@ -38,6 +37,10 @@
 			active.value = 1
 			tabbar.value.update(active.value)
 		}
+	})
+
+	onBeforeUnmount(() => {
+		tabbar.value = null
 	})
 </script>
 <template>

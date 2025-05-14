@@ -10,7 +10,7 @@ const changeRate = computed(()=>{
     return price.value?.last&&price.value?.sodUtc8?(parseFloat(price.value?.last)-parseFloat(price.value?.sodUtc8))/parseFloat(price.value?.sodUtc8)*100:0
 })
 
-const price = ref<Ticker>()
+const price = ref<Ticker|null>()
 const { $wsb, $ws } = useNuxtApp()
 const tickerHandler = (data: Ticker) => {
     price.value = data
@@ -19,6 +19,7 @@ onMounted(() => {
     $ws.addTickerHandler(props.symbol.instId,tickerHandler)
 })
 onUnmounted(() => {
+    price.value = null
     $ws.removeTickerHandler(props.symbol.instId,tickerHandler)
 })
 </script>

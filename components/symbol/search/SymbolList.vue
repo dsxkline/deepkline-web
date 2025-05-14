@@ -32,7 +32,7 @@
 		return props.height - lheader.value?.clientHeight || 0
 	})
 	// 虚拟化
-	const scrollbar = ref<HTMLElement>()
+	const scrollbar = ref<HTMLElement|null>()
 	// 每个元素的高度
 	const itemHeight = 54
 	// 可视区域的数量
@@ -66,11 +66,11 @@
 	// 价格变动
 	const lastPrices = ref<Record<string, number>>({})
 	// 保存item
-	let priceDoms: Record<string, HTMLElement> = {}
+	let priceDoms: Record<string, HTMLElement> | null = {}
 	// 背景动画防抖
 	let flickerTimers: Record<string, any> = {}
 	// 选中的品种左边的颜色线
-	const activeBorderColors = ref<Record<string, string>>({})
+	const activeBorderColors = ref<Record<string, string>|null>({})
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		mainScrollTop.value = params.scrollTop
@@ -202,13 +202,14 @@
 		const open = parseFloat(item.sodUtc8)
 		const last = lastPrices.value[item.instId] || 0
 
+		if(!priceDoms) return
 		let dom = priceDoms[item.instId]
 		if (!dom) {
 			dom = symbolDom.value.querySelector('#symbol-list-id-' + item.instId + ' .bg') as HTMLElement
 			if (dom) priceDoms[item.instId] = dom
 		}
 
-		activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+		if(activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
 		if (flickerTimers[item.instId]) {
 			return
 		}
@@ -296,7 +297,18 @@
 	onUnmounted(() => {
 		unSubSymbols()
 		$windowEvent.removeEvent(whenBrowserActive);
+		scrollbar.value = null
+		priceDoms = null
+		activeBorderColors.value = null
+		lastPrices.value = {}
+		if(scrollTimer) clearTimeout(scrollTimer)
 		symbols.value.forEach(symbol=>flickerTimers[symbol.instId] && clearTimeout(flickerTimers[symbol.instId]))
+		symbols.value = []
+		lheader.value = null
+		symbolDom.value = null
+		addouName.value = null
+		addouPrice.value = null
+		addouChange.value = null
 	})
 	onMounted(() => {
 		if (props.start) update()

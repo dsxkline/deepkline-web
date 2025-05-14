@@ -47,6 +47,7 @@
 	})
 
 	onUnmounted(() => {
+		inputDom.value = null
 		// 移除事件监听器
 		document.removeEventListener('click', hide)
 	})

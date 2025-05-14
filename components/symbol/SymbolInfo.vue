@@ -152,6 +152,7 @@
 	const update = () => {
 		getSymbolInfo()
 	}
+
 	defineExpose({
 		update
 	})
