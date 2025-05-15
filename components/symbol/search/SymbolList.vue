@@ -8,9 +8,8 @@
 	import { publicFetch } from '~/fetch/public.fetch'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
-import { useStore } from '~/store'
-import SymbolMarket from '../SymbolMarket.vue'
-import SymbolDetail from '../SymbolDetail.vue'
+	import { useStore } from '~/store'
+	import SymbolDetail from '../SymbolDetail.vue'
 
 	const props = defineProps<{
 		symbolCategory: InstanceType
@@ -75,8 +74,10 @@ import SymbolDetail from '../SymbolDetail.vue'
 	let flickerTimers: Record<string, any> = {}
 	// 选中的品种左边的颜色线
 	const activeBorderColors = ref<Record<string, string> | null>({})
+	let scrolling = false
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
+		scrolling = true
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
 		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
@@ -85,6 +86,7 @@ import SymbolDetail from '../SymbolDetail.vue'
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
 			subSymbols()
+			scrolling = false
 		}, 300)
 	}
 
@@ -172,6 +174,7 @@ import SymbolDetail from '../SymbolDetail.vue'
 		useSymbolStore().setSubSymbols(subSymbolCodes.value)
 
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
+			if (scrolling) return
 			// console.log("subTickers", message.data, error);
 			if (message.data)
 				message.data.forEach(item => {
@@ -195,8 +198,8 @@ import SymbolDetail from '../SymbolDetail.vue'
 		}
 	}
 	function clickSymbol(item?: Instruments) {
-		if(useStore().isH5){
-			useNuxtApp().$push(SymbolDetail, {symbol:item?.instId}, '100%')
+		if (useStore().isH5) {
+			useNuxtApp().$push(SymbolDetail, { symbol: item?.instId }, '100%')
 			return
 		}
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
@@ -225,7 +228,7 @@ import SymbolDetail from '../SymbolDetail.vue'
 		const open = parseFloat(item.sodUtc8)
 		const last = lastPrices.value[item.instId] || 0
 
-		let dom: HTMLElement | null = symbolDom.value.querySelector('#symbol-list-id-'+item.instId) as HTMLElement
+		let dom: HTMLElement | null = symbolDom.value.querySelector('#symbol-list-id-' + item.instId) as HTMLElement
 		if (dom) dom = dom.querySelector('.bg') as HTMLElement
 
 		if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
@@ -376,28 +379,28 @@ import SymbolDetail from '../SymbolDetail.vue'
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
-			<ul
-				v-else
-				class="w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer"
-				:style="{ paddingTop: start * itemHeight + 'px', paddingBottom: (symbols?.length - end) * itemHeight + 'px' }"
-			>
-				<li
-					:id="'symbol-list-id-' + item.instId"
-					:class="[
-						'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-						useSymbolStore().activeSymbol == item.instId ? 'border-l-2 '+activeBorderColors[item.instId] : ''
-					]"
-					v-for="item in virtualList"
-					:key="item.instId + '-' + start + '-' + end"
-					@click="clickSymbol(item)"
-					click-sound
-				>
-					<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
-					<div class="justify-end"><SymbolPrice :symbol="item" /></div>
-					<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
-					<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
-				</li>
-			</ul>
+			<!-- 容器总高度 -->
+			<div :style="{ height: (symbols.length*itemHeight)  + 'px' }" class="relative w-full" v-else >
+				
+				<ul class="w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+					<li
+						:id="'symbol-list-id-' + item.instId"
+						:class="[
+							'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
+							useSymbolStore().activeSymbol == item.instId ? 'border-l-2 ' + activeBorderColors[item.instId] : ''
+						]"
+						v-for="item in virtualList"
+						:key="item.instId + '-' + start + '-' + end"
+						@click="clickSymbol(item)"
+						click-sound
+					>
+						<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
+						<div class="justify-end"><SymbolPrice :symbol="item" /></div>
+						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
+						<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
+					</li>
+				</ul>
+			</div>
 		</el-scrollbar>
 	</div>
 </template>
@@ -427,6 +430,14 @@ import SymbolDetail from '../SymbolDetail.vue'
 			.bg-green-flash {
 				background: linear-gradient(to left, transparent, rgb(var(--color-green)));
 				animation: bgFlash 0.2s ease-in-out;
+			}
+		}
+	}
+
+	@media (max-width: 999px) {
+		:deep(ul) {
+			li {
+				border-left: none;
 			}
 		}
 	}

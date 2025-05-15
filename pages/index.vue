@@ -25,6 +25,18 @@
 			icon: markRaw(Monitor),
 			contentComp: markRaw(TradeIndex),
 			contentParams: {}
+		},
+		{
+			name: '日历',
+			icon: markRaw(Monitor),
+			contentComp: markRaw(TradeIndex),
+			contentParams: {}
+		},
+		{
+			name: '我的',
+			icon: markRaw(Monitor),
+			contentComp: markRaw(TradeIndex),
+			contentParams: {}
 		}
 	])
 	const menuHandler = (item: MenuModel, index: number) => {
@@ -76,24 +88,30 @@
 			width: var(--body-width);
 			display: flex;
 			flex-direction: column;
+			
 			:deep(.other-menu) {
 				display: none;
 			}
 			:deep(.main-menu) {
 				ul {
+					height: var(--menu-height);
 					width: 100% !important;
 					display: flex;
 					flex-direction: row;
 					align-items: center;
 					background-color: var(--transparent05);
+					display: grid;
+					grid-template-columns:auto auto auto auto;
 					li {
+						height: var(--menu-height);
 						flex: 1;
-						padding: 6px 12px;
+						padding: 0 12px;
 						align-items: center;
 						border: none;
 						background: none;
 						span {
 							padding-bottom: 0;
+							padding-top: 3px;
 						}
 					}
 				}

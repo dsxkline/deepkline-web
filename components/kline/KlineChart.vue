@@ -117,6 +117,6 @@
 			</template>
 		</Error>
 		<el-skeleton :rows="10" animated v-if="loading && !error" class="p-3" />
-		<div class="kline w-full h-full" v-show="!error"></div>
+		<div class="kline w-full h-full relative" v-show="!error"></div>
 	</div>
 </template>

@@ -38,6 +38,7 @@
     "autoprefixer": "^10.4.19",
     "dotenv": "^16.4.5",
     "postcss": "^8.4.38",
+    "postcss-px-to-viewport": "^1.1.1",
     "typescript": "^5.8.3"
   }
 }
