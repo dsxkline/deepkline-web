@@ -44,38 +44,16 @@
 <template>
 	<div class="*:text-white *:px-2 *:w-[70px] *:h-[28px] *:rounded *:text-xs *:font-bold">
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
-		<button :class="[changeRate > 0 ? 'bg-[rgb(var(--color-green))]' : '', changeRate < 0 ? 'bg-[rgb(var(--color-red))]' : '', changeColor]" v-else>{{ formatChangeRate(changeRate, 2) }}%</button>
+		<button :class="['transition-all duration-300',changeRate > 0 ? 'bg-[rgb(var(--color-green))]' : '', changeRate < 0 ? 'bg-[rgb(var(--color-red))]' : '', changeColor]" v-else>{{ formatChangeRate(changeRate, 2) }}%</button>
 	</div>
 </template>
 
 <style lang="less" scoped>
-	@keyframes bgFlashRed {
-		0% {
-			background: rgb(var(--color-red));
-		}
-		50% {
-			background: linear-gradient(to left, rgb(var(--color-red)), rgb(var(--color-red))),var(--transparent02);
-		}
-		100% {
-			background: rgb(var(--color-red));
-		}
-	}
-    @keyframes bgFlashGreen {
-		0% {
-			background: rgb(var(--color-green));
-		}
-		50% {
-			background: linear-gradient(to left, rgb(var(--color-green)), rgb(var(--color-green))),var(--transparent02);
-		}
-		100% {
-			background: rgb(var(--color-green));
-		}
-	}
 	// 背景闪烁
 	.bt-red-flash {
-		animation: bgFlashRed 0.3s ease-in-out;
+        background: #c52e41;
 	}
 	.bt-green-flash {
-		animation: bgFlashGreen 0.3s ease-in-out;
+        background: #1d9566;
 	}
 </style>
