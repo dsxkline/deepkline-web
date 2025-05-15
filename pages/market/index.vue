@@ -5,16 +5,33 @@
 	const twoSplit = ref()
 
 	onMounted(() => {
-		useStore().addSplitScreen(mainSplit.value)
-		useStore().addSplitScreen(twoSplit.value)
+		mainSplit.value && useStore().addSplitScreen(mainSplit.value)
+		twoSplit.value && useStore().addSplitScreen(twoSplit.value)
+		if (useStore().bodyWidth < 1400 && mainSplit.value) useStore().setSplitScreen(2)
 	})
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		mainSplit.value = null
 		twoSplit.value = null
 	})
+
+	watch(
+		() => useStore().bodyWidth,
+		val => {
+			mainSplit.value && useStore().addSplitScreen(mainSplit.value)
+			twoSplit.value && useStore().addSplitScreen(twoSplit.value)
+			if (val < 1400) {
+				// 隐藏行情
+				mainSplit.value && useStore().setSplitScreen(2)
+			}
+			if (val < 1200) {
+				// 隐藏行情
+				mainSplit.value && useStore().setSplitScreen(1)
+			}
+		}
+	)
 </script>
 <template>
-	<div class="w-full h-full">
+	<div class="pc-market w-full h-full" v-if="!useNuxtApp().$isMobile.value">
 		<SplitContainer ref="mainSplit">
 			<template #left>
 				<SymbolMarket />
@@ -50,4 +67,20 @@
 			</template>
 		</SplitContainer>
 	</div>
+	<div class="h5-market w-full h-full">
+		<SymbolMarket />
+	</div>
 </template>
+<style lang="less" scoped>
+	.h5-market {
+		display: none;
+	}
+	@media (max-width: 999px) {
+		.pc-market {
+			display: none;
+		}
+		.h5-market {
+			display: block;
+		}
+	}
+</style>

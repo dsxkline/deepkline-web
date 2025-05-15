@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
@@ -14,7 +13,7 @@
 	const active = ref(0)
 	const activeMenu = computed(() => menus.value && menus.value[active.value])
 	// 定义菜单及对应的组件
-	const menus = ref<MenuModel[]|null>([
+	const menus = ref<MenuModel[] | null>([
 		{
 			name: '行情',
 			icon: markRaw(Histogram),
@@ -35,7 +34,7 @@
 		active.value = index
 	}
 
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		menus.value = null
 		console.log('onBeforeUnmount.............................')
 	})
@@ -46,7 +45,7 @@
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>
-				<component :is="activeMenu.contentComp" v-if="activeMenu"/>
+				<component :is="activeMenu.contentComp" v-if="activeMenu" />
 			</KeepAlive>
 		</div>
 	</div>
@@ -58,6 +57,47 @@
 		width: var(--body-width);
 		.right-container {
 			width: calc(var(--body-width) - var(--menu-width));
+		}
+	}
+
+	@media (max-width: 999px) {
+		.main-container {
+			height: var(--body-height);
+			width: 100%;
+			.right-container {
+				width: 100%;
+			}
+		}
+		.left-menu {
+			background-color: rgb(var(--color-bg-base));
+			position: fixed;
+			bottom: 0;
+			z-index: 10;
+			width: var(--body-width);
+			display: flex;
+			flex-direction: column;
+			:deep(.other-menu) {
+				display: none;
+			}
+			:deep(.main-menu) {
+				ul {
+					width: 100% !important;
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					background-color: var(--transparent05);
+					li {
+						flex: 1;
+						padding: 6px 12px;
+						align-items: center;
+						border: none;
+						background: none;
+						span {
+							padding-bottom: 0;
+						}
+					}
+				}
+			}
 		}
 	}
 </style>

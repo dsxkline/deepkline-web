@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import type { VueElement } from 'vue'
 import { ApiSource } from '~/types/types.d'
 
 export const useStore = defineStore({
@@ -12,7 +11,7 @@ export const useStore = defineStore({
 		screenDoms: [] as any[],
 		splitScreen: 3, // 1=单屏 2=分屏 3=三屏
     bodyHeight: 0,
-    bodyWidth: 0,
+    bodyWidth: typeof window=="undefined"?0:window.innerWidth,
 	}),
 	actions: {
     setBodyHeight(height: number) {
@@ -21,6 +20,7 @@ export const useStore = defineStore({
     },
     setBodyWidth(width: number) {
       this.bodyWidth = width
+      console.log('body width',width)
     },
 		setApiSource(source: ApiSource) {
 			this.apiSource = source
@@ -55,11 +55,11 @@ export const useStore = defineStore({
         // 是否是两屏
         if(this.splitScreen==1){
           // 增加一屏
-          this.screenDoms[this.screenDoms.length-1].hideSplitLeft = false
+          if(this.screenDoms.length>=1) this.screenDoms[this.screenDoms.length-1].hideSplitLeft = false
         }
         if(this.splitScreen==3){
           // 减少一屏
-          this.screenDoms[0].hideSplitLeft = true
+          if(this.screenDoms.length>=1) this.screenDoms[0].hideSplitLeft = true
         }
         
       }
@@ -73,5 +73,12 @@ export const useStore = defineStore({
 			this.screenDoms = this.screenDoms.filter(item => item !== splitDom)
 			this.updateSplitScreen()
 		}
-	}
+	},
+  getters:{
+    // 是否是H5模式
+    isH5(state){
+      console.log('body width state.bodyWidth',state.bodyWidth,useNuxtApp().$isMobile)
+      return (state.bodyWidth>0 || useNuxtApp().$isMobile) && state.bodyWidth<999
+    }
+  }
 })

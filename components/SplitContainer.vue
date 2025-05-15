@@ -25,6 +25,7 @@
 	const hideSplitRight = ref(false)
 	const hideSplitLeft = ref(false)
 	const loading = ref(true)
+	let resizeObserver:ResizeObserver
 	const updateWindowWidth = (animation: boolean = true) => {
 		windowWidth.value = splitContainer.value.clientWidth
 		if(windowWidth.value>0) loading.value = false
@@ -70,7 +71,7 @@
 		})
 
 		// 监听元素宽高变化
-		const resizeObserver = new ResizeObserver(entries => {
+		resizeObserver = new ResizeObserver(entries => {
 			for (const entry of entries) {
 				if (entry.target === splitContainer.value) {
 					updateWindowWidth(false)
@@ -78,14 +79,9 @@
 			}
 		})
 		resizeObserver.observe(splitContainer.value)
-		// 监听元素销毁
-		onBeforeUnmount(() => {
-			resizeObserver.unobserve(splitContainer.value)
-		})
+
 	})
-	onUnmounted(() => {
-		// window.removeEventListener('resize', updateWindowWidth)
-	})
+
 	function setGutter(left:number,width:number=4){
 		const gutter = splitContainer.value.querySelector('.gutter')
 		if(gutter) {
@@ -193,6 +189,7 @@
 	}
 
 	onBeforeUnmount(()=>{
+		resizeObserver.unobserve(splitContainer.value)
 		splitHorizontal.value = null
 		splitContainer.value = null
 		splitLeft.value = null

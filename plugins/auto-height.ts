@@ -1,17 +1,24 @@
-import { useStore } from "~/store"
+import { useStore } from '~/store'
 
 function setBodyHeight() {
 	const doc = document.documentElement
-    const height = window.innerHeight
-    const width = window.innerWidth
+	const height = window.innerHeight
+	const width = window.innerWidth
 	doc.style.setProperty('--body-height', `${height}px`)
-    useStore().setBodyHeight(height)
-    doc.style.setProperty('--body-width', `${width}px`)
-    useStore().setBodyWidth(width)
-    
+	useStore().setBodyHeight(height)
+	doc.style.setProperty('--body-width', `${width}px`)
+	useStore().setBodyWidth(width)
 }
 
 export default defineNuxtPlugin(({ vueApp }) => {
+	const router = useRouter()
+	router.beforeEach((to, from, next) => {
+		if (process.client) {
+			// 设置body高度
+			setBodyHeight()
+		}
+		next()
+	})
 	if (process.client) {
 		// 设置body高度
 		setBodyHeight()
