@@ -1,7 +1,8 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
-import Trades from './Trades.vue';
+	import Trades from './Trades.vue'
+	import { useStore } from '~/store/index'
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -14,11 +15,14 @@ import Trades from './Trades.vue';
 		// 获取当前组件的高度
 		return props.height || 10000
 	})
-	watch(()=>props.symbol,(val,old)=>{
-		$ws.removeTickerHandler(old, tickerHandler)
-		$ws.addTickerHandler(val, tickerHandler)
-		item.value = null
-	})
+	watch(
+		() => props.symbol,
+		(val, old) => {
+			$ws.removeTickerHandler(old, tickerHandler)
+			$ws.addTickerHandler(val, tickerHandler)
+			item.value = null
+		}
+	)
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol] || {})
 	const { $wsb, $ws } = useNuxtApp()
 	const tickerHandler = (data: Ticker) => {
@@ -47,7 +51,7 @@ import Trades from './Trades.vue';
 					<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
 				</b>
 				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
-				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{rate > 0?'+':''}}{{ change.toFixed(2) }} ({{rate > 0?'+':''}}{{ rate.toFixed(2) }}%)</span>
+				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ rate > 0 ? '+' : '' }}{{ change.toFixed(2) }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span>
 				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 			</div>
 
@@ -93,6 +97,13 @@ import Trades from './Trades.vue';
 					<span v-else>--</span>
 				</li>
 			</ul>
+
+			
+			<div class="px-4 py-3 h-[50vh]" v-if="useStore().isH5">
+				<CycleBar :symbol="symbol"/>
+				<KlineChart :symbol="symbol" />
+				<Indicator :symbol="symbol"/>
+			</div>
 
 			<div class="px-4">
 				<BooksFull :symbol="symbol" />

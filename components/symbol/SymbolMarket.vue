@@ -26,11 +26,14 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 30
+			if(useStore().isH5) tabbarHeight.value = n;
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 30
+		if(useStore().isH5) tabbarHeight.value = window?.innerHeight;
+		
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
 		if (!favoriteSymbols?.length) {

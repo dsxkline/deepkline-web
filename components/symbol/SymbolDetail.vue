@@ -58,11 +58,13 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
+			if(useStore().isH5) tabbarHeight.value = n;
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
+		if(useStore().isH5) tabbarHeight.value = window?.innerHeight;
 	})
 	
 </script>

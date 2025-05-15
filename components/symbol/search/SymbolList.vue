@@ -8,6 +8,9 @@
 	import { publicFetch } from '~/fetch/public.fetch'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
+import { useStore } from '~/store'
+import SymbolMarket from '../SymbolMarket.vue'
+import SymbolDetail from '../SymbolDetail.vue'
 
 	const props = defineProps<{
 		symbolCategory: InstanceType
@@ -192,6 +195,10 @@
 		}
 	}
 	function clickSymbol(item?: Instruments) {
+		if(useStore().isH5){
+			useNuxtApp().$push(SymbolDetail, {symbol:item?.instId}, '100%')
+			return
+		}
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
 		emit('clickHandle', item)
 		props.clickHandle && props.clickHandle(item)
@@ -218,8 +225,7 @@
 		const open = parseFloat(item.sodUtc8)
 		const last = lastPrices.value[item.instId] || 0
 
-		const domIndex = virtualList.value.findIndex(i => i.instId === item.instId)
-		let dom: HTMLElement | null = symbolDom.value.querySelectorAll('ul li')[domIndex] as HTMLElement
+		let dom: HTMLElement | null = symbolDom.value.querySelector('#symbol-list-id-'+item.instId) as HTMLElement
 		if (dom) dom = dom.querySelector('.bg') as HTMLElement
 
 		if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
@@ -402,7 +408,7 @@
 			opacity: 0;
 		}
 		50% {
-			opacity: 0.1;
+			opacity: 0.2;
 		}
 		100% {
 			opacity: 0;
