@@ -99,9 +99,9 @@
 			</ul>
 
 			
-			<div class="px-4 py-3 h-[50vh]" v-if="useStore().isH5">
+			<div class="px-4 py-3 min-h-[50vh] flex flex-col justify-between" v-if="useStore().isH5">
 				<CycleBar :symbol="symbol"/>
-				<KlineChart :symbol="symbol" />
+				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
 				<Indicator :symbol="symbol"/>
 			</div>
 
