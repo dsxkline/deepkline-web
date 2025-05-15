@@ -77,21 +77,23 @@
 			axisLabel: {
 				show: true,
 				formatter: function (value: number) {
-					return moneyFormat(value,'', 0)
+					return moneyFormat(value, '', 0)
 				}
-			},
+			}
 		},
 		series: [
 			{
 				name: '主动买入量',
-				type: 'line',
+				type: symbolObj.value?.instType == InstanceType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
-				lineStyle: {
-					color: 'rgb(245 70 92)'
+				smooth: true,
+				itemStyle: {
+					color: 'rgb(45 189 133)'
 				},
 				emphasis: {
-					lineStyle: {
-						color: 'rgb(245, 70, 92)' // ✅ 鼠标悬停时保持线颜色
+					lineStyle: { color: 'rgb(45 189 133)' },
+					itemStyle: {
+						color: 'rgb(45 189 133)' // ✅ 鼠标悬停时保持线颜色
 					}
 				},
 				tooltip: {
@@ -103,14 +105,16 @@
 			},
 			{
 				name: '主动卖出量',
-				type: 'line',
+				type: symbolObj.value?.instType == InstanceType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
-				lineStyle: {
-					color: 'rgb(45 189 133)'
+				smooth: true,
+				itemStyle: {
+					color: 'rgb(245 70 92)'
 				},
 				emphasis: {
-					lineStyle: {
-						color: 'rgb(45 189 133)' // ✅ 鼠标悬停时保持线颜色
+					lineStyle: { color: 'rgb(245 70 92)' },
+					itemStyle: {
+						color: 'rgb(245 70 92)' // ✅ 鼠标悬停时保持线颜色
 					}
 				},
 				tooltip: {
@@ -148,7 +152,7 @@
 					xAxisData = []
 					seriesData = []
 					seriesData2 = []
-					res.data.slice(0, 50).forEach(([ts, buyVol, sellVol]: any) => {
+					res.data.slice(0, 20).forEach(([ts, buyVol, sellVol]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
@@ -181,6 +185,13 @@
 		() => props.symbol,
 		val => {
 			fetchData(period.value as Period, true)
+		}
+	)
+
+	watch(
+		() => useColorMode().value,
+		() => {
+			createEchart()
 		}
 	)
 

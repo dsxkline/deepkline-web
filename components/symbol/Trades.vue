@@ -3,7 +3,6 @@
 	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker, TradesMessage, TradesResponse } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
-
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -120,12 +119,14 @@
 		tradesList.value?.unshift(updates)
 		animation.value = true
 		updateTimer = setTimeout(() => {
+			// tradesList.value?.unshift(updates)
 			animation.value = false
-		}, 300)
+		}, 200)
 	}
 
 	const whenBrowserActive = () => {
 		console.log('浏览器重新激活')
+		updateTimer && clearTimeout(updateTimer)
 		$ws.unsubscribe(subHandle)
 		getTradeList()
 	}
@@ -149,6 +150,7 @@
 		}, 0)
 	})
 	onUnmounted(() => {
+		updateTimer && clearTimeout(updateTimer)
 		tradesList.value = null
 		lastTrade.value = null
 		$ws.unsubscribe(subHandle)
@@ -174,23 +176,25 @@
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<div class="w-full h-full relative">
-			<div class="w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px]">
-				<div>价格(USDT)</div>
-				<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
-				<div class="text-right">时间</div>
-			</div>
-			<ul
-				class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
-				v-if="tradesList"
-			>
-				<li v-for="(n, index) in tradesList.length" :key="index">
-					<template v-if="tradesList[index]">
-					<div :class="tradesList[index].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[index].px, pricePoint) }}</div>
-					<div class="text-right">{{ moneyFormat(formatPrice(tradesList[index].sz, point), '', point) }}</div>
-					<div class="text-right">{{ formatDate(parseInt(tradesList[index].ts), 'HH:mm:ss') }}</div>
-					</template>
-				</li>
-			</ul>
+				<div class="w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 bg-base z-10">
+					<div>价格(USDT)</div>
+					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+					<div class="text-right">时间</div>
+				</div>
+				
+				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]" v-if="tradesList" 
+				:style="{
+					transform: `translateY(${animation ? '20px' : '0px'})`,
+					transition: `${animation ? 'all 0.2s' : 'none'}`,
+				}">
+					<li v-for="(n, index) in tradesList.length" :key="index">
+						<template v-if="tradesList[index]">
+							<div :class="tradesList[index].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[index].px, pricePoint) }}</div>
+							<div class="text-right">{{ moneyFormat(formatPrice(tradesList[index].sz, point), '', point) }}</div>
+							<div class="text-right">{{ formatDate(parseInt(tradesList[index].ts), 'HH:mm:ss') }}</div>
+						</template>
+					</li>
+				</ul>
 			</div>
 		</template>
 	</div>

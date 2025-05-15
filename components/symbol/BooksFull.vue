@@ -245,6 +245,8 @@
 
 	const whenBrowserActive = () => {
 		console.log('浏览器重新激活')
+		updateBookList.cancel()
+		throttleAskBid.cancel()
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		getBooksFull()
@@ -264,11 +266,11 @@
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz
-		setTimeout(() => {
-			getBooksFull()
-		}, 0)
+		getBooksFull()
 	})
 	onUnmounted(() => {
+		throttleAskBid.cancel()
+		updateBookList.cancel()
 		orderBook.value = null
 		asks.value = null
 		bids.value = null

@@ -51,5 +51,21 @@ export const tradingDataFetch = {
             return Okx.tradingDataFetch.takerVolumeContract(instId,instType,period,unit,begin,end)
         }
         return Promise.reject('apiSource is not supported')
-    }
+    },
+    longShortAccountRatioContractTopTrader:(instId: string, period: Period = Period.M5, begin?: string, end?: string, limit: number = 50) =>{
+        const state = useStore();
+        const apiSource = state.apiSource;
+        if(apiSource==ApiSource.OKX){
+            return Okx.tradingDataFetch.longShortAccountRatioContractTopTrader(instId,period,begin,end,limit)
+        }
+        return Promise.reject('apiSource is not supported')
+    },
+    longShortPositionRatioContractTopTrader:(instId: string, period: Period = Period.M5, begin?: string, end?: string, limit: number = 50) =>{
+        const state = useStore();
+        const apiSource = state.apiSource;
+        if(apiSource==ApiSource.OKX){
+            return Okx.tradingDataFetch.longShortPositionRatioContractTopTrader(instId,period,begin,end,limit)
+        }
+        return Promise.reject('apiSource is not supported')
+    },
 }

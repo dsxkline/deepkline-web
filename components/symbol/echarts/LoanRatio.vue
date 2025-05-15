@@ -31,9 +31,9 @@
 		},
 		tooltip: {
 			trigger: 'axis',
-			textStyle: {
-				fontSize: 12
-			}
+			// textStyle: {
+			// 	fontSize: 12
+			// }
 			// formatter: function (params: any[]) {
 			// 	// console.log('params',params);
 			// 	const item = params[0]
@@ -81,7 +81,10 @@
 		},
 		yAxis: {
 			type: 'value',
-			boundaryGap: [0, '50%']
+			boundaryGap: ['100%', '100%'],
+			// min:"dataMin",
+			scale:true,
+			data:seriesData
 		},
 		series: [
 			{
@@ -134,7 +137,8 @@
 					seriesData = []
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
-					res.data.forEach(([ts, longShortAccountRatio]: any) => {
+					
+					res.data.slice(0,50).forEach(([ts, longShortAccountRatio]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
@@ -142,6 +146,7 @@
 					})
 					option.xAxis.data = xAxisData.reverse()
 					option.series[0].data = seriesData.reverse()
+					option.yAxis.data = seriesData.reverse()
 					createEchart()
 					// console.log(xAxisData,seriesData);
 				} else {
@@ -165,6 +170,13 @@
 		() => props.symbol,
 		val => {
 			fetchData(period.value as Period,true)
+		}
+	)
+
+	watch(
+		() => useColorMode().value,
+		() => {
+			createEchart()
 		}
 	)
 

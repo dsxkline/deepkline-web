@@ -276,11 +276,11 @@ class DsxKlineChart {
 			// 绿色呼吸灯
 			let cricleColor = 'rgba(25, 200, 59, 1)'
 			let cricleColorStart = 'rgba(25, 200, 59, 0.5)'
-			let cricleColorStop = this.theme == 'white' ? 'rgba(255,255,255, 0.0)' : 'rgba(13,16,23, 0.0)'
+			let cricleColorStop = this.theme == 'dark' ? 'rgba(13,16,23, 0.0)' : 'rgba(255,255,255, 0.0)'
 			// 红色呼吸灯
 			let cricleColorRed = 'rgba(255, 55, 55, 1)'
 			let cricleColorStartRed = 'rgba(254, 53, 53, 0.5)'
-			let cricleColorStopRed = this.theme == 'white' ? 'rgba(255,255,255, 0.0)' : 'rgba(13,16,23, 0.0)'
+			let cricleColorStopRed = cricleColorStop
 			// 空 红色
 			if(lastKline.OPEN>lastKline.CLOSE){
 				this.kline.theme.cricleColor = cricleColorRed

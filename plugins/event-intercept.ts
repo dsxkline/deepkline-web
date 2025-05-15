@@ -39,7 +39,7 @@ class WindowsEvent {
 
 	windowEvents() {
 		// blur 事件 - 当窗口失去焦点时触发
-		window.addEventListener('blur', this.blurHandler)
+		// window.addEventListener('blur', this.blurHandler)
 		// pagehide 事件 - 当页面隐藏时触发
 		window.addEventListener('pagehide', this.pagehideHandler)
 		// freeze 事件 - 当应用冻结时触发
@@ -47,7 +47,7 @@ class WindowsEvent {
 		// 切换网页标签栏事件
 		document.addEventListener('visibilitychange', this.visibilityChangeHandler)
 		// app 回到前台 focus 事件 - 当窗口获得焦点时触发
-		window.addEventListener('focus', this.focusHandler)
+		// window.addEventListener('focus', this.focusHandler)
 		//pageshow 事件 - 当页面重新显示时触发 event.persisted 表示页面是否从缓存加载
 		window.addEventListener('pageshow', this.pageshowHandler)
 		// resume 事件 - 当应用从后台恢复时触发

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
 	import { InstanceType, type Ticker } from '~/fetch/okx/okx.type.d'
-import TakerVolumn from './echarts/TakerVolume.vue';
+	import LongShortAccountRatioTopTrader from './echarts/LongShortAccountRatioTopTrader.vue'
+	import LongShortPositionRatioTopTrader from './echarts/LongShortPositionRatioTopTrader.vue'
 	const props = defineProps<{
 		height: number
 	}>()
@@ -15,7 +16,7 @@ import TakerVolumn from './echarts/TakerVolume.vue';
 	const symbol = computed(() => useSymbolStore().activeSymbol)
 	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value])
 
-	function update(){
+	function update() {
 		mounted.value = true
 	}
 	onBeforeUnmount(() => {
@@ -40,9 +41,13 @@ import TakerVolumn from './echarts/TakerVolume.vue';
 				<!-- 获取杠杠多空比 -->
 				<LoanRatio :symbol="symbol" />
 				<!-- 获取合约持仓量和成交量 -->
-				<OpenInterestVolume :symbol="symbol" v-if="symbolObj.instType==InstanceType.SWAP" />
+				<OpenInterestVolume :symbol="symbol" v-if="symbolObj.instType == InstanceType.SWAP" />
 				<!-- 主动买入/卖出情况 -->
 				<TakerVolume :symbol="symbol" />
+				<!-- 获取精英交易员合约多空持仓人数比 -->
+				<LongShortAccountRatioTopTrader :symbol="symbol" v-if="symbolObj.instType == InstanceType.SWAP" />
+				<!-- 获取精英交易员合约多空持仓仓位比 -->
+				<LongShortPositionRatioTopTrader :symbol="symbol" v-if="symbolObj.instType == InstanceType.SWAP" />
 			</div>
 		</el-scrollbar>
 	</div>

@@ -196,20 +196,20 @@
 		emit('clickHandle', item)
 		props.clickHandle && props.clickHandle(item)
 	}
-	let bgThrottleMap: Record<string, (...args: any[]) => void> = {}
+	// let bgThrottleMap: Record<string, (...args: any[]) => void> = {}
 
-	function getThrottledFn(instId: string) {
-		if (!bgThrottleMap[instId]) {
-			bgThrottleMap[instId] = throttle(
-				(item: Ticker) => {
-					bgFlicker(item)
-				},
-				300,
-				{ trailing: false }
-			)
-		}
-		return bgThrottleMap[instId]
-	}
+	// function getThrottledFn(instId: string) {
+	// 	if (!bgThrottleMap[instId]) {
+	// 		bgThrottleMap[instId] = throttle(
+	// 			(item: Ticker) => {
+	// 				bgFlicker(item)
+	// 			},
+	// 			300,
+	// 			{ trailing: false }
+	// 		)
+	// 	}
+	// 	return bgThrottleMap[instId]
+	// }
 
 	function bgFlicker(item: Ticker) {
 		if (!symbolDom.value) return
@@ -311,7 +311,7 @@
 	}
 	const { $windowEvent } = useNuxtApp()
 	onUnmounted(() => {
-		bgThrottleMap = {}
+		// bgThrottleMap = {}
 		unSubSymbols()
 		$windowEvent.removeEvent(whenBrowserActive)
 		scrollbar.value = null

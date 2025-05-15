@@ -191,7 +191,11 @@ export interface CandleMessage {
 
 export enum Period {
 	M5 = '5m',
+	M15 = '15m',
+	M30 = '30m',
 	H1 = '1H',
+	H2 = '2H',
+	H4 = '4H',
 	D1 = '1D'
 }
 

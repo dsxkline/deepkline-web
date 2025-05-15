@@ -92,7 +92,8 @@
 		},
 		yAxis: {
 			type: 'value',
-			boundaryGap: [0, '50%']
+			boundaryGap: ['100%', '100%'],
+			scale:true
 		},
 		series: [
 			{
@@ -138,7 +139,7 @@
 					seriesData = []
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
-					res.data.forEach(([ts, longShortAccountRatio]: any) => {
+					res.data.slice(0,50).forEach(([ts, longShortAccountRatio]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1)  xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1)  xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
@@ -168,6 +169,13 @@
 		() => props.symbol,
 		val => {
 			fetchData(period.value as Period, true)
+		}
+	)
+
+	watch(
+		() => useColorMode().value,
+		() => {
+			createEchart()
 		}
 	)
 
