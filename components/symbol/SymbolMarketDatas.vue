@@ -99,7 +99,7 @@
 			</ul>
 
 			
-			<div class="px-4 py-3 min-h-[50vh] flex flex-col justify-between" v-if="useStore().isH5">
+			<div class="px-4 py-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
 				<CycleBar :symbol="symbol"/>
 				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
 				<Indicator :symbol="symbol"/>
@@ -131,6 +131,14 @@
 					}
 				}
 			}
+		}
+	}
+	.market-kline-container{
+		display: none;
+	}
+	@media (max-width:999px) {
+		.market-kline-container{
+			display: flex;
 		}
 	}
 </style>
