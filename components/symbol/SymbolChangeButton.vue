@@ -1,31 +1,81 @@
 <script setup lang="ts">
-import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
-import { useSymbolStore } from '~/store/symbol';
-const props = defineProps<{
-    symbol: Instruments
-}>()
-// const price = computed(()=>useSymbolStore().tickets[props?.symbol?.instId])
-const changeRate = computed(()=>{
-    price.value = $ws.getTickers(props.symbol.instId)
-    return price.value?.last&&price.value?.sodUtc8?(parseFloat(price.value?.last)-parseFloat(price.value?.sodUtc8))/parseFloat(price.value?.sodUtc8)*100:0
-})
+	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { useSymbolStore } from '~/store/symbol'
+	const props = defineProps<{
+		symbol: Instruments
+	}>()
+	const { $wsb, $ws } = useNuxtApp()
+	const price = ref<Ticker | null>()
+	const changeRate = computed(() => {
+		price.value = $ws.getTickers(props.symbol.instId)
+		return price.value?.last && price.value?.sodUtc8 ? ((parseFloat(price.value?.last) - parseFloat(price.value?.sodUtc8)) / parseFloat(price.value?.sodUtc8)) * 100 : 0
+	})
+	const changeColor = ref('')
+    let timer: NodeJS.Timeout | null = null
+	watch(
+		() => changeRate.value,
+		(val, old) => {
+            if(timer) {
+                return
+            }
+			changeColor.value = ''
+			if (val.toFixed(2) != old.toFixed(2)) changeColor.value = val>0?'bt-green-flash':'bt-red-flash'
+            timer = setTimeout(() => {
+                changeColor.value = ''
+                timer = null
+            }, 300);
+			console.log('changerate', val, old)
+		}
+	)
 
-const price = ref<Ticker|null>()
-const { $wsb, $ws } = useNuxtApp()
-const tickerHandler = (data: Ticker) => {
-    price.value = data
-}
-onMounted(() => {
-    $ws.addTickerHandler(props.symbol.instId,tickerHandler)
-})
-onUnmounted(() => {
-    price.value = null
-    $ws.removeTickerHandler(props.symbol.instId,tickerHandler)
-})
+	
+	const tickerHandler = (data: Ticker) => {
+		price.value = data
+	}
+	onMounted(() => {
+		$ws.addTickerHandler(props.symbol.instId, tickerHandler)
+	})
+	onUnmounted(() => {
+        if(timer) clearTimeout(timer)
+		price.value = null
+		$ws.removeTickerHandler(props.symbol.instId, tickerHandler)
+	})
 </script>
 <template>
-    <div class="*:text-white *:px-2 *:w-[70px] *:h-[25px] *:rounded *:text-xs">
-        <button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
-        <button :class="{'bg-[rgb(var(--color-green))]':changeRate>0,'bg-[rgb(var(--color-red))]':changeRate<0}" v-else>{{formatChangeRate(changeRate,2)}}%</button>
-    </div>
+	<div class="*:text-white *:px-2 *:w-[70px] *:h-[28px] *:rounded *:text-xs *:font-bold">
+		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
+		<button :class="[changeRate > 0 ? 'bg-[rgb(var(--color-green))]' : '', changeRate < 0 ? 'bg-[rgb(var(--color-red))]' : '', changeColor]" v-else>{{ formatChangeRate(changeRate, 2) }}%</button>
+	</div>
 </template>
+
+<style lang="less" scoped>
+	@keyframes bgFlashRed {
+		0% {
+			background: rgb(var(--color-red));
+		}
+		50% {
+			background: linear-gradient(to left, rgb(var(--color-red)), rgb(var(--color-red))),var(--transparent02);
+		}
+		100% {
+			background: rgb(var(--color-red));
+		}
+	}
+    @keyframes bgFlashGreen {
+		0% {
+			background: rgb(var(--color-green));
+		}
+		50% {
+			background: linear-gradient(to left, rgb(var(--color-green)), rgb(var(--color-green))),var(--transparent02);
+		}
+		100% {
+			background: rgb(var(--color-green));
+		}
+	}
+	// 背景闪烁
+	.bt-red-flash {
+		animation: bgFlashRed 0.3s ease-in-out;
+	}
+	.bt-green-flash {
+		animation: bgFlashGreen 0.3s ease-in-out;
+	}
+</style>

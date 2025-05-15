@@ -182,7 +182,10 @@
 					// 同步到store
 					// useSymbolStore().setTickets(item.instId, item)
 					$ws.setTickers(item.instId, item)
-					bgFlicker(item)
+					const price = parseFloat(item.last)
+					const open = parseFloat(item.sodUtc8)
+					if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+					// bgFlicker(item)
 				})
 		})
 	}
@@ -231,7 +234,7 @@
 		let dom: HTMLElement | null = symbolDom.value.querySelector('#symbol-list-id-' + item.instId) as HTMLElement
 		if (dom) dom = dom.querySelector('.bg') as HTMLElement
 
-		if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+		
 
 		if (dom && last) {
 			// 插入前，先移除已有的 flash 背景层
