@@ -1,5 +1,5 @@
 const isMobleHandle = (userAgent:string)=>{
-    return /mobile|android|iphone|ipad|phone/i.test(userAgent)
+    return /mobile|android|iphone|ipad|phone/i.test(userAgent.toLocaleLowerCase())
 }
 const updateMobileState = ()=>{
     useNuxtApp().$isMobile.value = isMobleHandle(window.navigator.userAgent)
