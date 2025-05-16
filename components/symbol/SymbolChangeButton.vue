@@ -24,7 +24,7 @@
                 changeColor.value = ''
                 timer = null
             }, 300);
-			console.log('changerate', val, old)
+			// console.log('changerate', val, old)
 		}
 	)
 

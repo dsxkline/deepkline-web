@@ -155,7 +155,7 @@ export type OnLoading = (kline: DsxKline) => void;
 export type NextPage = (data: any[], index: number) => void;
 
 export interface DsxKlineConfig {
-	element?: Element | string;
+	element?: Element | string | null;
 	chartType?: ChartType;
 	klineWidth?: number;
 	theme?: DsxConfig.theme;

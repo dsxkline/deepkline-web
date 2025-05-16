@@ -3,6 +3,7 @@
 	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
+import { useStore } from '~/store';
 
 	const props = defineProps<{
 		symbol: string
@@ -29,6 +30,7 @@
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws?.getTickers(props.symbol) || {})
 	const tickerHandler = (data: Ticker) => {
+		if (useStore().isLeave) return
 		ticker.value = data
 	}
 	// 订阅句柄
@@ -103,7 +105,7 @@
 		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
-
+			if (useStore().isLeave) return
 			if (message.data) updateBookList(message)
 			if (asks.value?.length || bids.value?.length) {
 				loading.value = false

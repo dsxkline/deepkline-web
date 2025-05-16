@@ -45,64 +45,65 @@
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
-			<div class="flex flex-col items-start mt-2 mb-3 px-[16px]">
-				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
-					<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
-					<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
-				</b>
-				<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
-				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ rate > 0 ? '+' : '' }}{{ change.toFixed(2) }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span>
-				<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
+			<div class="market-datas-head">
+				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 px-[16px]">
+					<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+						<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
+						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
+					</b>
+					<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
+					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ rate > 0 ? '+' : '' }}{{ change.toFixed(2) }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span>
+					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
+				</div>
+
+				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-[16px]">
+					<li>
+						<span>24H开盘</span>
+						<span v-if="item?.open24h">{{ formatPrice(parseFloat(item?.open24h), symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li class="show">
+						<span>24H最高</span>
+						<span v-if="item?.high24h">{{ formatPrice(parseFloat(item?.high24h), symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li>
+						<span>24H收盘</span>
+						<span v-if="item?.last">{{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li class="show">
+						<span>24H最低</span>
+						<span v-if="item?.low24h">{{ formatPrice(parseFloat(item?.low24h), symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li class="show">
+						<span>24H量</span>
+						<span v-if="item?.vol24h">{{ moneyFormat(item?.vol24h) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li>
+						<span>买一价</span>
+						<span v-if="item?.askPx">{{ formatPrice(item?.askPx, symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li class="show">
+						<span>24H额</span>
+						<span v-if="item?.volCcy24h">{{ moneyFormat(item?.volCcy24h) }}</span>
+						<span v-else>--</span>
+					</li>
+					<li>
+						<span>卖一价</span>
+						<span v-if="item?.bidPx">{{ formatPrice(item?.bidPx, symbolObj.tickSz) }}</span>
+						<span v-else>--</span>
+					</li>
+				</ul>
 			</div>
 
-			<ul class="grid grid-cols-2 gap-2 text-invert mb-3 px-[16px]">
-				<li>
-					<span>24H开盘</span>
-					<span v-if="item?.open24h">{{ formatPrice(parseFloat(item?.open24h), symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>24H最高</span>
-					<span v-if="item?.high24h">{{ formatPrice(parseFloat(item?.high24h), symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>24H收盘</span>
-					<span v-if="item?.last">{{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>24H最低</span>
-					<span v-if="item?.low24h">{{ formatPrice(parseFloat(item?.low24h), symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>24H量</span>
-					<span v-if="item?.vol24h">{{ moneyFormat(item?.vol24h) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>买一价</span>
-					<span v-if="item?.askPx">{{ formatPrice(item?.askPx, symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>24H额</span>
-					<span v-if="item?.volCcy24h">{{ moneyFormat(item?.volCcy24h) }}</span>
-					<span v-else>--</span>
-				</li>
-				<li>
-					<span>卖一价</span>
-					<span v-if="item?.bidPx">{{ formatPrice(item?.bidPx, symbolObj.tickSz) }}</span>
-					<span v-else>--</span>
-				</li>
-			</ul>
-
-			
-			<div class="px-4 py-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
-				<CycleBar :symbol="symbol"/>
+			<div class="py-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
+				<div class="px-3 w-full overflow-hidden"><CycleBar :symbol="symbol" /></div>
 				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
-				<Indicator :symbol="symbol"/>
+				<div class="px-3 w-full overflow-hidden"><Indicator :symbol="symbol" /></div>
 			</div>
 
 			<div class="px-4">
@@ -133,11 +134,41 @@
 			}
 		}
 	}
-	.market-kline-container{
+	.market-kline-container {
 		display: none;
 	}
-	@media (max-width:999px) {
-		.market-kline-container{
+	@media (max-width: 999px) {
+		.market-datas-head {
+			display: flex;
+			flex-direction: row;
+			.market-datas-head-price {
+				width: 60%;
+				height: 60px;
+			}
+			.market-datas-head-right {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				width: 40%;
+				height: 100%;
+				gap:0;
+				@apply mt-3;
+				li {
+					width: 100%;
+					display: none;
+					justify-content: space-between;
+					align-items: center;
+					line-height: normal;
+					&.show{
+						display: flex;
+					}
+					span {
+						font-size: 10px;
+					}
+				}
+			}
+		}
+		.market-kline-container {
 			display: flex;
 		}
 	}

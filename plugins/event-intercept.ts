@@ -128,16 +128,19 @@ class WindowsEvent {
 	}
 
 	leaveForeground() {
+		useStore().isLeave = this.isLeave;
 		if (this.isLeave) return
 		console.log('leaveForeground', new Date())
 		// 离开前台
 		// 窗口失去焦点时的处理
 		this.quiescentTime = new Date().getTime()
 		this.isLeave = true
+
 	}
 	// 恢复前台
 	resumeForeground() {
 		this.isLeave = false
+		useStore().isLeave = this.isLeave;
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
 		console.log('resumeForeground', t, this.isBrowserDelay, this.quiescentTimeout, new Date())

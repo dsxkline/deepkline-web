@@ -8,7 +8,7 @@
 	}>()
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol])
 	declare var window: DsxWindow
-	const klineDom = ref(null)
+	const klineDom = ref<HTMLElement|null>()
 	const error = ref('')
 	const loading = ref(true)
 	let chart: DsxKlineChart|null
@@ -73,7 +73,7 @@
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
 		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useColorMode().preference, {
-			element: '.kline-chart-container .kline',
+			element: klineDom.value && klineDom.value.querySelector('.kline'),
 			autoSize: true,
 			chartType: ChartType.candle,
 			// klineWidth: 1,
@@ -102,11 +102,13 @@
 		chart.onError = err => {
 			error.value = '网络异常，请稍后再试'
 		}
+
+		console.log('create kline chart ');
 	})
 	onBeforeUnmount(()=>{
-		klineDom.value = null
 		chart && chart.destroy()
 		chart = null
+		klineDom.value = null
 	})
 </script>
 <template>

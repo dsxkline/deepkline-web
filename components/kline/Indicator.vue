@@ -18,8 +18,8 @@
 	}
 </script>
 <template>
-	<div class="indicator ml-1 w-max flex gap-1 *:p-1 *:rounded *:text-xs *:cursor-pointer">
-		<div class="indicator-item">指标</div>
+	<div class="indicator w-max flex gap-1 *:p-1 *:rounded *:text-xs *:cursor-pointer">
+		<!-- <div class="indicator-item">指标</div> -->
 		<div class="indicator-item" click-sound v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main[symbolObj?.instId]?.includes(item) }" @click="onMainIndicatorChange(item)">
 			{{ item }}
 		</div>
@@ -37,6 +37,22 @@
 		.active {
 			// border:1px solid var(--el-menu-active-color);
 			color: rgb(var(--color-green));
+		}
+	}
+	@media (max-width: 999px) {
+		.indicator {
+			max-width: 100%;
+			overflow-x: scroll;
+			flex-wrap: nowrap;
+			/* 隐藏滚动条 */
+			scrollbar-width: none; /* Firefox */
+			-ms-overflow-style: none; /* IE/Edge */
+			&::-webkit-scrollbar {
+				display: none; /* Chrome/Safari */
+			}
+			.indicator-item {
+				white-space: nowrap;
+			}
 		}
 	}
 </style>

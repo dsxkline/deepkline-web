@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Instruments } from '~/fetch/okx/okx.type.d'
+	import { useStore } from '~/store'
 	import { useKlineStore } from '~/store/kline'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
@@ -24,15 +24,18 @@
 	const onCycleChange = async (value: string) => {
 		if (useKlineStore().loading[symbolObj.value.instId]) return
 		cycle.value = value
-		useKlineStore().setCycle(symbolObj.value.instId,value)
+		useKlineStore().setCycle(symbolObj.value.instId, value)
 	}
 </script>
 <template>
 	<div class="cycle-bar ml-1 w-max flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-xs *:cursor-pointer">
-		<div class="cycle-bar-item">周期</div>
-		<div class="cycle-bar-item" v-for="(item, index) in cycleList" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)">
-			{{ item.label }}
-		</div>
+		<!-- <div class="cycle-bar-item">周期</div> -->
+		<template v-for="(item, index) in cycleList">
+			<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="(useStore().isH5 && index < 4) || !useStore().isH5">
+				{{ item.label }}
+			</div>
+		</template>
+		<button class="flex items-center"><span>更多</span><el-icon class="mx-1"><CaretBottom /></el-icon></button>
 	</div>
 </template>
 <style scoped lang="less">
@@ -43,6 +46,22 @@
 		.active {
 			background-color: rgb(var(--color-green));
 			color: white;
+		}
+	}
+	@media (max-width: 999px) {
+		.cycle-bar {
+			max-width: 100%;
+			overflow-x: scroll;
+			flex-wrap: nowrap;
+			/* 隐藏滚动条 */
+			scrollbar-width: none; /* Firefox */
+			-ms-overflow-style: none; /* IE/Edge */
+			&::-webkit-scrollbar {
+				display: none; /* Chrome/Safari */
+			}
+			.cycle-bar-item {
+				white-space: nowrap;
+			}
 		}
 	}
 </style>

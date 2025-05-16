@@ -3,6 +3,7 @@
 	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker, TradesMessage, TradesResponse } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
+import { useStore } from '~/store';
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -75,6 +76,7 @@
 		tradesList.value = []
 		if (subHandle) $ws.unsubscribe(subHandle)
 		subHandle = $ws.subTrades(symbolObj.value?.instId || props.symbol, (message, err) => {
+			if (useStore().isLeave) return
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
 			if (!loading.value && !error.value && message.data) updateTradeList(message)

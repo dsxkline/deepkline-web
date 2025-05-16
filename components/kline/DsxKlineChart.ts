@@ -324,9 +324,9 @@ class DsxKlineChart {
 	}
 
 	destroy() {
+		this.kline.destroy()
 		this.theme = null
 		this.config = {}
-		this.kline.destroy()
 		this.unsubscribe()
 		const {$windowEvent,$wsb} = useNuxtApp()
 		$windowEvent.removeEvent(this.whenBrowserActive)

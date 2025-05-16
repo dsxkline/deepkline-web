@@ -175,6 +175,7 @@
 
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
 			if (scrolling) return
+			if (useStore().isLeave) return
 			// console.log("subTickers", message.data, error);
 			if (message.data)
 				message.data.forEach(item => {
