@@ -1,5 +1,5 @@
 import { defineNuxtPlugin } from '#app'
-import { defineComponent, ref, h, render, createVNode } from 'vue';
+import { defineComponent, ref, h, render, createVNode, type ComponentInstance, type ComponentInternalInstance } from 'vue';
 import { usePushStore } from "@/store/push";
 import Push from '~/components/app/Push.vue';
 
@@ -29,28 +29,37 @@ function findRoute(path: string, routes: any) {
 
     return {};
 }
-const pushHandle = function (this: any,
+const pushHandle = function (this: ComponentInternalInstance, 
     comp: any,
     params = {},
     direction = "rtl",
     size = "100%"
 ) {
+    // 执行目标willDisappear方法
+    let instance = this
+    console.log('当前push的持有者',instance)
+    if(instance?.willDisappear) instance.willDisappear()
+    while (instance?.parent) {
+        instance = instance.parent
+        if(instance?.willDisappear) instance.willDisappear()
+    }
+    
     const pushStore = usePushStore();
     pushStore.setPushState(true);
     // 保存当前的 this 上下文
-    const context = this as any;
+    const context = this;
     let dynamicComponent = {
         url: null,
         component: comp?.default || comp,
     };
-    if (typeof comp === "string") {
-        // 加载路由对应的组件
-        const routes = this.$router.options.routes;
-        const { route, params: pas = {} } = findRoute(comp, routes);
-        if (!route) return;
-        if (route) dynamicComponent.component = route.component;
-        params = Object.assign(params, pas);
-    }
+    // if (typeof comp === "string") {
+    //     // 加载路由对应的组件
+    //     const routes = this.$router.options.routes;
+    //     const { route, params: pas = {} } = findRoute(comp, routes);
+    //     if (!route) return;
+    //     if (route) dynamicComponent.component = route.component;
+    //     params = Object.assign(params, pas);
+    // }
 
     // const instance = getCurrentInstance(); // 获取当前 Vue 组件实例
 
@@ -131,19 +140,19 @@ const pop = function (data = {}) {
 };
 
 // 右侧弹出
-function push(comp: any, params = {}, size = "100%") {
-    return pushHandle(comp, params, "rtl", size);
+function push(this: any,comp: any, params = {}, size = "100%") {
+    return pushHandle.bind(this)(comp, params, "rtl", size);
 }
-function pushLeft(comp: any, params = {}, size = "100%") {
-    return pushHandle(comp, params, "ltr", size);
+function pushLeft(this: any,comp: any, params = {}, size = "100%") {
+    return pushHandle.bind(this)(comp, params, "ltr", size);
 }
 
 // 底部弹出
-function pushUp(comp: any, params = {}, size = "100%") {
-    return pushHandle(comp, params, "btt", size);
+function pushUp(this: any,comp: any, params = {}, size = "100%") {
+    return pushHandle.bind(this)(comp, params, "btt", size);
 }
-function pushDown(comp: any, params = {}, size = "100%") {
-    return pushHandle(comp, params, "ttb", size);
+function pushDown(this: any,comp: any, params = {}, size = "100%") {
+    return pushHandle.bind(this)(comp, params, "ttb", size);
 }
 
 // 返回根视图

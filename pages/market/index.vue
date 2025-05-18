@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const mainSplit = ref()
@@ -12,6 +13,15 @@
 	onBeforeUnmount(() => {
 		mainSplit.value = null
 		twoSplit.value = null
+	})
+
+	useWillDisappear(()=>{
+		// 写hook方法
+		console.log('page market willdisappear...')
+	})
+
+	useWillAppear(()=>{
+		console.log('page market willappear...')
 	})
 
 	watch(
@@ -29,6 +39,7 @@
 			}
 		}
 	)
+
 </script>
 <template>
 	<div class="pc-market w-full h-full" v-if="!useNuxtApp().$isMobile.value">

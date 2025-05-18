@@ -58,15 +58,14 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
-			if(useStore().isH5) tabbarHeight.value = n;
+			if (useStore().isH5) tabbarHeight.value = n
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if(useStore().isH5) tabbarHeight.value = window?.innerHeight;
+		if (useStore().isH5) tabbarHeight.value = window?.innerHeight
 	})
-	
 </script>
 <template>
 	<div class="w-full h-full">
@@ -83,6 +82,13 @@
 				li {
 					font-size: 16px;
 				}
+			}
+		}
+	}
+	@media (max-width: 999px) {
+		:deep(.tabbar-container) {
+			.tabbar-header {
+				padding: 0px 12px;
 			}
 		}
 	}

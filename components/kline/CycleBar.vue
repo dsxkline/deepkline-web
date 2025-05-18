@@ -28,7 +28,7 @@
 	}
 </script>
 <template>
-	<div class="cycle-bar ml-1 w-max flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-xs *:cursor-pointer">
+	<div class="cycle-bar w-max flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-xs *:cursor-pointer">
 		<!-- <div class="cycle-bar-item">周期</div> -->
 		<template v-for="(item, index) in cycleList">
 			<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="(useStore().isH5 && index < 4) || !useStore().isH5">
@@ -44,8 +44,7 @@
 			background-color: var(--transparent05);
 		}
 		.active {
-			background-color: rgb(var(--color-green));
-			color: white;
+			background-color: var(--transparent20);
 		}
 	}
 	@media (max-width: 999px) {
@@ -53,6 +52,7 @@
 			max-width: 100%;
 			overflow-x: scroll;
 			flex-wrap: nowrap;
+			height: 28px;
 			/* 隐藏滚动条 */
 			scrollbar-width: none; /* Firefox */
 			-ms-overflow-style: none; /* IE/Edge */
@@ -61,6 +61,11 @@
 			}
 			.cycle-bar-item {
 				white-space: nowrap;
+				font-size: 14px;
+				padding: 0 12px;
+				height: 28px;
+				display: flex;
+				align-items: center;
 			}
 		}
 	}

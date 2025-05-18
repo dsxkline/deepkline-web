@@ -10,6 +10,8 @@
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
 	import SymbolDetail from '../SymbolDetail.vue'
+	import { usePush, useWillAppear } from '~/composable/usePush'
+	import { useWillDisappear } from '~/composable/usePush'
 
 	const props = defineProps<{
 		symbolCategory: InstanceType
@@ -201,9 +203,13 @@
 			activeBorderColors.value = {}
 		}
 	}
+
+	const push = usePush()
+
 	function clickSymbol(item?: Instruments) {
 		if (useStore().isH5) {
-			useNuxtApp().$push(SymbolDetail, { symbol: item?.instId }, '100%')
+			// useNuxtApp().$push(SymbolDetail, { symbol: item?.instId }, '100%')
+			push(SymbolDetail, { symbol: item?.instId }, '100%')
 			return
 		}
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
@@ -234,8 +240,6 @@
 
 		let dom: HTMLElement | null = symbolDom.value.querySelector('#symbol-list-id-' + item.instId) as HTMLElement
 		if (dom) dom = dom.querySelector('.bg') as HTMLElement
-
-		
 
 		if (dom && last) {
 			// 插入前，先移除已有的 flash 背景层
@@ -344,6 +348,16 @@
 		if (props.start) update()
 		$windowEvent.addEvent(whenBrowserActive)
 	})
+	useWillDisappear(() => {
+		console.log('symbollist willdisappear.....')
+		// 暂停订阅动画，通常用在h5页面切换事件中
+		unSubSymbols()
+		
+	})
+	useWillAppear(()=>{
+		console.log('symbollist willappear.....')
+		subSymbols()
+	})
 	// 暴露给父组件的方法
 	defineExpose({ update, leave })
 </script>
@@ -384,8 +398,7 @@
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<!-- 容器总高度 -->
-			<div :style="{ height: (symbols.length*itemHeight)  + 'px' }" class="relative w-full" v-else >
-				
+			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full" v-else>
 				<ul class="w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer" :style="{ transform: `translateY(${start * itemHeight}px)` }">
 					<li
 						:id="'symbol-list-id-' + item.instId"

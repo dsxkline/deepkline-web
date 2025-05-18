@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePushStore } from '~/store/push';
 import type { DrawerProps } from 'element-plus'
-import { getCurrentInstance, render } from 'vue'
+import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
 // import SymbolSearch from '../symbol/SymbolSearch.vue';
 const instance = getCurrentInstance()
 const props = defineProps<{
@@ -13,6 +13,7 @@ const props = defineProps<{
     to?: any;
     params?: any;
     popData?: any;
+    parent:ComponentInternalInstance
 }>();
 const drawerSize = ref(props.size);
 const drawer = ref(null);
@@ -62,20 +63,29 @@ const swipeDown = () => {
 
 };
 
-onBeforeUnmount(() => {
+onUnmounted(() => {
     // 获取组件的父级
-    // if (instance) {
-    //     let parent = instance.parent;
-    //     while (parent) {
-    //         // pop的时候返回执行自定义poped方法
-    //         // console.log("parent///test", parent, this.popData);
-    //         if (parent.exposed?.poped && instance.exposed?.popData) {
-    //             parent.exposed?.poped(instance.exposed?.popData);
-    //             break;
-    //         }
-    //         parent = parent.parent;
-    //     }
-    // }
+    if (props.parent) {
+        let parent:ComponentInternalInstance | null = props.parent;
+        while (parent) {
+            // pop的时候返回执行自定义poped方法
+            // console.log("parent///test", parent, this.popData);
+            if (parent?.poped) {
+                parent?.poped(props.popData);
+                break;
+            }
+            parent = parent.parent;
+        }
+        parent = props.parent;
+        while (parent) {
+            // pop的时候返回执行自定义poped方法
+            // console.log("parent///test", parent);
+            if (parent?.willAppear) {
+                parent?.willAppear(props.popData);
+            }
+            parent = parent.parent;
+        }
+    }
     drawer.value = null
     console.log('onBeforeUnmount')
     setTimeout(() => {

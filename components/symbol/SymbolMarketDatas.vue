@@ -33,10 +33,44 @@
 		// 涨跌幅
 		rate.value = (change.value / parseFloat(item.value?.sodUtc8 || '0')) * 100
 	}
+
+	let subHandle = ''
+
+	function subSymbols() {
+		// h5 spa模式
+		if(!useStore().isH5) return;
+		const { $wsb, $ws } = useNuxtApp()
+		
+		subHandle = $ws.subTickers([props.symbol], (message, error) => {
+			if (useStore().isLeave) return
+			// console.log("subTickers", message.data, error);
+			if (message.data)
+				message.data.forEach(item => {
+					// console.log('subitem',item.instId,item)
+					// 同步到store
+					// useSymbolStore().setTickets(item.instId, item)
+					$ws.setTickers(item.instId, item)
+					
+					// bgFlicker(item)
+				})
+		})
+	}
+
+	function unSubSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (subHandle) {
+			$ws.unsubscribe(subHandle)
+			
+		}
+	}
+	
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
+		subSymbols()
 	})
-	onUnmounted(() => {
+
+	onBeforeUnmount(() => {
+		unSubSymbols()
 		containerRef.value = null
 		item.value = null
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
@@ -100,8 +134,8 @@
 				</ul>
 			</div>
 
-			<div class="py-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
-				<div class="px-3 w-full overflow-hidden"><CycleBar :symbol="symbol" /></div>
+			<div class="pb-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
+				<div class="px-3 w-full"><CycleBar :symbol="symbol" /></div>
 				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
 				<div class="px-3 w-full overflow-hidden"><Indicator :symbol="symbol" /></div>
 			</div>
@@ -170,6 +204,7 @@
 		}
 		.market-kline-container {
 			display: flex;
+			height: calc(var(--body-height) - 3 * 40px - 60px);
 		}
 	}
 </style>
