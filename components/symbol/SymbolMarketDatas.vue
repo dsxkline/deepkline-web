@@ -66,6 +66,7 @@
 	
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
+		tickerHandler($ws.getTickers(props.symbol))
 		subSymbols()
 	})
 
@@ -81,7 +82,7 @@
 		<el-scrollbar :height="contentHeight + 'px'">
 			<div class="market-datas-head">
 				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4" ref="marketPrice">
-					<b v-autosize="30" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+					<b v-autosize="35" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 						<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
 					</b>
@@ -90,7 +91,7 @@
 					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 				</div>
 
-				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-4">
+				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-4 text-xs">
 					<li>
 						<span>24H开盘</span>
 						<span v-if="item?.open24h">{{ formatPrice(parseFloat(item?.open24h), symbolObj.tickSz) }}</span>
@@ -112,7 +113,7 @@
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H量</span>
+						<span>24H成交量</span>
 						<span v-if="item?.vol24h">{{ moneyFormat(item?.vol24h) }}</span>
 						<span v-else>--</span>
 					</li>
@@ -122,7 +123,7 @@
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H额</span>
+						<span>24H成交额</span>
 						<span v-if="item?.volCcy24h">{{ moneyFormat(item?.volCcy24h) }}</span>
 						<span v-else>--</span>
 					</li>
@@ -176,14 +177,17 @@
 			display: flex;
 			flex-direction: row;
 			.market-datas-head-price {
-				width: 60%;
 				height: 60px;
+				flex: 1;
+				min-width: 0;
 			}
 			.market-datas-head-right {
 				display: flex;
 				flex-direction: column;
 				justify-content: space-between;
-				width: 40%;
+				width: max-content;
+				min-width: 40%;
+				flex-shrink: 0;
 				height: 100%;
 				gap:0;
 				@apply mt-3;
@@ -197,7 +201,12 @@
 						display: flex;
 					}
 					span {
-						font-size: 10px;
+						@apply text-xs text-nowrap;
+						&:first-child {
+							@apply text-muted pr-2;
+							text-align-last:unset;
+							min-width: auto;
+						}
 					}
 				}
 			}

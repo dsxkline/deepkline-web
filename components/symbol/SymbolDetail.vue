@@ -85,7 +85,7 @@ import { usePop } from '~/composable/usePush'
 				<button class="flex items-center pr-2" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-lg flex items-center leading-[normal]">{{ getSymbolName(symbolObj) }}</b>
+				<b class="text-lg flex items-center leading-[normal] font-extrabold">{{ getSymbolName(symbolObj) }}</b>
 			</template>
 			<template #right>
 				<SymbolFavoriteButton :symbol="symbol"/>

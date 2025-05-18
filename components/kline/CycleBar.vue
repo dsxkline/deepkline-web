@@ -28,7 +28,7 @@
 	}
 </script>
 <template>
-	<div class="cycle-bar w-max flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-xs *:cursor-pointer">
+	<div class="cycle-bar w-max flex gap-1 *:py-1 *:px-2 *:rounded *:text-sm *:cursor-pointer">
 		<!-- <div class="cycle-bar-item">周期</div> -->
 		<template v-for="(item, index) in cycleList">
 			<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="(useStore().isH5 && index < 4) || !useStore().isH5">

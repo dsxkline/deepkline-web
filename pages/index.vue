@@ -2,8 +2,9 @@
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
 	import MeIndex from '@/pages/me/index.vue'
+	import StrategyIndex from '@/pages/strategy/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { Histogram, Monitor } from '@element-plus/icons-vue'
+	import { UserFilled, Histogram, Monitor,Opportunity, HelpFilled } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
 
@@ -17,7 +18,7 @@
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
 		{
-			name: '',
+			name: '行情',
 			iconSelected: markRaw(Logo),
 			icon:markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
@@ -25,13 +26,19 @@
 		},
 		{
 			name: '交易',
-			icon: markRaw(Monitor),
+			icon: markRaw(HelpFilled),
 			contentComp: markRaw(TradeIndex),
 			contentParams: {}
 		},
 		{
+			name: '策略',
+			icon: markRaw(Opportunity),
+			contentComp: markRaw(StrategyIndex),
+			contentParams: {}
+		},
+		{
 			name: '我的',
-			icon: markRaw(Monitor),
+			icon: markRaw(UserFilled),
 			contentComp: markRaw(MeIndex),
 			contentParams: {}
 		}
@@ -98,7 +105,7 @@
 					align-items: center;
 					background-color: var(--transparent05);
 					display: grid;
-					grid-template-columns:auto auto auto;
+					grid-template-columns:auto auto auto auto;
 					li {
 						height: var(--menu-height);
 						flex: 1;

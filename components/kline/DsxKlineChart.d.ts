@@ -169,6 +169,7 @@ export interface DsxKlineConfig {
 	sideHeight?: number;
 	paddingBottom?: number;
 	paddingMiddle?: number;
+	paddingTop?: number;
 	autoSize?: Boolean;
 	debug?: Boolean;
 	main?: string[];

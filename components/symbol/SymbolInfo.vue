@@ -175,12 +175,6 @@
 						<span class="font-bold text-[18px]">{{ symbolInfo?.project }}</span>
 						<span class="mx-2 text-grey">{{ symbolInfo?.fullName }}</span>
 					</div>
-					<!-- <span class="text-gray-300 my-3">{{ symbolInfo?.fullName }}</span> -->
-					<div class="cursor-pointer text-sm text-main my-2 mb-3 max-h-[100px] overflow-hidden line-clamp-5" v-html="symbolInfo?.introduce" @click="visibleDetail = true" click-sound></div>
-					<!-- <button @click="visibleDetail = !visibleDetail" click-sound>
-						<el-icon><el-icon-more /></el-icon>
-					</button> -->
-					<h3>基本信息</h3>
 					<ul class="my-3 text-grey *:flex *:justify-between *:py-1 text-xs [&_b]:text-main [&_b]:font-normal">
 						<li>
 							<span>市值</span><b>${{ thousandUnit(moneyFormat(symbolDataInfo.marketCap)) }}</b>
@@ -213,6 +207,15 @@
 							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
+
+					<h3>介绍</h3>
+					<!-- <span class="text-gray-300 my-3">{{ symbolInfo?.fullName }}</span> -->
+					<div class="cursor-pointer text-sm text-main my-2 mb-3 max-h-[100px] overflow-hidden line-clamp-5" v-html="symbolInfo?.introduce" @click="visibleDetail = true" click-sound></div>
+					<!-- <button @click="visibleDetail = !visibleDetail" click-sound>
+						<el-icon><el-icon-more /></el-icon>
+					</button> -->
+					
+					
 					<div class="w-full" v-if="symbolCoinInfo?.supportTokenUnlock">
 						<CoinAllot :symbol="symbol" />
 					</div>

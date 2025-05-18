@@ -13,15 +13,13 @@
 	}
 </script>
 <template>
-	<button click-sound @click="favorite(symbolObj)" :class="['!w-[16px] !h-[16px] relative flex items-center justify-center', useSymbolStore().isFavorite(symbolObj) ? 'favorite' : '']">
+	<button click-sound @click="favorite(symbolObj)" :class="['!w-6 !h-6 *:!w-6 *:!h-6 [&_svg]:!h-5 [&_svg]:!w-5 relative flex items-center justify-center', useSymbolStore().isFavorite(symbolObj) ? 'favorite' : '']">
 		<el-icon class="!absolute top-0 left-0"><Star /></el-icon>
 		<el-icon class="!absolute top-0 left-0"><StarFilled v-if="useSymbolStore().isFavorite(symbolObj)" /></el-icon>
 	</button>
 </template>
 <style lang="less" scoped>
 	button {
-		height: 30px;
-		@apply px-1 rounded-md cursor-pointer mx-1 flex items-center justify-center;
 		&:hover {
 			.el-icon {
 				@apply text-main;

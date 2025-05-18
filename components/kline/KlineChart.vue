@@ -83,7 +83,7 @@
 			transformers: false,
 			// isShowKlineTipPannel: true,
 			// sideHeight: 80,
-			// paddingBottom: 20,
+			paddingTop: 0,
 			// paddingMiddle: 0,
 			main: ['MA'], // 主图指标
 			sides: ['MACD', 'KDJ', 'RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)

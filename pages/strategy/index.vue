@@ -9,7 +9,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<NavigationBar title="策略" :hideBack="true"/>
 		
-		<NavigationBar title="我的" :hideBack="true"/>
 	</div>
 </template>

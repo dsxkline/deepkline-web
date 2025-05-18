@@ -9,7 +9,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		交易
+		<NavigationBar title="交易" :hideBack="true"/>
 		
 	</div>
 </template>

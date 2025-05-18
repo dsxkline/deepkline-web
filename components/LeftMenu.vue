@@ -26,11 +26,12 @@
 <template>
 	<div class="left-menu flex flex-col justify-between border-r border-[--border-color] bg-[--transparent05]">
 		<div class="main-menu">
-			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted">
+			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li :class="menuActive==index?'bg-[var(--transparent05)] !text-green border-l-2 border-green-500 font-bold':'hover:bg-[var(--transparent05)] hover:text-muted'+''" v-for="(menu,index) in props.menus" :key="menu.name" click-sound @click="handleOpen(menu,index)">
-					<component :is="menu.iconSelected" :class="menu.name?'w-5':'w-7'" v-if="menu.icon && menuActive==index && menu.iconSelected" />
-					<component :is="menu.icon" :class="menu.name?'w-5':'w-7'" v-else-if="menu.icon" />
-					<span v-if="menu.name" class="py-2">{{ menu.name }}</span>
+					<component :is="menu.iconSelected" class="w-7" v-if="menu.icon && menuActive==index && menu.iconSelected" />
+					<component :is="menu.icon" class="w-5" v-else-if="menu.icon" />
+					<span v-if="menu.name && menuActive==index && menu.iconSelected"></span>
+					<span v-else-if="menu.name" class="py-2">{{ menu.name }}</span>
 				</li>
 			</ul>
 		</div>
@@ -43,6 +44,14 @@
 		</div>
 	</div>
 </template>
-<style>
-
+<style lang="less" scoped>
+@media (max-width: 999px) {
+	.main-menu{
+		ul{
+			li{
+				min-height:auto;
+			}
+		}
+	}
+}
 </style>
