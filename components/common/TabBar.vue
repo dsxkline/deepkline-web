@@ -4,6 +4,7 @@
 	export interface MenuModel {
 		name: string
 		icon?: Component
+		iconSelected?: Component
 		titleComp?: Component
 		contentComp?: Component
 		contentParams?: Record<any, any>

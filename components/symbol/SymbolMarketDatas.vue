@@ -80,8 +80,8 @@
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'">
 			<div class="market-datas-head">
-				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 px-[16px]">
-					<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4" ref="marketPrice">
+					<b v-autosize="30" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 						<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
 					</b>
@@ -90,7 +90,7 @@
 					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 				</div>
 
-				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-[16px]">
+				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-4">
 					<li>
 						<span>24H开盘</span>
 						<span v-if="item?.open24h">{{ formatPrice(parseFloat(item?.open24h), symbolObj.tickSz) }}</span>

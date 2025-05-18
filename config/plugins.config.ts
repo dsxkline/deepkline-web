@@ -7,4 +7,5 @@ export default [
     {src: '~/plugins/event-intercept.ts', mode: 'client'},
     {src: '~/plugins/auto-height.ts', mode: 'client'},
     '~/plugins/device.ts',
+    '~/plugins/directives.ts',
 ] as (NuxtPlugin | string)[]

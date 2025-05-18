@@ -5,6 +5,7 @@
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { Histogram, Monitor } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
+	import Logo from '~/components/icons/Logo.vue'
 
 	// 使用默认布局
 	definePageMeta({
@@ -16,8 +17,9 @@
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
 		{
-			name: '行情',
-			icon: markRaw(Histogram),
+			name: '',
+			iconSelected: markRaw(Logo),
+			icon:markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
 		},

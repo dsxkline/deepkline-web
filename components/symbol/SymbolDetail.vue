@@ -85,7 +85,7 @@ import { usePop } from '~/composable/usePush'
 				<button class="flex items-center pr-2" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-lg">{{ getSymbolName(symbolObj) }}</b>
+				<b class="text-lg flex items-center leading-[normal]">{{ getSymbolName(symbolObj) }}</b>
 			</template>
 			<template #right>
 				<SymbolFavoriteButton :symbol="symbol"/>
@@ -97,7 +97,7 @@ import { usePop } from '~/composable/usePush'
 <style lang="less" scoped>
 	:deep(.tabbar-container) {
 		.tabbar-header {
-			padding: 0px 16px;
+			@apply px-4;
 			overflow-x: unset;
 			height: var(--header-height);
 			ul {
@@ -107,11 +107,5 @@ import { usePop } from '~/composable/usePush'
 			}
 		}
 	}
-	@media (max-width: 999px) {
-		:deep(.tabbar-container) {
-			.tabbar-header {
-				padding: 0px 12px;
-			}
-		}
-	}
+
 </style>
