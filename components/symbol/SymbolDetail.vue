@@ -1,15 +1,15 @@
 <script setup lang="ts">
-	import { Search } from '@element-plus/icons-vue'
 	import { type MenuModel } from '../common/TabBar.vue'
 	import TabBar from '../common/TabBar.vue'
-	import Options from './search/Options.vue'
-	import SymbolList from './search/SymbolList.vue'
-	import MarketList from './search/MarketList.vue'
 	import SymbolMarketDatas from './SymbolMarketDatas.vue'
 	import SymbolDatas from './SymbolDatas.vue'
 	import TradeOrder from '../trade/TradeOrder.vue'
 	import SymbolInfo from './SymbolInfo.vue'
 	import { useStore } from '~/store'
+	import { useSymbolStore } from '~/store/symbol'
+	import type { Instruments } from '~/fetch/okx/okx.type.d'
+	import { getSymbolName } from '../../utils/filters'
+import { usePop } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -44,6 +44,17 @@
 			}
 		}
 	])
+	const pop = usePop()
+
+	const symbolObj = computed(() => {
+		return useSymbolStore().symbols[props.symbol]
+	})
+	function favorite(item: Instruments) {
+		useSymbolStore().favoriteSymbol(item)
+	}
+	function returnBack(){
+		pop()
+	}
 
 	watch(
 		() => props.symbol,
@@ -58,17 +69,28 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = n
+			if (useStore().isH5) tabbarHeight.value = n - (document.querySelector('.nav')?.clientHeight||55)
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = window?.innerHeight
+		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (document.querySelector('.nav')?.clientHeight||55)
 	})
 </script>
 <template>
 	<div class="w-full h-full">
+		<NavigationBar v-if="useStore().isH5">
+			<template #left>
+				<button class="flex items-center pr-2" @click="returnBack">
+					<el-icon><ArrowLeftBold /></el-icon>
+				</button>
+				<b class="text-lg">{{ getSymbolName(symbolObj) }}</b>
+			</template>
+			<template #right>
+				<SymbolFavoriteButton :symbol="symbol"/>
+			</template>
+		</NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight" />
 	</div>
 </template>

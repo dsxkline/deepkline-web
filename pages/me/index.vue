@@ -9,7 +9,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		交易
+		我的
 		
 	</div>
 </template>

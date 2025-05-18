@@ -107,16 +107,16 @@ const pushHandle = function (this: ComponentInternalInstance,
     return pushInstance;
 };
 
-const pop = function (data = {}) {
+const pop = function (this: any,data = {}) {
     const store = usePushStore();
     let topPush = store.getTopPush();
     // 需要查找最顶部的push回传数据
     if (topPush) {
         // 回传数据
-        topPush.popData = data;
-        if (!topPush.$el?.closest('.pushup')) {
-            topPush.$el.style.transform = "translateX(100vw)";
-        }
+        topPush.props.popData = data;
+        // if (!topPush.vnode.el?.closest('.pushup')) {
+        //     if (topPush.vnode.el) topPush.vnode.el.style.transform = "translateX(100vw)";
+        // }
     } else {
         // 顶层
 
@@ -126,16 +126,16 @@ const pop = function (data = {}) {
     topPush = store.getTopPush();
     // console.log('pop',topPush)
     if (topPush) {
-        const parentDrawer = topPush.$el.closest(".el-drawer__wrapper");
-        if (parentDrawer && parentDrawer instanceof HTMLElement) {
-            parentDrawer.style.transform = "translateX(0)";
-        }
+        // const parentDrawer = topPush.vnode.el.closest(".el-drawer__wrapper");
+        // if (parentDrawer && parentDrawer instanceof HTMLElement) {
+        //     parentDrawer.style.transform = "translateX(0)";
+        // }
     } else {
         // 顶层
-        const nuxt = document.querySelector("#__nuxt");
-        if (nuxt && nuxt instanceof HTMLElement) {
-            nuxt.style.transform = "translateX(0)";
-        }
+        // const nuxt = document.querySelector("#__nuxt");
+        // if (nuxt && nuxt instanceof HTMLElement) {
+        //     nuxt.style.transform = "translateX(0)";
+        // }
     }
 };
 
@@ -156,17 +156,17 @@ function pushDown(this: any,comp: any, params = {}, size = "100%") {
 }
 
 // 返回根视图
-const popRoot = function (data: any, index = 0) {
+const popRoot = function (this: any,data: any, index = 0) {
     const pushComopnents = usePushStore().pushComopnents;
     const length = pushComopnents.length;
     // console.log("popRoot >>>", pushComopnents, index);
-    if (length <= 1) return pop(data);
+    if (length <= 1) return pop.bind(this)(data);
     // index 传负数表示从后往前，index = -1 表示返回倒数第二个，index = -2表示返回倒数第三个，因为倒数第一个是自己也就是index=0
     if (index < 0) {
-        for (let i = length - 1; i >= length + index; i--) pop(data);
+        for (let i = length - 1; i >= length + index; i--) pop.bind(this)(data);
         return;
     }
-    for (let i = length - 1; i >= index; i--) pop(data);
+    for (let i = length - 1; i >= index; i--) pop.bind(this)(data);
 };
 
 

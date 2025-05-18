@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
+	import MeIndex from '@/pages/me/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { Histogram, Monitor } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
@@ -27,15 +28,9 @@
 			contentParams: {}
 		},
 		{
-			name: '日历',
-			icon: markRaw(Monitor),
-			contentComp: markRaw(TradeIndex),
-			contentParams: {}
-		},
-		{
 			name: '我的',
 			icon: markRaw(Monitor),
-			contentComp: markRaw(TradeIndex),
+			contentComp: markRaw(MeIndex),
 			contentParams: {}
 		}
 	])
@@ -57,7 +52,7 @@
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>
-				<component :is="activeMenu.contentComp" v-if="activeMenu" />
+				<component :is="activeMenu.contentComp" v-if="activeMenu"  :key="activeMenu.name"/>
 			</KeepAlive>
 		</div>
 	</div>
@@ -101,7 +96,7 @@
 					align-items: center;
 					background-color: var(--transparent05);
 					display: grid;
-					grid-template-columns:auto auto auto auto;
+					grid-template-columns:auto auto auto;
 					li {
 						height: var(--menu-height);
 						flex: 1;

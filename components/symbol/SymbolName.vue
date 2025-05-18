@@ -30,7 +30,7 @@ onUnmounted(() => {
         </div>
         <!-- 合约 -->
         <div class="flex flex-col items-start" v-else-if="props.symbol?.instType === InstanceType.SWAP">
-            <div class="flex items-center"><b class="text-base text-main">{{props.symbol?.instFamily.replace('-','')}}</b>
+            <div class="flex items-center"><b class="text-base text-main">{{props.symbol?.ctValCcy}}{{props.symbol.settleCcy}}</b>
                 <!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
             </div>
             <span class="text-xs text-grey font-light">{{ moneyFormat(price,"$")||'-' }}</span>

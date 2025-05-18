@@ -20,6 +20,8 @@ declare module '#app' {
 		$pushLeft: (comp: any, params: {}, size: string) => void
 		$pushUp: (comp: any, params: {}, size: string) => void
 		$pushDown: (comp: any, params: {}, size: string) => void
+		$pop: (data?: any) => void
+		$popRoot: (data?: any, index?: number) => void
 		$clickSound: () => void
 		$windowEvent: WindowsEvent
 	}
@@ -30,8 +32,8 @@ interface window {
 }
 declare module 'vue' {
 	interface ComponentInternalInstance {
-		willDisappear: ((...args:any[]) => void) | null,
-    willAppear: ((...args:any[]) => void) | null,
-    poped: ((...args:any[]) => void) | null,
+		willDisappear: ((...args: any[]) => void) | null
+		willAppear: ((...args: any[]) => void) | null
+		poped: ((...args: any[]) => void) | null
 	}
 }

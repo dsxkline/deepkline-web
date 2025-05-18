@@ -52,7 +52,6 @@
 			max-width: 100%;
 			overflow-x: scroll;
 			flex-wrap: nowrap;
-			height: 28px;
 			/* 隐藏滚动条 */
 			scrollbar-width: none; /* Firefox */
 			-ms-overflow-style: none; /* IE/Edge */
@@ -61,11 +60,10 @@
 			}
 			.cycle-bar-item {
 				white-space: nowrap;
-				font-size: 14px;
-				padding: 0 12px;
-				height: 28px;
+				// padding: 0 12px;
 				display: flex;
 				align-items: center;
+				@apply rounded-full;
 			}
 		}
 	}

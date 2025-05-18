@@ -7,6 +7,14 @@ export function usePush() {
 	return (comp: any, params = {}, size = '100%') => useNuxtApp().$push.call(instance, comp, params, size)
 }
 
+export function usePop() {
+	const instance = getCurrentInstance()
+	if (!instance) throw new Error('must be used in setup')
+	return (data?:any, index?:number|undefined) => index!=undefined?useNuxtApp().$popRoot.call(instance,data,index):useNuxtApp().$pop.call(instance,data)
+}
+
+
+
 export function useWillDisappear(cb: (...args:any[]) => void) {
     const instance = getCurrentInstance()
     if (instance) {

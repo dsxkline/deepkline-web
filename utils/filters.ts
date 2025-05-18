@@ -1,5 +1,6 @@
 import { number } from 'echarts'
 import moment from 'moment'
+import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 
 export const formatPrice = (value: any, precision: number, prefix: string = '') => {
 	if (!precision) return value + ''
@@ -92,4 +93,9 @@ export function trimMap(map: Map<any, any>, MAX_ORDER_DEPTH: number) {
 		map.clear()
 		trimmed.forEach(([price, entry]) => map.set(price, entry))
 	}
+}
+
+export function getSymbolName(symbol:Instruments){
+	if(!symbol) return;
+	return symbol.instType==InstanceType.SPOT?symbol.baseCcy+"/"+symbol.quoteCcy:symbol.ctValCcy+symbol.settleCcy
 }

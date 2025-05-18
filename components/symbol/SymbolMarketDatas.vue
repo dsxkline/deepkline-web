@@ -13,7 +13,7 @@
 	const containerRef = ref(null)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height || 10000
+		return (props.height || 10000)
 	})
 	watch(
 		() => props.symbol,
@@ -134,10 +134,10 @@
 				</ul>
 			</div>
 
-			<div class="pb-3 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
-				<div class="px-3 w-full"><CycleBar :symbol="symbol" /></div>
-				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
-				<div class="px-3 w-full overflow-hidden"><Indicator :symbol="symbol" /></div>
+			<div class="pb-3 mb-2 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
+				<div class="px-3 w-full mb-2"><CycleBar :symbol="symbol" /></div>
+				<div class="flex-1 border-b border-t border-[--transparent10]"><KlineChart :symbol="symbol" /></div>
+				<div class="px-3 w-full h-auto border-b border-[--transparent10]"><Indicator :symbol="symbol" /></div>
 			</div>
 
 			<div class="px-4">

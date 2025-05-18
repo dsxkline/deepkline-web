@@ -14,11 +14,7 @@
 </script>
 <template>
 	<div class="symbol-tools flex items-center text-ms">
-		<!-- <button><el-icon><Reading /></el-icon></button> -->
-		<button click-sound @click="favorite(symbolObj)" :class="['!w-[16px] !h-[16px] relative flex items-center justify-center', useSymbolStore().isFavorite(symbolObj) ? 'favorite' : '']">
-			<el-icon class="!absolute top-0 left-0"><Star /></el-icon>
-			<el-icon class="!absolute top-0 left-0"><StarFilled v-if="useSymbolStore().isFavorite(symbolObj)" /></el-icon>
-		</button>
+		<SymbolFavoriteButton :symbol="symbol"/>
 	</div>
 </template>
 <style lang="less" scoped>

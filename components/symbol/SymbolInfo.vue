@@ -118,7 +118,7 @@
 
 	const getSymbolInfo = () => {
 		if (loading.value) return
-		if (!symbolInfo.value?.project) {
+		if (!symbolInfo.value?.project || error.value) {
 			loading.value = true
 			error.value = ''
 		}
@@ -144,8 +144,11 @@
 			})
 			.catch(err => {
 				console.error('一个请求失败:', err)
-				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				setTimeout(()=>{
+					loading.value=false
+					error.value = '网络异常，请稍后再试'
+				},100);
+				
 			})
 	}
 	onMounted(() => {})
