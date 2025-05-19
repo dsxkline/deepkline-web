@@ -14,6 +14,7 @@
 		symbol: string
 	}>()
 	const tabbarHeight = ref(0)
+	const navbar = ref()
 	const menus = ref<MenuModel[]>([
 		{
 			name: '行情',
@@ -69,18 +70,20 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = n - (document.querySelector('.navbar')?.clientHeight || 55)
+			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55)
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (document.querySelector('.navbar')?.clientHeight || 55)
+		nextTick(()=>{
+			if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+		})
 	})
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar v-if="useStore().isH5">
+		<NavigationBar v-if="useStore().isH5" ref="navbar">
 			<template #left>
 				<button class="flex items-center pr-2" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
