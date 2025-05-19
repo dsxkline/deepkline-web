@@ -76,9 +76,10 @@
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
-		nextTick(()=>{
-			if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
-		})
+		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+	})
+	onUnmounted(()=>{
+		navbar.value = null
 	})
 </script>
 <template>
