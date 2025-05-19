@@ -107,7 +107,7 @@ import { useStore } from '~/store';
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
 			if (useStore().isLeave) return
-			if (!interVisible.value) return
+			// if (!interVisible.value) return
 			if (message.data) updateBookList(message)
 			if (asks.value?.length || bids.value?.length) {
 				loading.value = false
