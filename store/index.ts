@@ -78,7 +78,7 @@ export const useStore = defineStore({
   getters:{
     // 是否是H5模式
     isH5(state){
-      console.log('body width state.bodyWidth',state.bodyWidth,useNuxtApp().$isMobile)
+      // console.log('body width state.bodyWidth',state.bodyWidth,useNuxtApp().$isMobile)
       return (state.bodyWidth>0 || useNuxtApp().$isMobile) && state.bodyWidth<999
     }
   }

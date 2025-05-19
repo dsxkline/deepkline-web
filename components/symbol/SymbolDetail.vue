@@ -9,7 +9,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import type { Instruments } from '~/fetch/okx/okx.type.d'
 	import { getSymbolName } from '../../utils/filters'
-import { usePop } from '~/composable/usePush'
+	import { usePop } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -52,7 +52,7 @@ import { usePop } from '~/composable/usePush'
 	function favorite(item: Instruments) {
 		useSymbolStore().favoriteSymbol(item)
 	}
-	function returnBack(){
+	function returnBack() {
 		pop()
 	}
 
@@ -69,13 +69,13 @@ import { usePop } from '~/composable/usePush'
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = n - (document.querySelector('.nav')?.clientHeight||55)
+			if (useStore().isH5) tabbarHeight.value = n - (document.querySelector('.navbar')?.clientHeight || 55)
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (document.querySelector('.nav')?.clientHeight||55)
+		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (document.querySelector('.navbar')?.clientHeight || 55)
 	})
 </script>
 <template>
@@ -85,10 +85,10 @@ import { usePop } from '~/composable/usePush'
 				<button class="flex items-center pr-2" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-lg flex items-center leading-[normal] font-extrabold">{{ getSymbolName(symbolObj) }}</b>
+				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold">{{ getSymbolName(symbolObj) }}</b>
 			</template>
 			<template #right>
-				<SymbolFavoriteButton :symbol="symbol"/>
+				<SymbolFavoriteButton :symbol="symbol" />
 			</template>
 		</NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight" />
@@ -107,5 +107,19 @@ import { usePop } from '~/composable/usePush'
 			}
 		}
 	}
+	:deep(.navbar) {
+		display: none;
+	}
 
+	@media (max-width: 999px) {
+		:deep(.navbar) {
+			display: flex;
+		}
+		:deep(.tabbar-container) {
+			.tabbar-header {
+				overflow-x: unset;
+				border-bottom: 1px solid var(--transparent10);
+			}
+		}
+	}
 </style>

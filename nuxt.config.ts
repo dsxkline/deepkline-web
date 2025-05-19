@@ -15,11 +15,11 @@ export default defineNuxtConfig({
 		port: 3010,
 		host: '0.0.0.0'
 	},
-	typescript:{
-		shim:true
+	typescript: {
+		shim: true
 	},
 	runtimeConfig: {
-		public:config,
+		public: config
 	},
 	devtools: { enabled: true },
 	modules: modulesConfig,
@@ -41,5 +41,11 @@ export default defineNuxtConfig({
 					  }
 					: {}
 		}
+	},
+	googleFonts: {
+		families: {
+			'Roboto+Mono': true
+		},
+		display: 'swap'
 	}
 })

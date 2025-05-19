@@ -12,7 +12,7 @@ function returnBack(){
 }
 </script>
 <template>
-    <div class="navbar flex items-center w-full h-[--nav-height] relative justify-between border-b border-[--transparent10]">
+    <div class="navbar flex items-center w-full h-[--nav-height] relative justify-between">
         <div class="navbar-left flex items-center">
             <button v-if="!slots.left && !hideBack" class="flex items-center px-3" @click="returnBack"><el-icon><ArrowLeftBold /></el-icon></button>
             <div class="flex items-center px-3"><slot name="left"/></div>
