@@ -103,9 +103,8 @@
 					display: flex;
 					flex-direction: row;
 					align-items: center;
-					background-color: var(--transparent05);
 					display: grid;
-					grid-template-columns:auto auto auto auto;
+					grid-template-columns:25% 25% 25% 25%;
 					li {
 						height: var(--menu-height);
 						flex: 1;

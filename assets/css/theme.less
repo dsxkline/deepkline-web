@@ -44,6 +44,10 @@ html:root {
   --footer-height: 40px;
   --status-bar-height:30px;
   --nav-height:50px;
+  --safe-top: constant(safe-area-inset-top);
+	--safe-top: env(safe-area-inset-top);
+	--safe-bottom: constant(safe-area-inset-bottom);
+	--safe-bottom: env(safe-area-inset-bottom);
 }
 
 html.dark {

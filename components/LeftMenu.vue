@@ -1,36 +1,41 @@
 <script lang="ts" setup>
-	import { ref } from "vue";
-	import { useStore } from "~/store";
-	import type { MenuModel } from "./common/TabBar.vue";
+	import { ref } from 'vue'
+	import { useStore } from '~/store'
+	import type { MenuModel } from './common/TabBar.vue'
 	const props = defineProps<{
-		menus: MenuModel[],
-		active?:number
-	}>();
+		menus: MenuModel[]
+		active?: number
+	}>()
 
-	const menuActive = ref(props.active||0)
+	const menuActive = ref(props.active || 0)
 
 	const emit = defineEmits<{
-		(event:"update:active",value:number):void,
-		(event:'menuHandler',menu:MenuModel,index:number):void
+		(event: 'update:active', value: number): void
+		(event: 'menuHandler', menu: MenuModel, index: number): void
 	}>()
 
 	const handleOpen = (menu: MenuModel, index: number) => {
-		console.log('handleOpen',menu,index)
+		console.log('handleOpen', menu, index)
 		menuActive.value = index
-		emit('update:active',index)
-		emit('menuHandler',menu,index);
-	};
-
+		emit('update:active', index)
+		emit('menuHandler', menu, index)
+	}
 </script>
 
 <template>
 	<div class="left-menu flex flex-col justify-between border-r border-[--border-color] bg-[--transparent05]">
-		<div class="main-menu">
+		<div class="main-menu bg-[var(--transparent10)] ">
 			<ul class="w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
-				<li :class="menuActive==index?'bg-[var(--transparent05)] !text-green border-l-2 border-green-500 font-bold':'hover:bg-[var(--transparent05)] hover:text-muted'+''" v-for="(menu,index) in props.menus" :key="menu.name" click-sound @click="handleOpen(menu,index)">
-					<component :is="menu.iconSelected" class="w-7" v-if="menu.icon && menuActive==index && menu.iconSelected && useStore().isH5" />
+				<li
+					:class="menuActive == index ? '!text-green border-l-2 border-green-500 font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
+					v-for="(menu, index) in props.menus"
+					:key="menu.name"
+					click-sound
+					@click="handleOpen(menu, index)"
+				>
+					<component :is="menu.iconSelected" class="w-8" v-if="menu.icon && menuActive == index && menu.iconSelected && useStore().isH5" />
 					<component :is="menu.icon" class="w-5" v-else-if="menu.icon" />
-					<span v-if="menu.name && menuActive==index && menu.iconSelected && useStore().isH5"></span>
+					<template v-if="menu.name && menuActive == index && menu.iconSelected && useStore().isH5"></template>
 					<span v-else-if="menu.name" class="py-2">{{ menu.name }}</span>
 				</li>
 			</ul>
@@ -45,13 +50,18 @@
 	</div>
 </template>
 <style lang="less" scoped>
-@media (max-width: 999px) {
-	.main-menu{
-		ul{
-			li{
-				min-height:auto;
+	@media (max-width: 999px) {
+		.left-menu {
+			
+			.main-menu {
+				padding-bottom: var(--safe-bottom);
+				ul {
+					
+					li {
+						min-height: auto;
+					}
+				}
 			}
 		}
 	}
-}
 </style>
