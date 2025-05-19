@@ -54,7 +54,7 @@
 		.left-menu {
 			
 			.main-menu {
-				padding-bottom: var(--safe-bottom);
+				padding-bottom: calc(var(--safe-bottom) - 8px);
 				ul {
 					
 					li {
