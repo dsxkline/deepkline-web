@@ -6,6 +6,7 @@ export default [
     {src: '~/plugins/echart.ts', mode: 'client'},
     {src: '~/plugins/event-intercept.ts', mode: 'client'},
     {src: '~/plugins/auto-height.ts', mode: 'client'},
+    {src: '~/plugins/vconsole.ts', mode: 'client'},
     '~/plugins/device.ts',
     '~/plugins/directives.ts',
 ] as (NuxtPlugin | string)[]

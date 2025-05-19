@@ -23,7 +23,8 @@ declare module '#app' {
 		$pop: (data?: any) => void
 		$popRoot: (data?: any, index?: number) => void
 		$clickSound: () => void
-		$windowEvent: WindowsEvent
+		$windowEvent: WindowsEvent,
+    $isMobile:globalThis.Ref<boolean>
 	}
 }
 
