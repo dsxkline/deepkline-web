@@ -15,7 +15,7 @@
 	}
 </script>
 <template>
-	<div class="symbol-title flex items-center text-ms px-2 rounded-md cursor-pointer" @click="pushSearch">
+	<div class="symbol-title flex items-center text-ms px-2 rounded-md cursor-pointer text-nowrap" @click="pushSearch">
 		<!-- <img src="https://www.okx.com/cdn/oksupport/asset/currency/icon/eth.png" width="20px" class="mr-1"/> -->
 		<b>{{ symbolObj?.instId }}</b>
 		<!-- <el-icon class="ml-1"><ArrowDown /></el-icon> -->

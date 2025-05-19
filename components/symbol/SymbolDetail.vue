@@ -7,7 +7,7 @@
 	import SymbolInfo from './SymbolInfo.vue'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
-	import type { Instruments } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 	import { getSymbolName } from '../../utils/filters'
 	import { usePop } from '~/composable/usePush'
 	const props = defineProps<{
@@ -36,13 +36,13 @@
 				symbol: props.symbol
 			}
 		},
-		{
-			name: '交易',
-			contentComp: markRaw(TradeOrder),
-			contentParams: {
-				symbol: props.symbol
-			}
-		}
+		// {
+		// 	name: '交易',
+		// 	contentComp: markRaw(TradeOrder),
+		// 	contentParams: {
+		// 		symbol: props.symbol
+		// 	}
+		// }
 	])
 	const pop = usePop()
 
@@ -85,7 +85,8 @@
 				<button class="flex items-center pr-2" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold">{{ getSymbolName(symbolObj) }}</b>
+				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold">{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType==InstanceType.SWAP?'永续':'' }}</b>
+				<button class="flex items-center pl-2"><el-icon><CaretBottom /></el-icon></button>
 			</template>
 			<template #right>
 				<SymbolFavoriteButton :symbol="symbol" />

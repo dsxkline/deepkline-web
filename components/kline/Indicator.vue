@@ -18,7 +18,7 @@
 	}
 </script>
 <template>
-	<div class="indicator w-max flex gap-1 *:p-1 *:rounded *:text-xs *:cursor-pointer">
+	<div class="indicator w-max flex gap-1 *:pr-2 *:rounded *:text-xs *:cursor-pointer">
 		<!-- <div class="indicator-item">指标</div> -->
 		<div class="indicator-item" click-sound v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main[symbolObj?.instId]?.includes(item) }" @click="onMainIndicatorChange(item)">
 			{{ item }}

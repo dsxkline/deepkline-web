@@ -9,16 +9,16 @@
 		return useSymbolStore().symbols[props.symbol]
 	})
 	const cycleList = ref([
-		{ label: '1分', value: '1m' },
-		{ label: '5分', value: '5m' },
-		{ label: '15分', value: '15m' },
-		{ label: '30分', value: '30m' },
-		{ label: '1小时', value: '1H' },
-		{ label: '2小时', value: '2H' },
-		{ label: '4小时', value: '4H' },
-		{ label: '1日', value: '1D' },
-		{ label: '1周', value: '1W' },
-		{ label: '1月', value: '1M' }
+		{ label: '1分', value: '1m', display: true },
+		{ label: '5分', value: '5m', display: true },
+		{ label: '15分', value: '15m', display: false },
+		{ label: '30分', value: '30m', display: useStore().isH5 ? false : true },
+		{ label: '1小时', value: '1H', display: true },
+		{ label: '2小时', value: '2H', display: false },
+		{ label: '4小时', value: '4H', display: false },
+		{ label: '1日', value: '1D', display: true },
+		{ label: '1周', value: '1W', display: useStore().isH5 ? false : true },
+		{ label: '1月', value: '1M', display: useStore().isH5 ? false : true }
 	])
 	const cycle = ref('1m')
 	const onCycleChange = async (value: string) => {
@@ -28,14 +28,27 @@
 	}
 </script>
 <template>
-	<div class="cycle-bar w-max flex gap-1 *:py-1 *:px-2 *:rounded *:text-sm *:cursor-pointer *:text-grey">
-		<!-- <div class="cycle-bar-item">周期</div> -->
-		<template v-for="(item, index) in cycleList">
-			<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="(useStore().isH5 && index < 4) || !useStore().isH5">
-				{{ item.label }}
-			</div>
-		</template>
-		<button class="flex items-center"><span>更多</span><el-icon class="mx-1"><CaretBottom /></el-icon></button>
+	<div class="cycle-bar w-full flex items-center gap-1">
+		<div class="flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-sm *:cursor-pointer *:text-grey">
+			<template v-for="(item, index) in cycleList">
+				<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="item.display">
+					{{ item.label }}
+				</div>
+			</template>
+			<button class="flex items-center !pr-0">
+				<span>更多</span><el-icon class="mx-1"><CaretBottom /></el-icon>
+			</button>
+		</div>
+
+		<el-divider direction="vertical" v-if="!useStore().isH5"></el-divider>
+
+		<div class="flex items-center *:h-full *:flex *:items-center">
+			<button class="pl-1"><IndicatorIcon class="w-4 h-4" /></button>
+			<button class="pl-4">
+				<el-icon class="!w-4 !h-4 !text-[var(--transparent70)] hover:!text-main"><Tools  class="!w-4 !h-4"/></el-icon>
+			</button>
+		</div>
+		
 	</div>
 </template>
 <style scoped lang="less">
@@ -45,11 +58,12 @@
 		}
 		.active {
 			background-color: var(--transparent20);
-			color: var(--color-text-main);
+			color: rgb(var(--color-text-main));
 		}
 	}
 	@media (max-width: 999px) {
 		.cycle-bar {
+			justify-content: space-between;
 			max-width: 100%;
 			overflow-x: scroll;
 			flex-wrap: nowrap;
@@ -61,10 +75,16 @@
 			}
 			.cycle-bar-item {
 				white-space: nowrap;
-				// padding: 0 12px;
-				display: flex;
-				align-items: center;
-				@apply rounded-full;
+				@apply px-0 py-2 mr-4 rounded-none flex items-center;
+				padding: 6px 0;
+			}
+			.cycle-bar-item:not(.active):hover {
+				background-color: unset;
+			}
+			.active {
+				background-color: unset;
+				color: rgb(var(--color-text-main));
+				border-bottom: 1px solid rgb(var(--color-text-main));
 			}
 		}
 	}

@@ -10,7 +10,7 @@
 	const loading = ref(false)
 	const error = ref('')
 	const chart = ref(null)
-	let echart: echarts.ECharts|null
+	let echart: echarts.ECharts | null
 	const timeVal = ref('15')
 	let xAxisData: string[] = []
 	let seriesData: number[] = []
@@ -52,22 +52,22 @@
 	const datas = ref<{ name: string; value: number; progress: number; itemStyle?: { color: string } }[][] | null>([[]])
 	const option = () => {
 		return {
-			title: {
-				text: '解锁进度',
-				subtext: parseFloat((parseFloat(symbolProgressData.value.percOfUnlocked) * 100).toFixed(2)) + '%',
-				left: 'center',
-				top: '85px',
-				itemGap: 3,
-				textStyle: {
-					color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
-					fontWeight: 'normal',
-					fontSize: 12
-				},
-				subtextStyle: {
-					color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
-					fontSize: 12
-				}
-			},
+			// title: {
+			// 	text: '解锁进度',
+			// 	subtext: parseFloat((parseFloat(symbolProgressData.value.percOfUnlocked) * 100).toFixed(2)) + '%',
+			// 	left: 'center',
+			// 	top: '85px',
+			// 	itemGap: 3,
+			// 	textStyle: {
+			// 		color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
+			// 		fontWeight: 'normal',
+			// 		fontSize: 12
+			// 	},
+			// 	subtextStyle: {
+			// 		color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
+			// 		fontSize: 12
+			// 	}
+			// },
 			grid: {
 				top: '0', // 图表容器的上边距
 				bottom: '0', // 图表容器的下边距
@@ -77,79 +77,81 @@
 			legend: {
 				show: false
 			},
-			series: datas.value && datas.value.map(function (data, idx) {
-				var top = 0
-				return {
-					type: 'pie',
-					radius: [40, 70],
-					center: ['50%', '100px'],
-					top: '0',
-					height: '100%',
-					left: '0',
-					width: '100%',
-					itemStyle: {
-						borderColor: useColorMode().value == 'dark' ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
-						borderWidth: 1
-					},
-					label: {
-						alignTo: 'edge',
-						formatter: '{name|{b}}\n{time|{c} %}',
-						minMargin: 5,
-						edgeDistance: 0,
-						lineHeight: 20,
-						rich: {
-							name: {
-								fontSize: 12,
-								color: 'inherit'
-							},
-							time: {
-								fontSize: 10,
-								textBorderWidth:0,
-								color:useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
-							}
-						}
-					},
-					emphasis: {
+			series:
+				datas.value &&
+				datas.value.map(function (data, idx) {
+					var top = 0
+					return {
+						type: 'pie',
+						radius: [40, 70],
+						center: ['50%', '100px'],
+						top: '0',
+						height: '100%',
+						left: '0',
+						width: '100%',
+						itemStyle: {
+							borderColor: useColorMode().value == 'dark' ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
+							borderWidth: 1
+						},
 						label: {
+							alignTo: 'edge',
+							formatter: '{name|{b}}\n{time|{c} %}',
+							minMargin: 5,
+							edgeDistance: 0,
+							lineHeight: 20,
 							rich: {
 								name: {
-									fontWeight: 'bold'
+									fontSize: 12,
+									color: 'inherit'
 								},
 								time: {
-									fontSize: 12,
-									fontWeight: 'bold'
+									fontSize: 10,
+									textBorderWidth: 0,
+									color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)'
+								}
+							}
+						},
+						emphasis: {
+							label: {
+								rich: {
+									name: {
+										fontWeight: 'bold'
+									},
+									time: {
+										fontSize: 12,
+										fontWeight: 'bold'
+									}
+								}
+							},
+							labelLine: {
+								lineStyle: {
+									width: 2
 								}
 							}
 						},
 						labelLine: {
-							lineStyle: {
-								width: 2
-							}
-						}
-					},
-					labelLine: {
-						length: 15,
-						length2: 0,
-						maxSurfaceAngle: 80
-					},
-					labelLayout: function (params: { labelRect: { x: number; width: any }; labelLinePoints: any }) {
-						// console.log('paramssss', params)
-						if(!echart) return;
-						const isLeft = params.labelRect.x < echart.getWidth() / 2
-						const points = params.labelLinePoints
-						// Update the end point.
-						points[2][0] = isLeft ? params.labelRect.x : params.labelRect.x + params.labelRect.width
-						points.forEach((p: [x: number, y: number]) => {
-							maxY.value = Math.max(maxY.value, p[1])
-						})
+							length: 15,
+							length2: 0,
+							maxSurfaceAngle: 80
+						},
+						labelLayout: function (params: { labelRect: { x: number; width: any }; labelLinePoints: any }) {
+							// console.log('paramssss', params)
+							if (!echart) return
+							const isLeft = params.labelRect.x < echart.getWidth() / 2
+							const points = params.labelLinePoints
+							// Update the end point.
+							points[2][0] = isLeft ? params.labelRect.x : params.labelRect.x + params.labelRect.width
+							points.forEach((p: [x: number, y: number]) => {
+								maxY.value = Math.max(maxY.value, p[1])
+							})
 
-						return {
-							labelLinePoints: points
-						}
-					},
-					data: data
-				}
-			})
+							return {
+								labelLinePoints: points
+							}
+						},
+						data: data
+					}
+				})
 		}
 	}
 
@@ -198,24 +200,25 @@
 	}
 
 	function createEchart() {
-		if(!datas.value) return;
+		if (!datas.value) return
 		datas.value[0] = []
 		symbolAllocationData.value.list.forEach(item => {
 			console.log('data item', item)
-			datas.value && datas.value[0].push({
-				name: item.label,
-				value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
-				progress: parseFloat(item.progress)
-			})
+			datas.value &&
+				datas.value[0].push({
+					name: item.label,
+					value: parseFloat((parseFloat(item.percOfLabel) * 100).toFixed(2)),
+					progress: parseFloat(item.progress)
+				})
 		})
-		const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
-		datas.value[0].push({
-			name: 'Untracked',
-			value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
-			progress: 1,
-			itemStyle: { color: itemColor }
-		})
-		datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
+		// const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+		// datas.value[0].push({
+		// 	name: 'Untracked',
+		// 	value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
+		// 	progress: 1,
+		// 	itemStyle: { color: itemColor }
+		// })
+		// datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
 
 		echart && echart.dispose()
 		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
@@ -285,7 +288,7 @@
 		}
 	})
 
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		chart.value = null
 		echart && echart.dispose()
 		echart = null
@@ -301,6 +304,31 @@
 	<div class="w-full h-full my-4 pb-3" ref="containerRef">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="mb-1 flex items-center">代币解锁</h3>
+		</div>
+		<div class="flex w-full flex-col mb-4">
+			<div class="pb-2">
+				<ul class="flex flex-row items-center justify-between text-sm *:flex *:flex-col *:text-grey">
+					<li>
+						<div class="flex items-center"><i class="bg-green w-2 h-2 rounded-full flex mr-1"></i><span>已解锁</span></div>
+						<b class="text-main font-bold">2.98亿</b>
+						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))}}%</span>
+					</li>
+					<li class="items-center">
+						<div class="flex items-center"><i class="bg-red w-2 h-2 rounded-full flex mr-1"></i><span>已锁定</span></div>
+						<b class="text-main font-bold">2.98亿</b>
+						<span>{{parseFloat((parseFloat(symbolProgressData.percOfLocked) * 100).toFixed(2))}}%</span>
+					</li>
+					<li class="items-end">
+						<div class="flex items-center"><i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1"></i><span>未追踪</span></div>
+						<b class="text-main font-bold">2.98亿</b>
+						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUntracked) * 100).toFixed(2))}}%</span>
+					</li>
+				</ul>
+			</div>
+			<div class="w-full"><el-progress :percentage="parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))" :show-text="false" /></div>
+		</div>
+		<div class="flex items-center justify-between mb-2">
+			<h3 class="mb-1 flex items-center">代币配置</h3>
 		</div>
 		<div class="container min-h-[260px] relative" v-show="!loading && !error">
 			<div class="chart w-full h-full absolute top-0 left-0 overflow-hidden" :style="'height:' + (maxY + 50) + 'px'" ref="chart"></div>
