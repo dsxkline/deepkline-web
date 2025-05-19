@@ -107,6 +107,7 @@
 		methods: {
 			onObserveVisible(visible){
 				this.interVisible = visible;
+				console.log('inview numberincrease',this.interVisible)
 			},
 			setDefaultDisplay() {
 				this.setNumberWidth()

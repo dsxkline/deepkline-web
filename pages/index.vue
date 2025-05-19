@@ -84,41 +84,6 @@
 				width: 100%;
 			}
 		}
-		.left-menu {
-			background-color: rgb(var(--color-bg-base));
-			position: fixed;
-			bottom: 0;
-			z-index: 10;
-			width: var(--body-width);
-			display: flex;
-			flex-direction: column;
-			
-			:deep(.other-menu) {
-				display: none;
-			}
-			:deep(.main-menu) {
-				ul {
-					height: var(--menu-height);
-					width: 100% !important;
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-					display: grid;
-					grid-template-columns:25% 25% 25% 25%;
-					li {
-						height: var(--menu-height);
-						flex: 1;
-						padding: 0 12px;
-						align-items: center;
-						border: none;
-						background: none;
-						span {
-							padding-bottom: 0;
-							padding-top: 3px;
-						}
-					}
-				}
-			}
-		}
+		
 	}
 </style>

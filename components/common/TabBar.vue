@@ -170,7 +170,6 @@
 		flex-direction: column;
 		.tabbar-header {
 			width: 100%;
-			overflow-x: auto;
 			position: relative;
 			padding: 0px 16px;
 			ul {

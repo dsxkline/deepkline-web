@@ -12,6 +12,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		}
 
 		const observer = new IntersectionObserver(([entry]) => {
+            console.log('inview', entry)
 			// 进入或离开视口都触发回调
 			callback(entry.isIntersecting)
 			if (entry.isIntersecting) {
@@ -26,20 +27,17 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		observer.observe(el)
 
 		// ⚠️ 初始化时主动触发一次（可能此时元素就在视口内）
-		requestAnimationFrame(() => {
-			const rect = el.getBoundingClientRect()
-			const inView = rect.top < window.innerHeight && rect.bottom > 0
-            console.log('inview',inView,rect)
-			if (inView) {
-				callback({
-					isIntersecting: true,
-					target: el
-				} as unknown as IntersectionObserverEntry)
-				if (!binding.modifiers?.multi) {
-					observer.unobserve(el)
-				}
-			}
-		})
+		// requestAnimationFrame(() => {
+		// 	const rect = el.getBoundingClientRect()
+		// 	const inView = rect.top < window.innerHeight && rect.bottom > 0
+		// 	console.log('inview', inView, rect)
+		// 	if (inView) {
+		// 		callback(true)
+		// 		if (!binding.modifiers?.multi) {
+		// 			observer.unobserve(el)
+		// 		}
+		// 	}
+		// })
 	},
 	unmounted(el) {
 		;(el as any).__observer__?.disconnect()

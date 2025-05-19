@@ -42,7 +42,7 @@
 
 </script>
 <template>
-	<div class="pc-market w-full h-full" v-if="!useNuxtApp().$isMobile.value">
+	<div class="pc-market w-full h-full" v-if="!useNuxtApp().$isMobile.value && !useStore().isH5">
 		<SplitContainer ref="mainSplit">
 			<template #left>
 				<SymbolMarket />
