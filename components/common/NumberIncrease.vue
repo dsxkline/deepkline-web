@@ -3,7 +3,7 @@
 		<ul v-show="fontWidth <= 0">
 			<li>{{ unit }}{{ value }}</li>
 		</ul>
-		<ul class="number-container" v-show="fontWidth > 0">
+		<ul class="number-container" v-show="fontWidth > 0"  v-observe-visible.multi="onObserveVisible">
 			<li
 				:style="{
 					height: fontHeight + 'px'
@@ -87,7 +87,8 @@
 				width: 0,
 				textHeight: 0,
 				inited: false,
-				timer: null
+				timer: null,
+				interVisible:false
 			}
 		},
 		beforeUnmount() {
@@ -104,6 +105,9 @@
 			}, this.time * 1000)
 		},
 		methods: {
+			onObserveVisible(visible){
+				this.interVisible = visible;
+			},
 			setDefaultDisplay() {
 				this.setNumberWidth()
 				this.$nextTick(() => {
@@ -130,6 +134,7 @@
 					const ndom = this.$el.querySelector('.numdom-' + i)
 					if (ndom) {
 						ndom.style.transition = `all ${this.time}s ease`
+						if(!this.interVisible) ndom.style.transition = 'none';
 						if (!isNaN(n) && n != '.' && n != ',') {
 							const translateY = this.getNumberY(n, ndom)
 							ndom.style.transform = translateY

@@ -37,6 +37,7 @@ import { useStore } from '~/store';
 	const pricePoint = ref(symbolObj.value?.tickSz || 0)
 	// 模拟动画
 	const animation = ref(false)
+	const interVisible = ref(false)
 	watch(
 		() => pointLevel.value,
 		val => {
@@ -77,6 +78,7 @@ import { useStore } from '~/store';
 		if (subHandle) $ws.unsubscribe(subHandle)
 		subHandle = $ws.subTrades(symbolObj.value?.instId || props.symbol, (message, err) => {
 			if (useStore().isLeave) return
+			if (!interVisible.value) return
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
 			if (!loading.value && !error.value && message.data) updateTradeList(message)
@@ -142,6 +144,11 @@ import { useStore } from '~/store';
 		}
 	}
 
+	// 滚动到显示触发
+	function onObserveVisible(visible:boolean){
+		interVisible.value = visible
+	}
+
 	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
 		$ws.onSignalState(wsError)
@@ -177,7 +184,7 @@ import { useStore } from '~/store';
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<div class="w-full h-full relative">
+			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible" >
 				<div class="w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 bg-base z-10">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>

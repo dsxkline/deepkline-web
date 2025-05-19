@@ -35,7 +35,8 @@ import { useStore } from '~/store';
 	}
 	// 订阅句柄
 	let subHandle = ''
-	const disabled = ref(false)
+	const interVisible = ref(false)
+	const interVisibleBottom = ref(false)
 
 	const pointLevel = ref(0)
 	const pointLevelOptions = computed(() => {
@@ -106,6 +107,7 @@ import { useStore } from '~/store';
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
 			if (useStore().isLeave) return
+			if (!interVisible.value) return
 			if (message.data) updateBookList(message)
 			if (asks.value?.length || bids.value?.length) {
 				loading.value = false
@@ -263,6 +265,14 @@ import { useStore } from '~/store';
 		}
 	}
 
+	// 滚动到显示触发
+	function onObserveVisible(visible:boolean){
+		interVisible.value = visible
+	}
+	function onObserveVisibleBottom(visible:boolean){
+		interVisibleBottom.value = visible
+	}
+
 	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
 		$ws.onSignalState(wsError)
@@ -305,7 +315,7 @@ import { useStore } from '~/store';
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
-				<li class="text-grey">
+				<li class="text-grey" v-observe-visible.multi="onObserveVisible">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
@@ -316,6 +326,7 @@ import { useStore } from '~/store';
 						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].total, point), '', point) }}</div>
 						<div
+							v-if="interVisible"
 							class="absolute top-0 right-0 h-full w-full bg-red/20 transition-all transition-200 ease-in-out origin-right"
 							:style="{
 								transform: `scaleX(${(asks[index].total / (totalBids + totalAsks)) * 100 + '%'})`
@@ -324,7 +335,7 @@ import { useStore } from '~/store';
 					</template>
 				</li>
 
-				<li class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
+				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
 					<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
 						<div
 							class="bg-green/50 flex justify-start items-center w-full h-full transition-all transition-100 ease-in-out absolute left-0 top-0 origin-left"
@@ -356,6 +367,7 @@ import { useStore } from '~/store';
 						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].total, point), '', point) }}</div>
 						<div
+							v-if="interVisible && interVisibleBottom"
 							class="absolute top-0 right-0 h-full w-full bg-red/20 transition-all transition-300 ease-in-out origin-right"
 							:style="{
 								transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
