@@ -24,7 +24,7 @@ declare module '#app' {
 		$popRoot: (data?: any, index?: number) => void
 		$clickSound: () => void
 		$windowEvent: WindowsEvent,
-    $isMobile:globalThis.Ref<boolean>
+    $isMobile:globalThis.Ref<boolean>,
 	}
 }
 
@@ -37,4 +37,31 @@ declare module 'vue' {
 		willAppear: ((...args: any[]) => void) | null
 		poped: ((...args: any[]) => void) | null
 	}
+}
+
+export interface PwaInjection {
+  /**
+   * @deprecated use `isPWAInstalled` instead
+   */
+  isInstalled: boolean
+  /**
+   * From version v0.3.5+. 
+   */  
+  isPWAInstalled: Ref<boolean>
+  showInstallPrompt: Ref<boolean>
+  cancelInstall: () => void
+  install: () => Promise<void>
+  swActivated: Ref<boolean>
+  registrationError: Ref<boolean>
+  offlineReady: Ref<boolean>
+  needRefresh: Ref<boolean>
+  updateServiceWorker: (reloadPage?: boolean | undefined) => Promise<void>
+  cancelPrompt: () => Promise<void>
+  getSWRegistration: () => ServiceWorkerRegistration | undefined
+}
+
+declare module '#app' {
+  interface NuxtApp {
+    $pwa: UnwrapNestedRefs<PwaInjection>
+  }
 }

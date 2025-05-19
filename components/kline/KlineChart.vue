@@ -3,6 +3,7 @@
 	import DsxKlineChart from './DsxKlineChart'
 	import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from './DsxKlineChart.d'
 	import { useSymbolStore } from '~/store/symbol'
+import { useStore } from '~/store';
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -79,9 +80,9 @@
 			// klineWidth: 1,
 			candleType: CandleType.solid,
 			zoomLockType: ZoomLockType.follow,
-			crossModel: CrossModel.mouseOver,
+			crossModel: useStore().isH5?CrossModel.longPress: CrossModel.mouseOver,
 			transformers: false,
-			// isShowKlineTipPannel: true,
+			isShowKlineTipPannel: useStore().isH5,
 			// sideHeight: 80,
 			paddingTop: 0,
 			// paddingMiddle: 0,

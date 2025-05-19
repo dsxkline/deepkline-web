@@ -12,12 +12,12 @@
 <style lang="less" scoped>
 	@media (max-width: 999px) {
 		.app-container {
-            .header{
-                display: none;
-            }
-            .status-bar{
-                display: none;
-            }
+			.header {
+				display: none;
+			}
+			.status-bar {
+				display: none;
+			}
 		}
 	}
 </style>

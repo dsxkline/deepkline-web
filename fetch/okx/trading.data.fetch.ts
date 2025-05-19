@@ -5,7 +5,7 @@ import config from '../../config/config'
 
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
-console.log('__NUXT__', config, process.client, baseApi)
+// console.log('__NUXT__', config, process.client, baseApi)
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const baseUrlOkx = 'https://www.okx.com'
 // 获取支持的币种

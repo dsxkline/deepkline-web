@@ -14,7 +14,10 @@ export default {
         { name: "format-detection", content: "telephone=no" }
     ],
     link: [
-        
+        {
+            rel: 'manifest',
+            href: '/api/manifest.webmanifest'
+        }
     ],
     script: [
         {

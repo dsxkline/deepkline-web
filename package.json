@@ -16,6 +16,7 @@
     "@nuxtjs/color-mode": "^3.4.0",
     "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.5.1",
+    "@vite-pwa/nuxt": "^1.0.1",
     "crypto-js": "^4.2.0",
     "echarts": "^5.5.0",
     "less": "^4.2.0",

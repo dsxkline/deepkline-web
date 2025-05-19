@@ -310,25 +310,33 @@
 				<ul class="flex flex-row items-center justify-between text-sm *:flex *:flex-col *:text-grey">
 					<li>
 						<div class="flex items-center"><i class="bg-green w-2 h-2 rounded-full flex mr-1"></i><span>已解锁</span></div>
-						<b class="text-main font-bold">2.98亿</b>
+						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.unlocked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))}}%</span>
 					</li>
 					<li class="items-center">
 						<div class="flex items-center"><i class="bg-red w-2 h-2 rounded-full flex mr-1"></i><span>已锁定</span></div>
-						<b class="text-main font-bold">2.98亿</b>
+						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.locked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfLocked) * 100).toFixed(2))}}%</span>
 					</li>
 					<li class="items-end">
 						<div class="flex items-center"><i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1"></i><span>未追踪</span></div>
-						<b class="text-main font-bold">2.98亿</b>
+						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.untracked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUntracked) * 100).toFixed(2))}}%</span>
 					</li>
 				</ul>
 			</div>
-			<div class="w-full"><el-progress :percentage="parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))" :show-text="false" /></div>
+			<div class="w-full relative">
+				<el-progress :percentage="parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))" :show-text="false" />
+				<div class="absolute top-0 bg-red h-full rounded-r-full" :style="{
+					width: (parseFloat(symbolProgressData.percOfLocked) * 100)+'%',
+					left:'calc('+(parseFloat(symbolProgressData.percOfUnlocked) * 100)+'% - 5px)'
+					
+					}"></div>
+			</div>
 		</div>
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="mb-1 flex items-center">代币配置</h3>
+			<span class="text-xs text-grey">最大供应量<b class="text-base pl-1 text-main">{{moneyFormat(symbolProgressData.maxSupply)}}</b></span>
 		</div>
 		<div class="container min-h-[260px] relative" v-show="!loading && !error">
 			<div class="chart w-full h-full absolute top-0 left-0 overflow-hidden" :style="'height:' + (maxY + 50) + 'px'" ref="chart"></div>

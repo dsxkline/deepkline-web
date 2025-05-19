@@ -9,7 +9,6 @@ import postcssConfig from './config/postcss.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
-// console.log('config',config)
 export default defineNuxtConfig({
 	devServer: {
 		port: 3010,
@@ -47,5 +46,8 @@ export default defineNuxtConfig({
 			'Roboto+Mono': true
 		},
 		display: 'swap'
+	},
+	pwa:{
+		manifest: false, // 不生成静态 manifest
 	}
 })

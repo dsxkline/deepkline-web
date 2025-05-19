@@ -31,7 +31,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
           class:colorMode.value,
         },
       })
-      
+
     if (process.client) {
         const state = useStore();
         if (state.apiSource == ApiSource.OKX) {

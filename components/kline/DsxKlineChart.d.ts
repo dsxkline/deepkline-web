@@ -164,7 +164,7 @@ export interface DsxKlineConfig {
 	crossModel?: CrossModel;
 	moveAnimationTime?: number;
 	transformers?: Bollean;
-	isShowKlineTipPannel?: true;
+	isShowKlineTipPannel?: Bollean;
 	lastClose?: number;
 	sideHeight?: number;
 	paddingBottom?: number;
