@@ -30,7 +30,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
         htmlAttrs: {
           class:colorMode.value,
         },
+        meta: [
+            { name: 'theme-color', content: colorMode.value=="dark"?'#1e0b2c':'#ffffff' }
+          ]
       })
+    
 
     if (process.client) {
         const state = useStore();
