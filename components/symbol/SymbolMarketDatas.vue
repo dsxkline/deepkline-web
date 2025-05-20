@@ -136,9 +136,9 @@
 			</div>
 
 			<div class="pb-3 mb-2 min-h-[50vh] flex flex-col justify-between market-kline-container" v-if="useStore().isH5">
-				<div class="px-4 w-full border-b border-[--transparent10]"><CycleBar :symbol="symbol" /></div>
+				<div class="px-4 w-full border-b border-[--transparent05]"><CycleBar :symbol="symbol" /></div>
 				<div class="flex-1"><KlineChart :symbol="symbol" /></div>
-				<div class="px-4 w-full h-auto border-b border-t border-[--transparent10] py-2"><Indicator :symbol="symbol" /></div>
+				<div class="px-4 w-full h-auto border-b border-t border-[--transparent05] py-2"><Indicator :symbol="symbol" /></div>
 			</div>
 
 			<div class="px-4">

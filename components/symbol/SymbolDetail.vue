@@ -123,7 +123,7 @@
 		:deep(.tabbar-container) {
 			.tabbar-header {
 				overflow-x: unset;
-				border-bottom: 1px solid var(--transparent10);
+				border-bottom: 1px solid var(--transparent05);
 			}
 		}
 	}
