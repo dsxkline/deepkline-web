@@ -31,7 +31,7 @@ const signalStateText = computed(() => {
 <template>
 	<div class="signal-state flex items-center justify-center h-full w-fit relative px-3">
         <div class="absolute left-[10px] bottom-[-4px]" v-if="signalState<0"><el-icon class="!text-red !w-3 !h-3"><Close/></el-icon></div>
-		<ul class="flex items-end justify-center *:w-[3px] h-[12px] *:bg-green *:opacity-20 *:rounded-2 *:mx-[1px]">
+		<ul class="flex items-end justify-center *:w-[3px] h-[12px] *:bg-brand *:opacity-20 *:rounded-2 *:mx-[1px]">
             <li :class="['h-[15%] ',signalState>=0?'!opacity-60':'',signalState<0?'!bg-[--transparent30] !opacity-100':'']"></li>
 			<li :class="['h-[35%] ',signalState>=1?'!opacity-70':'',signalState<0?'!bg-[--transparent30] !opacity-100':'']"></li>
 			<li :class="['h-[55%] ',signalState>=2?'!opacity-80':'',signalState<0?'!bg-[--transparent30] !opacity-100':'']"></li>
@@ -39,7 +39,7 @@ const signalStateText = computed(() => {
 			<li :class="['h-[100%] ',signalState>=4?'!opacity-100':'',signalState<0?'!bg-[--transparent30] !opacity-100':'']"></li>
 		</ul>
 		<div class="px-1">
-			<span :class="['text-green text-xs',signalState>=0?'opacity-'+(signalState*10 + 60)+'':'!text-grey']">{{signalStateText}}</span>
+			<span :class="['text-brand text-xs',signalState>=0?'opacity-'+(signalState*10 + 60)+'':'!text-grey']">{{signalStateText}}</span>
 		</div>
 	</div>
 </template>

@@ -52,6 +52,13 @@ body {
 	.el-switch {
 		--el-switch-on-color: var(--el-color-primary);
 		--el-switch-off-color: var(--transparent10);
+		.el-switch__input {
+			height: 0;
+			margin: 0;
+			opacity: 0;
+			position: absolute;
+			width: 0
+		}
 	}
 
 	.el-switch.is-checked .el-switch__core .el-switch__action {
@@ -185,6 +192,19 @@ body {
 		--el-overlay-color-lighter: rgb(0, 0, 0, 0.5);
 		overflow: hidden;
 		border: 1px solid var(--transparent10);
+		position: relative;
+		&::before {
+			background-image: var(--bg-linear-90);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.1;
+		}
 		.el-dialog__header {
 			background-color: var(--transparent10);
 			padding: 16px;
@@ -193,7 +213,7 @@ body {
 			position: relative;
 			&::before {
 				// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-				background-image: linear-gradient(90deg, #1e6f4d, #309993, #112d6b);
+				background-image: var(--bg-linear-90);
 				filter: blur(60px);
 				position: absolute;
 				top: 0;
@@ -263,6 +283,19 @@ body {
 		position: absolute;
 		transition: all var(--el-transition-duration);
 		overflow: hidden;
+		position: relative;
+		&::before {
+			background-image: var(--bg-linear-180);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: 0;
+			opacity: 0.1;
+		}
 	}
 
 	.el-scrollbar{

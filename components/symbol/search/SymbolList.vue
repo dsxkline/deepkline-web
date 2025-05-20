@@ -185,9 +185,7 @@
 					// 同步到store
 					// useSymbolStore().setTickets(item.instId, item)
 					$ws.setTickers(item.instId, item)
-					const price = parseFloat(item.last)
-					const open = parseFloat(item.sodUtc8)
-					if (activeBorderColors.value) activeBorderColors.value[item.instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
+					activeLeftBorder(item.instId)
 					// bgFlicker(item)
 				})
 		})
@@ -215,6 +213,15 @@
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
 		emit('clickHandle', item)
 		props.clickHandle && props.clickHandle(item)
+		activeLeftBorder(item?.instId)
+	}
+
+	function activeLeftBorder(instId?:string){
+		if(!instId)return;
+		const { $wsb, $ws } = useNuxtApp()
+		const price = $ws.getTickers(instId)?.last;
+		const open = $ws.getTickers(instId)?.sodUtc8;
+		if (activeBorderColors.value && instId) activeBorderColors.value[instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
 	}
 	// let bgThrottleMap: Record<string, (...args: any[]) => void> = {}
 
@@ -404,7 +411,7 @@
 						:id="'symbol-list-id-' + item.instId"
 						:class="[
 							'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-							useSymbolStore().activeSymbol == item.instId ? 'border-l-2 ' + activeBorderColors[item.instId] : ''
+							useSymbolStore().activeSymbol == item.instId && activeBorderColors[item.instId] ? 'border-l-2 ' + activeBorderColors[item.instId] : ''
 						]"
 						v-for="item in virtualList"
 						:key="item.instId + '-' + start + '-' + end"

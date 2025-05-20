@@ -22,6 +22,7 @@
 
 </script>
 <template>
+	
 	<el-switch
 		v-model="theme"
         width="30"
@@ -29,6 +30,7 @@
 		:inactive-action-icon="ElIconMoon"
 		click-sound
 		@change="changeTheme" />
+
 </template>
 
 <style lang="less" scoped>

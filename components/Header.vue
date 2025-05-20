@@ -10,7 +10,7 @@
 	}
 </script>
 <template>
-	<div class="header border-b border-[--border-color] w-full flex items-center justify-between">
+	<div class="header w-full flex items-center justify-between">
 		<!-- logo -->
 		<div class="flex items-center px-2">
 			<div class="flex items-center justify-center w-[28px] h-[28px] mr-1" v-if="useColorMode().preference == 'dark'">
@@ -51,18 +51,19 @@
 [class=light]{
 	.header{
 		&::before{
-			opacity: 0.3;
+			opacity: 0.1;
 		}
 	}
 }
 	.header {
 		height: var(--header-height);
-		background-color: var(--transparent05);
+		// background-color: var(--transparent05);
+		border-bottom: 1px solid var(--transparent10);
 		position: relative;
 		&::before {
 			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-			background-image: linear-gradient(90deg, #1e6f4d, #309993, #112d6b);
-			filter: blur(60px);
+			background-image: var(--bg-linear-90);
+			// filter: blur(60px);
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -70,7 +71,8 @@
 			height: 100%;
 			content: '';
 			z-index: -1;
-			opacity: 0.6;
+			opacity: 0.2;
+			
 			// transition: all 0.3s ease;
 		}
 		

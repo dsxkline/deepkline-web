@@ -23,11 +23,11 @@
 </script>
 
 <template>
-	<div class="left-menu flex flex-col justify-between border-r border-[--border-color] bg-[var(--transparent10)]">
+	<div class="left-menu relative flex flex-col justify-between border-r border-[--border-color]">
 		<div class="main-menu">
 			<ul class="menu-list w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li
-					:class="menuActive == index ? '!text-green border-l-2 border-green-500 font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
+					:class="menuActive == index ? 'active' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
 					v-for="(menu, index) in props.menus"
 					:key="menu.name"
 					click-sound
@@ -63,6 +63,27 @@
 	</div>
 </template>
 <style lang="less" scoped>
+	.left-menu {
+		&::before {
+			background-image: var(--bg-linear-180);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.1;
+		}
+		.main-menu {
+			.active {
+				border-left: 2px solid var(--brand-color);
+				@apply text-main;
+				background: var(--transparent05);
+			}
+		}
+	}
 	.menu-list-h5 {
 		display: none;
 	}
@@ -71,7 +92,10 @@
 			display: block;
 		}
 		.left-menu {
-			background-color: rgb(var(--color-bg-base));
+			&::before {
+				background-image: var(--bg-linear-90);
+				opacity: 0.2;
+			}
 			position: fixed;
 			bottom: 0;
 			z-index: 10;
@@ -83,7 +107,7 @@
 				display: none;
 			}
 			.main-menu {
-				background: var(--transparent10);
+				background: var(--transparent05);
 				padding-bottom: calc(var(--safe-bottom) - 8px);
 				ul {
 					height: var(--menu-height);

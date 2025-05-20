@@ -71,6 +71,18 @@
 	.main-container {
 		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height));
 		width: var(--body-width);
+		&::before {
+			background-image: linear-gradient(180deg, #cc10b0, #52247f, #112d6b);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.15;
+		}
 		.right-container {
 			width: calc(var(--body-width) - var(--menu-width));
 		}
