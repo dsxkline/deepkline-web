@@ -19,6 +19,7 @@
 		favorite?: boolean
 		start?: boolean
 		keyword?: string
+		isSearchList?:boolean
 		clickHandle?: (item?: Instruments) => void
 	}>()
 	const emit = defineEmits<{
@@ -396,17 +397,18 @@
 			</li>
 		</ul>
 		<div ref="lheader" class="w-full py-2 px-4" v-else-if="!loading && !error">
-			<ul class="grid grid-cols-4 *:flex *:items-center text-xs text-grey">
+			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey'+(isSearchList?' grid-cols-[1fr_1fr_1fr_1fr_50px]':'')">
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
+				<li class="justify-end cursor-pointer select-none" v-if="isSearchList"><span>收藏</span></li>
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<!-- 容器总高度 -->
 			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full" v-else>
-				<ul class="w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+				<ul :class="'w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer'+(isSearchList?' *:grid-cols-[1fr_1fr_1fr_1fr_50px]':'')" :style="{ transform: `translateY(${start * itemHeight}px)` }">
 					<li
 						:id="'symbol-list-id-' + item.instId"
 						:class="[
@@ -418,9 +420,13 @@
 						@click="clickSymbol(item)"
 						click-sound
 					>
-						<div class="col-span-2 text-grey"><SymbolName :symbol="item" /></div>
+						<div class="col-span-2 text-grey flex items-center">
+							<SymbolName :symbol="item" />
+						</div>
 						<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
+						<div class="justify-end"><SymbolFavoriteButton :symbol="item.instId" v-if="keyword"/></div>
+						
 						<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
 					</li>
 				</ul>

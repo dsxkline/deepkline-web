@@ -58,17 +58,31 @@
 			<el-icon><Search /></el-icon>
 			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.instId }}</span>
 		</div>
-		<div v-if="show" class="absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
+		<div v-if="show" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
 			<div class="bg-[--transparent05]">
 				<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="w-[100%] p-2" @focus="focus" @input="search" />
 				<div class="w-[100%] min-h-[316px] max-h-[50vh] p-2">
-					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" />
+					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" :isSearchList="true"/>
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <style lang="less" scoped>
+	.search-list{
+		&::before {
+			background-image: linear-gradient(180deg, #cc10b0, #52247f, #112d6b);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.15;
+		}
+	}
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			@apply px-4;
@@ -86,7 +100,7 @@
 		.el-input__wrapper {
 			// box-shadow: 0 0 0 1px var(--el-input-focus-border) inset;
 			box-shadow: none;
-			border: 1px solid var(--el-input-focus-border-color);
+			border: 1px solid rgb(var(--color-brand));
 			border-radius: 8px;
 		}
 	}

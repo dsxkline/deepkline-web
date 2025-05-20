@@ -7,6 +7,7 @@
 		height: number,
 		start?:boolean,
 		keyword?:string
+		isSearchList?:boolean
 	}>()
 	const emit = defineEmits<{
 		(event: 'clickHandle', symbol?: Instruments): void
@@ -20,6 +21,7 @@
 			contentParams: {
 				symbolCategory: InstanceType.SPOT,
 				keyword:props.keyword,
+				isSearchList:props.isSearchList,
 				clickHandle: (item:Instruments) => {
 					console.log('现货', item)
 					emit('clickHandle', item)
@@ -32,6 +34,7 @@
 			contentParams: {
 				symbolCategory: InstanceType.SWAP,
 				keyword:props.keyword,
+				isSearchList:props.isSearchList,
 				clickHandle: (item:Instruments) => {
 					console.log('现货', item)
 					emit('clickHandle', item)
