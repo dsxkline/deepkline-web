@@ -168,7 +168,7 @@ import { useStore } from '~/store';
 	})
 </script>
 <template>
-	<div class="w-full h-full min-h-[650px]">
+	<div class="w-full h-full min-h-[650px] overflow-hidden">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b>最新成交</b>
