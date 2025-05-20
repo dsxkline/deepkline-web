@@ -180,6 +180,7 @@
 				height: 60px;
 				flex: 1;
 				min-width: 0;
+				@apply mb-2;
 			}
 			.market-datas-head-right {
 				display: flex;
@@ -190,7 +191,7 @@
 				flex-shrink: 0;
 				height: 100%;
 				gap:0;
-				@apply mt-3;
+				@apply mt-3 mb-2;
 				li {
 					width: 100%;
 					display: none;
