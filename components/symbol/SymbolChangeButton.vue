@@ -51,9 +51,9 @@
 <style lang="less" scoped>
 	// 背景闪烁
 	.bt-red-flash {
-        background: #c52e41;
+		filter: brightness(0.8);
 	}
 	.bt-green-flash {
-        background: #1d9566;
+        filter: brightness(0.9);
 	}
 </style>

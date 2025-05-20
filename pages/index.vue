@@ -68,11 +68,16 @@
 </template>
 
 <style scoped lang="less">
+	.light .main-container{
+		&::before {
+			background-image: unset;
+		}
+	}
 	.main-container {
 		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height));
 		width: var(--body-width);
 		&::before {
-			background-image: linear-gradient(180deg, #cc10b0, #52247f, #112d6b);
+			background-image: var(--bg-linear-180);
 			// filter: blur(60px);
 			position: absolute;
 			top: 0;

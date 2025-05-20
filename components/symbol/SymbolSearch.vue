@@ -62,14 +62,19 @@
 			<div class="bg-[--transparent05]">
 				<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="w-[100%] p-2" @focus="focus" @input="search" />
 				<div class="w-[100%] min-h-[316px] max-h-[50vh] p-2">
-					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" :isSearchList="true"/>
+					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
 				</div>
 			</div>
 		</div>
 	</div>
 </template>
 <style lang="less" scoped>
-	.search-list{
+	.light .search-list {
+		&::before {
+			background-image: unset;
+		}
+	}
+	.search-list {
 		&::before {
 			background-image: linear-gradient(180deg, #cc10b0, #52247f, #112d6b);
 			// filter: blur(60px);
