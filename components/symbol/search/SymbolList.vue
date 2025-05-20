@@ -425,7 +425,7 @@
 						</div>
 						<div class="justify-end"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
-						<div class="justify-end"><SymbolFavoriteButton :symbol="item.instId" v-if="keyword"/></div>
+						<div class="justify-end"><SymbolFavoriteButton :symbol="item.instId" v-if="isSearchList"/></div>
 						
 						<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
 					</li>
