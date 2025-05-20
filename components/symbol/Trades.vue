@@ -185,13 +185,26 @@ import { useStore } from '~/store';
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
 			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible" >
-				<div class="w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 bg-base z-10">
+				<div class="trade-title w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 z-10">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">时间</div>
 				</div>
-				
-				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]" v-if="tradesList" 
+
+				<div v-if="tradesList" class="overflow-hidden w-full text-main grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-[20px] left-0 z-10"
+				:style="{
+					height: `${animation ? '20px' : '0px'}`,
+					opacity:`${animation ? '1' : '0'}`,
+					transition: `${animation ? 'all 0.2s' : 'none'}`,
+				}">
+					<template v-if="tradesList[0]">
+							<div :class="tradesList[0].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[0].px, pricePoint) }}</div>
+							<div class="text-right">{{ moneyFormat(formatPrice(tradesList[0].sz, point), '', point) }}</div>
+							<div class="text-right">{{ formatDate(parseInt(tradesList[0].ts), 'HH:mm:ss') }}</div>
+						</template>
+				</div>
+
+				<ul class="relative z-20 w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]" v-if="tradesList" 
 				:style="{
 					transform: `translateY(${animation ? '20px' : '0px'})`,
 					transition: `${animation ? 'all 0.2s' : 'none'}`,
@@ -208,3 +221,21 @@ import { useStore } from '~/store';
 		</template>
 	</div>
 </template>
+
+<style lang="less" scoped>
+.trade-title{
+	position: relative;
+		&::before {
+			background-image: var(--bg-linear-90);
+			filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: 0;
+			opacity: 0.1;
+		}
+}
+</style>
