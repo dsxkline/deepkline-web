@@ -40,14 +40,14 @@
 
 			<ul class="menu-list-h5 w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li
-					:class="menuActive == index ? '!text-green border-l-2 border-green-500 font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
+					:class="menuActive == index ? '!text-brand font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
 					v-for="(menu, index) in props.menus"
 					:key="menu.name"
 					click-sound
 					@click="handleOpen(menu, index)"
 				>
 					<component :is="menu.iconSelected" class="w-8" v-if="menu.icon && menuActive == index && menu.iconSelected" />
-					<component :is="menu.icon" class="w-5" v-else-if="menu.icon" />
+					<component :is="menu.icon" class="w-6" v-else-if="menu.icon" />
 					<template v-if="menu.name && menuActive == index && menu.iconSelected"></template>
 					<span v-else-if="menu.name" class="py-2">{{ menu.name }}</span>
 				</li>
@@ -128,6 +128,9 @@
 						span {
 							padding-bottom: 0;
 							padding-top: 3px;
+						}
+						&.active {
+							color:var(--color-brand);
 						}
 					}
 				}
