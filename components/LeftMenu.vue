@@ -63,6 +63,13 @@
 	</div>
 </template>
 <style lang="less" scoped>
+	.light .left-menu{
+		.main-menu {
+			.active {
+				@apply text-brand;
+			}
+		}
+	}
 	.left-menu {
 		&::before {
 			background-image: var(--bg-linear-180);

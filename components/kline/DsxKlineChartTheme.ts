@@ -92,10 +92,10 @@ export default {
 			color: "rgba(36, 38, 41, 1)",
 			grey: "rgba(128, 130, 135, 1)", // 字体颜色
 			fontSize: 10, // 字体大小
-			redColor: "#D04058",
-			greenColor: "#3AAF9C",
-			rectRedColor: "#D04058", // 矩形红色 一般用作成交量
-			rectGreenColor: "#3AAF9C", // 矩形绿色
+			redColor: "rgb(245 70 130)",
+			greenColor: "#2DBD85",
+			rectRedColor: "rgb(245 70 130)", // 矩形红色 一般用作成交量
+			rectGreenColor: "#2DBD85", // 矩形绿色
 			crossLineColor: "rgba(36, 38, 41, 1)", // 十字线颜色
 			crossLineWidth: 0.5, // 十字线宽度
 			crossBorderColor: "rgba(36, 38, 41, 1)", // 十字线边框颜色
