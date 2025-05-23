@@ -20,7 +20,7 @@
 		(val, old) => {
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
-			item.value = {}
+			item.value = null
 			nextTick(()=>{
 				tickerHandler($ws?.getTickers(props.symbol) || {})
 			})

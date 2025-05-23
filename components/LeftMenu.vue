@@ -102,13 +102,14 @@
 			display: block;
 		}
 		.left-menu {
+			background: rgb(var(--color-bg-base));
 			&::before {
 				background-image: var(--bg-linear-90);
 				opacity: 0.2;
 			}
 			position: fixed;
 			bottom: 0;
-			z-index: 10;
+			z-index: 100;
 			width: var(--body-width);
 			display: flex;
 			flex-direction: column;

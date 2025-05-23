@@ -22,6 +22,16 @@
 		{ label: '1月', value: '1M', display: useStore().isH5 ? false : true }
 	])
 	const cycle = ref('1m')
+	const popHide = (e?: Event) => {
+		if (e) {
+			const target = e.target as HTMLElement
+			if (!target.closest('.popover-cycle-bar')) {
+				if (popCycleBar.value) popCycleBar.value.hide()
+			}
+			return
+		}
+		if (popCycleBar.value) popCycleBar.value.hide()
+	}
 	const onCycleChange = async (value: string) => {
 		popHide()
 		if (useKlineStore().loading[symbolObj.value.instId]) return
@@ -36,16 +46,7 @@
 	const moreText = computed(() => {
 		return showHideMenu.value?.label || '更多'
 	})
-	const popHide = (e: Event) => {
-		if (e) {
-			const target = e.target as HTMLElement
-			if (!target.closest('.popover-cycle-bar')) {
-				if (popCycleBar.value) popCycleBar.value.hide()
-			}
-			return
-		}
-		if (popCycleBar.value) popCycleBar.value.hide()
-	}
+
 	onMounted(() => {
 		document.addEventListener('touchstart', popHide)
 	})
@@ -110,8 +111,8 @@
 				border-bottom: 1px solid rgb(var(--color-text-main));
 				border-radius: 0;
 				.el-icon {
-						margin-right: -2px;
-					}
+					margin-right: -2px;
+				}
 			}
 		}
 		.popover-cycle-bar {
@@ -124,7 +125,6 @@
 				&.active {
 					border-color: var(--transparent20);
 					background: rgba(255, 255, 255, 1);
-					
 				}
 			}
 		}
