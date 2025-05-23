@@ -31,6 +31,11 @@ export default {
 		]
 	},
 	meta: {
-		theme_color: '#1e0b2c' // 确保 meta 标签也设置
+		theme_color: '#1e0b2c', // 确保 meta 标签也设置
+		appleMobileWebAppCapable: true,
+		appleMobileWebAppStatusBarStyle: 'default',
+		mobileAppIOS: true,
+		appleStatusBarStyle: 'black-translucent',
+		appleIcon: '/images/pwa/apple-touch-icon.png', // 指定 iOS icon
 	}
 }
