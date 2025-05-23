@@ -20,18 +20,22 @@
 		(val, old) => {
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
-			item.value = null
+			item.value = {}
+			nextTick(()=>{
+				tickerHandler($ws?.getTickers(props.symbol) || {})
+			})
 		}
 	)
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol] || {})
 	const { $wsb, $ws } = useNuxtApp()
 	const tickerHandler = (data: Ticker) => {
-		item.value = data
+		
 		// console.log('symbol', symbol, '行情tick', item.value);
 		// 涨跌额
-		change.value = parseFloat(item.value?.last || '0') - parseFloat(item.value?.sodUtc8 || '0')
+		change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8 || '0')
 		// 涨跌幅
-		rate.value = (change.value / parseFloat(item.value?.sodUtc8 || '0')) * 100
+		rate.value = (change.value / parseFloat(data?.sodUtc8 || '0')) * 100
+		item.value = data
 	}
 
 	let subHandle = ''
@@ -79,7 +83,7 @@
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
-		<el-scrollbar :height="contentHeight + 'px'">
+		<el-scrollbar :height="contentHeight + 'px'" :always="false">
 			<div class="market-datas-head">
 				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4" ref="marketPrice">
 					<b v-autosize="32" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
@@ -170,6 +174,12 @@
 	}
 	.market-kline-container {
 		display: none;
+	}
+
+	:deep(.el-scrollbar__bar){
+		.el-scrollbar__thumb{
+			display: none;
+		}
 	}
 	@media (max-width: 999px) {
 		.market-datas-head {

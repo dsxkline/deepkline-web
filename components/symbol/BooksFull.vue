@@ -74,6 +74,7 @@ import { useStore } from '~/store';
 	watch(
 		() => props.symbol,
 		(val, old) => {
+			ticker.value = $ws?.getTickers(props.symbol) || {}
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
 			$ws.removeTickerHandler(old, tickerHandler)
 			getBooksFull()

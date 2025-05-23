@@ -5,6 +5,7 @@
 	const props = defineProps<{
 		symbol: string
 	}>()
+	const popCycleBar = ref()
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[props.symbol]
 	})
@@ -22,17 +23,34 @@
 	])
 	const cycle = ref('1m')
 	const onCycleChange = async (value: string) => {
+		popHide()
 		if (useKlineStore().loading[symbolObj.value.instId]) return
 		cycle.value = value
 		useKlineStore().setCycle(symbolObj.value.instId, value)
 	}
-	const showHideMenu = computed(()=>{
+	const showHideMenu = computed(() => {
 		// 是否存在
-		const menu = cycleList.value.find(item=>!item.display && item.value==cycle.value);
+		const menu = cycleList.value.find(item => !item.display && item.value == cycle.value)
 		return menu
 	})
-	const moreText = computed(()=>{
+	const moreText = computed(() => {
 		return showHideMenu.value?.label || '更多'
+	})
+	const popHide = (e: Event) => {
+		if (e) {
+			const target = e.target as HTMLElement
+			if (!target.closest('.popover-cycle-bar')) {
+				if (popCycleBar.value) popCycleBar.value.hide()
+			}
+			return
+		}
+		if (popCycleBar.value) popCycleBar.value.hide()
+	}
+	onMounted(() => {
+		document.addEventListener('touchstart', popHide)
+	})
+	onBeforeUnmount(() => {
+		document.removeEventListener('touchstart', popHide)
 	})
 </script>
 <template>
@@ -43,7 +61,7 @@
 					{{ item.label }}
 				</div>
 			</template>
-			<el-popover placement="bottom" trigger="click" width="auto">
+			<el-popover placement="bottom" trigger="click" width="auto" ref="popCycleBar">
 				<div class="popover-cycle-bar grid grid-cols-4 gap-2 w-[250px]">
 					<template v-for="(item, index) in cycleList">
 						<div
@@ -57,8 +75,9 @@
 					</template>
 				</div>
 				<template #reference>
-					<button :class="['cycle-bar-item flex items-center !pr-0',showHideMenu?'active !text-main bg-[--transparent20]':'']">
-						<span>{{ moreText }}</span><el-icon class="mx-1"><CaretBottom /></el-icon>
+					<button :class="['cycle-bar-item flex items-center !pr-0', showHideMenu ? 'active !text-main bg-[--transparent20]' : '']">
+						<span>{{ moreText }}</span
+						><el-icon class="mx-1"><CaretBottom /></el-icon>
 					</button>
 				</template>
 			</el-popover>
@@ -90,19 +109,22 @@
 				color: rgb(var(--color-text-main));
 				border-bottom: 1px solid rgb(var(--color-text-main));
 				border-radius: 0;
+				.el-icon {
+						margin-right: -2px;
+					}
 			}
 		}
-		.popover-cycle-bar{
-			.popover-cycle-bar-item{
-				background: rgba(255,255,255,0.8);
-				&:hover{
+		.popover-cycle-bar {
+			.popover-cycle-bar-item {
+				background: rgba(255, 255, 255, 0.8);
+				&:hover {
 					border-color: var(--transparent20);
-					background-color: rgba(255,255,255,0.5);
+					background-color: rgba(255, 255, 255, 0.5);
 				}
-				&.active{
+				&.active {
 					border-color: var(--transparent20);
-					background: rgba(255,255,255,1);
-
+					background: rgba(255, 255, 255, 1);
+					
 				}
 			}
 		}
@@ -114,9 +136,6 @@
 		.active {
 			background-color: var(--transparent20);
 			color: rgb(var(--color-text-main));
-			.el-icon{
-				margin-right: -2px;
-			}
 		}
 	}
 	@media (max-width: 999px) {
@@ -145,6 +164,8 @@
 				border-bottom: 1px solid rgb(var(--color-text-main));
 			}
 		}
-		
+		.popover-cycle-bar {
+			width: calc(var(--body-width) - 10px - 24px - 2px);
+		}
 	}
 </style>

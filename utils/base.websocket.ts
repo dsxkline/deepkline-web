@@ -27,11 +27,11 @@ export default class BaseWebSocket {
 	}
 	
 	private connectStateTime = 0; // 连接状态时间，超过多少秒超时主动触发重连
-	private connectStateTimeout = 30000
+	private connectStateTimeout = 15000
 	private connectLevelTime = 0; // 连接速度时间
 	private connectLevelFns: ((stateLevel:number) => void)[] = [];
 	private heatTimer:NodeJS.Timeout | null = null;
-	private heatInterval = 10000;
+	private heatInterval = 5000; 
 	private destroied = false
 	constructor(url: string, reconnectErrorCallback?: ((error: Event | null) => void)|null, reconnectSuccessCallback?: any | null) {
 		this.url = url;

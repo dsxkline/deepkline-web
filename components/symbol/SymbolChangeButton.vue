@@ -44,7 +44,7 @@
 <template>
 	<div class="*:text-white *:px-2 *:w-[70px] *:h-[28px] *:rounded *:text-xs *:font-bold">
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
-		<button :class="['transition-all duration-300',changeRate > 0 ? 'bg-[rgb(var(--color-green))]' : '', changeRate < 0 ? 'bg-[rgb(var(--color-red))]' : '', changeColor]" v-else>{{ formatChangeRate(changeRate, 2) }}%</button>
+		<button :class="['transition-all duration-300 bg-[var(--transparent10)]',changeRate > 0 ? '!bg-[rgb(var(--color-green))]' : '', changeRate < 0 ? '!bg-[rgb(var(--color-red))]' : '', changeColor]" v-else>{{ formatChangeRate(changeRate, 2) }}%</button>
 	</div>
 </template>
 
