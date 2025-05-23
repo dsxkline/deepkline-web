@@ -26,18 +26,42 @@
 		cycle.value = value
 		useKlineStore().setCycle(symbolObj.value.instId, value)
 	}
+	const showHideMenu = computed(()=>{
+		// 是否存在
+		const menu = cycleList.value.find(item=>!item.display && item.value==cycle.value);
+		return menu
+	})
+	const moreText = computed(()=>{
+		return showHideMenu.value?.label || '更多'
+	})
 </script>
 <template>
 	<div class="cycle-bar w-full flex items-center gap-1">
-		<div class="flex gap-1 *:py-[2px] *:px-2 *:rounded *:text-sm *:cursor-pointer *:text-grey">
+		<div class="flex gap-1 *:h-6 *:px-2 *:rounded *:text-sm *:cursor-pointer *:text-grey *:flex *:items-center *:leading-none">
 			<template v-for="(item, index) in cycleList">
 				<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="item.display">
 					{{ item.label }}
 				</div>
 			</template>
-			<button class="flex items-center !pr-0">
-				<span>更多</span><el-icon class="mx-1"><CaretBottom /></el-icon>
-			</button>
+			<el-popover placement="bottom" trigger="click" width="auto">
+				<div class="popover-cycle-bar grid grid-cols-4 gap-2 w-[250px]">
+					<template v-for="(item, index) in cycleList">
+						<div
+							class="popover-cycle-bar-item h-6 flex items-center text-xs text-grey justify-center px-2 text-nowrap cursor-pointer border border-[--border-color] rounded bg-[--transparent05] hover:bg-[--transparent10]"
+							:class="[item.value === cycle ? 'active !text-main bg-[--transparent20]' : '']"
+							click-sound
+							@click="onCycleChange(item.value)"
+						>
+							{{ item.label }}
+						</div>
+					</template>
+				</div>
+				<template #reference>
+					<button :class="['cycle-bar-item flex items-center !pr-0',showHideMenu?'active !text-main bg-[--transparent20]':'']">
+						<span>{{ moreText }}</span><el-icon class="mx-1"><CaretBottom /></el-icon>
+					</button>
+				</template>
+			</el-popover>
 		</div>
 
 		<el-divider direction="vertical" v-if="!useStore().isH5"></el-divider>
@@ -45,13 +69,44 @@
 		<div class="flex items-center *:h-full *:flex *:items-center">
 			<button class="pl-1"><IndicatorIcon class="w-4 h-4" /></button>
 			<button class="pl-4">
-				<el-icon class="!w-4 !h-4 !text-[var(--transparent70)] hover:!text-main"><Tools  class="!w-4 !h-4"/></el-icon>
+				<el-icon class="!w-4 !h-4 !text-[var(--transparent70)] hover:!text-main"><Tools class="!w-4 !h-4" /></el-icon>
 			</button>
 		</div>
-		
 	</div>
 </template>
 <style scoped lang="less">
+	.light {
+		.cycle-bar {
+			.cycle-bar-item {
+				padding: 0;
+				@apply mx-2;
+			}
+			.cycle-bar-item:not(.active):hover {
+				background: none;
+				color: rgb(var(--color-text-main));
+			}
+			.active {
+				background: none;
+				color: rgb(var(--color-text-main));
+				border-bottom: 1px solid rgb(var(--color-text-main));
+				border-radius: 0;
+			}
+		}
+		.popover-cycle-bar{
+			.popover-cycle-bar-item{
+				background: rgba(255,255,255,0.8);
+				&:hover{
+					border-color: var(--transparent20);
+					background-color: rgba(255,255,255,0.5);
+				}
+				&.active{
+					border-color: var(--transparent20);
+					background: rgba(255,255,255,1);
+
+				}
+			}
+		}
+	}
 	.cycle-bar {
 		.cycle-bar-item:not(.active):hover {
 			background-color: var(--transparent05);
@@ -59,6 +114,9 @@
 		.active {
 			background-color: var(--transparent20);
 			color: rgb(var(--color-text-main));
+			.el-icon{
+				margin-right: -2px;
+			}
 		}
 	}
 	@media (max-width: 999px) {
@@ -87,5 +145,6 @@
 				border-bottom: 1px solid rgb(var(--color-text-main));
 			}
 		}
+		
 	}
 </style>

@@ -38,7 +38,37 @@ html:root {
 	--el-button-active-bg-color: var(--el-color-primary);
 	--el-button-active-border-color: var(--el-color-primary);
 }
-
+.light body{
+	.el-popover {
+		--el-popover-border-color: var(--transparent10);
+		box-shadow: none;
+		&::before {
+			background-image: var(--bg-linear-180);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.3;
+		}
+		.el-popper__arrow {
+			&::before{
+				border-top-color: var(--transparent20)!important;
+				border-left-color: var(--transparent20)!important;
+				background: #fff8fd!important;
+			}
+		}
+		&[data-popper-placement^=left] .el-popper__arrow:before{
+			border-left-color:transparent!important;
+			border-right-color: var(--transparent20)!important;
+			border-top-color: var(--transparent20)!important;
+			background: #f7f7fd!important;
+		}
+	}
+}
 body {
 	.el-input {
 		--el-input-border-color: var(--transparent05);
@@ -57,7 +87,7 @@ body {
 			margin: 0;
 			opacity: 0;
 			position: absolute;
-			width: 0
+			width: 0;
 		}
 	}
 
@@ -163,7 +193,33 @@ body {
 
 	.el-popover {
 		--el-popover-border-color: var(--transparent20);
+		&::before {
+			background-image: var(--bg-linear-180);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.2;
+		}
+		.el-popper__arrow {
+			&::before{
+				border-top-color: var(--transparent30)!important;
+				border-left-color: var(--transparent30)!important;
+				background: #290e3d!important;
+			}
+		}
+		&[data-popper-placement^=left] .el-popper__arrow:before{
+			border-left-color:transparent!important;
+			border-right-color: var(--transparent30)!important;
+			border-top-color: var(--transparent30)!important;
+			background: #11092b!important;
+		}
 	}
+
 	.el-empty {
 		--el-empty-padding: 40px 0;
 		--el-empty-image-width: 160px;
@@ -247,8 +303,8 @@ body {
 		--el-radio-button-checked-text-color: var(--el-color-white);
 		--el-radio-button-checked-border-color: var(--transparent20);
 		--el-radio-button-disabled-checked-fill: var(--el-border-color-extra-light);
-		.el-radio-button__inner:hover{
-			color:rgb(var(--color-text-main));
+		.el-radio-button__inner:hover {
+			color: rgb(var(--color-text-main));
 		}
 	}
 
@@ -308,8 +364,8 @@ body {
 		}
 	}
 
-	.el-scrollbar{
-		.el-scrollbar__wrap{
+	.el-scrollbar {
+		.el-scrollbar__wrap {
 			overflow-y: scroll;
 		}
 	}

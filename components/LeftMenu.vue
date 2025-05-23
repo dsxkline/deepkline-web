@@ -63,7 +63,10 @@
 	</div>
 </template>
 <style lang="less" scoped>
-	.light .left-menu{
+	.light .left-menu {
+		&::before {
+			opacity: 0.3;
+		}
 		.main-menu {
 			.active {
 				@apply text-brand;
@@ -137,7 +140,7 @@
 							padding-top: 3px;
 						}
 						&.active {
-							color:var(--color-brand);
+							color: var(--color-brand);
 						}
 					}
 				}

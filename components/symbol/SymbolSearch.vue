@@ -54,12 +54,16 @@
 </script>
 <template>
 	<div class="w-[600px] relative symbol-search">
-		<div class="flex items-center justify-center text-xs text-grey w-[100%] h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer" click-sound @click="search">
+		<div
+			class="symbol-search-item flex items-center justify-center text-xs text-grey w-[100%] h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer"
+			click-sound
+			@click="search"
+		>
 			<el-icon><Search /></el-icon>
 			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.instId }}</span>
 		</div>
 		<div v-if="show" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
-			<div class="bg-[--transparent05]">
+			<div class="search-list-box bg-[--transparent05]">
 				<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="w-[100%] p-2" @focus="focus" @input="search" />
 				<div class="w-[100%] min-h-[316px] max-h-[50vh] p-2">
 					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
@@ -69,9 +73,23 @@
 	</div>
 </template>
 <style lang="less" scoped>
-	.light .search-list {
-		&::before {
-			background-image: unset;
+	.light {
+		.symbol-search-item {
+			background-color: white;
+		}
+		.search-list {
+			.search-list-box {
+				background-color: white;
+				:deep(.el-input) {
+					.el-input__wrapper {
+						// box-shadow: 0 0 0 1px var(--el-input-focus-border) inset;
+						background: white;
+					}
+				}
+			}
+			&::before {
+				background-image: unset;
+			}
 		}
 	}
 	.search-list {

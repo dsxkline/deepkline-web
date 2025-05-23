@@ -54,6 +54,6 @@
 		filter: brightness(0.8);
 	}
 	.bt-green-flash {
-        filter: brightness(0.9);
+        filter: brightness(0.8);
 	}
 </style>

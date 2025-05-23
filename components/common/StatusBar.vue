@@ -8,6 +8,13 @@
     </div>
 </template>
 <style lang="less" scoped>
+.light {
+	.status-bar{
+		&::before{
+			opacity: 0.2;
+		}
+	}
+}
 .status-bar {
     height: var(--status-bar-height);
     position:relative;
