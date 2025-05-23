@@ -3,13 +3,13 @@
 	import TabBar from '../common/TabBar.vue'
 	import SymbolMarketDatas from './SymbolMarketDatas.vue'
 	import SymbolDatas from './SymbolDatas.vue'
-	import TradeOrder from '../trade/TradeOrder.vue'
 	import SymbolInfo from './SymbolInfo.vue'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 	import { getSymbolName } from '../../utils/filters'
-	import { usePop } from '~/composable/usePush'
+	import { usePop, usePushUp } from '~/composable/usePush'
+	import SymbolSearch from './SymbolSearch.vue'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -74,6 +74,12 @@
 		}
 	)
 
+	const push = usePushUp()
+	function pushSearch(){
+		console.log('usePushUp')
+		push(SymbolSearch,{})
+	}
+
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
 		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
@@ -86,11 +92,11 @@
 	<div class="w-full h-full">
 		<NavigationBar v-if="useStore().isH5" ref="navbar">
 			<template #left>
-				<button class="flex items-center pr-2" @click="returnBack">
+				<button class="flex items-center pr-2 h-full" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold">{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType==InstanceType.SWAP?'永续':'' }}</b>
-				<button class="flex items-center pl-2"><el-icon><CaretBottom /></el-icon></button>
+				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch">{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType==InstanceType.SWAP?'永续':'' }}</b>
+				<button class="flex items-center pl-2 h-full" @click="pushSearch"><el-icon><CaretBottom /></el-icon></button>
 			</template>
 			<template #right>
 				<SymbolFavoriteButton :symbol="symbol" />

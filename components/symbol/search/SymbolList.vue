@@ -400,10 +400,10 @@
 			</li>
 		</ul>
 		<div ref="lheader" class="w-full py-2 px-4" v-else-if="!loading && !error">
-			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey'+(isSearchList?' grid-cols-[40px_1fr_1fr_1fr_1fr]':'')">
-				<li class="justify-start cursor-pointer select-none" v-if="isSearchList"><span>收藏</span></li>
+			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey'+(isSearchList?' grid-cols-[30px_1fr_1fr_1fr_1fr]':'')">
+				<li class="justify-start cursor-pointer select-none" v-if="isSearchList"><span></span></li>
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
+				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 				
 			</ul>
@@ -412,7 +412,7 @@
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<!-- 容器总高度 -->
 			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full" v-else>
-				<ul :class="'w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer'+(isSearchList?' *:grid-cols-[40px_1fr_1fr_1fr_1fr]':'')" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+				<ul :class="'w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer'+(isSearchList?' *:grid-cols-[30px_1fr_1fr_1fr_1fr]':'')" :style="{ transform: `translateY(${start * itemHeight}px)` }">
 					<li
 						:id="'symbol-list-id-' + item.instId"
 						:class="[
@@ -428,7 +428,7 @@
 						<div class="col-span-2 text-grey flex items-center">
 							<SymbolName :symbol="item" />
 						</div>
-						<div class="justify-end"><SymbolPrice :symbol="item" /></div>
+						<div class="justify-end pr-2"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
 						
 						

@@ -50,6 +50,7 @@ const visibleDrawer = computed({
         return vs;
     }, set: (val) => {
         console.log('visibleDrawer', val);
+        if(!val) usePushStore().pop()
     }
 });
 

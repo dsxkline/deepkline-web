@@ -7,6 +7,12 @@ export function usePush() {
 	return (comp: any, params = {}, size = '100%') => useNuxtApp().$push.call(instance, comp, params, size)
 }
 
+export function usePushUp() {
+	const instance = getCurrentInstance()
+	if (!instance) throw new Error('must be used in setup')
+	return (comp: any, params = {}, size = '80%') => useNuxtApp().$pushUp.call(instance, comp, params, size)
+}
+
 export function usePop() {
 	const instance = getCurrentInstance()
 	if (!instance) throw new Error('must be used in setup')
