@@ -15,10 +15,6 @@ export default {
         // 是否启用全屏模式
 		{ name: 'apple-mobile-web-app-capable', content: 'yes' },
 		{ name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
-        {
-			property: 'og:image',
-			content: '/images/pwa/apple-touch-icon.png'
-		}
 	],
 	link: [
 		{
