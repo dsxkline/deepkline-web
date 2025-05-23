@@ -31,7 +31,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
           class:colorMode.value,
         },
         meta: [
-            { name: 'theme-color', content: colorMode.value=="dark"?'#1e0b2c':'#ffffff' }
+            { name: 'theme-color', content: colorMode.value=="dark"?'#1e0b2c':'#ffffff' },
           ]
       })
     

@@ -17,6 +17,15 @@ export default {
         {
             rel: 'manifest',
             href: '/api/manifest.webmanifest'
+        },
+        {
+            rel: 'shortcut icon',
+            href: '/images/pwa/logo192.png',
+            type: "image/png"
+        },
+        {
+            rel: 'apple-touch-icon',
+            href: '/images/pwa/apple-touch-icon.png'
         }
     ],
     script: [
