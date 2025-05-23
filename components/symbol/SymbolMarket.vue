@@ -7,6 +7,7 @@
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
+import SymbolSearch from './SymbolSearch.vue'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -43,13 +44,17 @@
 		}
 	})
 
+	function pushSearch(){
+		useNuxtApp().$push(SymbolSearch,{})
+	}
+
 	onBeforeUnmount(() => {
 		tabbar.value = null
 	})
 </script>
 <template>
 	<div>
-		<div ref="search" class="search-enter bg-[--transparent10] rounded-full flex items-center justify-center text-grey text-sm h-[35px] m-3">
+		<div ref="search" class="search-enter bg-[--transparent10] rounded-full flex items-center justify-center text-grey text-sm h-[35px] m-3" @click="pushSearch">
 			<el-icon class="!w-[16px] !h-[16px]"><Search class="!w-[16px] !h-[16px]" /></el-icon>
 			<span class="px-2">搜索币对</span>
 		</div>

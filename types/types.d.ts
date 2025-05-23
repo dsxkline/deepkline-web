@@ -16,10 +16,10 @@ declare module '#app' {
 	interface NuxtApp {
 		$ws: OKXWebSocket
 		$wsb: OKXWebSocket
-		$push: (comp: any, params: {}, size: string) => void
-		$pushLeft: (comp: any, params: {}, size: string) => void
-		$pushUp: (comp: any, params: {}, size: string) => void
-		$pushDown: (comp: any, params: {}, size: string) => void
+		$push: (comp: any, params: {}, size: string = "100%") => void
+		$pushLeft: (comp: any, params: {}, size: string = "100%") => void
+		$pushUp: (comp: any, params: {}, size: string = "80%") => void
+		$pushDown: (comp: any, params: {}, size: string = "80%") => void
 		$pop: (data?: any) => void
 		$popRoot: (data?: any, index?: number) => void
 		$clickSound: () => void

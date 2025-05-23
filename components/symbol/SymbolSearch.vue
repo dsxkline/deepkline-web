@@ -3,9 +3,17 @@
 	import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
+	import { useStore } from '~/store'
 	const keyword = ref('')
 	const show = ref(false)
 	const inputDom = ref()
+	const height = computed(() => {
+		let h = 300
+		if (useStore().isH5) {
+			h = useStore().bodyHeight - (inputDom.value?.clientHeight || 50)
+		}
+		return h
+	})
 	const search = () => {
 		show.value = true
 	}
@@ -40,10 +48,14 @@
 		}
 	)
 
+	
+
 	onMounted(() => {
 		// 点击其他区域隐藏
 		document.addEventListener('click', hide)
-		inputDom.value?.focus()
+		setTimeout(() => {
+			inputDom.value?.focus()
+		}, 600);
 	})
 
 	onUnmounted(() => {
@@ -62,11 +74,14 @@
 			<el-icon><Search /></el-icon>
 			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.instId }}</span>
 		</div>
-		<div v-if="show" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
+		<div v-if="show || useStore().isH5" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
 			<div class="search-list-box bg-[--transparent05]">
-				<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="w-[100%] p-2" @focus="focus" @input="search" />
-				<div class="w-[100%] min-h-[316px] max-h-[50vh] p-2">
-					<MarketList :height="300" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
+				<div class="flex ">
+					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-2" @focus="focus" @input="search" />
+					<button class="flex items-center text-nowrap px-3" @click="useNuxtApp().$pop()">取消</button>
+				</div>
+				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] p-2">
+					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
 				</div>
 			</div>
 		</div>
@@ -125,6 +140,25 @@
 			box-shadow: none;
 			border: 1px solid rgb(var(--color-brand));
 			border-radius: 8px;
+		}
+	}
+
+	@media (max-width: 999px) {
+		.symbol-search {
+			width: 100%;
+			height: var(--body-height);
+			.symbol-search-item {
+				display: none;
+			}
+
+			.search-list {
+				.search-list-box {
+					.search-list-content {
+						max-height: unset;
+						padding: 0;
+					}
+				}
+			}
 		}
 	}
 </style>
