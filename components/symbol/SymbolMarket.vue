@@ -8,6 +8,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 import SymbolSearch from './SymbolSearch.vue'
+import { usePush } from '~/composable/usePush'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -44,8 +45,9 @@ import SymbolSearch from './SymbolSearch.vue'
 		}
 	})
 
+	const push = usePush()
 	function pushSearch(){
-		useNuxtApp().$push(SymbolSearch,{})
+		push(SymbolSearch,{})
 	}
 
 	onBeforeUnmount(() => {

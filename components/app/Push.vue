@@ -31,10 +31,11 @@ const closed = () => {
     if (instance) {
         nextTick(() => {
             const container = instance?.vnode.el?.parentNode;
+            // console.log('Component unmounted! container', container, instance.vnode.el, instance);
             if (container) {
                 render(null,container);
-                // container.removeChild(instance.vnode.el);  // 从 DOM 中移除组件
-                console.log('Component unmounted!', container, instance.vnode.el, instance);
+                document.body.removeChild(container);  // 从 DOM 中移除组件
+                // console.log('Component unmounted!', container, instance.vnode.el, instance);
                 show.value = false;
             }
         });
@@ -91,6 +92,8 @@ onUnmounted(() => {
     setTimeout(() => {
         usePushStore().setPushState(false);
     }, 100);
+
+    console.log('getCurrentInstance()?.parent',getCurrentInstance()?.parent)
 })
 
 onMounted(() => {
@@ -101,11 +104,12 @@ onMounted(() => {
 </script>
 
 <template>
-    <div>
+ 
         <el-drawer v-model="visibleDrawer" :direction="direction" :destroy-on-close="true"
             :modal="true" :size="drawerSize" @closed="closed" ref="drawer"
             :class="{ pushup: direction == 'btt' && size != '100%' }"
             :with-header="false"
+            :append-to-body="true"
         >
             <template #default>
                 <div class="drawer_body w-full">
@@ -121,5 +125,5 @@ onMounted(() => {
                 </div>
             </template>
         </el-drawer>
-    </div>
+ 
 </template>
