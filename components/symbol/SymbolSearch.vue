@@ -81,10 +81,10 @@
 		<div v-if="show || push" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
 			<div class="search-list-box bg-[--transparent05]">
 				<div class="flex">
-					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-2" @focus="focus" @input="search" />
+					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3" @focus="focus" @input="search" />
 					<button class="flex items-center text-nowrap px-3" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
 				</div>
-				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] p-2">
+				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
 					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
 				</div>
 			</div>
@@ -124,16 +124,26 @@
 			z-index: -1;
 			opacity: 0.2;
 		}
+		:deep(.symbol-list-header){
+			@apply px-3;
+		}
+		:deep(.symbol-list-content){
+			ul{
+				li{
+					@apply px-3;
+				}
+			}
+		}
 	}
 	:deep(.tabbar-container) {
 		.tabbar-header {
-			@apply px-4;
+			@apply px-3;
 			border-bottom: 1px solid var(--transparent05);
 			overflow-x: unset;
 			height: var(--header-height);
 			ul {
 				li {
-					font-size: 16px;
+					@apply text-base;
 				}
 			}
 		}
@@ -153,9 +163,11 @@
 			height: var(--body-height);
 			.symbol-search-item {
 				display: none;
+				border-radius: 0;
 			}
 
 			.search-list {
+				border-radius: 0;
 				&::before {
 					opacity: 0.1;
 				}

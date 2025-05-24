@@ -346,7 +346,6 @@ body {
 		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
-		overflow: hidden;
 		position: absolute;
 		transition: all var(--el-transition-duration);
 		overflow: hidden;
@@ -370,6 +369,19 @@ body {
 	.el-scrollbar {
 		.el-scrollbar__wrap {
 			overflow-y: scroll;
+		}
+	}
+}
+
+@media (max-width:999px) {
+	.el-drawer {
+		box-shadow: none;
+		border-radius: 0;
+		&::before {
+			opacity: 0.1;
+		}
+		.el-drawer__body{
+			border-radius: 0;
 		}
 	}
 }
