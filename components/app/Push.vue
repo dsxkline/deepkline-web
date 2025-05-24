@@ -103,13 +103,17 @@ onMounted(() => {
     usePushStore().push(instance)
 })
 
+defineExpose({
+    drawer:drawer
+})
+
 </script>
 
 <template>
  
         <el-drawer v-model="visibleDrawer" :direction="direction" :destroy-on-close="true"
             :modal="true" :size="drawerSize" @closed="closed" ref="drawer"
-            :class="{ pushup: direction == 'btt' && size != '100%' }"
+            :class="{ pushup: direction == 'btt' && size != '100%',transform : direction == 'rtl'?'translateX(100vw)':'' }"
             :with-header="false"
             :append-to-body="true"
         >

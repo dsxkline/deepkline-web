@@ -72,30 +72,31 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 	// 手动提供 Nuxt 上下文
 	const nuxtApp = useNuxtApp() // 获取 Nuxt 上下文
 	pushInstance.appContext = nuxtApp.vueApp._context
-    const box = document.createElement('div')
-    
-    document.body.appendChild(box)
+	const box = document.createElement('div')
+	document.body.appendChild(box)
 	// 在某个目标 DOM 元素中挂载组件
 	render(pushInstance, box)
-    
-
 	// 查找上一层，实现轻微退出动画
 	nextTick(() => {
-		console.log('pushInstance', pushInstance)
-        box.id='push-'+pushInstance.component?.uid
-		if (direction == 'rtl') {
-			// pushInstance.el.style.transform = "translateX(100vw)";
-			setTimeout(() => {
-				// pushInstance.el.style.transform = "translateX(0)";
-				// const parentDrawer =
-				//     context.$el.closest(".el-drawer__wrapper") ||
-				//     document.querySelector("#__nuxt");
-				// if (parentDrawer && !parentDrawer.classList.contains("pushup")) {
-				//     parentDrawer.style.transform = "translateX(-30%)";
-				//     // parentDrawer.classList.add("pop-right");
-				// }
-			}, 50)
-		}
+		box.id = 'push-' + pushInstance.component?.uid
+        // 获取到drawer
+        // const drawer = pushInstance.component?.exposed?.drawer
+		// if (direction == 'rtl' && drawer) {
+        //      console.log('pushInstance', pushInstance,drawer,context.vnode.el)
+		// 	drawer.style.transform = 'translateX(100vw)'
+           
+		// 	setTimeout(() => {
+		// 		drawer.style.transform = 'translateX(0)'
+        //         // 上一个drawer
+		// 		if (context.vnode.el) {
+		// 			const parentDrawer = context.vnode.el.closest('.el-drawer__wrapper') || document.querySelector('#__nuxt')
+		// 			if (parentDrawer && !parentDrawer.classList.contains('pushup')) {
+		// 				parentDrawer.style.transform = 'translateX(-30%)'
+		// 				// parentDrawer.classList.add("pop-right");
+		// 			}
+		// 		}
+		// 	}, 50)
+		// }
 	})
 
 	return pushInstance
@@ -108,8 +109,8 @@ const pop = function (this: any, data = {}) {
 	if (topPush) {
 		// 回传数据
 		topPush.props.popData = data
-		// if (!topPush.vnode.el?.closest('.pushup')) {
-		//     if (topPush.vnode.el) topPush.vnode.el.style.transform = "translateX(100vw)";
+		// if (topPush.vnode.component?.exposed && !topPush.vnode.component?.exposed?.drawer?.closest('.pushup')) {
+		// 	topPush.vnode.component.exposed.drawer.style.transform = 'translateX(100vw)'
 		// }
 	} else {
 		// 顶层
@@ -119,16 +120,18 @@ const pop = function (this: any, data = {}) {
 	topPush = store.getTopPush()
 	// console.log('pop',topPush)
 	if (topPush) {
-		// const parentDrawer = topPush.vnode.el.closest(".el-drawer__wrapper");
-		// if (parentDrawer && parentDrawer instanceof HTMLElement) {
-		//     parentDrawer.style.transform = "translateX(0)";
-		// }
+		if (topPush.vnode.el) {
+			// const parentDrawer = topPush.vnode.el.closest('.el-drawer__wrapper')
+			// if (parentDrawer && parentDrawer instanceof HTMLElement) {
+			// 	parentDrawer.style.transform = 'translateX(0)'
+			// }
+		}
 	} else {
 		// 顶层
-		// const nuxt = document.querySelector("#__nuxt");
-		// if (nuxt && nuxt instanceof HTMLElement) {
-		//     nuxt.style.transform = "translateX(0)";
-		// }
+		const nuxt = document.querySelector('#__nuxt')
+		if (nuxt && nuxt instanceof HTMLElement) {
+			nuxt.style.transform = 'translateX(0)'
+		}
 	}
 }
 

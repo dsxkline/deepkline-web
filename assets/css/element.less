@@ -38,7 +38,7 @@ html:root {
 	--el-button-active-bg-color: var(--el-color-primary);
 	--el-button-active-border-color: var(--el-color-primary);
 }
-.light body{
+.light body {
 	.el-popover {
 		--el-popover-border-color: var(--transparent10);
 		box-shadow: none;
@@ -55,17 +55,17 @@ html:root {
 			opacity: 0.3;
 		}
 		.el-popper__arrow {
-			&::before{
-				border-top-color: var(--transparent20)!important;
-				border-left-color: var(--transparent20)!important;
-				background: #fff8fd!important;
+			&::before {
+				border-top-color: var(--transparent20) !important;
+				border-left-color: var(--transparent20) !important;
+				background: #fff8fd !important;
 			}
 		}
-		&[data-popper-placement^=left] .el-popper__arrow:before{
-			border-left-color:transparent!important;
-			border-right-color: var(--transparent20)!important;
-			border-top-color: var(--transparent20)!important;
-			background: #f7f7fd!important;
+		&[data-popper-placement^='left'] .el-popper__arrow:before {
+			border-left-color: transparent !important;
+			border-right-color: var(--transparent20) !important;
+			border-top-color: var(--transparent20) !important;
+			background: #f7f7fd !important;
 		}
 	}
 }
@@ -206,17 +206,17 @@ body {
 			opacity: 0.2;
 		}
 		.el-popper__arrow {
-			&::before{
-				border-top-color: var(--transparent30)!important;
-				border-left-color: var(--transparent30)!important;
-				background: #290e3d!important;
+			&::before {
+				border-top-color: var(--transparent30) !important;
+				border-left-color: var(--transparent30) !important;
+				background: #290e3d !important;
 			}
 		}
-		&[data-popper-placement^=left] .el-popper__arrow:before{
-			border-left-color:transparent!important;
-			border-right-color: var(--transparent30)!important;
-			border-top-color: var(--transparent30)!important;
-			background: #11092b!important;
+		&[data-popper-placement^='left'] .el-popper__arrow:before {
+			border-left-color: transparent !important;
+			border-right-color: var(--transparent30) !important;
+			border-top-color: var(--transparent30) !important;
+			background: #11092b !important;
 		}
 	}
 
@@ -295,7 +295,6 @@ body {
 		}
 		.el-dialog__body {
 			background-color: var(--transparent05);
-			
 		}
 	}
 
@@ -338,6 +337,93 @@ body {
 		}
 	}
 
+	.el-drawer__wrapper {
+		@keyframes el-drawer-fade-enter-in {
+			from {
+				transform: translateX(100vw);
+			}
+
+			to {
+				transform: translateX(0);
+			}
+		}
+		@keyframes btt-drawer-in {
+			from {
+				transform: translateY(100%);
+			}
+
+			to {
+				transform: translateY(0);
+			}
+		}
+
+		&:not(.pushup) {
+			transition: transform 0.3s cubic-bezier(0.09, 0.83, 0.79, 0.99);
+		}
+
+		&.drawer-push {
+			transform: translateX(0);
+		}
+
+		&.push-left {
+			transform: translateX(0);
+		}
+
+		&.pop-right {
+			pointer-events: none;
+			background: var(--wt-trade-bg);
+
+			// transition: transform 0.8s cubic-bezier(0.1, 0.7, 0.1, 1);
+			// transform: translateX(-30vw)!important;
+			// will-change: transform;
+			.el-drawer__container {
+				animation: 0;
+			}
+		}
+
+		&.el-drawer-fade-enter-active:not(.pushup) {
+			border-left: 1px solid var(--wt-transparent05);
+			transform: translateX(100vw);
+			background: transparent;
+			animation: none;
+		}
+
+		&.el-drawer-fade-enter-active:not(.pushup) .el-drawer__container {
+			background: transparent;
+
+			.el-drawer.rtl {
+				animation: none;
+				overflow: hidden;
+			}
+		}
+
+		&:not(.pushup) .el-drawer__open .el-drawer.rtl {
+			animation: none;
+			overflow: hidden;
+		}
+		&.el-drawer-fade-enter-to:not(.pushup) {
+			// animation: el-drawer-fade-enter-in 0.3s cubic-bezier(0.36, 0.66, 0.04, 1);
+			animation: none;
+		}
+
+		&.el-drawer-fade-leave-active:not(.pushup) {
+			border-left: 1px solid var(--wt-transparent05);
+			animation: none;
+
+			.el-drawer__container {
+				background: transparent;
+
+				.el-drawer.rtl {
+					animation: none;
+				}
+			}
+		}
+
+		&.el-drawer-fade-leave-to:not(.pushup) {
+			animation: none;
+		}
+	}
+
 	.el-drawer {
 		--el-drawer-bg-color: rgb(var(--color-bg-base));
 		--el-drawer-padding-primary: var(--el-dialog-padding-primary, 20px);
@@ -361,7 +447,7 @@ body {
 			z-index: 0;
 			opacity: 0.15;
 		}
-		.el-drawer__body{
+		.el-drawer__body {
 			overflow: hidden;
 		}
 	}
@@ -373,14 +459,14 @@ body {
 	}
 }
 
-@media (max-width:999px) {
+@media (max-width: 999px) {
 	.el-drawer {
 		box-shadow: none;
 		border-radius: 0;
 		&::before {
 			opacity: 0.15;
 		}
-		.el-drawer__body{
+		.el-drawer__body {
 			border-radius: 0;
 		}
 	}

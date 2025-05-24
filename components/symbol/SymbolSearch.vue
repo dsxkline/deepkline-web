@@ -174,6 +174,7 @@
 					opacity: 0;
 				}
 				.search-list-box {
+					background-color: transparent;
 					.search-list-content {
 						max-height: unset;
 						padding: 0;
