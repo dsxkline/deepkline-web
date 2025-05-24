@@ -55,11 +55,11 @@
 		// 点击其他区域隐藏
 		document.addEventListener('click', hide)
 
-		setTimeout(() => {
-			if (useStore().isH5) {
-				inputDom.value?.focus()
-			}
-		}, 600)
+		// setTimeout(() => {
+		// 	if (useStore().isH5) {
+		// 		inputDom.value?.focus()
+		// 	}
+		// }, 600)
 	})
 
 	onUnmounted(() => {
