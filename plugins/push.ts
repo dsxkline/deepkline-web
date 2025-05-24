@@ -79,20 +79,22 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 	// 查找上一层，实现轻微退出动画
 	nextTick(() => {
 		box.id = 'push-' + pushInstance.component?.uid
-        box.classList.add('push-'+direction)
+		box.classList.add('push-' + direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
-			if (context.vnode.el) {
-				const parentDrawer = context.vnode.el.closest('.el-drawer')
-				if (parentDrawer) {
-					if (!parentDrawer.classList.contains('pushup')) {
-						parentDrawer.style.transform = 'translateX(-30%)'
+			setTimeout(() => {
+				if (context.vnode.el) {
+					const parentDrawer = context.vnode.el.closest('.el-drawer')
+					if (parentDrawer) {
+						if (!parentDrawer.classList.contains('pushup')) {
+							parentDrawer.style.transform = 'translateX(-30%)'
+						}
+					} else {
+						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 					}
-				} else {
-					const __nuxt = document.querySelector('#__nuxt') as HTMLElement
-					if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 				}
-			}
+			}, 30)
 		}
 	})
 
