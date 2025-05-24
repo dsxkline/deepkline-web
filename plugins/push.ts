@@ -79,22 +79,20 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 	// 查找上一层，实现轻微退出动画
 	nextTick(() => {
 		box.id = 'push-' + pushInstance.component?.uid
+        box.classList.add('push-'+direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
-			setTimeout(() => {
-				if (context.vnode.el) {
-					const parentDrawer = context.vnode.el.closest('.el-drawer')
-					if (parentDrawer) {
-						if (!parentDrawer.classList.contains('pushup')) {
-							parentDrawer.style.transform = 'translateX(-30%)'
-						}
-						// parentDrawer.classList.add("pop-right");
-					} else {
-						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
-						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
+			if (context.vnode.el) {
+				const parentDrawer = context.vnode.el.closest('.el-drawer')
+				if (parentDrawer) {
+					if (!parentDrawer.classList.contains('pushup')) {
+						parentDrawer.style.transform = 'translateX(-30%)'
 					}
+				} else {
+					const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+					if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 				}
-			}, 0)
+			}
 		}
 	})
 
@@ -118,7 +116,7 @@ const pop = function (this: any, data = {}) {
 	if (topPush) {
 		const parentDrawer = topPush.vnode.component?.exposed?.getInstance()?.querySelector('.el-drawer')
 		if (parentDrawer && parentDrawer instanceof HTMLElement) {
-			parentDrawer.style.cssText = 'width: 100%;'
+			parentDrawer.style.transform = ''
 		}
 	} else {
 		// 顶层

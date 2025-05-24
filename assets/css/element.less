@@ -338,6 +338,7 @@ body {
 	}
 
 	.el-overlay {
+		background-color: transparent;
 		// &.el-drawer-fade-enter-active:not(.pushup) {
 		// 	transform: translateX(0);
 		// }
@@ -347,6 +348,12 @@ body {
 		// }
 		&.el-drawer-fade-enter-from, &.el-drawer-fade-leave-to{
 			opacity: 1;
+		}
+	}
+
+	.push-btt{
+		.el-overlay{
+			background-color: var(--el-overlay-color-lighter);
 		}
 	}
 
