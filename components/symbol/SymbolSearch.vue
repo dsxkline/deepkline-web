@@ -168,6 +168,7 @@
 
 			.search-list {
 				border-radius: 0;
+				border: none;
 				&::before {
 					opacity: 0.1;
 				}
