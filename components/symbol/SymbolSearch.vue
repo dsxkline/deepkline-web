@@ -113,7 +113,7 @@
 	}
 	.search-list {
 		&::before {
-			background-image: linear-gradient(180deg, #cc10b0, #52247f, #112d6b);
+			background-image: var(--bg-linear-180);
 			// filter: blur(60px);
 			position: absolute;
 			top: 0;
@@ -169,8 +169,9 @@
 			.search-list {
 				border-radius: 0;
 				border: none;
+				background: transparent;
 				&::before {
-					opacity: 0.1;
+					opacity: 0;
 				}
 				.search-list-box {
 					.search-list-content {
