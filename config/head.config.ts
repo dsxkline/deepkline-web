@@ -29,7 +29,7 @@ export default {
         // Android 启动图标
         {
 			rel: 'shortcut icon',
-			id: '/images/pwa/logo192.png'
+			id: '/images/pwa/logo.png'
 		},
         // 添加到桌面的应用图标
 		{
