@@ -49,8 +49,9 @@ const visibleDrawer = computed({
         console.log('visibleDrawer', vs)
         return vs;
     }, set: (val) => {
-        console.log('visibleDrawer', val);
-        if(!val) usePushStore().pop()
+        const vs = usePushStore().getPushComponent(instance) >= 0 ? true : false;
+        console.log('visibleDrawer set', val,vs);
+        if(!val && vs) usePushStore().pop()
     }
 });
 
