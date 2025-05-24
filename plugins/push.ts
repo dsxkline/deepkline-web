@@ -79,24 +79,23 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 	// 查找上一层，实现轻微退出动画
 	nextTick(() => {
 		box.id = 'push-' + pushInstance.component?.uid
-        // 获取到drawer
-        // const drawer = pushInstance.component?.exposed?.drawer
-		// if (direction == 'rtl' && drawer) {
-        //      console.log('pushInstance', pushInstance,drawer,context.vnode.el)
-		// 	drawer.style.transform = 'translateX(100vw)'
-           
-		// 	setTimeout(() => {
-		// 		drawer.style.transform = 'translateX(0)'
-        //         // 上一个drawer
-		// 		if (context.vnode.el) {
-		// 			const parentDrawer = context.vnode.el.closest('.el-drawer__wrapper') || document.querySelector('#__nuxt')
-		// 			if (parentDrawer && !parentDrawer.classList.contains('pushup')) {
-		// 				parentDrawer.style.transform = 'translateX(-30%)'
-		// 				// parentDrawer.classList.add("pop-right");
-		// 			}
-		// 		}
-		// 	}, 50)
-		// }
+		if (direction == 'rtl') {
+			// 上一个drawer
+			setTimeout(() => {
+				if (context.vnode.el) {
+					const parentDrawer = context.vnode.el.closest('.el-drawer')
+					if (parentDrawer) {
+						if (!parentDrawer.classList.contains('pushup')) {
+							parentDrawer.style.transform = 'translateX(-30%)'
+						}
+						// parentDrawer.classList.add("pop-right");
+					} else {
+						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
+					}
+				}
+			}, 0)
+		}
 	})
 
 	return pushInstance
@@ -109,9 +108,6 @@ const pop = function (this: any, data = {}) {
 	if (topPush) {
 		// 回传数据
 		topPush.props.popData = data
-		// if (topPush.vnode.component?.exposed && !topPush.vnode.component?.exposed?.drawer?.closest('.pushup')) {
-		// 	topPush.vnode.component.exposed.drawer.style.transform = 'translateX(100vw)'
-		// }
 	} else {
 		// 顶层
 	}
@@ -120,11 +116,9 @@ const pop = function (this: any, data = {}) {
 	topPush = store.getTopPush()
 	// console.log('pop',topPush)
 	if (topPush) {
-		if (topPush.vnode.el) {
-			// const parentDrawer = topPush.vnode.el.closest('.el-drawer__wrapper')
-			// if (parentDrawer && parentDrawer instanceof HTMLElement) {
-			// 	parentDrawer.style.transform = 'translateX(0)'
-			// }
+		const parentDrawer = topPush.vnode.component?.exposed?.getInstance()?.querySelector('.el-drawer')
+		if (parentDrawer && parentDrawer instanceof HTMLElement) {
+			parentDrawer.style.cssText = 'width: 100%;'
 		}
 	} else {
 		// 顶层
