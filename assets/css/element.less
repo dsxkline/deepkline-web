@@ -339,15 +339,25 @@ body {
 		}
 	}
 
-	.el-overlay {
-		transition: all .2s;
-		background-color: var(--el-overlay-color-lighter);
-		&.el-drawer-fade-enter-active:not(.pushup) {
+	@keyframes bgmask {
+		from{
 			background-color: transparent;
 		}
+		to{
+			background-color: var(--el-overlay-color-lighter);
+		}
+	}
+
+	.el-overlay {
+		animation: bgmask 2s forwards;
+		background-color: transparent;
+		// &.el-drawer-fade-enter-active:not(.pushup) {
+		// 	background-color: transparent;
+		// }
 
 		&.el-drawer-fade-leave-to{
-			background-color: transparent;
+			background-color: var(--el-overlay-color-lighter);
+			animation: bgmask 2s reverse forwards;
 		}
 		&.el-drawer-fade-enter-from, &.el-drawer-fade-leave-to{
 			opacity: 1;
