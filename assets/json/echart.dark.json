@@ -37,6 +37,10 @@
 			"fontSize": 10,
 			"textStyle": {
 				"color": "rgba(165,165,165,1)"
+			},
+			"rich":{
+				"l":{"fontSize":10},
+				"r":{"fontSize":10}
 			}
 		},
 		"splitLine": {

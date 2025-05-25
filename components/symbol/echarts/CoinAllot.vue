@@ -101,7 +101,7 @@
 							lineHeight: 20,
 							rich: {
 								name: {
-									fontSize: 12,
+									fontSize: 10,
 									color: 'inherit'
 								},
 								time: {
@@ -115,10 +115,11 @@
 							label: {
 								rich: {
 									name: {
-										fontWeight: 'bold'
+										fontWeight: 'bold',
+										fontSize: 10,
 									},
 									time: {
-										fontSize: 12,
+										fontSize: 10,
 										fontWeight: 'bold'
 									}
 								}
@@ -309,17 +310,17 @@
 			<div class="pb-2">
 				<ul class="flex flex-row items-center justify-between text-sm *:flex *:flex-col *:text-grey">
 					<li>
-						<div class="flex items-center"><i class="bg-green w-2 h-2 rounded-full flex mr-1"></i><span>已解锁</span></div>
+						<div class="flex items-center"><i class="bg-green w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>已解锁</span></div>
 						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.unlocked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))}}%</span>
 					</li>
 					<li class="items-center">
-						<div class="flex items-center"><i class="bg-red w-2 h-2 rounded-full flex mr-1"></i><span>已锁定</span></div>
+						<div class="flex items-center"><i class="bg-red w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>已锁定</span></div>
 						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.locked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfLocked) * 100).toFixed(2))}}%</span>
 					</li>
 					<li class="items-end">
-						<div class="flex items-center"><i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1"></i><span>未追踪</span></div>
+						<div class="flex items-center"><i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>未追踪</span></div>
 						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.untracked))}}</b>
 						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUntracked) * 100).toFixed(2))}}%</span>
 					</li>

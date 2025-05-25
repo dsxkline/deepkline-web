@@ -394,6 +394,9 @@ body {
 }
 
 @media (max-width: 999px) {
+	.el-dialog{
+		min-width: 90%;
+	}
 	.el-drawer {
 		box-shadow: none;
 		border-radius: 0;
@@ -402,6 +405,10 @@ body {
 		}
 		.el-drawer__body {
 			border-radius: 0;
+		}
+		&.btt{
+			border-radius: 16px 16px 0 0;
+			border-top: 1px solid var(--transparent10);
 		}
 	}
 }

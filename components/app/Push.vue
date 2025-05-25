@@ -16,12 +16,10 @@
 		parent: ComponentInternalInstance
 	}>()
 	const drawerSize = ref(props.size)
-	const drawer = ref(null)
+	const drawer = ref<HTMLElement|null>(null)
 	const show = ref(true)
 	const hide = () => {
-		if (drawer.value) {
-			;(drawer.value as any).hide()
-		}
+		visibleDrawer.value = false;
 	}
 	const close = () => {
 		hide()
@@ -62,7 +60,29 @@
 	// 把参数通过props传递给目标组件
 	const componentProps = computed(() => props.params)
 
-	const swipeDown = () => {}
+    let contentHeight = 0
+	const swipeDown = (distance:number,time:number,end:boolean) => {
+        console.log('swipedown....',distance,time,end)
+        if(!drawer.value) return;
+        // 跟着滑下来
+        const content = drawer.value.querySelector('.el-drawer.btt') as HTMLElement
+        if (content) {
+            if (!contentHeight && content.clientHeight > 0) contentHeight = content.clientHeight
+            content.style.height = contentHeight - distance + 'px'
+            // 下拉关闭
+            drawerSize.value = content.style.height
+            if (end) {
+                if ((distance > contentHeight / 2 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
+                    // 关闭
+                    hide()
+                } else {
+                    // 恢复原始高度
+                    content.style.height = props.size||''
+                    drawerSize.value = props.size
+                }
+            }
+        }
+    }
 
 	onUnmounted(() => {
 		// 获取组件的父级
@@ -121,16 +141,13 @@
 			@closed="closed"
 			:class="{ pushup: direction == 'btt' && size != '100%' }"
 			:with-header="false"
+              
 		>
 			<template #default>
-				<div class="drawer_body w-full">
-					<!-- <SafeArea></SafeArea>
+				<div class="drawer_body w-full h-full flex flex-col relative" v-swipe-down="direction == 'btt' && size != '100%'?swipeDown:null">
                     <template v-if="direction == 'btt' && size != '100%'">
-                        <DrawLine @click="hide" />
-                        <div class="close" @click="hide" v-if="!params?.hideClose">
-                            <Close />
-                        </div>
-                    </template> -->
+                        <div @click="hide"><DrawLine /></div>
+                    </template>
 					<component :is="to" :push="true" @close="close" v-bind="componentProps" />
 					<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 				</div>
