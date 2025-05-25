@@ -37,6 +37,8 @@ html:root {
 
 	--el-button-active-bg-color: var(--el-color-primary);
 	--el-button-active-border-color: var(--el-color-primary);
+
+	--el-overlay-color-lighter: rgb(var(--color-bg-mask)/0.3);
 }
 .light body {
 	.el-popover {
@@ -245,7 +247,7 @@ body {
 		--el-dialog-font-line-height: var(--el-font-line-height-primary);
 		--el-dialog-padding-primary: 0;
 		--el-dialog-border-radius: 6px;
-		--el-overlay-color-lighter: rgb(0, 0, 0, 0.5);
+		
 		overflow: hidden;
 		border: 1px solid var(--transparent10);
 		position: relative;
@@ -338,14 +340,15 @@ body {
 	}
 
 	.el-overlay {
-		background-color: transparent;
-		// &.el-drawer-fade-enter-active:not(.pushup) {
-		// 	transform: translateX(0);
-		// }
+		transition: all .2s;
+		background-color: var(--el-overlay-color-lighter);
+		&.el-drawer-fade-enter-active:not(.pushup) {
+			background-color: transparent;
+		}
 
-		// &.el-drawer-fade-leave-to .rtl{
-		// 	transform: translateX(100%);
-		// }
+		&.el-drawer-fade-leave-to{
+			background-color: transparent;
+		}
 		&.el-drawer-fade-enter-from, &.el-drawer-fade-leave-to{
 			opacity: 1;
 		}
