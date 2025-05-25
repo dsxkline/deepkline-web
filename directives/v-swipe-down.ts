@@ -1,6 +1,23 @@
 // directives/v-swipe-down.ts
 import type { Directive } from 'vue'
+function isScrollable(el: HTMLElement) {
+	if (!el || el === document.body) return false
+	const style = window.getComputedStyle(el)
+	const overflowY = style.overflowY
+	const isScrollY = overflowY === 'auto' || overflowY === 'scroll'
+	const canScroll = el.scrollHeight > el.clientHeight && el.scrollTop>0
+	return (isScrollY && canScroll)
+}
 
+function findScrollableParent(el: HTMLElement | null) {
+	while (el && el !== document.body) {
+		if (isScrollable(el)) {
+      return el
+    }
+		el = el.parentElement
+	}
+	return null
+}
 export const vSwipeDown: Directive<HTMLElement, number> = {
 	mounted(el, binding) {
 		if (!binding?.value) return
@@ -15,9 +32,13 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 		let lockDirection = 0
 		// 首次方向,不能是向上
 		let firstDirection = 0
-    console.log('touchstart.......')
 		function touchStart(e: TouchEvent) {
-      console.log('touchstart.......',e)
+			const scrollable = findScrollableParent(e.target as HTMLElement)
+			if (scrollable) {
+				// e.preventDefault() // 🚫 阻止页面滚动
+        e.stopPropagation()
+        return;
+			}
 			startY = e.touches[0].clientY
 			startX = e.touches[0].clientX
 			endY = e.touches[0].clientY
@@ -28,9 +49,15 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 			// 首次方向
 			firstDirection = 0
 		}
-    
+
 		function touchMove(e: TouchEvent) {
-			//   e.preventDefault();
+			const scrollable = findScrollableParent(e.target as HTMLElement)
+			if (scrollable) {
+				// e.preventDefault() // 🚫 阻止页面滚动
+        e.stopPropagation()
+        return;
+			}
+      console.log('touchmove',e.target)
 			// 获取结束触摸点的纵坐标
 			endY = e.touches[0].clientY
 			endX = e.touches[0].clientX
@@ -50,6 +77,12 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 			}
 		}
 		function touchEnd(e: TouchEvent) {
+      const scrollable = findScrollableParent(e.target as HTMLElement)
+			if (scrollable) {
+				// e.preventDefault() // 🚫 阻止页面滚动
+        e.stopPropagation()
+        return;
+			}
 			endT = Date.now()
 			//   e.preventDefault();
 			// 计算滑动距离
