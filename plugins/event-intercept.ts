@@ -190,6 +190,9 @@ class WindowsEvent {
 		document.removeEventListener('resume', this.resumeHandler)
 		window.removeEventListener('focus', this.focusHandler)
 		window.removeEventListener('pageshow', this.pageshowHandler)
+		document.body.removeEventListener('dblclick', this.dblclickHandle)
+		document.body.removeEventListener('touchstart', this.touchstartHandle)
+		document.body.removeEventListener('gesturestart', this.dblclickHandle)
 	}
 }
 const soundHandle = (audio: HTMLAudioElement) => () => {
