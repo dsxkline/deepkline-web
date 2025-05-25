@@ -31,7 +31,7 @@
 				const container = instance?.vnode.el?.parentNode
 				// console.log('Component unmounted! container', container, instance.vnode.el, instance);
 				if (container) {
-					render(null, container)
+					// render(null, container)
 					document.body.removeChild(container) // 从 DOM 中移除组件
 					// console.log('Component unmounted!', container, instance.vnode.el, instance);
 					show.value = false
