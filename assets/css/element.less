@@ -349,15 +349,17 @@ body {
 	}
 
 	.el-overlay {
-		animation: bgmask 2s forwards;
+		
 		background-color: transparent;
-		// &.el-drawer-fade-enter-active:not(.pushup) {
-		// 	background-color: transparent;
-		// }
+		&.el-drawer-fade-enter-active {
+			background-color: transparent;
+			animation: bgmask 2s forwards;
+		}
 
 		&.el-drawer-fade-leave-to{
-			background-color: var(--el-overlay-color-lighter);
-			animation: bgmask .6s reverse forwards;
+			transition: all var(--el-transition-duration);
+			background-color: transparent;
+			// animation: bgmask .6s reverse forwards;
 		}
 		&.el-drawer-fade-enter-from, &.el-drawer-fade-leave-to{
 			opacity: 1;
