@@ -5,7 +5,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 	const props = defineProps<{
-		push?:boolean
+		push?: boolean
 	}>()
 	const keyword = ref('')
 	const show = ref(false)
@@ -124,12 +124,12 @@
 			z-index: -1;
 			opacity: 0.2;
 		}
-		:deep(.symbol-list-header){
+		:deep(.symbol-list-header) {
 			@apply px-3;
 		}
-		:deep(.symbol-list-content){
-			ul{
-				li{
+		:deep(.symbol-list-content) {
+			ul {
+				li {
 					@apply px-3;
 				}
 			}
@@ -175,6 +175,11 @@
 				}
 				.search-list-box {
 					background-color: transparent;
+					:deep(.el-input) {
+						.el-input__wrapper {
+							border-radius: 888px;
+						}
+					}
 					.search-list-content {
 						max-height: unset;
 						padding: 0;

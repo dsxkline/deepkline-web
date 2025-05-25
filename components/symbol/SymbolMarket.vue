@@ -3,7 +3,7 @@
 	import { type MenuModel } from '../common/TabBar.vue'
 	import TabBar from '../common/TabBar.vue'
 	import Options from './search/Options.vue'
-	import MeIndex from '../../pages/account/index.vue'
+	import MeIndex from '../../pages/me/index.vue'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
