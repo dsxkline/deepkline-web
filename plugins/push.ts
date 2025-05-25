@@ -94,7 +94,7 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 					}
 				}
-			}, 30)
+			}, 100)
 		}
 	})
 

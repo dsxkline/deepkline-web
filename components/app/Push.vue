@@ -68,10 +68,12 @@
         const content = drawer.value.querySelector('.el-drawer.btt') as HTMLElement
         if (content) {
             if (!contentHeight && content.clientHeight > 0) contentHeight = content.clientHeight
+            content.style.transition = 'unset'
             content.style.height = contentHeight - distance + 'px'
             // 下拉关闭
             drawerSize.value = content.style.height
             if (end) {
+                content.style.transition = 'all var(--el-transition-duration)'
                 if ((distance > contentHeight / 2 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
                     // 关闭
                     hide()
