@@ -1,4 +1,4 @@
-import { useStore } from "~/store"
+import { useStore } from '~/store'
 
 interface WindowsEvent {
 	quiescentTimeout: number
@@ -60,40 +60,24 @@ class WindowsEvent {
 
 	clearWindowEvent() {
 		// 禁用双指放大
-		document.body.addEventListener('dblclick', function (event) {
-			event.preventDefault()
-		})
-		document.documentElement.addEventListener(
-			'touchstart',
-			function (event) {
-				if (event.touches.length > 1) {
-					event.preventDefault()
-				}
-			},
-			false
-		)
-
-		var lastTouchEnd = 0
-		document.documentElement.addEventListener(
-			'touchend',
-			function (event) {
-				var now = Date.now()
-				if (now - lastTouchEnd <= 300) {
-					event.preventDefault()
-				}
-				lastTouchEnd = now
-			},
-			false
-		)
-
-		document.addEventListener('gesturestart', function (event) {
-			event.preventDefault()
-		})
+		document.body.addEventListener('dblclick', this.dblclickHandle,{ passive: false })
+		document.body.addEventListener('touchstart', this.touchstartHandle, { passive: false })
+		document.body.addEventListener('gesturestart', this.dblclickHandle,{ passive: false })
 
 		// 禁止右键点击
 		// document.addEventListener('contextmenu', function (event) {
 		// 	event.preventDefault(); // 取消默认右键菜单
 		// });
+	}
+
+	dblclickHandle(event: Event) {
+		event.preventDefault()
+	}
+	touchstartHandle(event: TouchEvent) {
+		if (event.touches.length > 1) {
+			event.preventDefault()
+		}
+		event.stopPropagation()
 	}
 
 	// 浏览器限流检测，一般是标签被隐藏或浏览器回到后台，或熄屏后
@@ -128,19 +112,18 @@ class WindowsEvent {
 	}
 
 	leaveForeground() {
-		useStore().isLeave = this.isLeave;
+		useStore().isLeave = this.isLeave
 		if (this.isLeave) return
 		console.log('leaveForeground', new Date())
 		// 离开前台
 		// 窗口失去焦点时的处理
 		this.quiescentTime = new Date().getTime()
 		this.isLeave = true
-
 	}
 	// 恢复前台
 	resumeForeground() {
 		this.isLeave = false
-		useStore().isLeave = this.isLeave;
+		useStore().isLeave = this.isLeave
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
 		console.log('resumeForeground', t, this.isBrowserDelay, this.quiescentTimeout, new Date())
@@ -232,14 +215,14 @@ function clickSoundHandle(audio: HTMLAudioElement) {
 	}
 }
 
-function beforeunload(){
+function beforeunload() {
 	// 页面离开或者刷新的时候注销组件释放内存等
 	console.log('beforeunload')
 	useNuxtApp().$windowEvent.destroy()
-	useStore().unload = true;
+	useStore().unload = true
 	useNuxtApp().$ws.destroy()
 	useNuxtApp().$wsb.destroy()
-	window.removeEventListener('beforeunload',beforeunload)
+	window.removeEventListener('beforeunload', beforeunload)
 	console.log('beforeunload success')
 }
 export default defineNuxtPlugin(({ vueApp }) => {
@@ -250,6 +233,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		const audio = new Audio('/sounds/click.mov')
 		nuxtApp.provide('clickSound', soundHandle(audio))
 		document.addEventListener('click', clickSoundHandle(audio))
-		window.addEventListener('beforeunload',beforeunload)
+		window.addEventListener('beforeunload', beforeunload)
 	}
 })
