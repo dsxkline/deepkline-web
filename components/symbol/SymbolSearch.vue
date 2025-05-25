@@ -81,8 +81,8 @@
 		<div v-if="show || push" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
 			<div class="search-list-box bg-[--transparent05]">
 				<div class="flex">
-					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3" @focus="focus" @input="search" />
-					<button class="flex items-center text-nowrap px-3" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
+					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3 pr-0" @focus="focus" @input="search" />
+					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
 				</div>
 				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
 					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />

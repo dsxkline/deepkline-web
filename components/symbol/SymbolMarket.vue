@@ -3,12 +3,12 @@
 	import { type MenuModel } from '../common/TabBar.vue'
 	import TabBar from '../common/TabBar.vue'
 	import Options from './search/Options.vue'
-	import SymbolList from './search/SymbolList.vue'
+	import MeIndex from '../../pages/account/index.vue'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
-import SymbolSearch from './SymbolSearch.vue'
-import { usePush } from '~/composable/usePush'
+	import SymbolSearch from './SymbolSearch.vue'
+	import { usePush } from '~/composable/usePush'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -29,14 +29,14 @@ import { usePush } from '~/composable/usePush'
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 30
-			if (useStore().isH5) tabbarHeight.value = n - (search.value?.clientHeight||0) - (document.querySelector('.left-menu')?.clientHeight||0) - 30
+			if (useStore().isH5) tabbarHeight.value = n - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0) - 30
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = useStore().bodyHeight - 40 - 30
-		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight||0) - (document.querySelector('.left-menu')?.clientHeight||0) - 30
-		console.log('tabbarHeight',useStore().bodyHeight)
+		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0) - 30
+		console.log('tabbarHeight', useStore().bodyHeight)
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
 		if (!favoriteSymbols?.length) {
@@ -46,20 +46,27 @@ import { usePush } from '~/composable/usePush'
 	})
 
 	const push = usePush()
-	function pushSearch(){
-		push(SymbolSearch,{})
+	function pushSearch() {
+		push(SymbolSearch, {})
 	}
-
+	function pushMe() {
+		push(MeIndex, {})
+	}
 	onBeforeUnmount(() => {
 		tabbar.value = null
 	})
 </script>
 <template>
 	<div>
-		<div ref="search" class="search-enter bg-[--transparent10] rounded-full flex items-center justify-center text-grey text-sm h-[35px] m-3" @click="pushSearch">
-			<el-icon class="!w-[16px] !h-[16px]"><Search class="!w-[16px] !h-[16px]" /></el-icon>
-			<span class="px-2">搜索币对</span>
+		<div class="search-container flex px-4 w-full">
+			
+			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-full flex items-center justify-center text-grey text-sm h-[35px] m-3 ml-0" @click="pushSearch">
+				<el-icon class="!w-4 !h-4"><Search class="!w-4 !h-4" /></el-icon>
+				<span class="px-2">搜索币对</span>
+			</div>
+			<button @click="pushMe"><MenuIcon /></button>
 		</div>
+
 		<TabBar ref="tabbar" :menus="menus" :hideLine="true" :height="tabbarHeight" :active="active" />
 	</div>
 </template>
@@ -70,7 +77,7 @@ import { usePush } from '~/composable/usePush'
 			height: var(--header-height);
 			ul {
 				li {
-					font-size: 16px;
+					@apply text-base;
 				}
 			}
 		}
@@ -78,7 +85,7 @@ import { usePush } from '~/composable/usePush'
 			.tabbar-header {
 				ul {
 					li {
-						font-size: 12px;
+						@apply text-xs;
 					}
 				}
 			}
@@ -91,49 +98,53 @@ import { usePush } from '~/composable/usePush'
 			border: 1px solid var(--el-input-focus-border-color);
 		}
 	}
-	.search-enter {
+
+	.search-container {
 		display: none;
 	}
 
 	@media (max-width: 999px) {
+		.search-container{
+			display: flex;
+		}
 		.search-enter {
 			display: flex;
 			position: relative;
-		&::before {
-			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-			background-image: var(--bg-linear-90);
-			// filter: blur(60px);
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			content: '';
-			z-index: -1;
-			opacity: 0.2;
-			border-radius: 99999px;
-			
-			// transition: all 0.3s ease;
-		}
+			&::before {
+				// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
+				background-image: var(--bg-linear-90);
+				// filter: blur(60px);
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				content: '';
+				z-index: -1;
+				opacity: 0.2;
+				border-radius: 99999px;
+
+				// transition: all 0.3s ease;
+			}
 		}
 
 		:deep(.tabbar-container) {
-		.tabbar-header {
-			ul {
-				li {
-					font-size: 20px;
-				}
-			}
-		}
-		.tabbar-content {
 			.tabbar-header {
 				ul {
 					li {
-						font-size: 16px;
+						font-size: 20px;
+					}
+				}
+			}
+			.tabbar-content {
+				.tabbar-header {
+					ul {
+						li {
+							font-size: 16px;
+						}
 					}
 				}
 			}
 		}
-	}
 	}
 </style>

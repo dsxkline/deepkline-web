@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
-	import MeIndex from '@/pages/me/index.vue'
+	import AccountIndex from '@/pages/account/index.vue'
 	import StrategyIndex from '@/pages/strategy/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { UserFilled, Histogram, Monitor,Opportunity, HelpFilled } from '@element-plus/icons-vue'
@@ -37,9 +37,9 @@
 			contentParams: {}
 		},
 		{
-			name: '我的',
+			name: '账户',
 			icon: markRaw(UserFilled),
-			contentComp: markRaw(MeIndex),
+			contentComp: markRaw(AccountIndex),
 			contentParams: {}
 		}
 	])
