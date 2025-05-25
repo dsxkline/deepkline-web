@@ -48,6 +48,7 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 			lockDirection = 0
 			// 首次方向
 			firstDirection = 0
+      e.stopPropagation()
 		}
 
 		function touchMove(e: TouchEvent) {
@@ -57,7 +58,6 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
         e.stopPropagation()
         return;
 			}
-      console.log('touchmove',e.target)
 			// 获取结束触摸点的纵坐标
 			endY = e.touches[0].clientY
 			endX = e.touches[0].clientX
@@ -75,6 +75,7 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 				// 执行向下滑动后的操作
 				callback(distance, time)
 			}
+      e.stopPropagation()
 		}
 		function touchEnd(e: TouchEvent) {
       const scrollable = findScrollableParent(e.target as HTMLElement)
@@ -97,6 +98,7 @@ export const vSwipeDown: Directive<HTMLElement, number> = {
 				// 执行向下滑动后的操作
 				callback(distance, time, true)
 			}
+      e.stopPropagation()
 		}
 
 		function getDirection(x1: number, y1: number, x2: number, y2: number) {
