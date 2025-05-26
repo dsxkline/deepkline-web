@@ -12,7 +12,7 @@ const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 const pwa = pwaConfig as any
-pwa.manifest = false;
+// pwa.manifest = false;
 
 // console.log('pwa',pwa,modulesConfig)
 
@@ -21,6 +21,7 @@ export default defineNuxtConfig({
 		port: 3010,
 		host: '0.0.0.0'
 	},
+	
 	typescript: {
 		shim: true
 	},

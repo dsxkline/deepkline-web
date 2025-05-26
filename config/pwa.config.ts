@@ -1,5 +1,8 @@
 export default {
 	registerType: 'autoUpdate',
+	strategies: 'injectManifest', // ⬅️ 使用自定义 SW
+	srcDir: 'public',
+    filename: 'sw.js',
 	manifest: {
 		id: '/',
 		start_url: '/?display=standalone',
@@ -30,32 +33,5 @@ export default {
 			}
 		]
 	},
-	// workbox: {
-	// 	runtimeCaching: [
-	// 		{
-	// 			// JS/CSS/图片资源：缓存优先
-    // 			urlPattern: /\.(?:js|css|png|jpg|jpeg|svg|webp)$/,
-	// 			handler: 'StaleWhileRevalidate',
-	// 			options: {
-	// 				cacheName: 'all-cache',
-	// 				expiration: {
-	// 					//   maxEntries: 200, // 最多缓存 200 个条目
-	// 					maxAgeSeconds: 60 * 60 * 24 * 7 // 缓存 7 天
-	// 				},
-	// 				// networkTimeoutSeconds: 30,
-	// 				cacheableResponse: {
-	// 					statuses: [0, 200] // 只缓存这些响应码的资源
-	// 				}
-	// 			}
-	// 		}
-	// 	]
-	// },
-	meta: {
-		theme_color: '#1e0b2c', // 确保 meta 标签也设置
-		appleMobileWebAppCapable: true,
-		appleMobileWebAppStatusBarStyle: 'default',
-		mobileAppIOS: true,
-		appleStatusBarStyle: 'black-translucent',
-		appleIcon: '/images/pwa/apple-touch-icon.png' // 指定 iOS icon
-	}
+	
 }

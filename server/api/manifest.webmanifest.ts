@@ -7,6 +7,5 @@ export default defineEventHandler(event => {
 	const languages = cookies.languages || 'en'
     pwaConfig.manifest.theme_color = theme=="dark"?'#1e0b2c':'#ffffff'
     pwaConfig.manifest.background_color = pwaConfig.manifest.theme_color
-    pwaConfig.meta.theme_color = pwaConfig.manifest.theme_color
 	return pwaConfig.manifest
 })
