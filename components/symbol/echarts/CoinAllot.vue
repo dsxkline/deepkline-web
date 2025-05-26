@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
+import { useStore } from '~/store'
 	const props = defineProps({
 		symbol: {
 			type: String,
@@ -59,12 +60,12 @@
 			// 	top: '85px',
 			// 	itemGap: 3,
 			// 	textStyle: {
-			// 		color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
+			// 		color: useStore().theme == 'dark' ? 'white' : 'rgb(31 41 55)',
 			// 		fontWeight: 'normal',
 			// 		fontSize: 12
 			// 	},
 			// 	subtextStyle: {
-			// 		color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)',
+			// 		color: useStore().theme == 'dark' ? 'white' : 'rgb(31 41 55)',
 			// 		fontSize: 12
 			// 	}
 			// },
@@ -90,7 +91,7 @@
 						left: '0',
 						width: '100%',
 						itemStyle: {
-							borderColor: useColorMode().value == 'dark' ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
+							borderColor: useStore().theme == 'dark' ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,1)',
 							borderWidth: 1
 						},
 						label: {
@@ -107,7 +108,7 @@
 								time: {
 									fontSize: 10,
 									textBorderWidth: 0,
-									color: useColorMode().value == 'dark' ? 'white' : 'rgb(31 41 55)'
+									color: useStore().theme == 'dark' ? 'white' : 'rgb(31 41 55)'
 								}
 							}
 						},
@@ -212,7 +213,7 @@
 					progress: parseFloat(item.progress)
 				})
 		})
-		// const itemColor = useColorMode().value == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
+		// const itemColor = useStore().theme == 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'
 		// datas.value[0].push({
 		// 	name: 'Untracked',
 		// 	value: parseFloat((parseFloat(symbolProgressData.value.percOfUntracked) * 100).toFixed(2)),
@@ -222,7 +223,7 @@
 		// datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
 
 		echart && echart.dispose()
-		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
+		echart = echarts.init(chart.value,useStore().theme == 'dark' ? 'dark' : 'light')
 		echart.setOption(option())
 		echart && echart.resize()
 
@@ -257,7 +258,7 @@
 		}
 	)
 	watch(
-		() => useColorMode().value,
+		() => useStore().theme,
 		() => {
 			createEchart()
 		}

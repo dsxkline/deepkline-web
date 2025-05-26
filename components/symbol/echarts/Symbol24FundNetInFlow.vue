@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
+import { useStore } from "~/store";
 const chart = ref(null);
 let echart: echarts.ECharts;
 let base = +new Date(1968, 9, 3);
@@ -59,7 +60,7 @@ const option = {
 };
 
 onMounted(() => {
-	echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light');
+	echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 });
 onDeactivated(() => {

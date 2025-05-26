@@ -45,7 +45,7 @@ self.addEventListener('activate', event => {
       // 让这个 Service Worker 控制所有客户端页面
       await self.clients.claim()
 
-      // 获取所有控制中的客户端（标签页）
+      // // 获取所有控制中的客户端（标签页）
       const allClients = await self.clients.matchAll({ type: 'window' })
 
       // 逐个刷新页面

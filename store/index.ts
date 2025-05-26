@@ -13,6 +13,7 @@ export const useStore = defineStore({
 		splitScreen: 3, // 1=单屏 2=分屏 3=三屏
     bodyHeight: 0,
     bodyWidth: typeof window=="undefined"?0:window.innerWidth,
+    theme: "dark", // 主题，默认dark
 	}),
 	actions: {
     setBodyHeight(height: number) {
@@ -73,7 +74,10 @@ export const useStore = defineStore({
 		removeSplitScreen(splitDom: any) {
 			this.screenDoms = this.screenDoms.filter(item => item !== splitDom)
 			this.updateSplitScreen()
-		}
+		},
+    setTheme(theme: string) {
+      this.theme = theme
+    }
 	},
   getters:{
     // 是否是H5模式

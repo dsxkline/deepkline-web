@@ -13,7 +13,7 @@
 	<div class="header w-full flex items-center justify-between">
 		<!-- logo -->
 		<div class="flex items-center px-2">
-			<div class="flex items-center justify-center w-[28px] h-[28px] mr-1" v-if="useColorMode().preference == 'dark'">
+			<div class="flex items-center justify-center w-[28px] h-[28px] mr-1" v-if="useStore().theme == 'dark'">
 				<img src="~/assets/images/logo.png" alt="logo" class="w-[22px] h-[22px] rounded-full" />
 			</div>
 			<div class="flex items-center justify-center w-[28px] h-[28px] mr-1" v-else>

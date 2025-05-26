@@ -6,6 +6,7 @@
 	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
 	import { useSymbolStore } from '~/store/symbol'
+import { useStore } from '~/store'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -129,7 +130,7 @@
 
 	function createEchart() {
 		echart && echart.dispose()
-		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
+		echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
 		resetSize()
 	}
@@ -189,7 +190,7 @@
 	)
 
 	watch(
-		() => useColorMode().value,
+		() => useStore().theme,
 		() => {
 			createEchart()
 		}

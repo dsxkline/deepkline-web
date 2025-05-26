@@ -23,7 +23,7 @@ import { useStore } from '~/store';
 		}
 	)
 	watch(
-		() => useColorMode().preference,
+		() => useStore().theme,
 		newVal => {
 			chart && chart.updateTheme(newVal)
 		}
@@ -73,7 +73,7 @@ import { useStore } from '~/store';
 	onMounted(() => {
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
-		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useColorMode().preference, {
+		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useStore().theme, {
 			element: klineDom.value && klineDom.value.querySelector('.kline'),
 			autoSize: true,
 			chartType: ChartType.candle,

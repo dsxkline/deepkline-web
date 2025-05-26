@@ -6,6 +6,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import moment from 'moment'
 	import { _borderWidth } from '#tailwind-config/theme'
+import { useStore } from '~/store'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -208,7 +209,7 @@
 	)
 
 	watch(
-		() => useColorMode().value,
+		() => useStore().theme,
 		() => {
 			createEchart()
 		}
@@ -216,7 +217,7 @@
 
 	function createEchart() {
 		echart && echart.dispose()
-		echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light')
+		echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
 		resetSize()
 	}

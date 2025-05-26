@@ -2,7 +2,7 @@ import { version } from '../package.json'
 export default {
 	title: 'DeepKline is the most silky cryptocurrency trading system.',
 	htmlAttrs: {
-		lang: 'zh-CN'
+		lang: 'zh-CN',
 	},
 	meta: [
 		{ charset: 'utf-8' },

@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { _borderColor } from "#tailwind-config/theme";
+import { useStore } from "~/store";
 const chart = ref(null);
 let echart: echarts.ECharts;
 const option = {
@@ -95,7 +96,7 @@ const option = {
 };
 
 onMounted(() => {
-	echart = echarts.init(chart.value ,useColorMode().value == 'dark' ? 'dark' : 'light');
+	echart = echarts.init(chart.value ,useStore().theme == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 });
 onDeactivated(() => {

@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { marketFetch } from "~/fetch/market.fetch";
+import { useStore } from "~/store";
 const props = defineProps({
 	symbol: {
 		type: String,
@@ -169,7 +170,7 @@ const fetchData = ()=>{
 }
 
 onMounted(() => {
-	echart = echarts.init(chart.value, useColorMode().value == 'dark' ? 'dark' : 'light');
+	echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light');
 	echart.setOption(option);
 	fetchData()
 	if (containerRef.value) {
