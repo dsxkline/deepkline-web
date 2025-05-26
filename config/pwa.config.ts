@@ -42,7 +42,7 @@ export default {
 						//   maxEntries: 200, // 最多缓存 200 个条目
 						maxAgeSeconds: 60 * 60 * 24 * 7 // 缓存 7 天
 					},
-					networkTimeoutSeconds: 30,
+					// networkTimeoutSeconds: 30,
 					cacheableResponse: {
 						statuses: [0, 200] // 只缓存这些响应码的资源
 					}
