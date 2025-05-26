@@ -6,9 +6,16 @@ import headConfig from './config/head.config'
 import modulesConfig from './config/modules.config'
 import pluginsConfig from './config/plugins.config'
 import postcssConfig from './config/postcss.config'
+import pwaConfig from './config/pwa.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+const pwa = pwaConfig as any
+pwa.manifest = false;
+
+// console.log('pwa',pwa,modulesConfig)
+
 export default defineNuxtConfig({
 	devServer: {
 		port: 3010,
@@ -47,7 +54,5 @@ export default defineNuxtConfig({
 		},
 		display: 'swap'
 	},
-	pwa:{
-		manifest: false, // 不生成静态 manifest
-	}
+	pwa:pwa
 })

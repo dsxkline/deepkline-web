@@ -14,6 +14,7 @@ export default {
 		{ name: 'format-detection', content: 'telephone=no' },
         // 是否启用全屏模式
 		{ name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'mobile-web-app-capable', content: 'yes' },
 		{ name: 'apple-mobile-web-app-status-bar-style', content: 'default' },
 	],
 	link: [
