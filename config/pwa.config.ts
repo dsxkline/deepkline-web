@@ -10,8 +10,11 @@ export default {
 	// 	]
 	// },
 	client: {
-		registerPlugin: true,
-		installPrompt: true
+		installPrompt: true,
+		registerSW: true,
+		// 自动跳过等待并控制页面
+		skipWaiting: true,
+		clientsClaim: true
 	},
 	manifest: {
 		id: '/',
