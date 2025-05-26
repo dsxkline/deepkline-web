@@ -27,6 +27,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
     // 服务端渲染主题
     const colorMode = useCookie('nuxt-color-mode', { default: () => 'dark' })
     // console.log('colorMode', colorMode.value)
+    useStore().setTheme(colorMode.value);
     useHead({
         htmlAttrs: {
           class:colorMode.value,

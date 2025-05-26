@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import {useStore} from '~/store'
     let colorCookie = useCookie('nuxt-color-mode',{default:()=>"dark"});
-	const theme = ref("dark" !== colorCookie.value);
+	const theme = ref("dark" !== useStore().theme);
 	watch(
 		() => theme.value,
 		(val) => {
