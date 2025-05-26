@@ -4,8 +4,7 @@ import { StaleWhileRevalidate, CacheFirst } from 'workbox-strategies'
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
 import { ExpirationPlugin } from 'workbox-expiration'
 
-// 由 @vite-pwa 插入的文件列表
-precacheAndRoute(self.__WB_MANIFEST);
+
 // runtime caching: cache homepage
 registerRoute(
   ({ request }) => request.mode === 'navigate',
@@ -31,3 +30,19 @@ registerRoute(
     ]
   })
 )
+
+// 由 @vite-pwa 插入的文件列表
+precacheAndRoute(self.__WB_MANIFEST);
+// self.addEventListener('install', function (e) {
+//   self.skipWaiting()
+// })
+
+// self.addEventListener('activate', function (e) {
+//   self.registration.unregister()
+//     .then(function () {
+//       return self.clients.matchAll()
+//     })
+//     .then(function (clients) {
+//       clients.forEach(client => client.navigate(client.url))
+//     })
+// })

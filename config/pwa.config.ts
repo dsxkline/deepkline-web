@@ -2,7 +2,17 @@ export default {
 	registerType: 'autoUpdate',
 	strategies: 'injectManifest', // ⬅️ 使用自定义 SW
 	srcDir: 'public',
-    filename: 'sw.js',
+	filename: 'sw.js',
+	// injectManifest: {
+	// 	additionalManifestEntries: [
+	// 		{ url: '/', revision: null }, // 显式预缓存首页
+	// 		{ url: '/?display=standalone', revision: null }
+	// 	]
+	// },
+	client: {
+		registerPlugin: true,
+		installPrompt: true
+	},
 	manifest: {
 		id: '/',
 		start_url: '/?display=standalone',
@@ -32,6 +42,5 @@ export default {
 				type: 'image/png'
 			}
 		]
-	},
-	
+	}
 }

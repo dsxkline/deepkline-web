@@ -10,6 +10,17 @@ function setBodyHeight() {
 	useStore().setBodyWidth(width)
 }
 
+function setRemUnit() {
+	const baseSize = 16 // 通常设置 1rem = 100px 设计稿（方便计算）
+	const designWidth = window.innerWidth > 999 ? window.innerWidth : 375 // 设计稿宽度
+
+	const html = document.documentElement
+	const width = html.clientWidth
+
+	const rem = Math.min((width / designWidth) * baseSize,20) // 限制最大值为 20px
+	html.style.fontSize = rem + 'px'
+}
+
 export default defineNuxtPlugin(({ vueApp }) => {
 	const router = useRouter()
 	router.beforeEach((to, from, next) => {
@@ -20,6 +31,8 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		next()
 	})
 	if (process.client) {
+		window.addEventListener('resize', setRemUnit)
+		setRemUnit()
 		// 设置body高度
 		setBodyHeight()
 		window.addEventListener('resize', setBodyHeight)
