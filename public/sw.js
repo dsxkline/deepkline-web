@@ -53,3 +53,19 @@ self.addEventListener('activate', event => {
 	// 	})()
 	// )
 })
+
+// 🧼 监听 message 事件
+self.addEventListener('message', async (event) => {
+  const data = event.data
+  if (data && data.action === 'clearAllCaches') {
+    try {
+      const keys = await caches.keys()
+      await Promise.all(keys.map((key) => key=='html-cache' && caches.delete(key)))
+      console.log('[SW] 所有缓存已清理')
+      event.ports?.[0]?.postMessage({ success: true })
+    } catch (err) {
+      console.error('[SW] 删除缓存出错:', err)
+      event.ports?.[0]?.postMessage({ success: false, error: err })
+    }
+  }
+})
