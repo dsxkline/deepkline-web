@@ -1,4 +1,3 @@
-import { Okx } from "~/fetch/okx";
 import { InstanceType } from "~/fetch/okx/okx.type.d";
 import { publicFetch } from "~/fetch/public.fetch";
 import { useStore } from "~/store";

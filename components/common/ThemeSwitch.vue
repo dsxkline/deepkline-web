@@ -13,6 +13,7 @@
 	function changeTheme(){
 		// console.log('changeTheme', theme.value);
 		// colorMode.preference = theme.value ? 'light' : 'dark'
+		colorCookie.value = theme.value ? 'light' : 'dark';
 		useStore().setTheme(theme.value ? 'light' : 'dark');
 		document.documentElement.setAttribute('class', theme.value ? 'light' : 'dark');
 	}
