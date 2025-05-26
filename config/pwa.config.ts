@@ -31,7 +31,6 @@ export default {
 		]
 	},
 	workbox: {
-		offline: false,
 		runtimeCaching: [
 			{
 				urlPattern: '.*', // 匹配所有 URL
