@@ -3,6 +3,7 @@
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	import Trades from './Trades.vue'
 	import { useStore } from '~/store/index'
+import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -71,6 +72,15 @@
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		tickerHandler($ws.getTickers(props.symbol))
+		subSymbols()
+	})
+
+	useWillDisappear(()=>{
+		console.log('symbol-market-datas useWillDisappear....')
+		unSubSymbols()
+	})
+	useWillAppear(()=>{
+		console.log('symbol-market-datas useWillAppear....')
 		subSymbols()
 	})
 

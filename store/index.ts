@@ -17,11 +17,11 @@ export const useStore = defineStore({
 	actions: {
     setBodyHeight(height: number) {
       this.bodyHeight = height
-      console.log('body height',height)
+      // console.log('body height',height)
     },
     setBodyWidth(width: number) {
       this.bodyWidth = width
-      console.log('body width',width)
+      // console.log('body width',width)
     },
 		setApiSource(source: ApiSource) {
 			this.apiSource = source

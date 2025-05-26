@@ -33,6 +33,7 @@
 	const lheader = ref()
 	const symbols = ref<Instruments[]>([])
 	const symbolDom = ref()
+	const isLeave = ref(false)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
 		return props.height - lheader.value?.clientHeight || 0
@@ -158,11 +159,12 @@
 			.catch(err => {
 				loading.value = false
 				error.value = '获取失败'
-				console.error('getInstruments', err)
+				// console.error('getInstruments', err)
 			})
 	}
 	function update() {
-		console.log('symbolCategory', props.symbolCategory, props.favorite)
+		isLeave.value = false
+		// console.log('symbolCategory', props.symbolCategory, props.favorite)
 		useSymbolStore().loadFavoriteSymbols()
 		new Promise(resolve=>{
 			getGroupSymbols()
@@ -172,6 +174,7 @@
 
 	function leave() {
 		unSubSymbols()
+		isLeave.value = true
 	}
 
 	function subSymbols() {
@@ -333,7 +336,7 @@
 	}
 
 	const whenBrowserActive = () => {
-		console.log('浏览器重新激活')
+		// console.log('浏览器重新激活')
 		unSubSymbols()
 		subSymbols()
 	}
@@ -367,6 +370,7 @@
 	})
 	useWillAppear(()=>{
 		console.log('symbollist willappear.....')
+		if(isLeave.value) return;
 		subSymbols()
 	})
 	// 暴露给父组件的方法

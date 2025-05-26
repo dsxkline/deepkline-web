@@ -22,17 +22,21 @@ export function usePop() {
 
 
 export function useWillDisappear(cb: (...args:any[]) => void) {
-    const instance = getCurrentInstance()
-    if (instance) {
-        instance.willDisappear = cb
-    }
+    // const instance = getCurrentInstance()
+    // if (instance) {
+    //     instance.willDisappear = cb
+    // }
+    const register = inject('registerChildWillDisAppear') as ((fn: () => void) => void) | undefined
+    register?.(cb)
 }
 
 export function useWillAppear(cb: (...args:any[]) => void) {
-    const instance = getCurrentInstance()
-    if (instance) {
-        instance.willAppear = cb
-    }
+    // const instance = getCurrentInstance()
+    // if (instance) {
+    //     instance.willAppear = cb
+    // }
+    const register = inject('registerChildWillAppear') as ((fn: () => void) => void) | undefined
+    register?.(cb)
 }
 
 export function poped(cb: (...args:any[]) => void) {

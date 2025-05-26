@@ -12,7 +12,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		}
 
 		const observer = new IntersectionObserver(([entry]) => {
-            console.log('inview', entry)
+            // console.log('inview', entry)
 			// 进入或离开视口都触发回调
 			callback(entry.isIntersecting)
 			if (entry.isIntersecting) {

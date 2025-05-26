@@ -31,7 +31,7 @@ import { useStore } from '~/store';
 	watch(
 		() => useKlineStore().main[props.symbol],
 		newVal => {
-			console.log('newVal useKlineStore().main=', newVal)
+			// console.log('newVal useKlineStore().main=', newVal)
 			chart && chart.selectMain(newVal)
 		},
 		{
@@ -41,7 +41,7 @@ import { useStore } from '~/store';
 	watch(
 		() => useKlineStore().sides[props.symbol],
 		newVal => {
-			console.log('newVal useKlineStore().sides=', newVal)
+			// console.log('newVal useKlineStore().sides=', newVal)
 			chart && chart.selectSides(newVal)
 		},
 		{
@@ -52,7 +52,7 @@ import { useStore } from '~/store';
 	watch(
 		() => useSymbolStore().symbols[props.symbol],
 		val => {
-			console.log('useSymbolStore().symbols[props.symbol] =', val)
+			// console.log('useSymbolStore().symbols[props.symbol] =', val)
 			const symbolDetail = val
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
 			chart && chart.updateDecimal(point)
@@ -63,7 +63,7 @@ import { useStore } from '~/store';
 	watch(
 		() => props.symbol,
 		newVal => {
-			console.log('props.symbol =', newVal)
+			// console.log('props.symbol =', newVal)
 			const symbolDetail = useSymbolStore().symbols[newVal]
 			const point = String(symbolDetail?.tickSz).split('.')[1]?.length
 			chart && chart.updateDecimal(point)
@@ -104,7 +104,7 @@ import { useStore } from '~/store';
 			error.value = '网络异常，请稍后再试'
 		}
 
-		console.log('create kline chart ');
+		// console.log('create kline chart ');
 	})
 	onBeforeUnmount(()=>{
 		chart && chart.destroy()

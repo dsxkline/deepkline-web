@@ -26,10 +26,8 @@ export const usePushStore = defineStore({
         },
         getPushComponent(comp: ComponentInternalInstance|null) {
             const index = this.pushComopnents.findIndex((item:any) => {
-                console.log(item, comp)
                 return item.uid == comp?.uid;
             });
-            console.log('mounted', comp, index)
             return index;
         },
     }

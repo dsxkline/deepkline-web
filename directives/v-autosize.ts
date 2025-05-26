@@ -32,7 +32,7 @@ export const vAutosize: Directive<HTMLElement, number> = {
 
     resizeFont()
 
-    console.log('resizefont',el.style.fontSize)
+    // console.log('resizefont',el.style.fontSize)
     // const observer = new ResizeObserver(resizeFont)
     // observer.observe(el);
     // (el as any).__autosizeObserver = observer

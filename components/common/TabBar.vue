@@ -52,7 +52,7 @@
 	watch(
 		() => menuActive.value,
 		(n, o) => {
-			console.log('menuActive.value', n)
+			// console.log('menuActive.value', n)
 			emit('update:active', n)
 		}
 	)

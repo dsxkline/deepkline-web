@@ -92,9 +92,9 @@
 			}
 		},
 		beforeUnmount() {
-			Object.keys(this.$refs).forEach(key => {
-				this.$refs[key] = null
-			})
+			// Object.keys(this.$refs).forEach(key => {
+			// 	this.$refs[key] = null
+			// })
 			if (this.timer) clearTimeout(this.timer)
 		},
 		mounted() {
@@ -107,7 +107,7 @@
 		methods: {
 			onObserveVisible(visible){
 				this.interVisible = visible;
-				console.log('inview numberincrease',this.interVisible)
+				// console.log('inview numberincrease',this.interVisible)
 			},
 			setDefaultDisplay() {
 				this.setNumberWidth()

@@ -5,5 +5,5 @@ import * as echarts from 'echarts'
 export default defineNuxtPlugin(() => {
     echarts.registerTheme("dark", dark);
     echarts.registerTheme("light", light);
-    console.log('echarts',echarts)
+    // console.log('echarts',echarts)
 })

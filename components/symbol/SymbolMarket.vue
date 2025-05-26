@@ -36,7 +36,7 @@
 	onMounted(() => {
 		tabbarHeight.value = useStore().bodyHeight - 40 - 30
 		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0) - 30
-		console.log('tabbarHeight', useStore().bodyHeight)
+		// console.log('tabbarHeight', useStore().bodyHeight)
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
 		if (!favoriteSymbols?.length) {

@@ -3,7 +3,8 @@
 	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker, TradesMessage, TradesResponse } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
-import { useStore } from '~/store';
+	import { useStore } from '~/store'
+import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -91,7 +92,7 @@ import { useStore } from '~/store';
 		marketFetch
 			.getTrades(props.symbol, 50)
 			.then(res => {
-				console.log('trades....', res)
+				// console.log('trades....', res)
 				if (res?.code === 0 && res?.data) {
 					const datas = res.data
 					datas.forEach(data => updateOrderBook(data))
@@ -129,7 +130,7 @@ import { useStore } from '~/store';
 	}
 
 	const whenBrowserActive = () => {
-		console.log('浏览器重新激活')
+		// console.log('浏览器重新激活')
 		updateTimer && clearTimeout(updateTimer)
 		$ws.unsubscribe(subHandle)
 		getTradeList()
@@ -145,7 +146,7 @@ import { useStore } from '~/store';
 	}
 
 	// 滚动到显示触发
-	function onObserveVisible(visible:boolean){
+	function onObserveVisible(visible: boolean) {
 		interVisible.value = visible
 	}
 
@@ -166,6 +167,16 @@ import { useStore } from '~/store';
 		$windowEvent.removeEvent(whenBrowserActive)
 		if (updateTimer) clearTimeout(updateTimer)
 	})
+
+	useWillDisappear(() => {
+		console.log('trades useWillDisappear....')
+		updateTimer && clearTimeout(updateTimer)
+		$ws.unsubscribe(subHandle)
+	})
+	useWillAppear(() => {
+		console.log('trades useWillAppear....')
+		getTradeList()
+	})
 </script>
 <template>
 	<div class="w-full h-full min-h-[650px] overflow-hidden">
@@ -184,31 +195,37 @@ import { useStore } from '~/store';
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible" >
+			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible">
 				<div class="trade-title w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 z-10">
 					<div>价格(USDT)</div>
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">时间</div>
 				</div>
 
-				<div v-if="tradesList" class="overflow-hidden w-full text-main grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-[20px] left-0 z-10"
-				:style="{
-					height: `${animation ? '20px' : '0px'}`,
-					opacity:`${animation ? '1' : '0'}`,
-					transition: `${animation ? 'all 0.2s' : 'none'}`,
-				}">
+				<div
+					v-if="tradesList"
+					class="overflow-hidden w-full text-main grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-[20px] left-0 z-10"
+					:style="{
+						height: `${animation ? '20px' : '0px'}`,
+						opacity: `${animation ? '1' : '0'}`,
+						transition: `${animation ? 'all 0.2s' : 'none'}`
+					}"
+				>
 					<template v-if="tradesList[0]">
-							<div :class="tradesList[0].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[0].px, pricePoint) }}</div>
-							<div class="text-right">{{ moneyFormat(formatPrice(tradesList[0].sz, point), '', point) }}</div>
-							<div class="text-right">{{ formatDate(parseInt(tradesList[0].ts), 'HH:mm:ss') }}</div>
-						</template>
+						<div :class="tradesList[0].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[0].px, pricePoint) }}</div>
+						<div class="text-right">{{ moneyFormat(formatPrice(tradesList[0].sz, point), '', point) }}</div>
+						<div class="text-right">{{ formatDate(parseInt(tradesList[0].ts), 'HH:mm:ss') }}</div>
+					</template>
 				</div>
 
-				<ul class="relative z-20 w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]" v-if="tradesList" 
-				:style="{
-					transform: `translateY(${animation ? '20px' : '0px'})`,
-					transition: `${animation ? 'all 0.2s' : 'none'}`,
-				}">
+				<ul
+					class="relative z-20 w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
+					v-if="tradesList"
+					:style="{
+						transform: `translateY(${animation ? '20px' : '0px'})`,
+						transition: `${animation ? 'all 0.2s' : 'none'}`
+					}"
+				>
 					<li v-for="(n, index) in tradesList.length" :key="index">
 						<template v-if="tradesList[index]">
 							<div :class="tradesList[index].side == 'buy' ? 'text-red' : 'text-green'">{{ formatPrice(tradesList[index].px, pricePoint) }}</div>
@@ -223,8 +240,8 @@ import { useStore } from '~/store';
 </template>
 
 <style lang="less" scoped>
-.trade-title{
-	position: relative;
+	.trade-title {
+		position: relative;
 		&::before {
 			background-image: var(--bg-linear-90);
 			filter: blur(60px);
@@ -237,5 +254,5 @@ import { useStore } from '~/store';
 			z-index: 0;
 			opacity: 0.1;
 		}
-}
+	}
 </style>

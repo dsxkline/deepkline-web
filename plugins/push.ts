@@ -27,15 +27,27 @@ function findRoute(path: string, routes: any) {
 
 	return {}
 }
+
+function getAppComponent(instance:ComponentInternalInstance){
+    let inst = instance
+    while (inst?.parent) {
+		inst = inst.parent
+		if (inst?.type.__name=="app") break
+	}
+    return inst
+}
+
 const pushHandle = function (this: ComponentInternalInstance, comp: any, params = {}, direction = 'rtl', size = '100%') {
 	// 执行目标willDisappear方法
 	let instance = this
-	console.log('当前push的持有者', instance)
-	if (instance?.willDisappear) instance.willDisappear()
-	while (instance?.parent) {
-		instance = instance.parent
-		if (instance?.willDisappear) instance.willDisappear()
-	}
+	// console.log('当前push的持有者', instance)
+	// if (instance?.willDisappear) instance.willDisappear()
+	// while (instance?.parent) {
+	// 	instance = instance.parent
+	// 	if (instance?.willDisappear) instance.willDisappear()
+	// }
+    const app = getAppComponent(instance);
+    if(app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
 
 	const pushStore = usePushStore()
 	pushStore.setPushState(true)
@@ -167,6 +179,5 @@ export default defineNuxtPlugin(({ vueApp }) => {
 	nuxtApp.provide('pushDown', pushDown)
 	nuxtApp.provide('popRoot', popRoot)
 	nuxtApp.provide('pop', pop)
-
-	console.log('push 注入。。。')
+	// console.log('push 注入。。。')
 })

@@ -76,7 +76,7 @@
 
 	const push = usePushUp()
 	function pushSearch(){
-		console.log('usePushUp')
+		// console.log('usePushUp')
 		push(SymbolSearch,{})
 	}
 

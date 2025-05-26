@@ -4,6 +4,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
 import { useStore } from '~/store';
+import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 
 	const props = defineProps<{
 		symbol: string
@@ -119,7 +120,7 @@ import { useStore } from '~/store';
 		marketFetch
 			.booksFull(props.symbol, 100)
 			.then(res => {
-				console.log('booksfull....', res)
+				// console.log('booksfull....', res)
 				if (res?.code === 0 && res?.data) {
 					const datas = res.data
 					datas.forEach(data => updateOrderBook(data, ''))
@@ -249,7 +250,7 @@ import { useStore } from '~/store';
 	})
 
 	const whenBrowserActive = () => {
-		console.log('浏览器重新激活')
+		// console.log('浏览器重新激活')
 		updateBookList.cancel()
 		throttleAskBid.cancel()
 		$ws.unsubscribe(subHandle)
@@ -291,6 +292,17 @@ import { useStore } from '~/store';
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)
+	})
+	useWillDisappear(()=>{
+		console.log('booksfull useWillDisappear....')
+		updateBookList.cancel()
+		throttleAskBid.cancel()
+		$ws.unsubscribe(subHandle)
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+	})
+	useWillAppear(()=>{
+		console.log('booksfull useWillAppear....')
+		getBooksFull()
 	})
 </script>
 <template>

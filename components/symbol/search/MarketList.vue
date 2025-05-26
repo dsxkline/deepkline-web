@@ -23,7 +23,7 @@
 				keyword:props.keyword,
 				isSearchList:props.isSearchList,
 				clickHandle: (item:Instruments) => {
-					console.log('现货', item)
+					// console.log('现货', item)
 					emit('clickHandle', item)
 				}
 			}
@@ -36,7 +36,7 @@
 				keyword:props.keyword,
 				isSearchList:props.isSearchList,
 				clickHandle: (item:Instruments) => {
-					console.log('现货', item)
+					// console.log('现货', item)
 					emit('clickHandle', item)
 				}
 			}
@@ -47,7 +47,7 @@
 		() => props.keyword,
 		(n, o) => {
 			if (n !== o) {
-				console.log('props.keyword active',active.value,tabbar.value)
+				// console.log('props.keyword active',active.value,tabbar.value)
 				if(menus.value[0].contentParams)menus.value[0].contentParams.keyword = n
 				if(menus.value[1].contentParams)menus.value[1].contentParams.keyword = n
 				update()
@@ -56,7 +56,7 @@
 	)	
 
 	function update() {
-		console.log('update',props.keyword)
+		// console.log('update',props.keyword)
 		if(props.keyword){
 			if(tabbar.value?.updateAll)tabbar.value.updateAll()
 		}else{
