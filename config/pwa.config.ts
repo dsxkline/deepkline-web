@@ -33,9 +33,9 @@ export default {
 	workbox: {
 		runtimeCaching: [
 			{
-				urlPattern: '.*', // 匹配所有 URL
+				// JS/CSS/图片资源：缓存优先
+    			urlPattern: /\.(?:js|css|png|jpg|jpeg|svg|webp)$/,
 				handler: 'StaleWhileRevalidate',
-				method: 'GET',
 				options: {
 					cacheName: 'all-cache',
 					expiration: {
