@@ -85,7 +85,7 @@
 			.tabbar-header {
 				ul {
 					li {
-						@apply text-xs;
+						@apply text-sm;
 					}
 				}
 			}

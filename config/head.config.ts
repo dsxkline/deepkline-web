@@ -22,6 +22,11 @@ export default {
 			rel: 'manifest',
 			href: '/api/manifest.webmanifest'
 		},
+        {
+            rel: 'icon',
+            href: '/favicon.ico',
+            type: 'image/x-icon'
+        },
         // iphone safari 添加到主屏幕的引导图标
 		{
 			rel: 'icon',
