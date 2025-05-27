@@ -42,13 +42,11 @@
 	// 虚拟化
 	const scrollbar = ref<HTMLElement | null>()
 	// 每个元素的高度
-	const itemHeight = computed(() => {
-		return symbolDom.value?.querySelector('ul li')?.clientHeight || 56 // 每个元素的高度
-	})
+	let itemHeight = 56
 	// 可视区域的数量
 	const visibleCount = computed(() => {
 		// 获取当前组件的高度
-		return Math.ceil(contentHeight.value / itemHeight.value)
+		return Math.ceil(contentHeight.value / itemHeight)
 	})
 	// 上下偏移量
 	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))
@@ -84,9 +82,11 @@
 	let scrolling = false
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
+		itemHeight = symbolDom.value?.querySelector('.symbol-list-content ul li')?.clientHeight || itemHeight
+		// console.log('scrollHandler', symbolDom.value?.querySelector('ul li')?.clientHeight, itemHeight, contentHeight.value)
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
-		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight.value - offset.value))
+		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
 		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
 		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
