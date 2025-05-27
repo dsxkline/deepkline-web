@@ -53,12 +53,6 @@ import { usePop } from '~/composable/usePush'
 		}
 	)
 
-	const pop = usePop()
-	const selectHandle = (item: Instruments) => {
-		show.value = false
-		props.selectHandle && props.selectHandle(item);
-	}
-
 	onMounted(() => {
 		// 点击其他区域隐藏
 		document.addEventListener('click', hide)
@@ -87,7 +81,7 @@ import { usePop } from '~/composable/usePush'
 					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
 				</div>
 				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
-					<MarketList :height="height" :keyword="keyword" :selectHandle="selectHandle" :isSearchList="true" />
+					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :selectHandle="selectHandle" :isSearchList="true" />
 				</div>
 			</div>
 		</div>
