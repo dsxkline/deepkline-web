@@ -1,15 +1,17 @@
 <script lang="ts" setup>
 	import { useSymbolStore } from '~/store/symbol'
 	import SymbolSearch from './SymbolSearch.vue'
+import { usePush } from '~/composable/usePush';
 	const props = defineProps<{
 		symbol: string
 	}>()
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[props.symbol]
 	})
-	const nuxtApp = useNuxtApp()
+
+	const push = usePush()
 	function pushSearch() {
-		nuxtApp.$pushLeft(SymbolSearch, {}, '460px')
+		push(SymbolSearch, {}, '460px')
 	}
 </script>
 <template>

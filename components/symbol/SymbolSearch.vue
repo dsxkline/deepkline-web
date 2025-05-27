@@ -4,8 +4,10 @@
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
+import { usePop } from '~/composable/usePush'
 	const props = defineProps<{
-		push?: boolean
+		push?: boolean,
+		selectHandle?: (item: Instruments) => void
 	}>()
 	const keyword = ref('')
 	const show = ref(false)
@@ -51,15 +53,15 @@
 		}
 	)
 
+	const pop = usePop()
+	const selectHandle = (item: Instruments) => {
+		show.value = false
+		props.selectHandle && props.selectHandle(item);
+	}
+
 	onMounted(() => {
 		// 点击其他区域隐藏
 		document.addEventListener('click', hide)
-
-		// setTimeout(() => {
-		// 	if (useStore().isH5) {
-		// 		inputDom.value?.focus()
-		// 	}
-		// }, 600)
 	})
 
 	onUnmounted(() => {
@@ -85,7 +87,7 @@
 					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
 				</div>
 				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
-					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :isSearchList="true" />
+					<MarketList :height="height" :keyword="keyword" :selectHandle="selectHandle" :isSearchList="true" />
 				</div>
 			</div>
 		</div>

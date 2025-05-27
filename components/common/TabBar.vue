@@ -140,9 +140,9 @@
 </script>
 
 <template>
-	<div class="tabbar-container" :style="[height ? `height:${height}px` : 'auto']">
-		<div class="tabbar-header" ref="tabbarHeader">
-			<ul>
+	<div class="tabbar-container flex overflow-hidden flex-col" :style="[height ? `height:${height}px` : 'auto']">
+		<div class="tabbar-header px-4 w-full relative" ref="tabbarHeader">
+			<ul class="flex py-1 w-max h-full text-base *:mx-2">
 				<li v-for="(item, index) in menus" :key="index" click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
 					<template v-if="item.titleComp">
 						<component :is="item.titleComp" />
@@ -165,24 +165,11 @@
 
 <style scoped lang="less">
 	.tabbar-container {
-		overflow: hidden;
-		display: flex;
-		flex-direction: column;
 		.tabbar-header {
-			width: 100%;
-			position: relative;
-			padding: 0px 16px;
 			ul {
-				width: max-content;
-				display: flex;
-				flex-direction: row;
-				padding: 5px 0;
-				height: 100%;
 				li {
 					cursor: pointer;
-					margin: 0 10px;
 					color: rgb(var(--color-text-muted));
-					font-size: 16px;
 					user-select: none;
 					display: flex;
 					align-items: center;

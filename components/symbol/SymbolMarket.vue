@@ -60,7 +60,7 @@
 	<div>
 		<div class="search-container flex px-4 w-full">
 			
-			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-full flex items-center justify-center text-grey text-sm h-[35px] m-3 ml-0" @click="pushSearch">
+			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-full flex items-center justify-center text-grey text-sm h-9 m-3 ml-0" @click="pushSearch">
 				<el-icon class="!w-4 !h-4"><Search class="!w-4 !h-4" /></el-icon>
 				<span class="px-2">搜索币对</span>
 			</div>
@@ -132,7 +132,7 @@
 			.tabbar-header {
 				ul {
 					li {
-						font-size: 20px;
+						@apply text-xl;
 					}
 				}
 			}
@@ -140,7 +140,7 @@
 				.tabbar-header {
 					ul {
 						li {
-							font-size: 16px;
+							@apply text-base;
 						}
 					}
 				}

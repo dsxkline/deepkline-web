@@ -115,11 +115,11 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 
 	useWillDisappear(()=>{
 		console.log('klinechart useWillDisappear....')
-		chart?.leave()
+		//chart?.leave()
 	})
 	useWillAppear(()=>{
 		console.log('klinechart useWillAppear....')
-		chart?.reload()
+		//chart?.reload()
 	})
 </script>
 <template>

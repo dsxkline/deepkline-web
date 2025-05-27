@@ -19,8 +19,9 @@
 		favorite?: boolean
 		start?: boolean
 		keyword?: string
-		isSearchList?:boolean
+		isSearchList?: boolean
 		clickHandle?: (item?: Instruments) => void
+		selectHandle?: (item: Instruments) => void
 	}>()
 	const emit = defineEmits<{
 		(event: 'clickHandle', symbol?: Instruments): void
@@ -41,11 +42,13 @@
 	// 虚拟化
 	const scrollbar = ref<HTMLElement | null>()
 	// 每个元素的高度
-	const itemHeight = 54
+	const itemHeight = computed(() => {
+		return symbolDom.value?.querySelector('ul li')?.clientHeight || 56 // 每个元素的高度
+	})
 	// 可视区域的数量
 	const visibleCount = computed(() => {
 		// 获取当前组件的高度
-		return Math.ceil(contentHeight.value / itemHeight)
+		return Math.ceil(contentHeight.value / itemHeight.value)
 	})
 	// 上下偏移量
 	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))
@@ -83,7 +86,7 @@
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
-		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
+		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight.value - offset.value))
 		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
 		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
@@ -166,7 +169,7 @@
 		isLeave.value = false
 		// console.log('symbolCategory', props.symbolCategory, props.favorite)
 		useSymbolStore().loadFavoriteSymbols()
-		new Promise(resolve=>{
+		new Promise(resolve => {
 			getGroupSymbols()
 			resolve(null)
 		})
@@ -212,9 +215,20 @@
 	const push = usePush()
 
 	function clickSymbol(item?: Instruments) {
+		// 是否选中返回
+		if (props.selectHandle && item) {
+			props.selectHandle(item)
+			return
+		}
 		if (useStore().isH5) {
-			// useNuxtApp().$push(SymbolDetail, { symbol: item?.instId }, '100%')
-			push(SymbolDetail, { symbol: item?.instId })
+			const params = {
+				symbol: item?.instId,
+				// 'onUpdate:symbol': (val:string) => {
+				// 	console.log('onUpdate:symbol', val)
+				// 	params.symbol = val // 或同步更新你的外部状态
+				// }
+			}
+			push(SymbolDetail,params)
 			return
 		}
 		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
@@ -223,11 +237,11 @@
 		activeLeftBorder(item?.instId)
 	}
 
-	function activeLeftBorder(instId?:string){
-		if(!instId)return;
+	function activeLeftBorder(instId?: string) {
+		if (!instId) return
 		const { $wsb, $ws } = useNuxtApp()
-		const price = $ws.getTickers(instId)?.last;
-		const open = $ws.getTickers(instId)?.sodUtc8;
+		const price = $ws.getTickers(instId)?.last
+		const open = $ws.getTickers(instId)?.sodUtc8
 		if (activeBorderColors.value && instId) activeBorderColors.value[instId] = `${price >= open ? '!border-green-500' : '!border-red-500'}`
 	}
 	// let bgThrottleMap: Record<string, (...args: any[]) => void> = {}
@@ -366,11 +380,10 @@
 		console.log('symbollist willdisappear.....')
 		// 暂停订阅动画，通常用在h5页面切换事件中
 		unSubSymbols()
-		
 	})
-	useWillAppear(()=>{
+	useWillAppear(() => {
 		console.log('symbollist willappear.....')
-		if(isLeave.value) return;
+		if (isLeave.value) return
 		subSymbols()
 	})
 	// 暴露给父组件的方法
@@ -385,7 +398,7 @@
 		</Error>
 
 		<ul class="w-full" v-if="loading && !error">
-			<li class="w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
+			<li class="w-full h-14 grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4" v-for="item in 20">
 				<el-skeleton :rows="0" animated class="col-span-2">
 					<template #template>
 						<el-skeleton-item variant="p" style="width: 80%; height: 30%" />
@@ -404,23 +417,25 @@
 			</li>
 		</ul>
 		<div ref="lheader" class="symbol-list-header w-full py-2 px-4" v-else-if="!loading && !error">
-			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey'+(isSearchList?' grid-cols-[30px_1fr_1fr_1fr_1fr]':'')">
+			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey' + (isSearchList ? ' grid-cols-[30px_1fr_1fr_1fr_1fr]' : '')">
 				<li class="justify-start cursor-pointer select-none" v-if="isSearchList"><span></span></li>
 				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
 				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
-				
 			</ul>
 		</div>
 		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<!-- 容器总高度 -->
 			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full symbol-list-content" v-else>
-				<ul :class="'w-full *:relative *:w-full *:h-[54px] *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer'+(isSearchList?' *:grid-cols-[30px_1fr_1fr_1fr_1fr]':'')" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+				<ul
+					:class="'w-full *:relative *:w-full *:h-14 *:grid *:grid-cols-4 *:*:flex *:*:items-center *:px-4 *:cursor-pointer' + (isSearchList ? ' *:grid-cols-[30px_1fr_1fr_1fr_1fr]' : '')"
+					:style="{ transform: `translateY(${start * itemHeight}px)` }"
+				>
 					<li
 						:id="'symbol-list-id-' + item.instId"
 						:class="[
-							'relative w-full h-[54px] grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
+							'relative w-full h-14 grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
 							useSymbolStore().activeSymbol == item.instId && activeBorderColors[item.instId] && !isSearchList ? 'border-l-2 ' + activeBorderColors[item.instId] : ''
 						]"
 						v-for="item in virtualList"
@@ -428,14 +443,13 @@
 						@click="clickSymbol(item)"
 						click-sound
 					>
-						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.instId"/></div>
+						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.instId" /></div>
 						<div class="col-span-2 text-grey flex items-center">
 							<SymbolName :symbol="item" />
 						</div>
 						<div class="justify-end pr-2"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
-						
-						
+
 						<div :class="'bg absolute top-0 left-0 w-full h-full -z-10'"></div>
 					</li>
 				</ul>

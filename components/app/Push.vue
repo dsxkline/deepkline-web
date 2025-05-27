@@ -54,9 +54,6 @@
 		}
 	})
 
-	// 把参数通过props传递给目标组件
-	const componentProps = computed(() => props.params)
-
 	let contentHeight = 0
 	const swipeDown = (distance: number, time: number, end: boolean) => {
 		console.log('swipedown....', distance, time, end)
@@ -117,11 +114,11 @@
 			usePushStore().setPushState(false)
 		}, 100)
 
-		console.log('getCurrentInstance()?.parent', getCurrentInstance()?.parent)
+		// console.log('getCurrentInstance()?.parent', getCurrentInstance()?.parent)
 	})
 
 	onMounted(() => {
-		console.log('push mounted...', props.size, instance, drawer.value)
+		// console.log('push mounted...', props.size, instance, drawer.value)
 		usePushStore().push(instance)
 	})
 
@@ -134,7 +131,7 @@
 		while (inst?.parent) {
 			inst = inst.parent
 			if (inst?.type.__name == 'app') break
-            console.log('parent.....',inst)
+            // console.log('parent.....',inst)
 		}
 		return inst
 	}
@@ -181,7 +178,7 @@
 					<template v-if="direction == 'btt' && size != '100%'">
 						<div @click="hide"><DrawLine /></div>
 					</template>
-					<component :is="to" :push="true" @close="close" v-bind="componentProps" />
+					<component :is="to" :push="true" @close="close" v-bind="props.params" />
 					<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 				</div>
 			</template>

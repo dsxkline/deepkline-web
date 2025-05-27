@@ -302,7 +302,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	})
 	useWillAppear(()=>{
 		console.log('booksfull useWillAppear....')
-		getBooksFull()
+		if(!loading.value)getBooksFull()
 	})
 </script>
 <template>

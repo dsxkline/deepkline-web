@@ -78,6 +78,9 @@ class DsxKlineChart {
 	leave() {
 		this.unsubscribe()
 	}
+	appear() {
+		this.subscribe()
+	}
 
 	subscribe() {
 		const { $wsb, $ws } = useNuxtApp()

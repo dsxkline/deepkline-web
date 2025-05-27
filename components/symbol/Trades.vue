@@ -175,7 +175,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	})
 	useWillAppear(() => {
 		console.log('trades useWillAppear....')
-		getTradeList()
+		if(!loading.value)getTradeList()
 	})
 </script>
 <template>

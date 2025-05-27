@@ -8,6 +8,7 @@
 		start?:boolean,
 		keyword?:string
 		isSearchList?:boolean
+		selectHandle?: (item: Instruments) => void
 	}>()
 	const emit = defineEmits<{
 		(event: 'clickHandle', symbol?: Instruments): void
@@ -22,6 +23,7 @@
 				symbolCategory: InstanceType.SPOT,
 				keyword:props.keyword,
 				isSearchList:props.isSearchList,
+				selectHandle:props.selectHandle,
 				clickHandle: (item:Instruments) => {
 					// console.log('现货', item)
 					emit('clickHandle', item)
@@ -35,6 +37,7 @@
 				symbolCategory: InstanceType.SWAP,
 				keyword:props.keyword,
 				isSearchList:props.isSearchList,
+				selectHandle:props.selectHandle,
 				clickHandle: (item:Instruments) => {
 					// console.log('现货', item)
 					emit('clickHandle', item)

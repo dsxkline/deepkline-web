@@ -12,12 +12,12 @@ function setBodyHeight() {
 
 function setRemUnit() {
 	const baseSize = 16 // 通常设置 1rem = 100px 设计稿（方便计算）
-	const designWidth = window.innerWidth > 999 ? window.innerWidth : 375 // 设计稿宽度
+	const designWidth = window.innerWidth > 999 ? window.innerWidth : 400 // 设计稿宽度
 
 	const html = document.documentElement
 	const width = html.clientWidth
 
-	const rem = Math.min((width / designWidth) * baseSize,20) // 限制最大值为 20px
+	const rem = Math.max(baseSize,Math.min((width / designWidth) * baseSize,20)) // 限制最大值为 20px
 	html.style.fontSize = rem + 'px'
 }
 

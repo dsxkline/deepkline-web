@@ -13,6 +13,11 @@
 	const props = defineProps<{
 		symbol: string
 	}>()
+	// 更新props.symbol
+	const emit = defineEmits<{
+		(event: 'update:symbol', symbol: string): void
+	}>()
+	const currentSymbol = ref(props.symbol)
 	const tabbarHeight = ref(0)
 	const navbar = ref()
 	const menus = ref<MenuModel[]>([
@@ -20,14 +25,14 @@
 			name: '行情',
 			contentComp: markRaw(SymbolMarketDatas),
 			contentParams: {
-				symbol: props.symbol
+				symbol: currentSymbol.value
 			}
 		},
 		{
 			name: '概况',
 			contentComp: markRaw(SymbolInfo),
 			contentParams: {
-				symbol: props.symbol
+				symbol: currentSymbol.value
 			}
 		},
 		{
@@ -41,14 +46,14 @@
 		// 	name: '交易',
 		// 	contentComp: markRaw(TradeOrder),
 		// 	contentParams: {
-		// 		symbol: props.symbol
+		// 		symbol: currentSymbol.value
 		// 	}
 		// }
 	])
 	const pop = usePop()
 
 	const symbolObj = computed(() => {
-		return useSymbolStore().symbols[props.symbol]
+		return useSymbolStore().symbols[currentSymbol.value]
 	})
 	function favorite(item: Instruments) {
 		useSymbolStore().favoriteSymbol(item)
@@ -58,7 +63,7 @@
 	}
 
 	watch(
-		() => props.symbol,
+		() => currentSymbol.value,
 		val => {
 			menus.value.forEach(item => {
 				if (item.contentParams) item.contentParams.symbol = val
@@ -77,7 +82,13 @@
 	const push = usePushUp()
 	function pushSearch(){
 		// console.log('usePushUp')
-		push(SymbolSearch,{})
+		push(SymbolSearch,{selectHandle: (item: Instruments) => {
+			if (item?.instId) {
+				// 切换当前symbol
+				currentSymbol.value = item.instId
+				pop()
+			}
+		}})
 	}
 
 	onMounted(() => {
@@ -99,7 +110,7 @@
 				<button class="flex items-center pl-2 h-full" @click="pushSearch"><el-icon><CaretBottom /></el-icon></button>
 			</template>
 			<template #right>
-				<SymbolFavoriteButton :symbol="symbol" />
+				<SymbolFavoriteButton :symbol="currentSymbol" />
 			</template>
 		</NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight" />

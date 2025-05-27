@@ -1,5 +1,4 @@
 require('dotenv').config({ path: '.env.' + process.env.NODE_ENV })
-import colorModeConfig from './config/color.mode.config'
 import componentsConfig from './config/components.config'
 import cssConfig from './config/css.config'
 import headConfig from './config/head.config'
@@ -31,7 +30,6 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: modulesConfig,
 	tailwindcss: tailwindNuxtConfig,
-	colorMode: colorModeConfig,
 	app: {
 		head: headConfig
 	},
