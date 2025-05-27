@@ -41,7 +41,7 @@
 			contentParams: {
 				symbol: props.symbol
 			}
-		},
+		}
 		// {
 		// 	name: '交易',
 		// 	contentComp: markRaw(TradeOrder),
@@ -61,7 +61,12 @@
 	function returnBack() {
 		pop()
 	}
-
+	watch(
+		() => props.symbol,
+		val => {
+			currentSymbol.value = val;
+		}
+	)
 	watch(
 		() => currentSymbol.value,
 		val => {
@@ -80,22 +85,24 @@
 	)
 
 	const push = usePushUp()
-	function pushSearch(){
+	function pushSearch() {
 		// console.log('usePushUp')
-		push(SymbolSearch,{selectHandle: (item: Instruments) => {
-			if (item?.instId) {
-				// 切换当前symbol
-				currentSymbol.value = item.instId
-				pop()
+		push(SymbolSearch, {
+			selectHandle: (item: Instruments) => {
+				if (item?.instId) {
+					// 切换当前symbol
+					currentSymbol.value = item.instId
+					pop()
+				}
 			}
-		}})
+		})
 	}
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40
 		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
 	})
-	onUnmounted(()=>{
+	onUnmounted(() => {
 		navbar.value = null
 	})
 </script>
@@ -106,8 +113,12 @@
 				<button class="flex items-center pr-2 h-full" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
-				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch">{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType==InstanceType.SWAP?'永续':'' }}</b>
-				<button class="flex items-center pl-2 h-full" @click="pushSearch"><el-icon><CaretBottom /></el-icon></button>
+				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
+					>{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType == InstanceType.SWAP ? '永续' : '' }}</b
+				>
+				<button class="flex items-center pl-2 h-full" @click="pushSearch">
+					<el-icon><CaretBottom /></el-icon>
+				</button>
 			</template>
 			<template #right>
 				<SymbolFavoriteButton :symbol="currentSymbol" />
