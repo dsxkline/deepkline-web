@@ -18,6 +18,19 @@
 	const drawerSize = ref(props.size)
 	const drawer = ref<HTMLElement | null>(null)
 	const show = ref(true)
+
+    // 异步加载组件
+    const asyncComp = defineAsyncComponent(() => {
+        return new Promise((resolve, reject) => {
+            if (props.to) {
+                resolve(props.to)
+            } else {
+                reject(new Error('No async component provided'))
+            }
+        })
+    })
+    
+
 	const hide = () => {
 		visibleDrawer.value = false
 	}
@@ -178,7 +191,7 @@
 					<template v-if="direction == 'btt' && size != '100%'">
 						<div @click="hide"><DrawLine /></div>
 					</template>
-					<component :is="to" :push="true" @close="close" v-bind="props.params" />
+					<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" />
 					<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 				</div>
 			</template>
