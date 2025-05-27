@@ -224,8 +224,8 @@ export default {
 			askBidLineWidth: 0.2, // 多空价格线宽度
 			askBidLineBash: [15, 5],
 			askBidLineBgColor: "rgba(13,16,23, .5)",
-			tipPaddingLeft: 10, // 指标提示信息离左边的距离
-			tipPaddingTop: 10, // 指标提示信息离顶部的距离
+			tipPaddingLeft: 16, // 指标提示信息离左边的距离
+			tipPaddingTop: 16, // 指标提示信息离顶部的距离
 			tipBorderColor: "rgba(0, 0, 0, 0.1)",
 			maxMinBgColor: "rgba(35, 35, 35, 0.05)",
 			maxMinLineColor: "rgba(255, 255, 255, 0.4)"

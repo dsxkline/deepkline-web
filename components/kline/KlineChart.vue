@@ -83,7 +83,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			zoomLockType: ZoomLockType.follow,
 			crossModel: useStore().isH5?CrossModel.longPress: CrossModel.mouseOver,
 			transformers: false,
-			isShowKlineTipPannel: useStore().isH5,
+			// isShowKlineTipPannel: useStore().isH5,
 			// sideHeight: 80,
 			paddingTop: 0,
 			// paddingMiddle: 0,
