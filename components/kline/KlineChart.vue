@@ -3,17 +3,17 @@
 	import DsxKlineChart from './DsxKlineChart'
 	import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from './DsxKlineChart.d'
 	import { useSymbolStore } from '~/store/symbol'
-import { useStore } from '~/store';
-import { useWillAppear, useWillDisappear } from '~/composable/usePush';
+	import { useStore } from '~/store'
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 	}>()
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol])
 	declare var window: DsxWindow
-	const klineDom = ref<HTMLElement|null>()
+	const klineDom = ref<HTMLElement | null>()
 	const error = ref('')
 	const loading = ref(true)
-	let chart: DsxKlineChart|null
+	let chart: DsxKlineChart | null
 	function reloadChart() {
 		chart && chart.reload()
 	}
@@ -74,6 +74,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	onMounted(() => {
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
+		const ticker = useNuxtApp().$ws.getTickers(symbol)
 		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useStore().theme, {
 			element: klineDom.value && klineDom.value.querySelector('.kline'),
 			autoSize: true,
@@ -81,7 +82,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			// klineWidth: 1,
 			candleType: CandleType.solid,
 			zoomLockType: ZoomLockType.follow,
-			crossModel: useStore().isH5?CrossModel.longPress: CrossModel.mouseOver,
+			crossModel: useStore().isH5 ? CrossModel.longPress : CrossModel.mouseOver,
 			transformers: false,
 			// isShowKlineTipPannel: useStore().isH5,
 			// sideHeight: 80,
@@ -91,6 +92,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			sides: ['MACD', 'KDJ', 'RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
+			ask: parseFloat(ticker?.last || '0'),
+			bid: parseFloat(ticker?.last || '0'),
 			decimalPoint: String(symbolDetail?.tickSz).split('.')[1]?.length
 		})
 		nextTick(() => {
@@ -107,17 +110,17 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 
 		// console.log('create kline chart ');
 	})
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		chart && chart.destroy()
 		chart = null
 		klineDom.value = null
 	})
 
-	useWillDisappear(()=>{
+	useWillDisappear(() => {
 		console.log('klinechart useWillDisappear....')
 		//chart?.leave()
 	})
-	useWillAppear(()=>{
+	useWillAppear(() => {
 		console.log('klinechart useWillAppear....')
 		//chart?.reload()
 	})

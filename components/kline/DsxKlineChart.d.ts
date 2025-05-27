@@ -185,6 +185,8 @@ export interface DsxKlineConfig {
 	workerPath?:string,
 	loadMain?: string[];
 	loadSides?: string[];
+	ask?:number;
+	bid?:number;
 	
 }
 export declare class DsxKline {
