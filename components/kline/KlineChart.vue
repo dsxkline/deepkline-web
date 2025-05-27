@@ -4,6 +4,7 @@
 	import { ChartType, CandleType, ZoomLockType, CrossModel, type DsxWindow } from './DsxKlineChart.d'
 	import { useSymbolStore } from '~/store/symbol'
 import { useStore } from '~/store';
+import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -110,6 +111,15 @@ import { useStore } from '~/store';
 		chart && chart.destroy()
 		chart = null
 		klineDom.value = null
+	})
+
+	useWillDisappear(()=>{
+		console.log('klinechart useWillDisappear....')
+		chart?.leave()
+	})
+	useWillAppear(()=>{
+		console.log('klinechart useWillAppear....')
+		chart?.reload()
 	})
 </script>
 <template>

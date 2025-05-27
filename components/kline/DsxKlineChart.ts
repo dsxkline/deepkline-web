@@ -75,6 +75,10 @@ class DsxKlineChart {
 		this.kline.startLoading()
 	}
 
+	leave() {
+		this.unsubscribe()
+	}
+
 	subscribe() {
 		const { $wsb, $ws } = useNuxtApp()
 		const candleCycle: Record<string, CandleCannel> = {
