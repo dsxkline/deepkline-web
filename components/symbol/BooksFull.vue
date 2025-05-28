@@ -3,8 +3,8 @@
 	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
-import { useStore } from '~/store';
-import { useWillAppear, useWillDisappear } from '~/composable/usePush';
+	import { useStore } from '~/store'
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 
 	const props = defineProps<{
 		symbol: string
@@ -268,10 +268,10 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	}
 
 	// 滚动到显示触发
-	function onObserveVisible(visible:boolean){
+	function onObserveVisible(visible: boolean) {
 		interVisible.value = visible
 	}
-	function onObserveVisibleBottom(visible:boolean){
+	function onObserveVisibleBottom(visible: boolean) {
 		interVisibleBottom.value = visible
 	}
 
@@ -280,7 +280,12 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz
-		getBooksFull()
+		new Promise(resolve => {
+			setTimeout(() => {
+				getBooksFull()
+				resolve(true)
+			}, 300)
+		})
 	})
 	onUnmounted(() => {
 		throttleAskBid.cancel()
@@ -293,16 +298,16 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)
 	})
-	useWillDisappear(()=>{
+	useWillDisappear(() => {
 		console.log('booksfull useWillDisappear....')
 		updateBookList.cancel()
 		throttleAskBid.cancel()
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 	})
-	useWillAppear(()=>{
+	useWillAppear(() => {
 		console.log('booksfull useWillAppear....')
-		if(!loading.value)getBooksFull()
+		if (!loading.value) getBooksFull()
 	})
 </script>
 <template>
@@ -333,7 +338,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
 				</li>
-				<li v-for="(n,index) in (activeBook==2?2*showNumber+2:showNumber)" v-if="(activeBook == 0 || activeBook == 2) && asks" :key="index">
+				<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && asks" :key="index">
 					<template v-if="asks[index]">
 						<div class="text-red">{{ formatPrice(asks[index].px, pricePoint) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
@@ -373,8 +378,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 					</div>
 				</li>
 
-
-				<li v-for="(n,index) in (activeBook==1?2*showNumber+2:showNumber)" v-if="(activeBook == 0 || activeBook == 1) && bids" :key="index">
+				<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && bids" :key="index">
 					<template v-if="bids[index]">
 						<div class="text-green">{{ formatPrice(bids[index].px, pricePoint) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>

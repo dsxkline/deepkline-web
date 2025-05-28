@@ -155,9 +155,12 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz
-		setTimeout(() => {
-			getTradeList()
-		}, 0)
+		new Promise(resolve => {
+			setTimeout(() => {
+				getTradeList()
+				resolve(true)
+			}, 300)
+		})
 	})
 	onUnmounted(() => {
 		updateTimer && clearTimeout(updateTimer)
