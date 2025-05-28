@@ -113,7 +113,7 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 	return pushInstance
 }
 
-const pop = function (this: any, data = {}) {
+const pop = function (data = {}) {
 	const store = usePushStore()
 	let topPush = store.getTopPush()
 	// 需要查找最顶部的push回传数据
@@ -158,17 +158,17 @@ function pushDown(this: any, comp: any, params = {}, size = '100%') {
 }
 
 // 返回根视图
-const popRoot = function (this: any, data: any, index = 0) {
+const popRoot = function (data: any, index = 0) {
 	const pushComopnents = usePushStore().pushComopnents
 	const length = pushComopnents.length
 	// console.log("popRoot >>>", pushComopnents, index);
-	if (length <= 1) return pop.bind(this)(data)
+	if (length <= 1) return pop(data)
 	// index 传负数表示从后往前，index = -1 表示返回倒数第二个，index = -2表示返回倒数第三个，因为倒数第一个是自己也就是index=0
 	if (index < 0) {
-		for (let i = length - 1; i >= length + index; i--) pop.bind(this)(data)
+		for (let i = length - 1; i >= length + index; i--) pop(data)
 		return
 	}
-	for (let i = length - 1; i >= index; i--) pop.bind(this)(data)
+	for (let i = length - 1; i >= index; i--) pop(data)
 }
 
 export default defineNuxtPlugin(({ vueApp }) => {

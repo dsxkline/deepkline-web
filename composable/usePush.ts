@@ -14,9 +14,7 @@ export function usePushUp() {
 }
 
 export function usePop() {
-	const instance = getCurrentInstance()
-	if (!instance) throw new Error('must be used in setup')
-	return (data?:any, index?:number|undefined) => index!=undefined?useNuxtApp().$popRoot.call(instance,data,index):useNuxtApp().$pop.call(instance,data)
+	return (data?:any, index?:number|undefined) => index!=undefined?useNuxtApp().$popRoot.call(data,index):useNuxtApp().$pop.call(data)
 }
 
 
