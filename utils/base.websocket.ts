@@ -42,6 +42,13 @@ export default class BaseWebSocket {
 		if(!this.connectLevelFns.includes(fn))this.connectLevelFns.push(fn);
 		return this.connectLevel;
 	}
+	// 移除监听
+	removeSignalState(fn:(stateLevel:number) => void) {
+		const index = this.connectLevelFns.indexOf(fn);
+		if (index >= 0) {
+			this.connectLevelFns.splice(index, 1);
+		}
+	}
 	
 	// 重连成功执行一次hook
 	onReconnectSuccess(fn:()=>void){

@@ -161,6 +161,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 		})
 	})
 	onBeforeUnmount(() => {
+		$ws.removeSignalState(wsError)
 		updateTimer && clearTimeout(updateTimer)
 		$ws.unsubscribe(subHandle)
 		$windowEvent.removeEvent(whenBrowserActive)

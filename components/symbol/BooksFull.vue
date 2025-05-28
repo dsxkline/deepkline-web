@@ -288,6 +288,7 @@
 		})
 	})
 	onBeforeUnmount(() => {
+		$ws.removeSignalState(wsError)
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		$windowEvent.removeEvent(whenBrowserActive)
