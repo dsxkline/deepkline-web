@@ -23,8 +23,8 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 			}
 		}, options)
 
-		;(el as any).__observer__ = observer
-		observer.observe(el)
+		;(el as any).__observer__ = observer;
+		observer.observe(el);
 
 		// ⚠️ 初始化时主动触发一次（可能此时元素就在视口内）
 		// requestAnimationFrame(() => {
@@ -40,7 +40,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		// })
 	},
 	unmounted(el) {
-		;(el as any).__observer__?.disconnect()
-		delete (el as any).__observer__
+		;(el as any).__observer__?.disconnect();
+		delete (el as any).__observer__;
 	}
 }

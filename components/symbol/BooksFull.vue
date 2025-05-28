@@ -287,16 +287,17 @@
 			}, 300)
 		})
 	})
-	onUnmounted(() => {
+	onBeforeUnmount(() => {
+		$ws.unsubscribe(subHandle)
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		$windowEvent.removeEvent(whenBrowserActive)
 		throttleAskBid.cancel()
 		updateBookList.cancel()
 		orderBook.value = null
 		asks.value = null
 		bids.value = null
 		ticker.value = null
-		$ws.unsubscribe(subHandle)
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
-		$windowEvent.removeEvent(whenBrowserActive)
+		
 	})
 	useWillDisappear(() => {
 		console.log('booksfull useWillDisappear....')

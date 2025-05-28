@@ -16,8 +16,7 @@
 		parent: ComponentInternalInstance
 	}>()
 	const drawerSize = ref(props.size)
-	const drawer = ref<HTMLElement | null>(null)
-	const show = ref(true)
+	const drawer = ref<HTMLElement | null>(null);
 
     // 异步加载组件
     const asyncComp = defineAsyncComponent(() => {
@@ -46,8 +45,6 @@
 				if (container) {
 					render(null, container)
 					document.body.removeChild(container) // 从 DOM 中移除组件
-					console.log('push closed!', container, instance.vnode.el, instance)
-					show.value = false
 				}
 			})
 		}
@@ -69,7 +66,6 @@
 
 	let contentHeight = 0
 	const swipeDown = (distance: number, time: number, end: boolean) => {
-		console.log('swipedown....', distance, time, end)
 		if (!drawer.value) return
 		// 跟着滑下来
 		const content = drawer.value.querySelector('.el-drawer.btt') as HTMLElement
@@ -127,7 +123,8 @@
 			usePushStore().setPushState(false)
 		}, 100)
 
-		// console.log('getCurrentInstance()?.parent', getCurrentInstance()?.parent)
+		childWillAppearlisteners.value = []
+        childWillDisAppearlisteners.value = []
 	})
 
 	onMounted(() => {
@@ -152,7 +149,7 @@
 	// 控制子组件将要显示回调
 	const childWillAppearlisteners = ref<(() => void)[]>([])
 	provide('registerChildWillAppear', (refreshFn: () => void) => {
-        console.log('注册进来了吗',refreshFn)
+        // console.log('注册进来了吗',refreshFn)
 		childWillAppearlisteners.value.push(refreshFn)
 	})
 	const refreshChildWillAppear = () => {

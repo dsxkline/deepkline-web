@@ -10,7 +10,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	}>()
 
 	const tradesList = ref<TradesResponse[] | null>([])
-	const lastTrade = ref<TradesResponse | null>()
 	// 小数点
 	const point = ref(0)
 	const loading = ref(true)
@@ -118,7 +117,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 		pricePoint.value = symbolObj.value?.tickSz || 0
 		if (tradesList.value && tradesList.value.length > 30) {
 			// 删除最后的数据
-			lastTrade.value = JSON.parse(JSON.stringify(tradesList.value[tradesList.value.length - 1]))
 			tradesList.value.splice(tradesList.value.length - 1, 1)[0]
 		}
 		tradesList.value?.unshift(updates)
@@ -162,13 +160,11 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 			}, 300)
 		})
 	})
-	onUnmounted(() => {
+	onBeforeUnmount(() => {
 		updateTimer && clearTimeout(updateTimer)
-		tradesList.value = null
-		lastTrade.value = null
 		$ws.unsubscribe(subHandle)
 		$windowEvent.removeEvent(whenBrowserActive)
-		if (updateTimer) clearTimeout(updateTimer)
+		tradesList.value = null
 	})
 
 	useWillDisappear(() => {

@@ -106,7 +106,7 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 					}
 				}
-			}, 50)
+			}, 150)
 		}
 	})
 
@@ -136,7 +136,7 @@ const pop = function (this: any, data = {}) {
 		// 顶层
 		const nuxt = document.querySelector('#__nuxt')
 		if (nuxt && nuxt instanceof HTMLElement) {
-			nuxt.style.transform = 'translateX(0)'
+			nuxt.style.transform = ''
 		}
 	}
 }
