@@ -16,19 +16,19 @@
 		parent: ComponentInternalInstance
 	}>()
 	const drawerSize = ref(props.size)
-	const drawer = ref<HTMLElement | null>(null);
-
-    // 异步加载组件
-    const asyncComp = defineAsyncComponent(() => {
-        return new Promise((resolve, reject) => {
-            if (props.to) {
-                resolve(props.to)
-            } else {
-                reject(new Error('No async component provided'))
-            }
-        })
-    })
-    
+	const drawer = ref<HTMLElement | null>(null)
+	const container = ref<HTMLElement | null>(null)
+	const show = ref(true)
+	// 异步加载组件
+	const asyncComp = defineAsyncComponent(() => {
+		return new Promise((resolve, reject) => {
+			if (props.to) {
+				resolve(props.to)
+			} else {
+				reject(new Error('No async component provided'))
+			}
+		})
+	})
 
 	const hide = () => {
 		visibleDrawer.value = false
@@ -37,16 +37,11 @@
 		hide()
 	}
 	const closed = () => {
-		// 调用组件卸载方法
-		if (instance) {
-			nextTick(() => {
-				const container = instance?.vnode.el?.parentNode
-				// console.log('Component unmounted! container', container, instance.vnode.el, instance);
-				if (container) {
-					render(null, container)
-					document.body.removeChild(container) // 从 DOM 中移除组件
-				}
-			})
+		console.log('drawer 调用 closed')
+		show.value = false
+		if (container.value) {
+			render(null, container.value as HTMLElement)
+			//document.body.removeChild(container.value as HTMLElement)
 		}
 	}
 
@@ -90,7 +85,7 @@
 	}
 
 	onUnmounted(() => {
-		console.log('push onUnmounted')
+		console.log('push onUnmounted', container.value)
 		// 获取组件的父级
 		if (props.parent) {
 			let parent: ComponentInternalInstance | null = props.parent
@@ -112,24 +107,30 @@
 			// 	}
 			// 	parent = parent.parent
 			// }
-            const app = getAppComponent(parent)
-            if(app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
+			const app = getAppComponent(parent)
+			if (app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
 		}
-		// 卸载的时候，上一个push的子组件触发将要显示
 
+		childWillAppearlisteners.value = []
+		childWillDisAppearlisteners.value = []
+
+		// 调用组件卸载方法
+		if (container.value) {
+			document.body.removeChild(container.value) // 从 DOM 中移除组件
+		}
+		container.value = null
 		drawer.value = null
 
 		setTimeout(() => {
 			usePushStore().setPushState(false)
 		}, 100)
-
-		childWillAppearlisteners.value = []
-        childWillDisAppearlisteners.value = []
 	})
 
 	onMounted(() => {
 		// console.log('push mounted...', props.size, instance, drawer.value)
 		usePushStore().push(instance)
+		container.value = instance?.vnode.el?.parentNode
+		console.log('container', container.value)
 	})
 
 	function getInstance() {
@@ -141,7 +142,7 @@
 		while (inst?.parent) {
 			inst = inst.parent
 			if (inst?.type.__name == 'app') break
-            // console.log('parent.....',inst)
+			// console.log('parent.....',inst)
 		}
 		return inst
 	}
@@ -149,7 +150,7 @@
 	// 控制子组件将要显示回调
 	const childWillAppearlisteners = ref<(() => void)[]>([])
 	provide('registerChildWillAppear', (refreshFn: () => void) => {
-        // console.log('注册进来了吗',refreshFn)
+		// console.log('注册进来了吗',refreshFn)
 		childWillAppearlisteners.value.push(refreshFn)
 	})
 	const refreshChildWillAppear = () => {
@@ -172,7 +173,7 @@
 </script>
 
 <template>
-	<div class="drawer-container" ref="drawer">
+	<div class="drawer-container" ref="drawer" v-if="show">
 		<el-drawer
 			v-model="visibleDrawer"
 			:direction="direction"
