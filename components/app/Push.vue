@@ -167,7 +167,7 @@
 </script>
 
 <template>
-	<div class="drawer-container" ref="drawerContainer" v-if="show">
+	<div class="drawer-container" ref="drawerContainer">
 		<el-drawer
 			v-model="visibleDrawer"
 			:direction="direction"
@@ -177,6 +177,7 @@
 			:class="{ pushup: direction == 'btt' && size != '100%' }"
 			:with-header="false"
 			:destroy-on-close="true"
+            :append-to-body="true"
 			v-if="show"
 		>
 			<template #default>
