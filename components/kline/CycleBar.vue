@@ -52,6 +52,8 @@
 	})
 	onBeforeUnmount(() => {
 		document.removeEventListener('touchstart', popHide)
+		popCycleBar.value = null
+		cycleList.value = []
 	})
 </script>
 <template>

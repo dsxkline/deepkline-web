@@ -95,6 +95,8 @@
 			// Object.keys(this.$refs).forEach(key => {
 			// 	this.$refs[key] = null
 			// })
+			this.interVisible = false
+			this.orderNum = []
 			if (this.timer) clearTimeout(this.timer)
 		},
 		mounted() {
