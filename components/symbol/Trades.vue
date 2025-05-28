@@ -184,8 +184,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 			<h3 class="text-sm mb-1 flex items-center">
 				<b>最新成交</b>
 			</h3>
-			<!-- <el-select v-model="pointLevel" style="width: 100px" v-if="!loading" click-sound>
-				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" click-sound />
+			<!-- <el-select v-model="pointLevel" style="width: 100px" v-if="!loading" v-click-sound>
+				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" v-click-sound />
 			</el-select> -->
 		</div>
 		<Error :content="error" v-if="!loading && error" class="min-h-[400px]">

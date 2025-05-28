@@ -30,7 +30,7 @@
 					:class="menuActive == index ? 'active' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
 					v-for="(menu, index) in props.menus"
 					:key="menu.name"
-					click-sound
+					v-click-sound
 					@click="handleOpen(menu, index)"
 				>
 					<component :is="menu.icon" class="w-5" v-if="menu.icon" />
@@ -43,7 +43,7 @@
 					:class="menuActive == index ? '!text-brand font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
 					v-for="(menu, index) in props.menus"
 					:key="menu.name"
-					click-sound
+					v-click-sound
 					@click="handleOpen(menu, index)"
 				>
 					<component :is="menu.iconSelected" class="w-8" v-if="menu.icon && menuActive == index && menu.iconSelected" />

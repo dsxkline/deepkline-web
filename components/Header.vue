@@ -32,9 +32,9 @@
 			<el-divider direction="vertical" class="mx-1"></el-divider>
 			<div class="split-screen flex items-center justify-center *:mx-1">
 				
-				<button :class="{ active: useStore().splitScreen == 3 }" @click="clickSplitScreen(3)" click-sound><ThreeScreenIcon /></button>
-				<button :class="{ active: useStore().splitScreen == 2 }" @click="clickSplitScreen(2)" click-sound><TwoScreenIcon /></button>
-				<button :class="{ active: useStore().splitScreen == 1 }" @click="clickSplitScreen(1)" click-sound><OneScreenIcon /></button>
+				<button :class="{ active: useStore().splitScreen == 3 }" @click="clickSplitScreen(3)" v-click-sound><ThreeScreenIcon /></button>
+				<button :class="{ active: useStore().splitScreen == 2 }" @click="clickSplitScreen(2)" v-click-sound><TwoScreenIcon /></button>
+				<button :class="{ active: useStore().splitScreen == 1 }" @click="clickSplitScreen(1)" v-click-sound><OneScreenIcon /></button>
 				
 			</div>
 			<el-divider direction="vertical" class="mx-1"></el-divider>

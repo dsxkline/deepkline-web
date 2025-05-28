@@ -35,12 +35,12 @@
 </script>
 <template>
 	<div>
-		<button class="flex items-center justify-center" click-sound v-if="!visible">
+		<button class="flex items-center justify-center" v-click-sound v-if="!visible">
 			<LanguagesIcon />
 		</button>
 		<el-popover ref="langPopover" placement="bottom" trigger="click" width="auto" popper-class="!p-0 !min-w-0" v-else>
 			<template #reference>
-				<button class="flex items-center justify-center" click-sound>
+				<button class="flex items-center justify-center" v-click-sound>
 					<LanguagesIcon />
 				</button>
 			</template>
@@ -52,7 +52,7 @@
 						v-for="item in languageList"
 						:key="item.value"
 						@click="changeLanguage(item.value)"
-						click-sound
+						v-click-sound
 					>
 						{{ item.label }}
 					</li>

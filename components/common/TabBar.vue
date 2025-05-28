@@ -143,7 +143,7 @@
 	<div class="tabbar-container flex overflow-hidden flex-col" :style="[height ? `height:${height}px` : 'auto']">
 		<div class="tabbar-header px-4 w-full relative" ref="tabbarHeader">
 			<ul class="flex py-1 w-max h-full text-base *:mx-2">
-				<li v-for="(item, index) in menus" :key="index" click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
+				<li v-for="(item, index) in menus" :key="index" v-click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
 					<template v-if="item.titleComp">
 						<component :is="item.titleComp" />
 					</template>

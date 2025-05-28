@@ -60,7 +60,7 @@
 	<div class="cycle-bar w-full flex items-center gap-1">
 		<div class="flex gap-1 *:h-6 *:px-2 *:rounded *:text-sm *:cursor-pointer *:text-grey *:flex *:items-center *:leading-none">
 			<template v-for="(item, index) in cycleList">
-				<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" click-sound @click="onCycleChange(item.value)" v-if="item.display">
+				<div class="cycle-bar-item" :key="index" :class="{ active: item.value === cycle }" v-click-sound @click="onCycleChange(item.value)" v-if="item.display">
 					{{ item.label }}
 				</div>
 			</template>
@@ -70,7 +70,7 @@
 						<div
 							class="popover-cycle-bar-item h-6 flex items-center text-xs text-grey justify-center px-2 text-nowrap cursor-pointer border border-[--border-color] rounded bg-[--transparent05] hover:bg-[--transparent10]"
 							:class="[item.value === cycle ? 'active !text-main bg-[--transparent20]' : '']"
-							click-sound
+							v-click-sound
 							@click="onCycleChange(item.value)"
 						>
 							{{ item.label }}

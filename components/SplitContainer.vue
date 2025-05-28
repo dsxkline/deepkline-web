@@ -223,7 +223,7 @@
 				:style="[rightWidth > 0 ? 'width:calc(' + rightWidth + 'px)' : '', hideSplitLeft ? 'width:100%' : leftWidth > 0 ? 'width:calc(100% - ' + leftWidth + 'px - 2px)' : '']"
 			>
 				<!-- <div class="flex items-center absolute left-[-10px] top-0" v-if="hideSplitLeft" @click="toggleLeft"><ContractionIcon/></div> -->
-				<button class="flex items-center absolute left-2 top-3" v-if="pushLeft" click-sound @click="toggleLeft()">
+				<button class="flex items-center absolute left-2 top-3" v-if="pushLeft" v-click-sound @click="toggleLeft()">
 					<el-icon><Fold v-if="!hideSplitLeft" /><Expand v-else /></el-icon>
 				</button>
 				<slot name="right"></slot>

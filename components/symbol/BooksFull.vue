@@ -318,13 +318,13 @@
 			<h3 class="text-sm mb-1 flex items-center">
 				<b>订单表</b>
 				<div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
-					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" click-sound><BooksListIcon /></button>
-					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" click-sound><BooksBuyListIcon /></button>
-					<button :class="['hover:opacity-80', activeBook == 2 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 2" click-sound><BooksSellListIcon /></button>
+					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" v-click-sound><BooksListIcon /></button>
+					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" v-click-sound><BooksBuyListIcon /></button>
+					<button :class="['hover:opacity-80', activeBook == 2 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 2" v-click-sound><BooksSellListIcon /></button>
 				</div>
 			</h3>
-			<!-- <el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" click-sound>
-				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  click-sound/>
+			<!-- <el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" v-click-sound>
+				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  v-click-sound/>
 			</el-select> -->
 		</div>
 		<Error :content="error" v-if="!loading && error" class="min-h-[400px]">

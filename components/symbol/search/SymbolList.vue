@@ -441,7 +441,7 @@
 						v-for="item in virtualList"
 						:key="item.instId + '-' + start + '-' + end"
 						@click="clickSymbol(item)"
-						click-sound
+						v-click-sound
 					>
 						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.instId" /></div>
 						<div class="col-span-2 text-grey flex items-center">

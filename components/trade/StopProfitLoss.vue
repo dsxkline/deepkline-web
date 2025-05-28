@@ -88,7 +88,7 @@
 				controls-position="right"
 				size="large"
 				class="!w-full price-input"
-				click-sound
+				v-click-sound
 				autofocus
 			/>
 		</div>
@@ -105,11 +105,11 @@
 				controls-position="right"
 				size="large"
 				class="!w-full"
-				click-sound
+				v-click-sound
 			/>
 		</div>
 		<div class="py-2">
-			<el-button type="primary" size="large" class="w-full !h-auto" click-sound @click="confirm">确定</el-button>
+			<el-button type="primary" size="large" class="w-full !h-auto" v-click-sound @click="confirm">确定</el-button>
 		</div>
 	</div>
 </template>

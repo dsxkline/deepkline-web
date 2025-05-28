@@ -27,7 +27,7 @@
         width="30"
 		:active-action-icon="ElIconSunny"
 		:inactive-action-icon="ElIconMoon"
-		click-sound
+		v-click-sound
 		@change="changeTheme" />
 
 </template>

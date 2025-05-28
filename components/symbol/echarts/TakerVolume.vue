@@ -251,7 +251,7 @@ import { useStore } from '~/store'
 			<h3 class="text-sm flex items-center">
 				<b class="text-base">主动买入/卖出量</b>
 			</h3>
-			<el-radio-group v-model="period" :disabled="disabled" size="small" click-sound>
+			<el-radio-group v-model="period" :disabled="disabled" size="small" v-click-sound>
 				<el-radio-button value="5m">5分钟</el-radio-button>
 				<el-radio-button value="1H">1小时</el-radio-button>
 				<el-radio-button value="1D">1天</el-radio-button>

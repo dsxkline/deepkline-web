@@ -205,23 +205,24 @@ const soundHandle = (audio: HTMLAudioElement) => () => {
 	audio.currentTime = 0
 	audio.play().catch(() => {})
 }
-function clickSoundHandle(audio: HTMLAudioElement) {
-	return (event: MouseEvent) => {
-		const path = event.composedPath?.() || [] // 获取事件传播路径
-		for (const el of path) {
-			if (!(el instanceof HTMLElement)) continue
-			// 判断原生 onclick 或 Vue 绑定过的 click 事件
-			if (
-				typeof el.onclick === 'function' || // 原生 DOM
-				el.getAttributeNames().some(attr => attr.startsWith('@click') || attr === 'v-on:click' || attr == 'click-sound') // Vue 模板
-			) {
-				// 播放音效
-				soundHandle(audio)
-				break
-			}
-		}
-	}
-}
+// function clickSoundHandle(audio: HTMLAudioElement) {
+// 	return (event: MouseEvent) => {
+// 		const path = event.composedPath?.() || [] // 获取事件传播路径
+// 		for (const el of path) {
+// 			if (!(el instanceof HTMLElement)) continue
+// 			// 判断原生 onclick 或 Vue 绑定过的 click 事件
+// 			if (
+// 				typeof el.onclick === 'function' || // 原生 DOM
+// 				el.getAttributeNames().some(attr => attr.startsWith('@click') || attr === 'v-on:click' || attr == 'click-sound') // Vue 模板
+// 			) {
+// 				// 播放音效
+// 				soundHandle(audio)
+// 				break
+// 			}
+// 		}
+// 	}
+// }
+
 
 function beforeunload() {
 	// 页面离开或者刷新的时候注销组件释放内存等
@@ -233,6 +234,7 @@ function beforeunload() {
 	window.removeEventListener('beforeunload', beforeunload)
 	console.log('beforeunload success')
 }
+
 export default defineNuxtPlugin(({ vueApp }) => {
 	const nuxtApp = useNuxtApp()
 	if (process.client) {
@@ -240,7 +242,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		nuxtApp.provide('windowEvent', new WindowsEvent())
 		const audio = new Audio('/sounds/click.mov')
 		nuxtApp.provide('clickSound', soundHandle(audio))
-		document.addEventListener('click', clickSoundHandle(audio))
+
 		window.addEventListener('beforeunload', beforeunload)
 	}
 })

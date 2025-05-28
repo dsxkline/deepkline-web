@@ -68,7 +68,7 @@ import { usePop } from '~/composable/usePush'
 	<div class="w-[600px] relative symbol-search">
 		<div
 			class="symbol-search-item flex items-center justify-center text-xs text-grey w-[100%] h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer"
-			click-sound
+			v-click-sound
 			@click="search"
 		>
 			<el-icon><Search /></el-icon>

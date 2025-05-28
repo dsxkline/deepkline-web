@@ -210,8 +210,8 @@
 
 					<h3>介绍</h3>
 					<!-- <span class="text-gray-300 my-3">{{ symbolInfo?.fullName }}</span> -->
-					<div class="cursor-pointer text-sm text-main my-2 mb-3 max-h-[100px] overflow-hidden line-clamp-5" v-html="symbolInfo?.introduce" @click="visibleDetail = true" click-sound></div>
-					<!-- <button @click="visibleDetail = !visibleDetail" click-sound>
+					<div class="cursor-pointer text-sm text-main my-2 mb-3 max-h-[100px] overflow-hidden line-clamp-5" v-html="symbolInfo?.introduce" @click="visibleDetail = true" v-click-sound></div>
+					<!-- <button @click="visibleDetail = !visibleDetail" v-click-sound>
 						<el-icon><el-icon-more /></el-icon>
 					</button> -->
 					
