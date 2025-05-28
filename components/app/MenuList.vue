@@ -5,6 +5,7 @@
 		subName?: string // 子菜单名称
 		icon?: any
 		desc?: string
+        descIcon?: any // 描述图标
 		more?: any
 		callback?: () => void // 点击回调
 	}
@@ -24,7 +25,10 @@
 					</div>
 				</div>
 				<div class="flex items-center">
-					<span class="text-xs text-muted">{{ item.desc }}</span>
+					<span class="text-xs text-muted flex items-center">
+                        {{ item.desc }}
+                        <component :is="item.descIcon" v-if="item.descIcon" class="ml-1 w-4" />
+                    </span>
 					<el-icon v-if="item.more==undefined" class="ml-2 text-muted">
                         <ArrowRight />
 					</el-icon>

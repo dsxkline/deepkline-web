@@ -5,7 +5,9 @@ export const useKlineStore = defineStore({
     cycle:{} as Record<string,string>,
     main:{} as Record<string,string[]>,
     sides:{} as Record<string,string[]>,
-    loading:{} as Record<string,boolean>
+    loading:{} as Record<string,boolean>,
+    klineColorModel:'green-red' as ('green-red'|'red-green'), // k线颜色模型，green-red:绿色上涨红色下跌，red-green:红色上涨绿色下跌
+    timezone: 'UTC+8' as ('UTC+8'|"UTC"|"24"), // 时区，默认UTC
   }),
   actions: {
     setLoading(symbol:string,loading:boolean){
@@ -31,6 +33,12 @@ export const useKlineStore = defineStore({
             sides.push(index)
         }
         this.sides[symbol] = sides;
-    }
+    },
+    setKlineColorModel(model:'green-red'|'red-green') {
+      this.klineColorModel = model
+    },
+    setTimezone(timezone:'UTC+8'|"UTC"|"24") {
+      this.timezone = timezone
+    },
   }
 })
