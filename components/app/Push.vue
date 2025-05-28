@@ -177,7 +177,6 @@
 			:class="{ pushup: direction == 'btt' && size != '100%' }"
 			:with-header="false"
 			:destroy-on-close="true"
-            :append-to-body="true"
 			v-if="show"
 		>
 			<template #default>
