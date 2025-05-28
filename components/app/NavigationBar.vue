@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { ArrowLeftBold } from '@element-plus/icons-vue';
-import { usePop } from '~/composable/usePush';
 const props = defineProps<{
     title?:string,
     hideBack?:boolean
 }>()
 const slots = useSlots()
-const pop = usePop()
 function returnBack(){
-    pop()
+    useNuxtApp().$pop()
 }
 </script>
 <template>
