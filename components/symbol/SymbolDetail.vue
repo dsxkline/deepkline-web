@@ -50,7 +50,6 @@
 		// 	}
 		// }
 	])
-	const pop = usePop()
 
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[currentSymbol.value]
@@ -59,7 +58,7 @@
 		useSymbolStore().favoriteSymbol(item)
 	}
 	function returnBack() {
-		pop()
+		useNuxtApp().$pop()
 	}
 	watch(
 		() => props.symbol,
@@ -92,7 +91,7 @@
 				if (item?.instId) {
 					// 切换当前symbol
 					currentSymbol.value = item.instId
-					pop()
+					useNuxtApp().$pop()
 				}
 			}
 		},'80%')
@@ -103,6 +102,7 @@
 		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
 	})
 	onUnmounted(() => {
+		menus.value = []
 		navbar.value = null
 	})
 </script>
