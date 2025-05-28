@@ -25,7 +25,7 @@
 					height: fontHeight + 'px'
 				}"
 			>
-				<span :class="'numdom-' + index" ref="numdom" v-if="!isNaN(item)" :data-index="index" :data-number="item">
+				<span :class="'numdom-' + index" v-if="!isNaN(item)" :data-index="index" :data-number="item">
 					<i
 						v-for="(i, index) in 10"
 						:style="{
@@ -35,7 +35,7 @@
 						{{ index }}
 					</i>
 				</span>
-				<span :class="'comma numdom-' + index" ref="numdom" v-else>
+				<span :class="'comma numdom-' + index" v-else>
 					<i>{{ item }}</i>
 				</span>
 			</li>
@@ -134,8 +134,8 @@
 				this.orderNum.forEach((n, i) => {
 					const ndom = this.$el.querySelector('.numdom-' + i)
 					if (ndom) {
-						ndom.style.transition = `all ${this.time}s ease`
-						if(!this.interVisible) ndom.style.transition = 'none';
+						// ndom.style.transition = `all ${this.time}s ease`
+						// if(!this.interVisible) ndom.style.transition = 'none';
 						if (!isNaN(n) && n != '.' && n != ',') {
 							const translateY = this.getNumberY(n, ndom)
 							ndom.style.transform = translateY

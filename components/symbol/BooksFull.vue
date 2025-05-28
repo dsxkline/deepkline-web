@@ -338,7 +338,7 @@
 					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
 					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
 				</li>
-				<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && asks" :key="index" v-show="interVisible">
+				<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && asks" :key="index">
 					<template v-if="asks[index]">
 						<div class="text-red">{{ formatPrice(asks[index].px, pricePoint) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
@@ -353,7 +353,7 @@
 					</template>
 				</li>
 
-				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0" v-show="interVisible">
+				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
 					<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
 						<div
 							class="bg-green/50 flex justify-start items-center w-full h-full transition-all transition-100 ease-in-out absolute left-0 top-0 origin-left"
@@ -378,7 +378,7 @@
 					</div>
 				</li>
 
-				<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && bids" :key="index" v-show="interVisible">
+				<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && bids" :key="index">
 					<template v-if="bids[index]">
 						<div class="text-green">{{ formatPrice(bids[index].px, pricePoint) }}</div>
 						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
