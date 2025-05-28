@@ -16,7 +16,7 @@
 		parent: ComponentInternalInstance
 	}>()
 	const drawerSize = ref(props.size)
-	const drawer = ref<HTMLElement | null>(null)
+	const drawerContainer = ref<HTMLElement | null>(null)
 	const container = ref<HTMLElement | null>(null)
 	const show = ref(true)
 	// 异步加载组件
@@ -37,12 +37,10 @@
 		hide()
 	}
 	const closed = () => {
-		console.log('drawer 调用 closed')
-		show.value = false
-		if (container.value) {
-			render(null, container.value as HTMLElement)
-			//document.body.removeChild(container.value as HTMLElement)
-		}
+		console.log('drawer 调用 closed', drawerContainer.value)
+		nextTick(() => {
+            show.value = false
+        })
 	}
 
 	// 是否显示
@@ -56,14 +54,18 @@
 			const vs = usePushStore().getPushComponent(instance) >= 0 ? true : false
 			console.log('visibleDrawer set', val, vs)
 			if (!val && vs) usePushStore().pop()
+            // 关闭drawer后，开始卸载当前组件
+			if (container.value) {
+				render(null, container.value as HTMLElement)
+			}
 		}
 	})
 
 	let contentHeight = 0
 	const swipeDown = (distance: number, time: number, end: boolean) => {
-		if (!drawer.value) return
+		if (!drawerContainer.value) return
 		// 跟着滑下来
-		const content = drawer.value.querySelector('.el-drawer.btt') as HTMLElement
+		const content = drawerContainer.value.querySelector('.el-drawer.btt') as HTMLElement
 		if (content) {
 			if (!contentHeight && content.clientHeight > 0) contentHeight = content.clientHeight
 			content.style.transition = 'unset'
@@ -99,14 +101,6 @@
 				parent = parent.parent
 			}
 			parent = props.parent
-			// while (parent) {
-			// 	// pop的时候返回执行自定义poped方法
-			// 	console.log('parent///test', parent)
-			// 	if (parent?.willAppear) {
-			// 		parent?.willAppear(props.popData)
-			// 	}
-			// 	parent = parent.parent
-			// }
 			const app = getAppComponent(parent)
 			if (app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
 		}
@@ -119,7 +113,7 @@
 			document.body.removeChild(container.value) // 从 DOM 中移除组件
 		}
 		container.value = null
-		drawer.value = null
+		drawerContainer.value = null
 
 		setTimeout(() => {
 			usePushStore().setPushState(false)
@@ -130,11 +124,11 @@
 		// console.log('push mounted...', props.size, instance, drawer.value)
 		usePushStore().push(instance)
 		container.value = instance?.vnode.el?.parentNode
-		console.log('container', container.value)
+		// console.log('container', container.value)
 	})
 
 	function getInstance() {
-		return drawer.value
+		return drawerContainer.value
 	}
 
 	function getAppComponent(instance: ComponentInternalInstance) {
@@ -173,16 +167,17 @@
 </script>
 
 <template>
-	<div class="drawer-container" ref="drawer" v-if="show">
+	<div class="drawer-container" ref="drawerContainer" v-if="show">
 		<el-drawer
 			v-model="visibleDrawer"
 			:direction="direction"
-			:destroy-on-close="true"
 			:modal="true"
 			:size="drawerSize"
 			@closed="closed"
 			:class="{ pushup: direction == 'btt' && size != '100%' }"
 			:with-header="false"
+			:destroy-on-close="true"
+			v-if="show"
 		>
 			<template #default>
 				<div class="drawer_body w-full h-full flex flex-col relative" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
