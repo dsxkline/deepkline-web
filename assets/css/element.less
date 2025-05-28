@@ -45,7 +45,8 @@ html:root {
 		--el-popover-border-color: var(--transparent10);
 		box-shadow: none;
 		&::before {
-			background-image: var(--bg-linear-180);
+			// background-image: var(--bg-linear-180);
+			background-image: none;
 			// filter: blur(60px);
 			position: absolute;
 			top: 0;
@@ -68,6 +69,16 @@ html:root {
 			border-right-color: var(--transparent20) !important;
 			border-top-color: var(--transparent20) !important;
 			background: #f7f7fd !important;
+		}
+	}
+	.el-dialog{
+		&::before{
+			background-image: none;
+		}
+	}
+	.el-drawer {
+		&::before {
+			background-image: none;
 		}
 	}
 }

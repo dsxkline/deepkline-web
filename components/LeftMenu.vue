@@ -66,6 +66,7 @@
 	.light .left-menu {
 		&::before {
 			opacity: 0.3;
+			background-image: none;
 		}
 		.main-menu {
 			.active {

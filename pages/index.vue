@@ -68,11 +68,11 @@
 </template>
 
 <style scoped lang="less">
-	// .light .main-container{
-	// 	&::before {
-	// 		background-image: unset;
-	// 	}
-	// }
+	.light .main-container{
+		&::before {
+			background-image: unset;
+		}
+	}
 	.main-container {
 		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height));
 		width: var(--body-width);

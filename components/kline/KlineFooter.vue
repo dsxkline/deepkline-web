@@ -11,6 +11,14 @@
 	</div>
 </template>
 <style lang="less" scoped>
+.light{
+	.kline-footer {
+		&::before {
+			opacity: 0.2;
+			background-image: none;
+		}
+	}
+}
 	.kline-footer {
 		position: relative;
 		&::before {

@@ -14,6 +14,14 @@
 	</div>
 </template>
 <style lang="less" scoped>
+.light{
+	.kline-header {
+		&::before {
+			opacity: 0.2;
+			background-image: none;
+		}
+	}
+}
 	.kline-header {
 		position: relative;
 		&::before {
