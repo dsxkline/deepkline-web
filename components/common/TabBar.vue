@@ -40,6 +40,7 @@
 	const tabbarContent = ref()
 	const bottomLine = ref()
 	const tabbarHeader = ref()
+	const isDestroyed = ref(false) // 是否已销毁
 	interface ComponentWithUpdate {
 		update?: () => void
 		leave?: () => void
@@ -127,10 +128,18 @@
 	})
 
 	onBeforeUnmount(() => {
+		// 子组件卸载
+		if (componentRefs.value) {
+			componentRefs.value.forEach(item => {
+				if (item.leave) item.leave()
+			})
+		}
+		isDestroyed.value = true
+		// 清理引用
 		tabbarContent.value = null
 		bottomLine.value = null
 		tabbarHeader.value = null
-		componentRefs.value = null
+		
 	})
 
 	defineExpose({
@@ -157,7 +166,7 @@
 		</div>
 		<div class="tabbar-content" ref="tabbarContent" :style="{ height: contentHeight ? `${contentHeight}px` : 'auto' }">
 			<div class="tabbar-content-item" v-for="(item, index) in menus">
-				<component :is="item.contentComp" v-bind="item.contentParams" ref="componentRefs" :height="contentHeight" />
+				<component :is="item.contentComp" v-bind="item.contentParams" ref="componentRefs" :height="contentHeight" v-if="!isDestroyed" />
 			</div>
 		</div>
 	</div>

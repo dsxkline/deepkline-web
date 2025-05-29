@@ -86,16 +86,18 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 
 	onBeforeUnmount(() => {
 		unSubSymbols()
-		containerRef.value = null
-		item.value = null
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		item.value = null
+		containerRef.value = null
+		
+		
 	})
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
 		<el-scrollbar :height="contentHeight + 'px'" :always="false">
 			<div class="market-datas-head">
-				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4" ref="marketPrice">
+				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4">
 					<b v-autosize="32" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 						<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
