@@ -146,7 +146,7 @@
 				: 'translateX(var(--body-width))'
 		}
 		if (drawBg.value) {
-			drawBg.value.style.opacity = visible ? '0.5' : '0'
+			drawBg.value.style.opacity = visible ? props.direction == 'btt'?'0.3':'0.1' : '0'
 		}
 	}
 
