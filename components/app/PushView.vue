@@ -173,7 +173,7 @@
 			setTimeout(() => {
 				showComponent.value = true
 			resolve(true)
-			}, 0);
+			}, 30);
 		})
 	})
 
