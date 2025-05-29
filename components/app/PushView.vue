@@ -23,6 +23,7 @@
 	const drawBg = ref<HTMLElement | null>(null)
 	const parentContainer = ref<HTMLElement | null>(null)
 	const show = ref(true)
+	const showComponent = ref(false)
 	// 异步加载组件
 	const asyncComp = defineAsyncComponent(() => {
 		return new Promise((resolve, reject) => {
@@ -56,7 +57,7 @@
 				if (parentContainer.value && !val && old) {
 					render(null, parentContainer.value as HTMLElement)
 				}
-			}, 300)
+			}, 500)
 		}
 	)
 
@@ -68,19 +69,19 @@
 		if (content) {
 			if (!contentHeight && content.clientHeight > 0) contentHeight = content.clientHeight
 			const h = drawerBody.value.getBoundingClientRect().height
-			if(distance < 0) distance = 0 // 下拉距离不能小于0
+			if (distance < 0) distance = 0 // 下拉距离不能小于0
 			// 不能高于默认高度
 			if (props.size && props.size?.indexOf('%') > 0) {
-				const maxHeight = parseFloat(props.size) / 100 * window.innerHeight
+				const maxHeight = (parseFloat(props.size) / 100) * window.innerHeight
 				contentHeight = Math.min(h, maxHeight)
 			}
 
 			content.style.transition = 'unset'
-			content.style.transform = 'translateY(calc(var(--body-height) - ' + (contentHeight-distance) + 'px))'
+			content.style.transform = 'translateY(calc(var(--body-height) - ' + (contentHeight - distance) + 'px))'
 			// 下拉关闭
 			//drawerSize.value = content.style.height
 			if (end) {
-				content.style.transition = 'all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99)'
+				content.style.transition = 'all 0.5s var(--translate-animation-liner)'
 				if ((distance > contentHeight / 3 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
 					// 关闭
 					hide()
@@ -129,6 +130,7 @@
 		setTimeout(() => {
 			usePushStore().setPushState(false)
 			show.value = false
+			showComponent.value = false
 		}, 100)
 	})
 
@@ -144,9 +146,12 @@
 				: props.direction == 'btt'
 				? 'translateY(var(--body-height))'
 				: 'translateX(var(--body-width))'
+			if (props.direction == 'rtl' || props.direction == 'ltr') {
+				drawerBody.value.style.height = "var(--body-height)"
+			}
 		}
 		if (drawBg.value) {
-			drawBg.value.style.opacity = visible ? props.direction == 'btt'?'0.3':'0.1' : '0'
+			drawBg.value.style.opacity = visible ? (props.direction == 'btt' ? '0.3' : '0') : '0'
 		}
 	}
 
@@ -155,7 +160,7 @@
 		async () => {
 			await nextTick()
 			// 组件已经渲染完成，可以访问 DOM 或 exposed 方法
-			nextTick(() => setDrawerBodyStyle(true))
+			setDrawerBodyStyle(true)
 		}
 	)
 
@@ -163,11 +168,14 @@
 		// console.log('push mounted...', props.size, instance, drawer.value)
 		usePushStore().push(instance)
 		parentContainer.value = instance?.vnode.el?.parentNode
+		if (props.direction == 'rtl' || props.direction == 'ltr') nextTick(() => setDrawerBodyStyle(true))
+		new Promise(resolve => {
+			setTimeout(() => {
+				showComponent.value = true
+			resolve(true)
+			}, 0);
+		})
 	})
-
-	function getInstance() {
-		return drawerContainer.value
-	}
 
 	function getAppComponent(instance: ComponentInternalInstance) {
 		let inst = instance
@@ -199,23 +207,17 @@
 
 	defineExpose({
 		refreshChildWillAppear,
-		refreshChildWillDisAppear,
-		getInstance
+		refreshChildWillDisAppear
 	})
 </script>
 
 <template>
 	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer" v-if="show">
-		<div
-			ref="drawerBody"
-			:class="['drawer_body w-full relative bg-base z-10', direction]"
-			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
-			v-if="show"
-		>
+		<div ref="drawerBody" :class="['drawer-body bg-base w-full relative z-10', direction]" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null" v-if="show">
 			<template v-if="direction == 'btt' && size != '100%'">
 				<div @click="hide"><DrawLine /></div>
 			</template>
-			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" v-if="show" ref="drawerComponent" />
+			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" v-if="showComponent" ref="drawerComponent" />
 			<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 		</div>
 		<div class="drawer-bg absolute top-0 left-0 w-full h-full z-0" @click="hide" ref="drawBg"></div>
@@ -245,8 +247,8 @@
 		.ttb {
 			transform: translateY(-var(--body-height));
 		}
-		.drawer_body {
-			transition: all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99);
+		.drawer-body {
+			transition: all 0.5s var(--translate-animation-liner);
 			overflow: hidden;
 			&::before {
 				background-image: var(--bg-linear-180);
@@ -262,10 +264,9 @@
 			}
 		}
 		.drawer-bg {
-			transition: all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99);
+			transition: all 0.5s var(--translate-animation-liner);
 			background: rgb(0 0 0);
 			opacity: 0;
-			transition: opacity var(--el-transition-duration);
 			z-index: -1;
 		}
 	}

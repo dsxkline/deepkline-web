@@ -92,17 +92,15 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 			// 上一个drawer
 			setTimeout(() => {
 				if (instance.vnode.el) {
-					const parentDrawer = instance.vnode.el.closest('.el-drawer')
+					const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
 					if (parentDrawer) {
-						if (!parentDrawer.classList.contains('pushup')) {
-							parentDrawer.style.transform = 'translateX(-30%)'
-						}
+						parentDrawer.style.transform = 'translateX(-30%)'
 					} else {
 						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
 						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 					}
 				}
-			}, 150)
+			}, 50)
 		}
 	})
 
@@ -128,11 +126,11 @@ const pop = function (data = {}) {
 
 	// 父层抽屉恢复
 	topPush = store.getTopPush()
-	// console.log('pop',topPush)
+	console.log('pop',topPush)
 	if (topPush) {
-		const parentDrawer = topPush.vnode.component?.exposed?.getInstance()?.querySelector('.el-drawer')
+		const parentDrawer = topPush.vnode.el.querySelector('.drawer-body') as HTMLElement
 		if (parentDrawer && parentDrawer instanceof HTMLElement) {
-			parentDrawer.style.transform = ''
+			parentDrawer.style.transform = 'translateX(0)'
 		}
 	} else {
 		// 顶层

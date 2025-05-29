@@ -157,7 +157,7 @@
 			}
 			.cycle-bar-item {
 				white-space: nowrap;
-				@apply px-0 py-2 mr-4 !ml-0 rounded-none flex items-center;
+				@apply px-0 py-2 !mr-4 !ml-0 rounded-none flex items-center;
 				padding: 6px 0;
 			}
 			.cycle-bar-item:not(.active):hover {

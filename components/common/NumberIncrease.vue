@@ -21,6 +21,7 @@
 			<li
 				:class="{ 'number-item': !isNaN(item), 'mark-item': isNaN(item) }"
 				v-for="(item, index) in orderNum"
+				:key="index"
 				:style="{
 					height: fontHeight + 'px'
 				}"
@@ -28,6 +29,7 @@
 				<span :class="'numdom-' + index" v-if="!isNaN(item)" :data-index="index" :data-number="item">
 					<i
 						v-for="(i, index) in 10"
+						:key="index"
 						:style="{
 							height: fontHeight + 'px'
 						}"
@@ -128,7 +130,11 @@
 				})
 			},
 			setNumberList() {
-				this.orderNum = (this.value + '').split('') || ''
+				if (this.value.length!=this.orderNum.length) {
+					// 如果数字长度不一致，重新设置
+					this.orderNum = (this.value + '').split('') || ''
+				}
+				
 			},
 			resetNumbers() {
 				this.textHeight = this.fontSize * 10
