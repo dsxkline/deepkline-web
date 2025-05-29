@@ -20,7 +20,7 @@
 			</li>
 			<li
 				:class="{ 'number-item': !isNaN(item), 'mark-item': isNaN(item) }"
-				v-for="(item, index) in orderNum"
+				v-for="(item, index) in orderNumOld"
 				:key="index"
 				:style="{
 					height: fontHeight + 'px'
@@ -83,6 +83,7 @@
 		data() {
 			return {
 				orderNum: ['0', '0', ',', '0', '0', '0', ',', '0', '0', '0'],
+				orderNumOld: [],
 				fontWidth: 0,
 				fontHeight: this.fontSize,
 				digWidth: 0,
@@ -99,6 +100,7 @@
 			// })
 			this.interVisible = false
 			this.orderNum = []
+			this.orderNumOld = []
 			if (this.timer) clearTimeout(this.timer)
 		},
 		mounted() {
@@ -130,9 +132,10 @@
 				})
 			},
 			setNumberList() {
-				if (this.value.length!=this.orderNum.length) {
+				this.orderNum = (this.value + '').split('') || ''
+				if (this.orderNumOld.length!=this.orderNum.length) {
 					// 如果数字长度不一致，重新设置
-					this.orderNum = (this.value + '').split('') || ''
+					this.orderNumOld = this.orderNum
 				}
 				
 			},
