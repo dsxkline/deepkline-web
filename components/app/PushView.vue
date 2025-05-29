@@ -234,6 +234,7 @@
 		z-index: 1000;
 		.btt {
 			transform: translateY(var(--body-height));
+			border-radius: 16px 16px 0 0;
 		}
 		.rtl {
 			transform: translateX(var(--body-width));
@@ -245,7 +246,7 @@
 			transform: translateY(-var(--body-height));
 		}
 		.drawer_body {
-			border-radius: 16px 16px 0 0;
+			
 			overflow: hidden;
 			transition-timing-function: cubic-bezier(0.09, 0.83, 0.79, 0.99);
 			&::before {
