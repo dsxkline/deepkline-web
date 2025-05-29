@@ -22,6 +22,7 @@ export const usePushStore = defineStore({
             }
         },
         getTopPush() {
+            if (this.pushComopnents.length == 0) return null;
             return this.pushComopnents[this.pushComopnents.length - 1];
         },
         getPushComponent(comp: ComponentInternalInstance|null) {

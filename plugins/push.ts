@@ -2,6 +2,7 @@ import { defineNuxtPlugin } from '#app'
 import { defineComponent, ref, h, render, createVNode, type ComponentInstance, type ComponentInternalInstance } from 'vue'
 import { usePushStore } from '@/store/push'
 import Push from '~/components/app/Push.vue'
+import PushView from '~/components/app/PushView.vue'
 
 function findRoute(path: string, routes: any) {
 	try {
@@ -28,31 +29,26 @@ function findRoute(path: string, routes: any) {
 	return {}
 }
 
-function getAppComponent(instance:ComponentInternalInstance){
-    let inst = instance
-    while (inst?.parent) {
+function getAppComponent(instance: ComponentInternalInstance) {
+	let inst = instance
+	while (inst?.parent) {
 		inst = inst.parent
-		if (inst?.type.__name=="app") break
+		if (inst?.type.__name == 'app') break
 	}
-    return inst
+	return inst
 }
 
+let pushing = false
 const pushHandle = function (this: ComponentInternalInstance, comp: any, params = {}, direction = 'rtl', size = '100%') {
+    if (pushing) return
+    pushing = true
 	// 执行目标willDisappear方法
 	let instance = this
-	// console.log('当前push的持有者', instance)
-	// if (instance?.willDisappear) instance.willDisappear()
-	// while (instance?.parent) {
-	// 	instance = instance.parent
-	// 	if (instance?.willDisappear) instance.willDisappear()
-	// }
-    const app = getAppComponent(instance);
-    if(app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
-
+	const app = getAppComponent(instance)
+	if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
 	const pushStore = usePushStore()
 	pushStore.setPushState(true)
-	// 保存当前的 this 上下文
-	const context = this
+
 	let dynamicComponent = {
 		url: null,
 		component: comp?.default || comp
@@ -75,12 +71,12 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 		to: dynamicComponent.component, // 传递给 Push 组件的动态目标组件
 		url: dynamicComponent.url, // 传递 URL 参数
 		params: params || [], // 传递额外的参数
-		parent: context, // 传递父组件或上下文
+		parent: instance, // 传递父组件或上下文
 		direction: direction, // 传递方向
 		size: size // 传递大小
 		// parent:instance?.proxy
 	}
-	const pushInstance = createVNode(Push, props)
+	const pushInstance = createVNode(PushView, props)
 	// 手动提供 Nuxt 上下文
 	const nuxtApp = useNuxtApp() // 获取 Nuxt 上下文
 	pushInstance.appContext = nuxtApp.vueApp._context
@@ -95,8 +91,8 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 		if (direction == 'rtl') {
 			// 上一个drawer
 			setTimeout(() => {
-				if (context.vnode.el) {
-					const parentDrawer = context.vnode.el.closest('.el-drawer')
+				if (instance.vnode.el) {
+					const parentDrawer = instance.vnode.el.closest('.el-drawer')
 					if (parentDrawer) {
 						if (!parentDrawer.classList.contains('pushup')) {
 							parentDrawer.style.transform = 'translateX(-30%)'
@@ -110,20 +106,26 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 		}
 	})
 
+    setTimeout(() => {
+        pushing = false
+    }, 300);
+
 	return pushInstance
 }
 
 const pop = function (data = {}) {
 	const store = usePushStore()
-	let topPush = store.getTopPush()
+    // 获得栈顶的实例
+	let topPush: any = store.getTopPush()
 	// 需要查找最顶部的push回传数据
-	if (topPush) {
-		// 回传数据
-		topPush.props.popData = data
-	} else {
-		// 顶层
-	}
+	// 回传数据
+	topPush && topPush?.exposed?.onPop?.(data)
+    // topPush.vnode = null
+    // topPush.component = null
+	topPush = null
+    // 弹出栈顶实例
 	store.pop()
+
 	// 父层抽屉恢复
 	topPush = store.getTopPush()
 	// console.log('pop',topPush)
