@@ -108,7 +108,7 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 
     setTimeout(() => {
         pushing = false
-    }, 300);
+    }, 400);
 
 	return pushInstance
 }
