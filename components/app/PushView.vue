@@ -62,24 +62,33 @@
 
 	let contentHeight = 0
 	const swipeDown = (distance: number, time: number, end: boolean) => {
-		if (!drawerContainer.value) return
+		if (!drawerBody.value) return
 		// 跟着滑下来
-		const content = drawerContainer.value.querySelector('.el-drawer.btt') as HTMLElement
+		const content = drawerBody.value as HTMLElement
 		if (content) {
 			if (!contentHeight && content.clientHeight > 0) contentHeight = content.clientHeight
+			const h = drawerBody.value.getBoundingClientRect().height
+			if(distance < 0) distance = 0 // 下拉距离不能小于0
+			// 不能高于默认高度
+			if (props.size && props.size?.indexOf('%') > 0) {
+				const maxHeight = parseFloat(props.size) / 100 * window.innerHeight
+				contentHeight = Math.min(h, maxHeight)
+			}
+
 			content.style.transition = 'unset'
-			content.style.height = contentHeight - distance + 'px'
+			content.style.transform = 'translateY(calc(var(--body-height) - ' + (contentHeight-distance) + 'px))'
 			// 下拉关闭
-			drawerSize.value = content.style.height
+			//drawerSize.value = content.style.height
 			if (end) {
 				content.style.transition = 'all var(--el-transition-duration)'
-				if ((distance > contentHeight / 2 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
+				if ((distance > contentHeight / 3 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
 					// 关闭
 					hide()
 				} else {
 					// 恢复原始高度
-					content.style.height = props.size || ''
-					drawerSize.value = props.size
+					//content.style.height = props.size || ''
+					setDrawerBodyStyle(true)
+					//drawerSize.value = props.size
 				}
 			}
 		}
@@ -236,6 +245,8 @@
 			transform: translateY(-var(--body-height));
 		}
 		.drawer_body {
+			border-radius: 16px 16px 0 0;
+			overflow: hidden;
 			transition-timing-function: cubic-bezier(0.09, 0.83, 0.79, 0.99);
 			&::before {
 				background-image: var(--bg-linear-180);
