@@ -80,7 +80,7 @@
 			// 下拉关闭
 			//drawerSize.value = content.style.height
 			if (end) {
-				content.style.transition = 'all var(--el-transition-duration)'
+				content.style.transition = 'all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99)'
 				if ((distance > contentHeight / 3 && time > 0) || (distance > 70 && time < 200 && time > 0)) {
 					// 关闭
 					hide()
@@ -208,7 +208,7 @@
 	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer" v-if="show">
 		<div
 			ref="drawerBody"
-			:class="['drawer_body w-full flex flex-col relative bg-base duration-400 transition-all z-10', direction]"
+			:class="['drawer_body w-full relative bg-base z-10', direction]"
 			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
 			v-if="show"
 		>
@@ -218,7 +218,7 @@
 			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" v-if="show" ref="drawerComponent" />
 			<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 		</div>
-		<div class="drawer-bg absolute top-0 left-0 w-full h-full z-0 duration-400 transition-all" @click="hide" ref="drawBg"></div>
+		<div class="drawer-bg absolute top-0 left-0 w-full h-full z-0" @click="hide" ref="drawBg"></div>
 	</div>
 </template>
 
@@ -246,9 +246,8 @@
 			transform: translateY(-var(--body-height));
 		}
 		.drawer_body {
-			
+			transition: all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99);
 			overflow: hidden;
-			transition-timing-function: cubic-bezier(0.09, 0.83, 0.79, 0.99);
 			&::before {
 				background-image: var(--bg-linear-180);
 				// filter: blur(60px);
@@ -263,6 +262,7 @@
 			}
 		}
 		.drawer-bg {
+			transition: all 0.4s cubic-bezier(0.09, 0.83, 0.79, 0.99);
 			background: rgb(0 0 0);
 			opacity: 0;
 			transition: opacity var(--el-transition-duration);
