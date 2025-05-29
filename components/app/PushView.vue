@@ -263,7 +263,7 @@
 			}
 		}
 		.drawer-bg {
-			background: rgb(var(--color-bg-mask));
+			background: rgb(0 0 0);
 			opacity: 0;
 			transition: opacity var(--el-transition-duration);
 			z-index: -1;
