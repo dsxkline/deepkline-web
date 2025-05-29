@@ -277,8 +277,8 @@ class DsxKlineChart {
 
 	// 呼吸灯跟随K线颜色
 	heartFollowKline(){
-		if(!this.kline.showDatas.length) return;
-		const lastKline = this.kline.showDatas[this.kline.showDatas.length-1];
+		if(!this.kline.datas.length) return;
+		const lastKline = this.kline.datas[this.kline.datas.length-1];
 		if(lastKline){
 			// 绿色呼吸灯
 			let cricleColor = 'rgba(25, 200, 59, 1)'

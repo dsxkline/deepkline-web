@@ -158,7 +158,7 @@ import Aboutus from './aboutus.vue'
 <template>
 	<div class="w-full h-full">
 		<NavigationBar title="我的" :hideBack="!push" />
-		<el-scrollbar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
+		<el-scrollbar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace />
 			<MenuList :menus="menus" />
 			<div class="my-3 px-3 flex flex-col items-center justify-center mt-20">
