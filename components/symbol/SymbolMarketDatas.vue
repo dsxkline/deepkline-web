@@ -99,8 +99,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			<div class="market-datas-head">
 				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4">
 					<b v-autosize="32" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
-						<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
-						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
+						${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}
+						<!-- <NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" /> -->
 					</b>
 					<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
 					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ rate > 0 ? '+' : '' }}{{ change.toFixed(2) }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span>
