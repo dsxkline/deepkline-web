@@ -19,7 +19,7 @@
 			if (startChangeColor.value) return
 			if (val.toFixed(2) === old.toFixed(2)) return
 			startChangeColor.value = true
-			changeColor.value = val > 0 ? 'bt-green-flash ' + new Date().getTime() : 'bt-red-flash ' + new Date().getTime()
+			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
 			// console.log('changerate', val, old)
 		}
 	)
