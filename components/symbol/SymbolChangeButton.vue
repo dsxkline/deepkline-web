@@ -16,10 +16,10 @@
 	watch(
 		() => changeRate.value,
 		(val, old) => {
-			if (startChangeColor.value) return
-			if (val.toFixed(2) === old.toFixed(2)) return
-			startChangeColor.value = true
-			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
+			// if (startChangeColor.value) return
+			// if (val.toFixed(2) === old.toFixed(2)) return
+			// startChangeColor.value = true
+			// changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
 			// console.log('changerate', val, old)
 		
 		}
@@ -49,7 +49,6 @@
 		<button
 			v-else
 			:key="changeColor"
-			@animationend="animationend"
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
 			{{ formatChangeRate(changeRate, 2) }}%
@@ -66,34 +65,34 @@
 	// 	filter: brightness(0.8);
 	// }
 
-	@keyframes green-flash {
-		0% {
-			background-color: rgb(var(--color-green));
-		}
-		50% {
-			background-color: rgb(var(--color-green)/0.8);
-		}
-		100% {
-			background-color: rgb(var(--color-green));
-		}
-	}
+	// @keyframes green-flash {
+	// 	0% {
+	// 		background-color: rgb(var(--color-green));
+	// 	}
+	// 	50% {
+	// 		background-color: rgb(var(--color-green)/0.8);
+	// 	}
+	// 	100% {
+	// 		background-color: rgb(var(--color-green));
+	// 	}
+	// }
 
-	@keyframes red-flash {
-		0% {
-			background-color: rgb(var(--color-red));
-		}
-		50% {
-			background-color: rgb(var(--color-red)/0.8);
-		}
-		100% {
-			background-color: rgb(var(--color-red));
-		}
-	}
+	// @keyframes red-flash {
+	// 	0% {
+	// 		background-color: rgb(var(--color-red));
+	// 	}
+	// 	50% {
+	// 		background-color: rgb(var(--color-red)/0.8);
+	// 	}
+	// 	100% {
+	// 		background-color: rgb(var(--color-red));
+	// 	}
+	// }
 
-	.bt-green-flash {
-		animation: green-flash 0.3s ease;
-	}
-	.bt-red-flash {
-		animation: red-flash 0.3s ease;
-	}
+	// .bt-green-flash {
+	// 	animation: green-flash 0.3s ease;
+	// }
+	// .bt-red-flash {
+	// 	animation: red-flash 0.3s ease;
+	// }
 </style>
