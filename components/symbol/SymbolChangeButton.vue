@@ -21,9 +21,7 @@
 			startChangeColor.value = true
 			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
 			// console.log('changerate', val, old)
-			setTimeout(() => {
-				animationend()
-			}, 300);
+		
 		}
 	)
 	// 延迟等待销毁
@@ -31,7 +29,7 @@
 		changeColor.value = ''
 		setTimeout(() => {
 			startChangeColor.value = false
-		}, 50)
+		},100)
 	}
 
 	const tickerHandler = (data: Ticker) => {
@@ -51,6 +49,7 @@
 		<button
 			v-else
 			:key="changeColor"
+			@animationend="animationend"
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
 			{{ formatChangeRate(changeRate, 2) }}%
