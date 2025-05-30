@@ -12,26 +12,49 @@
 		price.value = $ws.getTickers(props.symbol.instId)
 		return price.value?.last && price.value?.sodUtc8 ? ((parseFloat(price.value?.last) - parseFloat(price.value?.sodUtc8)) / parseFloat(price.value?.sodUtc8)) * 100 : 0
 	})
-	const changeColor = ref('')
 	watch(
 		() => changeRate.value,
 		(val, old) => {
 			if (startChangeColor.value) return
 			if (val.toFixed(2) === old.toFixed(2)) return
 			startChangeColor.value = true
-			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
-			// console.log('changerate', val, old)
-			setTimeout(() => {
-				animationend()
-			}, 300);
+			// 开始动画
+			animationFrameId = requestAnimationFrame(animatonHandle)
 		}
 	)
 	// 延迟等待销毁
 	const animationend = () => {
-		changeColor.value = ''
 		setTimeout(() => {
 			startChangeColor.value = false
-		},100)
+		}, 100);
+		
+	}
+
+	// requetAnimationFrame
+	// 这里可以使用requestAnimationFrame来处理动画
+	let animationFrameId: number | null = null
+	let startTimestamp = 0
+	let startColor = 0.8
+	let endColor = 1
+	const animationDuration = 300 // 动画持续时间，单位毫秒
+	// 颜色变化的 style
+	const filterStyle = ref<string>('')
+	// 动画执行函数
+	const animatonHandle = (t: number) => {
+		if (!startTimestamp) startTimestamp = t
+
+		const progress = Math.min((t - startTimestamp) / animationDuration, 1)
+		const currentColor = startColor + (endColor - startColor) * progress
+		filterStyle.value = `brightness(${currentColor})`
+
+		if (progress >= 1) {
+			animationend()
+			animationFrameId && cancelAnimationFrame(animationFrameId)
+			animationFrameId = null
+			startTimestamp = 0
+		} else {
+			animationFrameId = requestAnimationFrame(animatonHandle)
+		}
 	}
 
 	const tickerHandler = (data: Ticker) => {
@@ -41,18 +64,16 @@
 		$ws.addTickerHandler(props.symbol.instId, tickerHandler)
 	})
 	onUnmounted(() => {
+		animationFrameId && cancelAnimationFrame(animationFrameId)
+		animationFrameId = null
 		price.value = null
 		$ws.removeTickerHandler(props.symbol.instId, tickerHandler)
 	})
 </script>
 <template>
-	<div class="*:text-white *:px-2 *:w-16 *:h-7 *:rounded *:text-xs *:font-bold *:transition-all *:duration-300">
+	<div class="*:text-white *:px-2 *:w-16 *:h-7 *:rounded *:text-xs *:font-bold">
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
-		<button
-			v-else
-			
-			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
-		>
+		<button :class="changeRate > 0 ? '!bg-[rgb(var(--color-green))]' : changeRate < 0 ? '!bg-[rgb(var(--color-red))]' : ''" :style="{ filter: filterStyle }">
 			{{ formatChangeRate(changeRate, 2) }}%
 		</button>
 	</div>
@@ -62,8 +83,10 @@
 	// 背景闪烁
 	.bt-red-flash {
 		filter: brightness(0.8);
+		transition: filter 0.2s ease-in-out;
 	}
 	.bt-green-flash {
 		filter: brightness(0.8);
+		transition: filter 0.2s ease-in-out;
 	}
 </style>
