@@ -26,8 +26,7 @@
 	const animationend = () => {
 		setTimeout(() => {
 			startChangeColor.value = false
-		}, 100);
-		
+		}, 100)
 	}
 
 	// requetAnimationFrame
@@ -42,10 +41,17 @@
 	// 动画执行函数
 	const animatonHandle = (t: number) => {
 		if (!startTimestamp) startTimestamp = t
-
 		const progress = Math.min((t - startTimestamp) / animationDuration, 1)
-		const currentColor = startColor + (endColor - startColor) * progress
-		filterStyle.value = `brightness(${currentColor})`
+		// 分两阶段：前 50% 升亮，后 50% 降暗
+		let brightness = 0.8
+		if (progress <= 0.5) {
+			// 阶段1: 0.8 ➜ 1
+			brightness = 0.8 + (1 - 0.8) * (progress / 0.5)
+		} else {
+			// 阶段2: 1 ➜ 0.8
+			brightness = 1 - (1 - 0.8) * ((progress - 0.5) / 0.5)
+		}
+		filterStyle.value = `brightness(${brightness})`
 
 		if (progress >= 1) {
 			animationend()
@@ -68,7 +74,6 @@
 		$ws.removeTickerHandler(props.symbol.instId, tickerHandler)
 		animationFrameId && cancelAnimationFrame(animationFrameId)
 		animationFrameId = null
-		
 	})
 </script>
 <template>
