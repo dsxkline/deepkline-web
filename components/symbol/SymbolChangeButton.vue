@@ -21,6 +21,9 @@
 			startChangeColor.value = true
 			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
 			// console.log('changerate', val, old)
+			setTimeout(() => {
+				animationend()
+			}, 300);
 		}
 	)
 	// 延迟等待销毁
@@ -47,7 +50,6 @@
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
 		<button
 			v-else
-			@animationend="animationend"
 			:key="changeColor"
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
