@@ -491,6 +491,9 @@
 		:deep(ul) {
 			li {
 				border-left: none;
+				&:hover {
+					background-color: transparent;
+				}
 			}
 		}
 	}
