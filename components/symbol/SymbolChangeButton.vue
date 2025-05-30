@@ -1,13 +1,13 @@
 <script setup lang="ts">
-	import { start } from 'single-spa';
-import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { start } from 'single-spa'
+	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		symbol: Instruments
 	}>()
 	const { $wsb, $ws } = useNuxtApp()
 	const price = ref<Ticker | null>()
-	const startChangeColor = ref(true)
+	const startChangeColor = ref(false)
 	const changeRate = computed(() => {
 		price.value = $ws.getTickers(props.symbol.instId)
 		return price.value?.last && price.value?.sodUtc8 ? ((parseFloat(price.value?.last) - parseFloat(price.value?.sodUtc8)) / parseFloat(price.value?.sodUtc8)) * 100 : 0
@@ -16,13 +16,19 @@ import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.typ
 	watch(
 		() => changeRate.value,
 		(val, old) => {
-			if(!startChangeColor.value) return
-			if(val.toFixed(2) === old.toFixed(2)) return
-			startChangeColor.value = false
-			changeColor.value = val > 0 ? 'bt-green-flash '+(new Date().getTime()) : 'bt-red-flash '+(new Date().getTime())
+			if (startChangeColor.value) return
+			if (val.toFixed(2) === old.toFixed(2)) return
+			startChangeColor.value = true
+			changeColor.value = val > 0 ? 'bt-green-flash ' + new Date().getTime() : 'bt-red-flash ' + new Date().getTime()
 			// console.log('changerate', val, old)
 		}
 	)
+	// 延迟等待销毁
+	const animationend = () => {
+		setTimeout(() => {
+			startChangeColor.value = false
+		}, 50)
+	}
 
 	const tickerHandler = (data: Ticker) => {
 		price.value = data
@@ -40,7 +46,7 @@ import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.typ
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
 		<button
 			v-else
-			@animationend="startChangeColor=true"
+			@animationend="animationend"
 			:key="changeColor"
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
@@ -83,9 +89,9 @@ import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.typ
 	}
 
 	.bt-green-flash {
-		animation: green-flash .3s ease;
+		animation: green-flash 0.3s ease;
 	}
 	.bt-red-flash {
-		animation: red-flash .3s ease;
+		animation: red-flash 0.3s ease;
 	}
 </style>
