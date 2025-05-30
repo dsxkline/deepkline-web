@@ -25,6 +25,7 @@
 	)
 	// 延迟等待销毁
 	const animationend = () => {
+		changeColor.value = ''
 		setTimeout(() => {
 			startChangeColor.value = false
 		}, 50)
