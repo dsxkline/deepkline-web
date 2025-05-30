@@ -11,7 +11,6 @@ import { useKlineStore } from '~/store/kline'
 import KlineGreenRedIcon from '~/components/icons/KlineGreenRedIcon.vue'
 import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
 import Timezone from './timezone.vue'
-import { use } from 'echarts'
 import Aboutus from './aboutus.vue'
 	const props = defineProps<{
 		push?: boolean
@@ -158,7 +157,7 @@ import Aboutus from './aboutus.vue'
 <template>
 	<div class="w-full h-full">
 		<NavigationBar title="我的" :hideBack="!push" />
-		<el-scrollbar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace />
 			<MenuList :menus="menus" />
 			<div class="my-3 px-3 flex flex-col items-center justify-center mt-20">
@@ -166,6 +165,6 @@ import Aboutus from './aboutus.vue'
 				<el-divider class="!my-3" />
 				<div class="text-center text-xs text-muted">版本 1.0.0</div>
 			</div>
-		</el-scrollbar>
+		</ScrollBar>
 	</div>
 </template>

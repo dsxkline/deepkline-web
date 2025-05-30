@@ -424,7 +424,7 @@
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 			</ul>
 		</div>
-		<el-scrollbar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
+		<ScrollBar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
 			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
 			<!-- 容器总高度 -->
 			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full symbol-list-content" v-else>
@@ -454,7 +454,7 @@
 					</li>
 				</ul>
 			</div>
-		</el-scrollbar>
+		</ScrollBar>
 	</div>
 </template>
 

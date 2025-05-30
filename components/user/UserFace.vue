@@ -5,7 +5,7 @@ import { useAvatar } from '~/composable/useAvatar';
 </script>
 
 <template>
-    <div class="face-container w-full h-full flex items-center justify-center">
+    <div class="face-container w-full h-auto flex items-center justify-center">
         <div class="face-content flex items-center justify-center flex-col p-4">
             <div class="face-icon flex items-center justify-center">
                 <img :src="useAvatar()" alt="Face Icon" class="w-16 h-16 rounded-full" />
