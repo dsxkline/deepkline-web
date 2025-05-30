@@ -64,10 +64,11 @@
 		$ws.addTickerHandler(props.symbol.instId, tickerHandler)
 	})
 	onUnmounted(() => {
-		animationFrameId && cancelAnimationFrame(animationFrameId)
-		animationFrameId = null
 		price.value = null
 		$ws.removeTickerHandler(props.symbol.instId, tickerHandler)
+		animationFrameId && cancelAnimationFrame(animationFrameId)
+		animationFrameId = null
+		
 	})
 </script>
 <template>
