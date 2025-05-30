@@ -19,7 +19,7 @@ import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.typ
 			if(!startChangeColor.value) return
 			if(val.toFixed(2) === old.toFixed(2)) return
 			startChangeColor.value = false
-			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
+			changeColor.value = val > 0 ? 'bt-green-flash '+(new Date().getTime()) : 'bt-red-flash '+(new Date().getTime())
 			// console.log('changerate', val, old)
 		}
 	)
@@ -41,7 +41,7 @@ import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.typ
 		<button
 			v-else
 			@animationend="startChangeColor=true"
-			:key="changeColor + changeRate.toFixed(2)"
+			:key="changeColor"
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
 			{{ formatChangeRate(changeRate, 2) }}%
