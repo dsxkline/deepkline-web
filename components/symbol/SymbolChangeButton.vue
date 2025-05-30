@@ -69,25 +69,25 @@
 
 	@keyframes green-flash {
 		0% {
-			filter: brightness(1);
+			background-color: rgb(var(--color-green));
 		}
 		50% {
-			filter: brightness(0.8);
+			background-color: rgb(var(--color-green)/0.8);
 		}
 		100% {
-			filter: brightness(1);
+			background-color: rgb(var(--color-green));
 		}
 	}
 
 	@keyframes red-flash {
 		0% {
-			filter: brightness(1);
+			background-color: rgb(var(--color-red));
 		}
 		50% {
-			filter: brightness(0.8);
+			background-color: rgb(var(--color-red)/0.8);
 		}
 		100% {
-			filter: brightness(1);
+			background-color: rgb(var(--color-red));
 		}
 	}
 
