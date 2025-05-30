@@ -95,7 +95,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
-		<el-scrollbar :height="contentHeight + 'px'" :always="false">
+		<ScrollBar :height="contentHeight + 'px'" :always="false">
 			<div class="market-datas-head">
 				<div class="market-datas-head-price flex flex-col items-start mt-2 mb-3 pl-4">
 					<b v-autosize="32" :class="'text-3xl roboto-bold ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
@@ -163,7 +163,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			<div class="px-4 py-3">
 				<Trades :symbol="symbol" />
 			</div>
-		</el-scrollbar>
+		</ScrollBar>
 	</div>
 </template>
 
@@ -188,8 +188,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		display: none;
 	}
 
-	:deep(.el-scrollbar__bar){
-		.el-scrollbar__thumb{
+	:deep(.ScrollBar__bar){
+		.ScrollBar__thumb{
 			display: none;
 		}
 	}

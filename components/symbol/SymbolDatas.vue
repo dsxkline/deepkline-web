@@ -29,7 +29,7 @@
 </script>
 <template>
 	<div class="symbol-market-datas w-full text-xs" ref="containerRef">
-		<el-scrollbar :height="contentHeight + 'px'">
+		<ScrollBar :height="contentHeight + 'px'">
 			<div class="px-4" v-if="mounted">
 				<!-- 需要每笔成交数据计算生成 -->
 				<!-- <SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
@@ -49,7 +49,7 @@
 				<!-- 获取精英交易员合约多空持仓仓位比 -->
 				<LongShortPositionRatioTopTrader :symbol="symbol" v-if="symbolObj.instType == InstanceType.SWAP" />
 			</div>
-		</el-scrollbar>
+		</ScrollBar>
 	</div>
 </template>
 

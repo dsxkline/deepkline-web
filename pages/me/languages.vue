@@ -45,10 +45,10 @@
 <template>
 	<div class="w-full h-full">
 		<NavigationBar title="主题设置" :hideBack="!push" />
-		<el-scrollbar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
 	
 			<MenuList :menus="menus" />
 			
-		</el-scrollbar>
+		</ScrollBar>
 	</div>
 </template>

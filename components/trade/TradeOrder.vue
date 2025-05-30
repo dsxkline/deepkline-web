@@ -145,7 +145,7 @@
 	<div>
 		<div class="w-full h-full wrapper trade-order">
 			<client-only>
-				<el-scrollbar :height="contentHeight + 'px'" v-show="!loading && !error">
+				<ScrollBar :height="contentHeight + 'px'" v-show="!loading && !error">
 					<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']" v-if="contentHeight">
 						<div class="pb-[200px]" v-if="!loading">
 							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
@@ -248,7 +248,7 @@
 							</button>
 						</div>
 					</div>
-				</el-scrollbar>
+				</ScrollBar>
 			</client-only>
 			<div v-show="loading || error" class="p-4">
 				<Error :content="error" v-if="!loading && error">

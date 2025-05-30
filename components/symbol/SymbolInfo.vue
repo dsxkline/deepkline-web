@@ -164,11 +164,11 @@
 	<div>
 		<div class="w-full h-full" v-if="!loading && !error && symbolInfo?.project">
 			<el-dialog v-model="visibleDetail" :title="symbolInfo?.project + '介绍'" width="50vw" :append-to-body="true">
-				<el-scrollbar height="50vh" class="px-4">
+				<ScrollBar height="50vh" class="px-4">
 					<div class="text-sm text-main text-justify py-4" v-html="symbolInfo?.introduceSeo"></div>
-				</el-scrollbar>
+				</ScrollBar>
 			</el-dialog>
-			<el-scrollbar :height="contentHeight + 'px'">
+			<ScrollBar :height="contentHeight + 'px'">
 				<div class="p-4 group">
 					<div class="text-sm text-main flex items-center mb-3">
 						<img :src="symbolInfo?.icon" alt="" class="w-6 h-6 inline-block mr-1" />
@@ -258,7 +258,7 @@
 						</div>
 					</div>
 				</div>
-			</el-scrollbar>
+			</ScrollBar>
 		</div>
 		<div v-else class="p-4" :style="{height:contentHeight + 'px'}">
 			<Error :content="error" v-if="!loading && error">
