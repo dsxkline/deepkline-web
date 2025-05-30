@@ -226,7 +226,7 @@
 
 <style scoped lang="less">
 	.light .drawer-container {
-		.drawer_body {
+		.drawer-body {
 			&::before {
 				background-image: unset;
 			}
