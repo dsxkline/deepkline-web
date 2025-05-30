@@ -16,12 +16,14 @@
 	watch(
 		() => changeRate.value,
 		(val, old) => {
-			// if (startChangeColor.value) return
-			// if (val.toFixed(2) === old.toFixed(2)) return
-			// startChangeColor.value = true
-			// changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
+			if (startChangeColor.value) return
+			if (val.toFixed(2) === old.toFixed(2)) return
+			startChangeColor.value = true
+			changeColor.value = val > 0 ? 'bt-green-flash transition-all duration-300' : 'bt-red-flash transition-all duration-300'
 			// console.log('changerate', val, old)
-		
+			setTimeout(() => {
+				animationend()
+			}, 300);
 		}
 	)
 	// 延迟等待销毁
@@ -58,41 +60,10 @@
 
 <style lang="less" scoped>
 	// 背景闪烁
-	// .bt-red-flash {
-	// 	filter: brightness(0.8);
-	// }
-	// .bt-green-flash {
-	// 	filter: brightness(0.8);
-	// }
-
-	// @keyframes green-flash {
-	// 	0% {
-	// 		background-color: rgb(var(--color-green));
-	// 	}
-	// 	50% {
-	// 		background-color: rgb(var(--color-green)/0.8);
-	// 	}
-	// 	100% {
-	// 		background-color: rgb(var(--color-green));
-	// 	}
-	// }
-
-	// @keyframes red-flash {
-	// 	0% {
-	// 		background-color: rgb(var(--color-red));
-	// 	}
-	// 	50% {
-	// 		background-color: rgb(var(--color-red)/0.8);
-	// 	}
-	// 	100% {
-	// 		background-color: rgb(var(--color-red));
-	// 	}
-	// }
-
-	// .bt-green-flash {
-	// 	animation: green-flash 0.3s ease;
-	// }
-	// .bt-red-flash {
-	// 	animation: red-flash 0.3s ease;
-	// }
+	.bt-red-flash {
+		filter: brightness(0.8);
+	}
+	.bt-green-flash {
+		filter: brightness(0.8);
+	}
 </style>
