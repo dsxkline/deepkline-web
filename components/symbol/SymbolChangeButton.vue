@@ -1,7 +1,5 @@
 <script setup lang="ts">
-	import { start } from 'single-spa'
 	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
-	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		symbol: Instruments
 	}>()
@@ -77,20 +75,8 @@
 <template>
 	<div class="*:text-white *:px-2 *:w-16 *:h-7 *:rounded *:text-xs *:font-bold">
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
-		<button :class="changeRate > 0 ? '!bg-[rgb(var(--color-green))]' : changeRate < 0 ? '!bg-[rgb(var(--color-red))]' : ''" :style="{ filter: filterStyle }">
+		<button v-else :class="changeRate > 0 ? 'bg-[rgb(var(--color-green))]' : changeRate < 0 ? 'bg-[rgb(var(--color-red))]' : 'bg-[var(--transparent10)]'" :style="{ filter: filterStyle }">
 			{{ formatChangeRate(changeRate, 2) }}%
 		</button>
 	</div>
 </template>
-
-<style lang="less" scoped>
-	// 背景闪烁
-	.bt-red-flash {
-		filter: brightness(0.8);
-		transition: filter 0.2s ease-in-out;
-	}
-	.bt-green-flash {
-		filter: brightness(0.8);
-		transition: filter 0.2s ease-in-out;
-	}
-</style>
