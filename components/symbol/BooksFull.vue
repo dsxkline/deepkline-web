@@ -5,6 +5,8 @@
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+import { useRequestAnimation } from '~/composable/useRequestAnimation'
+import { use } from 'echarts'
 
 	const props = defineProps<{
 		symbol: string
@@ -16,6 +18,8 @@
 	})
 	const asks = ref<BookEntry[] | null>([])
 	const bids = ref<BookEntry[] | null>([])
+	const lastAsks = ref<BookEntry[] | null>([])
+	const lastBids = ref<BookEntry[] | null>([])
 	let totalAsks = ref(0)
 	let totalBids = ref(0)
 	// 小数点
@@ -240,7 +244,58 @@
 
 		trimMap(orderBook.value.asks, 100)
 		trimMap(orderBook.value.bids, 100)
+
+		bookAnimation()
+
 	}, 300)
+
+	// 每个订单的占比动画
+	function bookAnimation() {
+		if (!asks.value || !bids.value) return
+		if (totalAsks.value + totalBids.value <= 0) return
+		// 计算每个订单的占比
+		// transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
+		asks.value.forEach((item,index) => {
+			const ratio = item.total / (totalBids.value + totalAsks.value)
+			// 上一次比例
+			const lastRatio = lastAsks.value && lastAsks.value[index]?.ratio || 0;
+			useRequestAnimation().start({
+				from: lastRatio,
+				to: ratio,
+				duration: 200,
+				onUpdate: (value) => {
+					// 更新dom
+					item.ratio = value;
+				}
+			})
+		})
+		bids.value.forEach((item,index) => {
+			const ratio = item.total / (totalBids.value + totalAsks.value)
+			// 上一次比例
+			const lastRatio = lastBids.value && lastBids.value[index]?.ratio || 0;
+			useRequestAnimation().start({
+				from: lastRatio,
+				to: ratio,
+				duration: 200,
+				onUpdate: (value) => {
+					// 更新dom
+					item.ratio = value;
+				}
+			})
+		})
+
+		useRequestAnimation().start({
+			from: calculateBuySellRatioValue.value,
+			to: calculateBuySellRatio.value,
+			duration: 200,
+			onUpdate: (value) => {
+				calculateBuySellRatioValue.value = value
+			}
+		})
+
+		lastAsks.value = [...asks.value]
+		lastBids.value = [...bids.value]
+	}
 
 	// bid/ask
 	const calculateBuySellRatio = computed(() => {
@@ -248,6 +303,7 @@
 		const totalAsks = (asks.value && asks.value.reduce((sum, entry) => sum + entry.sz, 0)) || 1
 		return (totalBids / (totalBids + totalAsks)) * 100
 	})
+	const calculateBuySellRatioValue = ref(calculateBuySellRatio.value)
 
 	const whenBrowserActive = () => {
 		// console.log('浏览器重新激活')
@@ -347,35 +403,35 @@
 						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].total, point), '', point) }}</div>
 						<div
 							v-if="interVisible"
-							class="absolute top-0 right-0 h-full w-full bg-red/20 transition-all transition-200 ease-in-out origin-right"
+							class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-right"
 							:style="{
-								transform: `scaleX(${(asks[index].total / (totalBids + totalAsks)) * 100 + '%'})`
+								transform: `scaleX(${asks[index].ratio})`
 							}"
 						></div>
 					</template>
 				</li>
 
-				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatio) && activeBook == 0">
+				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
 					<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
 						<div
-							class="bg-green/50 flex justify-start items-center w-full h-full transition-all transition-100 ease-in-out absolute left-0 top-0 origin-left"
+							class="bg-green/50 flex justify-start items-center w-full h-full absolute left-0 top-0 origin-left"
 							:style="{
-								transform: `translate3d(calc(-${100 - calculateBuySellRatio}% + 5px),0,0)`,
+								transform: `translate3d(calc(-${100 - calculateBuySellRatioValue}% + 5px),0,0)`,
 								'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)'
 							}"
 						></div>
 						<div
-							class="bg-red/50 flex justify-end items-center w-full h-full transition-all transition-100 ease-in-out absolute right-0 top-0 origin-right"
+							class="bg-red/50 flex justify-end items-center w-full h-full absolute right-0 top-0 origin-right"
 							:style="{
-								transform: `translate3d(calc(${calculateBuySellRatio}% + 5px),0,0)`,
+								transform: `translate3d(calc(${calculateBuySellRatioValue}% + 5px),0,0)`,
 								'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)'
 							}"
 						></div>
 						<div class="absolute left-0 top-0 h-full flex items-center">
-							<b class="px-2">B</b><span>{{ calculateBuySellRatio.toFixed(2) }}%</span>
+							<b class="px-2">B</b><span>{{ calculateBuySellRatioValue.toFixed(2) }}%</span>
 						</div>
 						<div class="absolute right-0 top-0 h-full flex items-center">
-							<span>{{ (100 - calculateBuySellRatio).toFixed(2) }}%</span><b class="px-2">S</b>
+							<span>{{ (100 - calculateBuySellRatioValue).toFixed(2) }}%</span><b class="px-2">S</b>
 						</div>
 					</div>
 				</li>
@@ -387,9 +443,9 @@
 						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].total, point), '', point) }}</div>
 						<div
 							v-if="interVisible && interVisibleBottom"
-							class="absolute top-0 right-0 h-full w-full bg-red/20 transition-all transition-300 ease-in-out origin-right"
+							class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-right"
 							:style="{
-								transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
+								transform: `scaleX(${bids[index].ratio})`
 							}"
 						></div>
 					</template>

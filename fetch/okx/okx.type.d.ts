@@ -204,6 +204,7 @@ interface BookEntry {
 	sz: number // 数量 (BTC)
 	total: number // 合计 (BTC)
 	ratio: number // 占比
+	
 }
 export interface Books {
 	asks: BookEntry[]

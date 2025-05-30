@@ -3,7 +3,7 @@
 		<ul v-show="fontWidth <= 0">
 			<li>{{ unit }}{{ value }}</li>
 		</ul>
-		<ul class="number-container" v-show="fontWidth > 0"  v-observe-visible.multi="onObserveVisible">
+		<ul class="number-container" v-show="fontWidth > 0" v-observe-visible.multi="onObserveVisible">
 			<li
 				:style="{
 					height: fontHeight + 'px'
@@ -45,6 +45,8 @@
 	</div>
 </template>
 <script>
+	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+
 	export default {
 		props: {
 			value: {
@@ -91,13 +93,17 @@
 				textHeight: 0,
 				inited: false,
 				timer: null,
-				interVisible:false
+				interVisible: false,
+				startAnimations: {},
+				lastTransitionY: {}
 			}
 		},
 		beforeUnmount() {
-			// Object.keys(this.$refs).forEach(key => {
-			// 	this.$refs[key] = null
-			// })
+			this.startAnimations.forEach(animation => {
+				if (animation) animation.stop()
+			})
+			this.startAnimations = {}
+			this.lastTransitionY = {}
 			this.interVisible = false
 			this.orderNum = []
 			this.orderNumOld = []
@@ -111,8 +117,14 @@
 			}, this.time * 1000)
 		},
 		methods: {
-			onObserveVisible(visible){
-				this.interVisible = visible;
+			createStartAnimations() {
+				this.orderNum.forEach((n, i) => {
+					if (this.startAnimations[i]) return
+					this.startAnimations[i] = useRequestAnimation()
+				})
+			},
+			onObserveVisible(visible) {
+				this.interVisible = visible
 				// console.log('inview numberincrease',this.interVisible)
 			},
 			setDefaultDisplay() {
@@ -133,11 +145,11 @@
 			},
 			setNumberList() {
 				this.orderNum = (this.value + '').split('') || ''
-				if (this.orderNumOld.length!=this.orderNum.length) {
+				if (this.orderNumOld.length != this.orderNum.length) {
 					// 如果数字长度不一致，重新设置
 					this.orderNumOld = this.orderNum
 				}
-				
+				this.createStartAnimations()
 			},
 			resetNumbers() {
 				this.textHeight = this.fontSize * 10
@@ -145,19 +157,23 @@
 				this.orderNum.forEach((n, i) => {
 					const ndom = this.$el.querySelector('.numdom-' + i)
 					if (ndom) {
-						// ndom.style.transition = `all ${this.time}s ease`
-						// if(!this.interVisible) ndom.style.transition = 'none';
+						let translateY = 0
 						if (!isNaN(n) && n != '.' && n != ',') {
-							const translateY = this.getNumberY(n, ndom)
-							ndom.style.transform = translateY
-							//ndom.style.transition = `all ${this.time}s ease`
-							//   ndom.style.top = translateY;
-						} else {
-							// const translateY = this.getNumberY(0, ndom)
-							ndom.style.transform = 'translateY(0%)'
-							//ndom.style.transition = `all ${this.time}s ease`
-							//   ndom.style.top = 0;
+							translateY = this.getNumberY(n, ndom)
 						}
+
+						const startAnimation = this.startAnimations[i]
+						if (startAnimation) {
+							startAnimation.start({
+								from: this.lastTransitionY[i] || 0,
+								to: translateY,
+								duration: 300,
+								onUpdate: value => {
+									ndom.style.transform = `translateY(${value}%)`
+								}
+							})
+						}
+						this.lastTransitionY[i] = translateY
 					}
 				})
 			},
@@ -176,7 +192,7 @@
 				//     (space) / 2 +
 				//     "px)";
 				// console.log('getNumberY',number,translateY)
-				return translateY
+				return 45 - (number / 10) * 100
 			},
 			setNumberWidth() {
 				const { width, height } = this.getTextWidth(this.unit + this.value, this.fontSize, this.fontWeight) //this.$refs.hideNumber.getBoundingClientRect().width;
@@ -212,17 +228,13 @@
 	.number-container {
 		position: relative;
 		display: flex;
-		transition: all 0.3s ease;
-
 		li {
 			overflow: hidden;
 			display: flex;
 			align-items: center;
-			transition: all 0.3s ease;
-
 			span {
 				transform: translateY(45%);
-				transition: all 0.3s ease;
+
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;

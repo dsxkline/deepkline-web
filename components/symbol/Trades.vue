@@ -208,7 +208,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 					:style="{
 						height: `${animation ? '20px' : '0px'}`,
 						opacity: `${animation ? '1' : '0'}`,
-						transition: `${animation ? 'all 0.2s' : 'none'}`
 					}"
 				>
 					<template v-if="tradesList[0]">
@@ -223,7 +222,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 					v-if="tradesList"
 					:style="{
 						transform: `translateY(${animation ? '20px' : '0px'})`,
-						transition: `${animation ? 'all 0.2s' : 'none'}`
 					}"
 				>
 					<li v-for="(n, index) in tradesList.length" :key="index">
