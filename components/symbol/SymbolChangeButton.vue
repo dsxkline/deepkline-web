@@ -33,11 +33,9 @@
 	// 这里可以使用requestAnimationFrame来处理动画
 	let animationFrameId: number | null = null
 	let startTimestamp = 0
-	let startColor = 0.8
-	let endColor = 1
 	const animationDuration = 300 // 动画持续时间，单位毫秒
 	// 颜色变化的 style
-	const filterStyle = ref<string>('')
+	const filterStyle = ref<string>('unset')
 	// 动画执行函数
 	const animatonHandle = (t: number) => {
 		if (!startTimestamp) startTimestamp = t
