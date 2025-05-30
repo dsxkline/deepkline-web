@@ -41,11 +41,11 @@
 		// 分两阶段：前 50% 升亮，后 50% 降暗
 		let brightness = 0.8
 		if (progress <= 0.5) {
-			// 阶段1: 0.8 ➜ 1
-			brightness = 0.8 + (1 - 0.8) * (progress / 0.5)
+			// 阶段1: 1 ➜ 0.8
+			brightness = 1 - (1 - 0.8) * (progress / 0.5)
 		} else {
-			// 阶段2: 1 ➜ 0.8
-			brightness = 1 - (1 - 0.8) * ((progress - 0.5) / 0.5)
+			// 阶段2: 0.8 ➜ 1
+			brightness = 0.8 + (1 - 0.8) * ((progress - 0.5) / 0.5)
 		}
 		filterStyle.value = `brightness(${brightness})`
 
