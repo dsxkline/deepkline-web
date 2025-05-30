@@ -19,7 +19,7 @@
 			if (startChangeColor.value) return
 			if (val.toFixed(2) === old.toFixed(2)) return
 			startChangeColor.value = true
-			changeColor.value = val > 0 ? 'bt-green-flash transition-all duration-300' : 'bt-red-flash transition-all duration-300'
+			changeColor.value = val > 0 ? 'bt-green-flash' : 'bt-red-flash'
 			// console.log('changerate', val, old)
 			setTimeout(() => {
 				animationend()
@@ -46,11 +46,11 @@
 	})
 </script>
 <template>
-	<div class="*:text-white *:px-2 *:w-16 *:h-7 *:rounded *:text-xs *:font-bold">
+	<div class="*:text-white *:px-2 *:w-16 *:h-7 *:rounded *:text-xs *:font-bold *:transition-all *:duration-300">
 		<button class="bg-[var(--transparent10)] text-grey" v-if="!changeRate && !price?.last">-</button>
 		<button
 			v-else
-			:key="changeColor"
+			
 			:class="['bg-[var(--transparent10)]', changeRate > 0 && '!bg-[rgb(var(--color-green))]', changeRate < 0 && '!bg-[rgb(var(--color-red))]', changeColor]"
 		>
 			{{ formatChangeRate(changeRate, 2) }}%
