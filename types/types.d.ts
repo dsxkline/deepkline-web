@@ -16,10 +16,10 @@ declare module '#app' {
 	interface NuxtApp {
 		$ws: OKXWebSocket
 		$wsb: OKXWebSocket
-		$push: (thisUid:number,comp: any, params: {}, size?: string) => void
-		$pushLeft: (thisUid:number,comp: any, params: {}, size?: string) => void
-		$pushUp: (thisUid:number,comp: any, params: {}, size?: string) => void
-		$pushDown: (thisUid:number,comp: any, params: {}, size?: string) => void
+		$push: (comp: any, params: {}, size?: string) => void
+		$pushLeft: (comp: any, params: {}, size?: string) => void
+		$pushUp: (comp: any, params: {}, size?: string) => void
+		$pushDown: (comp: any, params: {}, size?: string) => void
 		$pop: (data?: any) => void
 		$popRoot: (data?: any, index?: number) => void
 		$clickSound: () => void
@@ -29,8 +29,7 @@ declare module '#app' {
 }
 
 interface window {
-	__NUXT__: {},
-	pushing: number
+	__NUXT__: {}
 }
 declare module 'vue' {
 	interface ComponentInternalInstance {

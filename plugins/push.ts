@@ -96,8 +96,10 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		box.classList.add('push-' + direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
+			console.log('parentDrawer instance',instance)
 			if (instance?.vnode.el) {
 				const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
+				console.log('parentDrawer',parentDrawer)
 				if (parentDrawer) {
 					parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
@@ -111,7 +113,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 	setTimeout(() => {
 		pushing = false
 	}, 400)
-	instance = null
+	
 	return pushInstance
 }
 
@@ -130,7 +132,7 @@ const pop = function (data = {}) {
 
 	// 父层抽屉恢复
 	topPush = store.getTopPush()
-	console.log('pop', topPush)
+
 	if (topPush) {
 		const parentDrawer = topPush.vnode.el.querySelector('.drawer-body') as HTMLElement
 		if (parentDrawer && parentDrawer instanceof HTMLElement) {
