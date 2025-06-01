@@ -27,7 +27,7 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: config
 	},
-	devtools: { enabled: true },
+	devtools: { enabled: false },
 	modules: modulesConfig,
 	tailwindcss: tailwindNuxtConfig,
 	app: {

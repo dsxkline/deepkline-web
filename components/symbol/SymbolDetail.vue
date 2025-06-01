@@ -104,6 +104,9 @@
 	onUnmounted(() => {
 		menus.value = []
 		navbar.value = null
+		console.log('SymbolDetail unmounted')
+
+		
 	})
 </script>
 <template>

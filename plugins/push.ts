@@ -39,13 +39,15 @@ function getAppComponent(instance: ComponentInternalInstance) {
 }
 
 let pushing = false
-const pushHandle = function (this: ComponentInternalInstance, comp: any, params = {}, direction = 'rtl', size = '100%') {
-    if (pushing) return
-    pushing = true
+const pushHandle = function (this: ComponentInternalInstance | null, comp: any, params = {}, direction = 'rtl', size = '100%') {
+	if (pushing) return
+	pushing = true
 	// 执行目标willDisappear方法
 	let instance = this
-	const app = getAppComponent(instance)
-	if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
+	if (instance) {
+		const app = getAppComponent(instance)
+		if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
+	}
 	const pushStore = usePushStore()
 	pushStore.setPushState(true)
 
@@ -73,8 +75,12 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 		params: params || [], // 传递额外的参数
 		parent: instance, // 传递父组件或上下文
 		direction: direction, // 传递方向
-		size: size // 传递大小
-		// parent:instance?.proxy
+		size: size, // 传递大小
+		destroy:()=>{
+			pushInstance.appContext = null
+			render(null,box)
+			box.remove()
+		}
 	}
 	const pushInstance = createVNode(PushView, props)
 	// 手动提供 Nuxt 上下文
@@ -90,43 +96,41 @@ const pushHandle = function (this: ComponentInternalInstance, comp: any, params 
 		box.classList.add('push-' + direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
-			setTimeout(() => {
-				if (instance.vnode.el) {
-					const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
-					if (parentDrawer) {
-						parentDrawer.style.transform = 'translateX(-30%)'
-					} else {
-						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
-						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
-					}
+			if (instance?.vnode.el) {
+				const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
+				if (parentDrawer) {
+					parentDrawer.style.transform = 'translateX(-30%)'
+				} else {
+					const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+					if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
 				}
-			}, 0)
+			}
 		}
 	})
 
-    setTimeout(() => {
-        pushing = false
-    }, 400);
-
+	setTimeout(() => {
+		pushing = false
+	}, 400)
+	instance = null
 	return pushInstance
 }
 
 const pop = function (data = {}) {
 	const store = usePushStore()
-    // 获得栈顶的实例
+	// 获得栈顶的实例
 	let topPush: any = store.getTopPush()
 	// 需要查找最顶部的push回传数据
 	// 回传数据
 	topPush && topPush?.exposed?.onPop?.(data)
-    // topPush.vnode = null
-    // topPush.component = null
+	// topPush.vnode = null
+	// topPush.component = null
 	topPush = null
-    // 弹出栈顶实例
+	// 弹出栈顶实例
 	store.pop()
 
 	// 父层抽屉恢复
 	topPush = store.getTopPush()
-	console.log('pop',topPush)
+	console.log('pop', topPush)
 	if (topPush) {
 		const parentDrawer = topPush.vnode.el.querySelector('.drawer-body') as HTMLElement
 		if (parentDrawer && parentDrawer instanceof HTMLElement) {

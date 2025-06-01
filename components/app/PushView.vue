@@ -2,7 +2,6 @@
 	import { usePushStore } from '~/store/push'
 	import type { DrawerProps } from 'element-plus'
 	import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
-	import { transform } from 'typescript'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
@@ -14,7 +13,8 @@
 		to?: any
 		params?: any
 		popData?: any
-		parent: ComponentInternalInstance
+		parent: any
+		destroy?: () => void
 	}>()
 	const drawerSize = ref(props.size)
 	const drawerContainer = ref<HTMLElement | null>(null)
@@ -52,12 +52,11 @@
 		() => visibleLocal.value,
 		(val, old) => {
 			if (!val && old) setDrawerBodyStyle(val)
-			setTimeout(() => {
-				// 开始卸载当前组件
-				if (parentContainer.value && !val && old) {
-					render(null, parentContainer.value as HTMLElement)
-				}
-			}, 500)
+			if (old && !val) {
+				setTimeout(() => {
+					props.destroy && props.destroy()
+				}, 500)
+			}
 		}
 	)
 
@@ -95,10 +94,21 @@
 		}
 	}
 
+	onBeforeUnmount(() => {
+		drawerContainer.value = null
+		drawerComponent.value = null
+		drawerBody.value = null
+		drawBg.value = null
+		showComponent.value = false
+		show.value = false
+	})
+
 	onUnmounted(() => {
-		// 获取组件的父级
-		if (props.parent) {
-			let parent: ComponentInternalInstance | null = props.parent
+		// 获取上一级
+		let parent = props.parent
+		if (parent) {
+			const app = getAppComponent(parent)
+			if (app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
 			while (parent) {
 				// pop的时候返回执行自定义poped方法
 				// console.log("parent///test", parent, this.popData);
@@ -108,30 +118,14 @@
 				}
 				parent = parent.parent
 			}
-			parent = props.parent
-			const app = getAppComponent(parent)
-			if (app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
 		}
-		// (props.parent as any).ctx = null;
-		;(instance as any).props = null // 清除组件的props引用
 
 		childWillAppearlisteners.value = []
 		childWillDisAppearlisteners.value = []
 
-		// 调用组件卸载方法
-		if (parentContainer.value) {
-			document.body.removeChild(parentContainer.value) // 从 DOM 中移除组件
-		}
-		parentContainer.value = null
-		drawerContainer.value = null
+		usePushStore().setPushState(false)
 
-		console.log('push onUnmounted', instance)
-
-		setTimeout(() => {
-			usePushStore().setPushState(false)
-			show.value = false
-			showComponent.value = false
-		}, 100)
+		console.log('push onUnmounted')
 	})
 
 	const setDrawerBodyStyle = (visible: boolean) => {
@@ -147,7 +141,7 @@
 				? 'translateY(var(--body-height))'
 				: 'translateX(var(--body-width))'
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
-				drawerBody.value.style.height = "var(--body-height)"
+				drawerBody.value.style.height = 'var(--body-height)'
 			}
 		}
 		if (drawBg.value) {
@@ -172,8 +166,8 @@
 		new Promise(resolve => {
 			setTimeout(() => {
 				showComponent.value = true
-			resolve(true)
-			}, 30);
+				resolve(true)
+			}, 30)
 		})
 	})
 
@@ -193,7 +187,7 @@
 		// console.log('注册进来了吗',refreshFn)
 		childWillAppearlisteners.value.push(refreshFn)
 	})
-	const refreshChildWillAppear = () => {
+	let refreshChildWillAppear = () => {
 		childWillAppearlisteners.value.forEach(fn => fn())
 	}
 	// 控制子组件将要隐藏回调
@@ -201,7 +195,7 @@
 	provide('registerChildWillDisAppear', (refreshFn: () => void) => {
 		childWillDisAppearlisteners.value.push(refreshFn)
 	})
-	const refreshChildWillDisAppear = () => {
+	let refreshChildWillDisAppear = () => {
 		childWillDisAppearlisteners.value.forEach(fn => fn())
 	}
 
@@ -212,12 +206,12 @@
 </script>
 
 <template>
-	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer" v-if="show">
-		<div ref="drawerBody" :class="['drawer-body bg-base w-full relative z-10', direction]" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null" v-if="show">
+	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer">
+		<div ref="drawerBody" :class="['drawer-body bg-base w-full relative z-10', direction]" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
 			<template v-if="direction == 'btt' && size != '100%'">
 				<div @click="hide"><DrawLine /></div>
 			</template>
-			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" v-if="showComponent" ref="drawerComponent" />
+			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" />
 			<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 		</div>
 		<div class="drawer-bg absolute top-0 left-0 w-full h-full z-0" @click="hide" ref="drawBg"></div>

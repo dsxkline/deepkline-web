@@ -36,6 +36,7 @@
 	onBeforeUnmount(() => {
 		scrollBarRef.value = null
 		thumbRef.value = null
+        console.log('ScrollBar component unmounted')
 	})
 </script>
 <template>

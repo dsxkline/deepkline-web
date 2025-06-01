@@ -45,9 +45,10 @@
 		}
 	})
 
-	const push = usePush()
+	let push = usePush()
 	function pushSearch() {
 		push(SymbolSearch, {})
+		
 	}
 	function pushMe() {
 		push(MeIndex, {})

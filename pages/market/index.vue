@@ -9,6 +9,7 @@
 		mainSplit.value && useStore().addSplitScreen(mainSplit.value)
 		twoSplit.value && useStore().addSplitScreen(twoSplit.value)
 		if (useStore().bodyWidth < 1400 && mainSplit.value) useStore().setSplitScreen(2)
+		
 	})
 	onBeforeUnmount(() => {
 		mainSplit.value = null

@@ -5,18 +5,18 @@
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import MeInfo from './info.vue'
 	import LanguagesIcon from '~/components/icons/LanguagesIcon.vue'
-import Theme from './theme.vue'
-import Colors from './colors.vue'
-import { useKlineStore } from '~/store/kline'
-import KlineGreenRedIcon from '~/components/icons/KlineGreenRedIcon.vue'
-import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
-import Timezone from './timezone.vue'
-import Aboutus from './aboutus.vue'
+	import Theme from './theme.vue'
+	import Colors from './colors.vue'
+	import { useKlineStore } from '~/store/kline'
+	import KlineGreenRedIcon from '~/components/icons/KlineGreenRedIcon.vue'
+	import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
+	import Timezone from './timezone.vue'
+	import Aboutus from './aboutus.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
-	const push = usePush()
-	const pushUp = usePushUp()
+	let usepush = usePush()
+	let pushUp = usePushUp()
 	const menus = ref([
 		{
 			id: 1,
@@ -25,7 +25,7 @@ import Aboutus from './aboutus.vue'
 			icon: 'User',
 			desc: '',
 			callback: () => {
-				push(MeInfo)
+				usepush(MeInfo)
 			}
 		},
 
@@ -74,7 +74,7 @@ import Aboutus from './aboutus.vue'
 			id: 6,
 			name: '语言',
 			subName: '',
-			icon: LanguagesIcon,
+			icon: markRaw(LanguagesIcon),
 			desc: '简体中文',
 			callback: () => {}
 		},
@@ -86,7 +86,7 @@ import Aboutus from './aboutus.vue'
 			icon: 'Moon',
 			desc: '夜间模式',
 			callback: () => {
-				push(Theme)
+				usepush(Theme)
 			}
 		},
 		{
@@ -105,7 +105,7 @@ import Aboutus from './aboutus.vue'
 			subName: '',
 			icon: 'DataLine',
 			desc: useKlineStore().klineColorModel === 'red-green' ? '红涨绿跌' : '绿涨红跌',
-			descIcon:useKlineStore().klineColorModel === 'red-green'?KlineRedGreenIcon:KlineGreenRedIcon,
+			descIcon: markRaw(useKlineStore().klineColorModel === 'red-green' ? KlineRedGreenIcon : KlineGreenRedIcon),
 			callback: () => {
 				pushUp(Colors)
 			}
@@ -125,34 +125,62 @@ import Aboutus from './aboutus.vue'
 			icon: 'Postcard',
 			desc: '',
 			callback: () => {
-				push(Aboutus)
+				usepush(Aboutus)
 			}
 		}
 	])
-	watch(()=>useStore().theme, (theme) => {
-		menus.value.forEach((menu) => {
-			if (menu.id === 7) {
-				menu.desc = theme === 'dark' ? '夜间模式' : '日间模式'
-				menu.icon = theme === 'dark' ? 'Moon' : 'Sunny'
+	watch(
+		() => useStore().theme,
+		theme => {
+			menus.value.forEach(menu => {
+				if (menu.id === 7) {
+					menu.desc = theme === 'dark' ? '夜间模式' : '日间模式'
+					menu.icon = theme === 'dark' ? 'Moon' : 'Sunny'
+				}
+			})
+		}
+	)
+	watch(
+		() => useKlineStore().klineColorModel,
+		colorModel => {
+			menus.value.forEach(menu => {
+				if (menu.id === 9) {
+					menu.desc = colorModel === 'red-green' ? '红涨绿跌' : '绿涨红跌'
+					menu.descIcon = colorModel === 'red-green' ? KlineRedGreenIcon : KlineGreenRedIcon
+				}
+			})
+		}
+	)
+	watch(
+		() => useKlineStore().timezone,
+		timezone => {
+			menus.value.forEach(menu => {
+				if (menu.id === 8) {
+					menu.desc = timezone === 'UTC+8' ? 'UTC+8' : timezone === 'UTC' ? 'UTC' : '24小时制'
+				}
+			})
+		}
+	)
+	onMounted(() => {
+		// setTimeout(() => {
+		// 	useNuxtApp().$pop()
+		// }, 1000)
+	})
+	onBeforeUnmount(() => {
+		// ;(usepush as any) = null
+		// ;(pushUp as any) = null
+		// 清理工作
+		menus.value.forEach(menu => {
+			if (menu.callback) {
+				;(menu.callback as any) = null // 清除回调函数
 			}
 		})
+		menus.value = []
+		console.log('Me component unmounted, menus cleared')
 	})
-	watch(()=>useKlineStore().klineColorModel, (colorModel) => {
-		menus.value.forEach((menu) => {
-			if (menu.id === 9) {
-				menu.desc = colorModel === 'red-green' ? '红涨绿跌' : '绿涨红跌'
-				menu.descIcon = colorModel === 'red-green' ? KlineRedGreenIcon : KlineGreenRedIcon
-			}
-		})
+	onUnmounted(() => {
+		console.log('Me component unmounted')
 	})
-	watch(()=>useKlineStore().timezone, (timezone) => {
-		menus.value.forEach((menu) => {
-			if (menu.id === 8) {
-				menu.desc = timezone === 'UTC+8' ? 'UTC+8' : timezone === 'UTC' ? 'UTC' : '24小时制'
-			}
-		})
-	})
-	onMounted(() => {})
 </script>
 <template>
 	<div class="w-full h-full">
@@ -161,7 +189,7 @@ import Aboutus from './aboutus.vue'
 			<UserFace />
 			<MenuList :menus="menus" />
 			<div class="my-3 px-3 flex flex-col items-center justify-center mt-20">
-				<button class="w-full bt-default !py-2 !rounded-full mb-3" @click="push(MeInfo)">退出登录</button>
+				<button class="w-full bt-default !py-2 !rounded-full mb-3">退出登录</button>
 				<el-divider class="!my-3" />
 				<div class="text-center text-xs text-muted">版本 1.0.0</div>
 			</div>

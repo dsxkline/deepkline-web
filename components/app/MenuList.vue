@@ -12,11 +12,16 @@
 	const props = defineProps<{
 		menus: MenuListModel[]
 	}>()
+
+	onBeforeUnmount(() => {
+		// 清理工作
+		console.log('MenuList component is being destroyed');
+	})
 </script>
 <template>
-	<div class="menu-list w-full h-full flex flex-col">
+	<div class="menu-list w-full h-full flex flex-col" v-if="menus && menus.length > 0">
 		<ul>
-			<li v-for="(item, index) in menus" :key="index" class="flex justify-between items-center p-3 hover:bg-[var(--transparent05)] cursor-pointer" @click="item.callback ? item.callback() : null">
+			<li v-for="(item, index) in menus" :key="index" class="flex justify-between items-center p-3 hover:bg-[var(--transparent05)] cursor-pointer" @click="item.callback">
 				<div class="flex items-center">
 					<component :is="item.icon" class="w-5 h-5 mr-2" v-if="item.icon"></component>
 					<div class="flex flex-col">

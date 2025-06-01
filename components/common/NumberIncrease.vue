@@ -99,7 +99,7 @@
 			}
 		},
 		beforeUnmount() {
-			this.startAnimations.forEach(animation => {
+			Object.values(this.startAnimations).forEach(animation => {
 				if (animation) animation.stop()
 			})
 			this.startAnimations = {}

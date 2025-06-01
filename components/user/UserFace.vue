@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useAvatar } from '~/composable/useAvatar';
 
-
+onBeforeUnmount(() => {
+    // Cleanup or additional logic if needed
+    console.log('UserFace component is being destroyed');
+});
 </script>
 
 <template>
