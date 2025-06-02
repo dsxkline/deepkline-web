@@ -73,7 +73,11 @@
 </script>
 <template>
 	<div class="login-index-container">
-		<NavigationBar ref="navbar" />
+		<NavigationBar ref="navbar">
+            <template #right>
+                <button class="flex items-center p-2"><el-icon class="!w-5 !h-5"><Service class="!w-5 !h-5" /></el-icon></button>
+            </template>
+        </NavigationBar>
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
 			输入邮箱验证码
 			<p class="text-sm font-normal text-grey py-1">邮箱验证码已发送到 {{ email }}</p>
