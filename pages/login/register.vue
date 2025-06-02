@@ -1,9 +1,9 @@
 <template>
 	<div class="register-container">
-		<div class="global-form p-10 py-4">
+		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<label>邮箱登录:</label>
-				<el-input :placeholder="'请输入邮箱'" size="large"></el-input>
+				<!-- <label>邮箱登录:</label> -->
+				<el-input :placeholder="'请输入邮箱 例如:deepkline@gmail.com'" size="large"></el-input>
 			</div>
 
 			<div class="form-item mt-8">
