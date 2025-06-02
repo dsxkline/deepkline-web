@@ -15,11 +15,11 @@
 
 	const keystr = ref('')
 
-	function inputHandle(e: KeyboardEvent, code: Ref,input:Ref, nextInput: Ref, preInput: Ref) {
-        //console.log('key',e)
+	function inputHandle(e: KeyboardEvent, code: Ref, input: Ref, nextInput: Ref, preInput: Ref) {
+		//console.log('key',e)
 		let key = e?.key
-        // keystr.value = key;
-        // console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location,input.value.value,code.value)
+		keystr.value = key
+		// console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location,input.value.value,code.value)
 		if (key == 'Process') return
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
@@ -35,9 +35,9 @@
 					preInput.value?.focus()
 				}, 10)
 			} else {
-                if (key === 'Unidentified') {
+				if (key === 'Unidentified') {
 					setTimeout(() => {
-                        if(code.value) nextInput.value?.focus()
+						if (code.value) nextInput.value?.focus()
 					}, 10)
 				}
 			}
@@ -45,22 +45,23 @@
 	}
 
 	function inputHandle1(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code1,input1, input2, input1)
+		inputHandle(e as KeyboardEvent, code1, input1, input2, input1)
 	}
 	function inputHandle2(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code2,input2, input3, input1)
+		inputHandle(e as KeyboardEvent, code2, input2, input3, input1)
 	}
 	function inputHandle3(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code3,input3, input4, input2)
+		inputHandle(e as KeyboardEvent, code3, input3, input4, input2)
 	}
 	function inputHandle4(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code4,input4, input4, input3)
+		inputHandle(e as KeyboardEvent, code4, input4, input4, input3)
 		next()
 	}
 
 	function next() {
 		if (code1 && code2 && code3 && code4) {
 		}
+        keystr.value = ''
 	}
 
 	onMounted(() => {
@@ -85,10 +86,15 @@
 				<el-input v-model="code3" size="large" maxlength="1" ref="input3" @keydown="inputHandle3" inputmode="numeric" />
 				<el-input v-model="code4" size="large" maxlength="1" ref="input4" @keydown="inputHandle4" inputmode="numeric" />
 			</div>
-			{{ keystr }}
+			<div class="flex justify-between items-center text-grey text-sm">
+				<div class="text-red">
+					<span v-if="!keystr">验证码错误，请重新输入</span>
+				</div>
+				<div class="">重新发送验证码</div>
+			</div>
 
 			<div class="form-item mt-8">
-				<button :class="['w-full transition-all !py-3 !text-sm bt-default', code1 && code2 && code3 && code4 ? '!bg-brand' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']">
+				<button @click="next" :class="['w-full transition-all !py-3 !text-sm bt-default', code1 && code2 && code3 && code4 ? '!bg-brand' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']">
 					下一步
 				</button>
 			</div>
