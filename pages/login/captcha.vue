@@ -18,6 +18,7 @@
 	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
 		const key = e?.key
         keystr.value = key;
+        if(key=='Process') return;
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
 			code.value = key
@@ -71,12 +72,12 @@
 
 		<div class="global-form p-6">
 			<div class="form-item my-4 justify-between !flex-row flex *:!w-[60px]">
-				<el-input v-model="code1" size="large" maxlength="1" ref="input1" @keydown="inputHandle1" autocomplete="one-time-code"/>
-				<el-input v-model="code2" size="large" maxlength="1" ref="input2" @keydown="inputHandle2" />
-				<el-input v-model="code3" size="large" maxlength="1" ref="input3" @keydown="inputHandle3" />
-				<el-input v-model="code4" size="large" maxlength="1" ref="input4" @keydown="inputHandle4" />
+				<el-input v-model="code1" size="large" maxlength="1" ref="input1" @keydown="inputHandle1" inputmode="numeric" autocomplete="one-time-code"/>
+				<el-input v-model="code2" size="large" maxlength="1" ref="input2" @keydown="inputHandle2" inputmode="numeric"/>
+				<el-input v-model="code3" size="large" maxlength="1" ref="input3" @keydown="inputHandle3" inputmode="numeric"/>
+				<el-input v-model="code4" size="large" maxlength="1" ref="input4" @keydown="inputHandle4" inputmode="numeric"/>
 			</div>
-            {{  }}
+            {{ keystr }}
 
 			<div class="form-item mt-8">
 				<button :class="['w-full transition-all !py-3 !text-sm bt-default', code1 && code2 && code3 && code4 ? '!bg-brand' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']">
