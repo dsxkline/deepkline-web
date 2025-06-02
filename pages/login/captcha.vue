@@ -15,11 +15,11 @@
 
 	const keystr = ref('')
 
-	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
-        console.log('key',e)
+	function inputHandle(e: KeyboardEvent, code: Ref,input:Ref, nextInput: Ref, preInput: Ref) {
+        //console.log('key',e)
 		let key = e?.key
         keystr.value = key;
-        console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location)
+        console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location,input.value.value,code.value)
 		if (key == 'Process') return
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
@@ -37,7 +37,7 @@
 			} else {
                 if (key === 'Unidentified') {
 					setTimeout(() => {
-                        if(code.value) preInput.value?.focus()
+                        if(code.value) nextInput.value?.focus()
 					}, 10)
 				}
 			}
@@ -45,16 +45,16 @@
 	}
 
 	function inputHandle1(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code1, input2, input1)
+		inputHandle(e as KeyboardEvent, code1,input1, input2, input1)
 	}
 	function inputHandle2(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code2, input3, input1)
+		inputHandle(e as KeyboardEvent, code2,input2, input3, input1)
 	}
 	function inputHandle3(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code3, input4, input2)
+		inputHandle(e as KeyboardEvent, code3,input3, input4, input2)
 	}
 	function inputHandle4(e: KeyboardEvent | Event) {
-		inputHandle(e as KeyboardEvent, code4, input4, input3)
+		inputHandle(e as KeyboardEvent, code4,input4, input4, input3)
 		next()
 	}
 
