@@ -18,8 +18,8 @@
 	function inputHandle(e: KeyboardEvent, code: Ref,input:Ref, nextInput: Ref, preInput: Ref) {
         //console.log('key',e)
 		let key = e?.key
-        keystr.value = key;
-        console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location,input.value.value,code.value)
+        // keystr.value = key;
+        // console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location,input.value.value,code.value)
 		if (key == 'Process') return
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
@@ -74,8 +74,8 @@
 	<div class="login-index-container">
 		<NavigationBar ref="navbar" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
-			输入验证码
-			<p class="text-sm font-normal text-grey py-1">未注册邮箱将自动注册 {{ email }}</p>
+			输入邮箱验证码
+			<p class="text-sm font-normal text-grey py-1">邮箱验证码已发送到 {{ email }}</p>
 		</h1>
 
 		<div class="global-form p-6">
