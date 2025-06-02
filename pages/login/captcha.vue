@@ -18,10 +18,8 @@
 	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
         console.log('key',e)
 		let key = e?.key
-		if (key === 'Unidentified') {
-			key = e.code || (e.target as HTMLInputElement)?.value
-		}
         keystr.value = key;
+        console.log('keykey',e.code,e.charCode,e.keyCode,e.metaKey,e.location)
 		if (key == 'Process') return
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
@@ -37,7 +35,7 @@
 					preInput.value?.focus()
 				}, 10)
 			} else {
-				if (key == '') {
+                if (key === 'Unidentified') {
 					setTimeout(() => {
                         if(code.value) preInput.value?.focus()
 					}, 10)
