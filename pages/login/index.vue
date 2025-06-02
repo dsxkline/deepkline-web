@@ -44,8 +44,8 @@
 
 		<div class="p-6 pb-10 absolute bottom-0 left-0 w-full">
 				<div class="pb-10 grid grid-flow-col *:flex *:flex-col *:items-center *:justify-center *:py-3 *:text-sm">
-					<button><GoogleIcon class="w-10"/><span>Google</span></button>
-					<button><AppleIcon  class="w-10"/><span>Apple ID</span></button>
+					<button><GoogleIcon class="w-10 pb-1"/><span>Google</span></button>
+					<button><AppleIcon  class="w-10 pb-1"/><span>Apple ID</span></button>
 				</div>
 
 				<div class="text-sm text-center text-grey [&_span]:text-main">登录即代表您已仔细阅读并完全理解<span>客户协议</span>,<span>隐私政策</span>,<span>风险披露</span>的全部内容，接受并同意。</div>
