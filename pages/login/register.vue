@@ -13,7 +13,7 @@ const next = ()=>{
 		<div class="global-form p-6">
 			<div class="form-item my-4">
 				<!-- <label>邮箱登录:</label> -->
-				<el-input v-model="email" :placeholder="'请输入邮箱...'" size="large"/>
+				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large"/>
 			</div>
 
 			<div class="form-item mt-8">
