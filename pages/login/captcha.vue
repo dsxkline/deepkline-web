@@ -13,21 +13,24 @@
 	const code3 = ref('')
 	const code4 = ref('')
 
+    const keystr = ref('')
+
 	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
 		const key = e?.key
+        keystr.value = key;
 		// 判断是否是字母或数字
 		if (/^[a-zA-Z0-9]$/.test(key)) {
 			code.value = key
 			setTimeout(() => {
 				nextInput.value?.focus()
-			}, 50)
+			}, 30)
 		} else {
 			// 删除键
 			if (key === 'Delete' || key === 'Backspace') {
 				code.value = ''
 				setTimeout(() => {
 					preInput.value?.focus()
-				}, 50)
+				}, 30)
 			}
 		}
 	}
@@ -73,6 +76,7 @@
 				<el-input v-model="code3" size="large" maxlength="1" ref="input3" @keydown="inputHandle3" />
 				<el-input v-model="code4" size="large" maxlength="1" ref="input4" @keydown="inputHandle4" />
 			</div>
+            {{  }}
 
 			<div class="form-item mt-8">
 				<button :class="['w-full transition-all !py-3 !text-sm bt-default', code1 && code2 && code3 && code4 ? '!bg-brand' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']">
