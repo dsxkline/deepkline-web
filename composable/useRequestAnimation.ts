@@ -7,8 +7,16 @@ type AnimationOptions = {
 	onFinish?: () => void
 }
 
+export function easeInOut(t: number) {
+	// 常用的 ease-in-out 缓动函数（可替换为贝塞尔曲线或其他）
+	return t < 0.5
+		? 2 * t * t // ease-in 前半段
+		: -1 + (4 - 2 * t) * t // ease-out 后半段
+}
+export const liner = (t: number) => t // 线性过渡
+
 export function useRequestAnimation() {
-	const defaultEasing = (t: number) => t // 线性过渡
+	const defaultEasing = easeInOut // (t: number) => t // 线性过渡
 	let animationFrameId: number | null = null
 	let startTimestamp: number | null = null
 	let _duration: number = 300 // 默认 300ms

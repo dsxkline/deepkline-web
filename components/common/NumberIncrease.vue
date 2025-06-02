@@ -95,7 +95,8 @@
 				timer: null,
 				interVisible: false,
 				startAnimations: {},
-				lastTransitionY: {}
+				lastTransitionY: {},
+				lastNumber:{}
 			}
 		},
 		beforeUnmount() {
@@ -104,6 +105,7 @@
 			})
 			this.startAnimations = {}
 			this.lastTransitionY = {}
+			this.lastNumber = {}
 			this.interVisible = false
 			this.orderNum = []
 			this.orderNumOld = []
@@ -162,18 +164,22 @@
 							translateY = this.getNumberY(n, ndom)
 						}
 
+						if(this.lastNumber[i] == n) return;
+
 						const startAnimation = this.startAnimations[i]
 						if (startAnimation) {
+							const startY = this.lastTransitionY[i] || 0
 							startAnimation.start({
-								from: this.lastTransitionY[i] || 0,
+								from: startY,
 								to: translateY,
-								duration: 300,
+								duration: 400,
 								onUpdate: value => {
 									ndom.style.transform = `translateY(${value}%)`
+									this.lastTransitionY[i] = value
 								}
 							})
 						}
-						this.lastTransitionY[i] = translateY
+						this.lastNumber[i] = n
 					}
 				})
 			},
