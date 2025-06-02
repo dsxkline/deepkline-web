@@ -16,6 +16,7 @@
 	const keystr = ref('')
 
 	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
+        console.log('key',e)
 		let key = e?.key
 		if (key === 'Unidentified') {
 			key = e.code || (e.target as HTMLInputElement)?.value
