@@ -16,7 +16,10 @@
     const keystr = ref('')
 
 	function inputHandle(e: KeyboardEvent, code: Ref, nextInput: Ref, preInput: Ref) {
-		const key = e?.key
+		let key = e?.key
+        if (key === 'Unidentified'){
+            key = e.code;
+        }
         keystr.value = key;
         if(key=='Process') return;
 		// 判断是否是字母或数字
@@ -24,14 +27,14 @@
 			code.value = key
 			setTimeout(() => {
 				nextInput.value?.focus()
-			}, 30)
+			}, 10)
 		} else {
 			// 删除键
 			if (key === 'Delete' || key === 'Backspace') {
 				code.value = ''
 				setTimeout(() => {
 					preInput.value?.focus()
-				}, 30)
+				}, 10)
 			}
 		}
 	}
