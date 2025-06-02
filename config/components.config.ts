@@ -9,5 +9,6 @@ export default [
     "~/components/icons/",
     "~/components/icons/trade",
     "~/components/icons/social",
+    "~/components/icons/login",
     "~/components/user"
 ];

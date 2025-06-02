@@ -12,6 +12,7 @@
 	import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
 	import Timezone from './timezone.vue'
 	import Aboutus from './aboutus.vue'
+import Login from '../login/index.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -25,7 +26,8 @@
 			icon: 'User',
 			desc: '',
 			callback: () => {
-				usepush(MeInfo)
+				//usepush(MeInfo)
+				pushUp(Login)
 			}
 		},
 
@@ -188,7 +190,7 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace />
 			<MenuList :menus="menus" />
-			<div class="my-3 px-3 flex flex-col items-center justify-center mt-20">
+			<div class="my-3 px-3 flex flex-col items-center justify-center">
 				<button class="w-full bt-default !py-2 !rounded-full mb-3">退出登录</button>
 				<el-divider class="!my-3" />
 				<div class="text-center text-xs text-muted">版本 1.0.0</div>

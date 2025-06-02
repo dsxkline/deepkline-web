@@ -45,4 +45,22 @@
 		</ul>
 	</div>
 </template>
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+@media (max-width:999px) {
+	.menu-list{
+		ul{
+			li{
+				&:hover{
+					background-color: transparent;
+				}
+				transition: background-color 0.2s ease;
+				user-select: none;
+				-webkit-tap-highlight-color: transparent;
+				&:active{
+					background-color: var(--transparent05);
+				}
+			}
+		}
+	}
+}
+</style>

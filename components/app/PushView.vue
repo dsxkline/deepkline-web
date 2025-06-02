@@ -24,6 +24,7 @@
 	const parentContainer = ref<HTMLElement | null>(null)
 	const show = ref(true)
 	const showComponent = ref(false)
+	const bttFull = ref(false)
 	// 异步加载组件
 	const asyncComp = defineAsyncComponent(() => {
 		return new Promise((resolve, reject) => {
@@ -131,7 +132,7 @@
 	const setDrawerBodyStyle = (visible: boolean) => {
 		// 处理auto
 		if (drawerBody.value) {
-			const h = drawerBody.value.getBoundingClientRect().height
+			const h = Math.min(drawerBody.value.getBoundingClientRect().height,window.innerHeight)
 			let size = props.size == 'auto' ? h + 'px' : props.size || '100%'
 			drawerBody.value.style.transform = visible
 				? props.direction == 'btt'
@@ -143,6 +144,7 @@
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
 				drawerBody.value.style.height = 'var(--body-height)'
 			}
+			if(h>=window.innerHeight) bttFull.value = true
 		}
 		if (drawBg.value) {
 			drawBg.value.style.opacity = visible ? (props.direction == 'btt' ? '0.3' : '0') : '0'
@@ -207,8 +209,8 @@
 
 <template>
 	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer">
-		<div ref="drawerBody" :class="['drawer-body bg-base w-full relative z-10', direction]" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
-			<template v-if="direction == 'btt' && size != '100%'">
+		<div ref="drawerBody" :class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction,bttFull?'btt-full':'']" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
+			<template v-if="direction == 'btt' && size != '100%' && !bttFull">
 				<div @click="hide"><DrawLine /></div>
 			</template>
 			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" />
@@ -231,6 +233,9 @@
 		.btt {
 			transform: translateY(var(--body-height));
 			border-radius: 16px 16px 0 0;
+		}
+		.btt-full{
+			border-radius: 0;
 		}
 		.rtl {
 			transform: translateX(var(--body-width));
