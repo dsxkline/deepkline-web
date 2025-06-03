@@ -3,6 +3,7 @@
 
 	const props = defineProps<{
 		email: string
+		successCallback: (code: string) => Promise<boolean>
 	}>()
 	const input1 = ref()
 	const input2 = ref()
@@ -12,6 +13,9 @@
 	const code2 = ref('')
 	const code3 = ref('')
 	const code4 = ref('')
+
+	const loading = ref(false)
+	const error = ref('')
 
 	const keystr = ref('')
 
@@ -59,9 +63,27 @@
 	}
 
 	function next() {
-		if (code1 && code2 && code3 && code4) {
+		if (!(code1.value && code2.value && code3.value && code4.value)) {
+			return
 		}
-        keystr.value = ''
+		keystr.value = ''
+		error.value = ''
+		loading.value = true
+		console.log('code...', code1.value, code2.value, code3.value, code4.value, props.successCallback)
+		props.successCallback &&
+			props
+				.successCallback(code1.value + code2.value + code3.value + code4.value)
+				.then(success => {
+					loading.value = false
+					useNuxtApp().$pop()
+				})
+				.catch(err => {
+					console.log('err', err)
+					setTimeout(() => {
+						loading.value = false
+						error.value = err.message || '网络异常，请稍后再试'
+					}, 500)
+				})
 	}
 
 	onMounted(() => {
@@ -74,10 +96,12 @@
 <template>
 	<div class="login-index-container">
 		<NavigationBar ref="navbar">
-            <template #right>
-                <button class="flex items-center p-2"><el-icon class="!w-5 !h-5"><Service class="!w-5 !h-5" /></el-icon></button>
-            </template>
-        </NavigationBar>
+			<template #right>
+				<button class="flex items-center p-2">
+					<el-icon class="!w-5 !h-5"><Service class="!w-5 !h-5" /></el-icon>
+				</button>
+			</template>
+		</NavigationBar>
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
 			输入邮箱验证码
 			<p class="text-sm font-normal text-grey py-1">邮箱验证码已发送到 {{ email }}</p>
@@ -92,15 +116,22 @@
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
-					<span v-if="!keystr">验证码错误，请重新输入</span>
+					<span v-if="!keystr && error">{{ error }}</span>
 				</div>
 				<div class="">重新发送验证码</div>
 			</div>
 
 			<div class="form-item mt-8">
-				<button @click="next" :class="['w-full transition-all !py-3 !text-sm bt-default', code1 && code2 && code3 && code4 ? '!bg-brand' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']">
+				<el-button
+					:loading="loading"
+					@click="next"
+					:class="[
+						'w-full transition-all !py-3 !h-auto !text-sm bt-default',
+						code1 && code2 && code3 && code4 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]'
+					]"
+				>
 					下一步
-				</button>
+				</el-button>
 			</div>
 		</div>
 	</div>

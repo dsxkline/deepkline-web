@@ -7,7 +7,7 @@
             </div>
        
             <div class="form-item mt-8">
-                <button class="w-full bt-default !py-2 !text-sm !text-grey">登录</button>
+                <el-button loading class="w-full bt-default !py-2 !text-sm !text-grey">登录</el-button>
             </div>
         </div>
     </div>

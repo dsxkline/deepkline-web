@@ -46,7 +46,7 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
         key: 'okx-request-' + Date.now()+path,
         timeout:10000
     };
-    sign(options, path);
+    // sign(options, path);
 
     // const fetch = $fetch.create(options as FetchOptions)
     let { data, error, pending, status } = await useFetch(baseUrl + path, options);
