@@ -71,16 +71,22 @@
 			@apply py-2;
 		}
 		.el-input {
-            --el-color-primary:rgb(var(--color-brand));
+			--el-color-primary: rgb(var(--color-brand));
 			.el-input__wrapper {
 				.el-input__inner {
 					--el-input-inner-height: 46px;
 					@apply text-lg;
-                    &::placeholder{
-                        @apply text-sm;
-                    }
+					&::placeholder {
+						@apply text-sm;
+					}
 				}
 			}
 		}
+	}
+}
+
+@media (max-width: 9999) {
+	.tcaptcha-transform {
+		transform: scale(0.9);
 	}
 }

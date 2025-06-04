@@ -1,12 +1,14 @@
 import type { ApiResult } from "~/types/types";
 import { useGet, usePost } from "./global.fetch";
 import config from "~/config/config";
-import type { LoginReqDto, userRespDto } from "./dtos/user";
+import type { LoginReqDto, UserRespDto } from "./dtos/user";
+import type { CheckEmailReqDto, CheckEmailRespDto } from "./dtos/check-email";
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const loginApi = '/user/login';
+const checkEmailApi = '/user/checkemail';
 
 export const userFetch = {
    
@@ -17,7 +19,11 @@ export const userFetch = {
      * @param smsCode 验证码
      * @returns 
      */
-    login:(params:LoginReqDto)=>usePost<ApiResult<userRespDto>>(baseUrl,loginApi,{
+    login:(params:LoginReqDto)=>usePost<ApiResult<UserRespDto>>(baseUrl,loginApi,{
+        ...params
+    }),
+
+    checkEmail:(params:CheckEmailReqDto)=>usePost<ApiResult<CheckEmailRespDto>>(baseUrl,checkEmailApi,{
         ...params
     })
 }

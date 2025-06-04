@@ -4,7 +4,7 @@ export class LoginReqDto {
 	smsCode: string
 }
 
-export class userRespDto {
+export class UserRespDto {
 	userName: string
 	nickName: string
 	token: string

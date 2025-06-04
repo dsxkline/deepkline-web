@@ -41,7 +41,13 @@
 			} else {
 				if (key === 'Unidentified') {
 					setTimeout(() => {
-						if (code.value) nextInput.value?.focus()
+						if (code.value) {
+                            nextInput.value?.focus()
+                            if(nextInput==input4){
+                                next()
+                            }
+                        }
+                        
 					}, 10)
 				}
 			}
@@ -89,7 +95,7 @@
 	onMounted(() => {
 		setTimeout(() => {
 			input1.value?.focus()
-		}, 500)
+		}, 600)
 	})
 	onUnmounted(() => {})
 </script>

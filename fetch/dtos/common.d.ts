@@ -1,5 +1,3 @@
-export interface CommonDto {
-    id: number
-    name: string
-    email: string
-  }
+export enum FetchResultDto {
+	OK = 0
+}

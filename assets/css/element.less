@@ -417,6 +417,17 @@ body {
 			overflow-y: scroll;
 		}
 	}
+	.el-button:focus-visible {
+		outline: none;
+		outline-offset: 0;
+		transition: outline-offset 0s, outline 0s;
+	}
+	.el-button:active {
+		background-color: var(--el-button-active-bg-color);
+		border-color: transparent;
+		color: var(--el-button-active-text-color);
+		outline: none;
+	}
 }
 
 @media (max-width: 999px) {
