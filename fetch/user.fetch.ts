@@ -9,6 +9,7 @@ if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const loginApi = '/user/login';
 const checkEmailApi = '/user/checkemail';
+const sendsmsApi = '/user/sendsms'
 
 export const userFetch = {
    
@@ -23,7 +24,23 @@ export const userFetch = {
         ...params
     }),
 
+    /**
+     * 检查邮箱账户是否存在
+     * @param params 请求体
+     * @returns 
+     */
     checkEmail:(params:CheckEmailReqDto)=>usePost<ApiResult<CheckEmailRespDto>>(baseUrl,checkEmailApi,{
         ...params
+    }),
+
+    /**
+     * 发送邮箱验证码
+     * @param email 邮箱地址
+     * @param type 验证码类型 0=登录 1=注册 2=忘记密码 3=绑定手机号
+     * @returns 
+     */
+    sendEmailCode:(email:string,type:number=0)=>usePost<ApiResult<null>>(baseUrl,sendsmsApi,{
+        email,
+        type
     })
 }

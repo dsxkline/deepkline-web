@@ -3,29 +3,33 @@
 	import Captcha from './captcha.vue'
 	import { userFetch } from '~/fetch/user.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import type { ComponentInternalInstance } from 'vue'
+import { useUserStore } from '~/store/user'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
 	// 定义回调函数
-	function captchCallback(res: ICaptchaResult) {
-		// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
-        console.log('captchCallback',res)
-		if (res.ret==0) {
-			// 验证成功进入发送验证码流程
-			nextSendValidCode()
-		} else {
-			error.value = res.errMessage
+	function captchCallback(isreset: boolean) {
+		return (res: ICaptchaResult) => {
+			// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
+			console.log('captchCallback', res)
+			if (res.ret == 0) {
+				// 验证成功进入发送验证码流程
+				nextSendEmailValidCode(isreset)
+			} else {
+				error.value = res.errMessage
+			}
 		}
 	}
 
 	// 定义验证码js加载错误处理函数
-	function loadErrorCallback() {
+	function loadErrorCallback(isreset: boolean) {
 		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID
 		// 生成容灾票据或自行做其它处理
 		var ticket = createTicket(appid)
-		captchCallback({
-            ret:0,
-            appid:appid,
+		captchCallback(isreset)({
+			ret: 0,
+			appid: appid,
 			randstr: '@' + Math.random().toString(36).substr(2),
 			ticket: ticket,
 			errorCode: '1001',
@@ -37,11 +41,15 @@
 	const usepush = usePush()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
-	const next = () => {
+	let captchaInstance: ComponentInternalInstance | null = null
+	const nextStep = () => {
+		next()
+	}
+	const next = (isreset: boolean = false) => {
 		loading.value = true
 		error.value = ''
-		const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback)
-		userFetch
+		const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
+		return userFetch
 			.checkEmail({ email: email.value })
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
@@ -51,18 +59,31 @@
 					// 已注册，可以直接进入输入密码界面，触发安全风控就提示验证码62
 					// 调用方法，显示验证码
 					try {
-						if (isValid) captcha.show()
-						else {
-							nextSendValidCode()
+						if (isValid) {
+							captcha.show()
+							return false
+						} else {
+							return nextSendEmailValidCode(isreset)
 						}
 					} catch (err) {
-						loadErrorCallback()
+						loadErrorCallback(isreset)
+						ElMessage({
+							message: '验证码发送异常，请稍后再试',
+							type: 'error'
+						})
+						return false
 					}
 				} else {
 					setTimeout(() => {
 						loading.value = false
 						error.value = result?.msg
 					}, 500)
+					if (isreset)
+						ElMessage({
+							message: result?.msg,
+							type: 'error'
+						})
+					return false
 				}
 			})
 			.catch(err => {
@@ -70,10 +91,62 @@
 					loading.value = false
 					error.value = '网络异常，请稍后再试'
 				}, 500)
+				if (isreset)
+					ElMessage({
+						message: '网络异常，请稍后再试',
+						type: 'error'
+					})
+				return false
 			})
 	}
-	const nextSendValidCode = () => {
-		usepush(Captcha, {
+	const nextSendEmailValidCode = (isreset: boolean) => {
+		loading.value = true
+		error.value = ''
+		return userFetch
+			.sendEmailCode(email.value)
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					loading.value = false
+					// 发送成功进入验证码输入界面
+					ElMessage({
+						message: '验证码已发送',
+						type: 'success'
+					})
+					if (!isreset) pushCaptchaView()
+					else {
+						//  重新开始计时
+						captchaInstance?.exposed?.resetStart && captchaInstance.exposed.resetStart()
+					}
+					return true
+				} else {
+					setTimeout(() => {
+						loading.value = false
+						error.value = result?.msg
+					}, 500)
+					if (isreset)
+						ElMessage({
+							message: result?.msg,
+							type: 'error'
+						})
+					return false
+				}
+			})
+			.catch(err => {
+				setTimeout(() => {
+					loading.value = false
+					error.value = '网络异常，请稍后再试'
+				}, 500)
+				if (isreset)
+					ElMessage({
+						message: '网络异常，请稍后再试',
+						type: 'error'
+					})
+				return false
+			})
+	}
+
+	const pushCaptchaView = () => {
+		captchaInstance = usepush(Captcha, {
 			email: email.value,
 			successCallback: async (code: string) => {
 				console.log('success callback:', code)
@@ -81,10 +154,21 @@
 				const result = await userFetch.login({ userName: email.value, smsCode: code })
 				console.log('result de', FetchResultDto.OK, result)
 				if (result?.code == FetchResultDto.OK) {
+					useNuxtApp().$pop()
+					ElMessage({
+						message: '登录成功',
+						type: 'success'
+					})
+                    useUserStore().setUser(result.data)
 					return true
 				} else {
 					throw new Error(result?.msg)
 				}
+			},
+			resetCallback: async () => {
+				// 重新发送验证码
+				const result = await next(true)
+				return result
 			}
 		})
 	}
@@ -106,7 +190,7 @@
 				<el-button
 					size="large"
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', email.indexOf('@') >= 0 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
-					@click="next"
+					@click="nextStep"
 					:loading="loading"
 					>下一步</el-button
 				>

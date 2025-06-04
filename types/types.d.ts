@@ -16,12 +16,12 @@ declare module '#app' {
 	interface NuxtApp {
 		$ws: OKXWebSocket
 		$wsb: OKXWebSocket
-		$push: (comp: any, params: {}, size?: string) => void
-		$pushLeft: (comp: any, params: {}, size?: string) => void
-		$pushUp: (comp: any, params: {}, size?: string) => void
-		$pushDown: (comp: any, params: {}, size?: string) => void
-		$pop: (data?: any) => void
-		$popRoot: (data?: any, index?: number) => void
+		$push: (comp: any, params: {}, size?: string) => ComponentInternalInstance
+		$pushLeft: (comp: any, params: {}, size?: string) => ComponentInternalInstance
+		$pushUp: (comp: any, params: {}, size?: string) => ComponentInternalInstance
+		$pushDown: (comp: any, params: {}, size?: string) => ComponentInternalInstance
+		$pop: (data?: any) => ComponentInternalInstance
+		$popRoot: (data?: any, index?: number) => ComponentInternalInstance
 		$clickSound: () => void
 		$windowEvent: WindowsEvent,
     $isMobile:globalThis.Ref<boolean>,

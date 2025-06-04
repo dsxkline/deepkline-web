@@ -3,7 +3,6 @@
 	import Register from './register.vue'
 	import Login from './login.vue'
 	import { useStore } from '~/store'
-	
 
 	const tabbarHeight = ref(0)
 	const navbar = ref()
@@ -25,9 +24,6 @@
 			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55)
 		}
 	)
-
-	
-
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - 40 - 40

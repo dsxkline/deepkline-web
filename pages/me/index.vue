@@ -12,22 +12,23 @@
 	import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
 	import Timezone from './timezone.vue'
 	import Aboutus from './aboutus.vue'
-import Login from '../login/index.vue'
+	import Login from '../login/index.vue'
+	import { useUserStore } from '~/store/user'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	let usepush = usePush()
 	let pushUp = usePushUp()
-	const menus = ref([
+	const menus = computed(()=>[
 		{
 			id: 1,
 			name: '个人资料',
 			subName: '已认证',
 			icon: 'User',
 			desc: '',
+			hide: !useUserStore().user?.id,
 			callback: () => {
-				//usepush(MeInfo)
-				pushUp(Login)
+				usepush(MeInfo)
 			}
 		},
 
@@ -45,6 +46,7 @@ import Login from '../login/index.vue'
 			subName: '',
 			icon: 'Lock',
 			desc: '',
+			hide: !useUserStore().user?.id,
 			callback: () => {}
 		},
 		{
@@ -53,6 +55,7 @@ import Login from '../login/index.vue'
 			subName: '',
 			icon: 'Wallet',
 			desc: '',
+			hide: !useUserStore().user?.id,
 			callback: () => {}
 		},
 		{
@@ -61,6 +64,7 @@ import Login from '../login/index.vue'
 			subName: '',
 			icon: 'Bell',
 			desc: '',
+			hide: !useUserStore().user?.id,
 			callback: () => {}
 		},
 		{
@@ -118,6 +122,7 @@ import Login from '../login/index.vue'
 			subName: '',
 			icon: 'Tickets',
 			desc: '',
+			hide: !useUserStore().user?.id,
 			callback: () => {}
 		},
 		{
@@ -169,15 +174,6 @@ import Login from '../login/index.vue'
 		// }, 1000)
 	})
 	onBeforeUnmount(() => {
-		// ;(usepush as any) = null
-		// ;(pushUp as any) = null
-		// 清理工作
-		menus.value.forEach(menu => {
-			if (menu.callback) {
-				;(menu.callback as any) = null // 清除回调函数
-			}
-		})
-		menus.value = []
 		console.log('Me component unmounted, menus cleared')
 	})
 	onUnmounted(() => {

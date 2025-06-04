@@ -4,6 +4,7 @@
 	const props = defineProps<{
 		email: string
 		successCallback: (code: string) => Promise<boolean>
+		resetCallback: () => Promise<void>
 	}>()
 	const input1 = ref()
 	const input2 = ref()
@@ -16,8 +17,10 @@
 
 	const loading = ref(false)
 	const error = ref('')
-
 	const keystr = ref('')
+	let timer: NodeJS.Timeout | null = null
+	const timemout = 30
+	const second = ref(timemout)
 
 	function inputHandle(e: KeyboardEvent, code: Ref, input: Ref, nextInput: Ref, preInput: Ref) {
 		//console.log('key',e)
@@ -42,12 +45,11 @@
 				if (key === 'Unidentified') {
 					setTimeout(() => {
 						if (code.value) {
-                            nextInput.value?.focus()
-                            if(nextInput==input4){
-                                next()
-                            }
-                        }
-                        
+							nextInput.value?.focus()
+							if (nextInput == input4) {
+								next()
+							}
+						}
 					}, 10)
 				}
 			}
@@ -81,7 +83,7 @@
 				.successCallback(code1.value + code2.value + code3.value + code4.value)
 				.then(success => {
 					loading.value = false
-					useNuxtApp().$pop()
+                    useNuxtApp().$pop()
 				})
 				.catch(err => {
 					console.log('err', err)
@@ -92,12 +94,58 @@
 				})
 	}
 
+	function reset() {
+		code1.value = ''
+		code2.value = ''
+		code3.value = ''
+		code4.value = ''
+		keystr.value = ''
+		error.value = ''
+		loading.value = true
+		console.log('code...', code1.value, code2.value, code3.value, code4.value, props.successCallback)
+		props.resetCallback &&
+			props
+				.resetCallback()
+				.then(() => {
+					loading.value = false
+				})
+				.catch(err => {
+					console.log('err', err)
+					setTimeout(() => {
+						loading.value = false
+						error.value = err.message || '网络异常，请稍后再试'
+					}, 500)
+				})
+	}
+
+    function resetStart(){
+        createTimer()
+    }
+
+	function createTimer() {
+        clearTimer()
+        second.value = timemout
+		timer = setInterval(() => {
+			second.value--
+		}, 1000)
+	}
+	function clearTimer() {
+		if (timer) clearInterval(timer)
+	}
+
 	onMounted(() => {
+		createTimer()
 		setTimeout(() => {
 			input1.value?.focus()
 		}, 600)
 	})
-	onUnmounted(() => {})
+	onUnmounted(() => {
+		clearTimer()
+	})
+
+    defineExpose({
+        resetStart
+    })
 </script>
 <template>
 	<div class="login-index-container">
@@ -124,7 +172,8 @@
 				<div class="text-red">
 					<span v-if="!keystr && error">{{ error }}</span>
 				</div>
-				<div class="">重新发送验证码</div>
+				<div class="" @click="reset" v-if="second<=0">重新发送验证码</div>
+                <div class="" v-if="second>0">{{second}}秒后重新发送</div>
 			</div>
 
 			<div class="form-item mt-8">

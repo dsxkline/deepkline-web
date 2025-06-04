@@ -16,4 +16,10 @@ export class UserRespDto {
 	coin: number | null
 	integs: number | null
 	openId: string | null
+    email:string
+    createdAt:string
+    updatedAt:string
+    cancelTime:string
+    levelCode:string
+    appleOpenId:string
 }
