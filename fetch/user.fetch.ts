@@ -12,6 +12,7 @@ const checkEmailApi = '/user/checkemail'
 const sendsmsApi = '/user/sendsms'
 const chackverificationcodeApi = '/user/checkverificationcode'
 const resetApi = '/user/reset'
+const userInfoApi = '/user/info'
 
 export const userFetch = {
 	/**
@@ -77,5 +78,7 @@ export const userFetch = {
 			email,
 			password,
 			validId
-		})
+		}),
+
+	getUser: () => usePost<ApiResult<UserRespDto>>(baseUrl, userInfoApi, {})
 }

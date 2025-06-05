@@ -15,6 +15,7 @@
 	import Login from '../login/index.vue'
 	import { useUserStore } from '~/store/user'
 	import Security from './security.vue'
+import Notification from './notification.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -24,7 +25,7 @@
 		{
 			id: 1,
 			name: '个人资料',
-			subName: '已认证',
+			subName: '',
 			icon: 'User',
 			desc: '',
 			hide: !useUserStore().user?.id,
@@ -68,7 +69,9 @@
 			icon: 'Bell',
 			desc: '',
 			hide: !useUserStore().user?.id,
-			callback: () => {}
+			callback: () => {
+				usepush(Notification)
+			}
 		},
 		{
 			id: 5,

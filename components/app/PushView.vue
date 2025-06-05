@@ -2,6 +2,7 @@
 	import { usePushStore } from '~/store/push'
 	import type { DrawerProps } from 'element-plus'
 	import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
+	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
@@ -129,10 +130,13 @@
 		console.log('push onUnmounted')
 	})
 
+	const animation = useRequestAnimation()
+	const animationParent = useRequestAnimation()
+
 	const setDrawerBodyStyle = (visible: boolean) => {
 		// 处理auto
 		if (drawerBody.value) {
-			const h = Math.min(drawerBody.value.getBoundingClientRect().height,window.innerHeight)
+			const h = Math.min(drawerBody.value.getBoundingClientRect().height, window.innerHeight)
 			let size = props.size == 'auto' ? h + 'px' : props.size || '100%'
 			drawerBody.value.style.transform = visible
 				? props.direction == 'btt'
@@ -141,10 +145,72 @@
 				: props.direction == 'btt'
 				? 'translateY(var(--body-height))'
 				: 'translateX(var(--body-width))'
+
+			// let from = window.innerWidth
+			// let to = 0
+			// if (props.direction == 'rtl') {
+			// 	from = visible ? window.innerWidth : 0
+			// 	to = visible ? 0 : window.innerWidth
+			// }
+			// if (props.direction == 'ltr') {
+			// 	from = visible ? -window.innerWidth : 0
+			// 	to = visible ? 0 : -window.innerWidth
+			// }
+			// if (props.direction == 'btt') {
+			// 	from = visible ? window.innerHeight : window.innerHeight - h
+			// 	to = visible ? window.innerHeight - h : window.innerHeight
+			// }
+
+			// animation.start({
+			// 	from: from,
+			// 	to: to,
+			// 	duration: 500,
+			// 	onUpdate: (value: number) => {
+			// 		const transform = props.direction == 'btt' ? `translateY(${value}px)` : `translateX(${value}px)`
+			// 		if (drawerBody.value) {
+			// 			drawerBody.value.style.transform = transform
+			// 		}
+			// 	}
+			// })
+
+			// // 上一个轻微退出
+			// nextTick(() => {
+			// 	if (props.parent?.vnode.el && props.direction == 'rtl') {
+			// 		const parentDrawer = props.parent.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
+			// 		console.log('parentDrawer', parentDrawer)
+			// 		if (parentDrawer) {
+			// 			// parentDrawer.style.transform = 'translateX(-30%)'
+			// 			animationParent.start({
+			// 				from: visible ? 0 : -(window.innerWidth * 0.3),
+			// 				to: visible ? -(window.innerWidth * 0.3) : 0,
+			// 				duration: 500,
+			// 				onUpdate: (value: number) => {
+			// 					const transform = `translateX(${value}px)`
+			// 					parentDrawer.style.transform = transform
+			// 				}
+			// 			})
+			// 		} else {
+			// 			const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+			// 			if (__nuxt) {
+			// 				// __nuxt.style.transform = 'translateX(-30%)'
+			// 				animationParent.start({
+			// 					from: visible ? 0 : -(window.innerWidth * 0.3),
+			// 					to: visible ? -(window.innerWidth * 0.3) : 0,
+			// 					duration: 500,
+			// 					onUpdate: (value: number) => {
+			// 						const transform = `translateX(${value}px)`
+			// 						__nuxt.style.transform = transform
+			// 					}
+			// 				})
+			// 			}
+			// 		}
+			// 	}
+			// })
+
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
 				drawerBody.value.style.height = 'var(--body-height)'
 			}
-			if(h>=window.innerHeight) bttFull.value = true
+			if (h >= window.innerHeight) bttFull.value = true
 		}
 		if (drawBg.value) {
 			drawBg.value.style.opacity = visible ? (props.direction == 'btt' ? '0.3' : '0') : '0'
@@ -209,7 +275,11 @@
 
 <template>
 	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer">
-		<div ref="drawerBody" :class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction,bttFull?'btt-full':'']" v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null">
+		<div
+			ref="drawerBody"
+			:class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
+			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
+		>
 			<template v-if="direction == 'btt' && size != '100%' && !bttFull">
 				<div @click="hide"><DrawLine /></div>
 			</template>
@@ -234,7 +304,7 @@
 			transform: translateY(var(--body-height));
 			border-radius: 16px 16px 0 0;
 		}
-		.btt-full{
+		.btt-full {
 			border-radius: 0;
 		}
 		.rtl {

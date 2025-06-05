@@ -35,6 +35,7 @@ const commonHeader = (source: string): any => {
     }[source]
 }
 const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, headers: Record<string, any> = {}) => {
+    headers['authorization'] = "Bearer "+useCookie("token").value
     const options: UseFetchOptions<T> = {
         headers: Object.assign(
             commonHeader("okx"),
@@ -66,12 +67,11 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 }
 
 const useGet = async <T = any>(baseUrl: string, path: string, query: Record<string, any> = {}, headers: any = {}) => {
+    headers['authorization'] = "Bearer "+useCookie("token").value
     const options: UseFetchOptions<T> = {
         headers: Object.assign(
             commonHeader("okx"),
-            // Object.assign(headers, {
-            //     path: path,
-            // }),
+            headers
         ),
         query,
         method: "GET",
