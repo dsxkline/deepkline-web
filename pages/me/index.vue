@@ -14,12 +14,13 @@
 	import Aboutus from './aboutus.vue'
 	import Login from '../login/index.vue'
 	import { useUserStore } from '~/store/user'
+	import Security from './security.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	let usepush = usePush()
 	let pushUp = usePushUp()
-	const menus = computed(()=>[
+	const menus = computed(() => [
 		{
 			id: 1,
 			name: '个人资料',
@@ -47,7 +48,9 @@
 			icon: 'Lock',
 			desc: '',
 			hide: !useUserStore().user?.id,
-			callback: () => {}
+			callback: () => {
+				usepush(Security)
+			}
 		},
 		{
 			id: 3,

@@ -1,7 +1,7 @@
 export class LoginReqDto {
 	userName: string
 	password?: string
-	smsCode: string
+	validId?: string
 }
 
 export class UserRespDto {
@@ -13,9 +13,9 @@ export class UserRespDto {
 	realName: string
 	idcard: string
 	face: string
-	coin: number | null
-	integs: number | null
-	openId: string | null
+	coin: number
+	integs: number
+	openId: string
     email:string
     createdAt:string
     updatedAt:string

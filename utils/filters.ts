@@ -95,7 +95,23 @@ export function trimMap(map: Map<any, any>, MAX_ORDER_DEPTH: number) {
 	}
 }
 
-export function getSymbolName(symbol:Instruments){
-	if(!symbol) return;
-	return symbol.instType==InstanceType.SPOT?symbol.baseCcy+"/"+symbol.quoteCcy:symbol.ctValCcy+symbol.settleCcy
+export function getSymbolName(symbol: Instruments) {
+	if (!symbol) return
+	return symbol.instType == InstanceType.SPOT ? symbol.baseCcy + '/' + symbol.quoteCcy : symbol.ctValCcy + symbol.settleCcy
+}
+
+export function phoneStar(value: string) {
+	const len = Math.floor(value.length / 3)
+	const star = Array.from(value.substring(len, 2 * len + 1))
+		.map(() => '*')
+		.join('')
+	const vals = value.substring(0, len) + star + value.substring(value.length - len - 1, value.length)
+	// console.log(value,value.substring(len,2*len),star,len,vals);
+	return vals
+}
+
+export function emailStar(value: string) {
+	const preStr = value.split('@')[0]
+	const domainStr = value.split('@')[1]
+	return phoneStar(preStr) + '@' + domainStr
 }

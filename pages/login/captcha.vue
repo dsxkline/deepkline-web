@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { useStore } from '~/store'
+	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { userFetch } from '~/fetch/user.fetch'
 
 	const props = defineProps<{
 		email: string
@@ -77,21 +78,43 @@
 		keystr.value = ''
 		error.value = ''
 		loading.value = true
-		console.log('code...', code1.value, code2.value, code3.value, code4.value, props.successCallback)
-		props.successCallback &&
-			props
-				.successCallback(code1.value + code2.value + code3.value + code4.value)
-				.then(success => {
-					loading.value = false
-                    useNuxtApp().$pop()
-				})
-				.catch(err => {
-					console.log('err', err)
+		const code = code1.value + code2.value + code3.value + code4.value
+		console.log('code...', code, props.successCallback)
+		// 校验验证码是否正确
+		userFetch
+			.checkVerificationCode(props.email, code)
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					const validId = result.data?.validId
+					if (validId) {
+						props.successCallback &&
+							props
+								.successCallback(validId)
+								.then(success => {
+									loading.value = false
+								})
+								.catch(err => {
+									console.log('err', err)
+									setTimeout(() => {
+										loading.value = false
+										error.value = err.message || '网络异常，请稍后再试'
+									}, 500)
+								})
+					}
+				} else {
 					setTimeout(() => {
 						loading.value = false
-						error.value = err.message || '网络异常，请稍后再试'
+						error.value = result?.msg || '网络异常，请稍后再试'
 					}, 500)
-				})
+				}
+			})
+			.catch(err => {
+				console.log('err', err)
+				setTimeout(() => {
+					loading.value = false
+					error.value = err.message || '网络异常，请稍后再试'
+				}, 500)
+			})
 	}
 
 	function reset() {
@@ -118,13 +141,13 @@
 				})
 	}
 
-    function resetStart(){
-        createTimer()
-    }
+	function resetStart() {
+		createTimer()
+	}
 
 	function createTimer() {
-        clearTimer()
-        second.value = timemout
+		clearTimer()
+		second.value = timemout
 		timer = setInterval(() => {
 			second.value--
 		}, 1000)
@@ -143,9 +166,9 @@
 		clearTimer()
 	})
 
-    defineExpose({
-        resetStart
-    })
+	defineExpose({
+		resetStart
+	})
 </script>
 <template>
 	<div class="login-index-container">
@@ -172,8 +195,8 @@
 				<div class="text-red">
 					<span v-if="!keystr && error">{{ error }}</span>
 				</div>
-				<div class="" @click="reset" v-if="second<=0">重新发送验证码</div>
-                <div class="" v-if="second>0">{{second}}秒后重新发送</div>
+				<div class="" @click="reset" v-if="second <= 0">重新发送验证码</div>
+				<div class="" v-if="second > 0">{{ second }}秒后重新发送</div>
 			</div>
 
 			<div class="form-item mt-8">

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import Register from './register.vue'
-	import Login from './login.vue'
 	import { useStore } from '~/store'
 
 	const tabbarHeight = ref(0)
@@ -10,10 +9,6 @@
 		{
 			name: '注册',
 			contentComp: markRaw(Register)
-		},
-		{
-			name: '登录',
-			contentComp: markRaw(Login)
 		}
 	])
 

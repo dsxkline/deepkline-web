@@ -4,7 +4,9 @@
 	import { userFetch } from '~/fetch/user.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	import type { ComponentInternalInstance } from 'vue'
-import { useUserStore } from '~/store/user'
+	import { useUserStore } from '~/store/user'
+	import Password from './password.vue'
+	import ResetPassword from './reset-password.vue'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
@@ -15,7 +17,7 @@ import { useUserStore } from '~/store/user'
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
 				// 验证成功进入发送验证码流程
-				nextSendEmailValidCode(isreset)
+				nextSendEmailValidCode(isreset, res.ticket, res.randstr)
 			} else {
 				error.value = res.errMessage
 			}
@@ -42,10 +44,18 @@ import { useUserStore } from '~/store/user'
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	let captchaInstance: ComponentInternalInstance | null = null
+	const forgetPassword = ref(false)
 	const nextStep = () => {
+		error.value = ''
+		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
+		if (email.value.indexOf('@') < 0) {
+			error.value = '请输入邮箱账号'
+			return
+		}
 		next()
 	}
 	const next = (isreset: boolean = false) => {
+        if (loading.value) return
 		loading.value = true
 		error.value = ''
 		const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
@@ -59,6 +69,10 @@ import { useUserStore } from '~/store/user'
 					// 已注册，可以直接进入输入密码界面，触发安全风控就提示验证码62
 					// 调用方法，显示验证码
 					try {
+						if (isRegister) {
+							usepush(Password, { email: email.value })
+							return false
+						}
 						if (isValid) {
 							captcha.show()
 							return false
@@ -99,11 +113,11 @@ import { useUserStore } from '~/store/user'
 				return false
 			})
 	}
-	const nextSendEmailValidCode = (isreset: boolean) => {
+	const nextSendEmailValidCode = (isreset: boolean, ticket?: string, randstr?: string, userIp?: string) => {
 		loading.value = true
 		error.value = ''
 		return userFetch
-			.sendEmailCode(email.value)
+			.sendEmailCode(email.value, forgetPassword.value ? 2 : 0, ticket, randstr, userIp)
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
@@ -148,18 +162,28 @@ import { useUserStore } from '~/store/user'
 	const pushCaptchaView = () => {
 		captchaInstance = usepush(Captcha, {
 			email: email.value,
-			successCallback: async (code: string) => {
-				console.log('success callback:', code)
+			forgetPassword: forgetPassword.value,
+			successCallback: async (validId: string) => {
+				console.log('success callback:', validId)
+				// 如果是忘记密码，进入重置密码界面
+				if (forgetPassword.value) {
+					usepush(ResetPassword, { email: email.value, forgetPassword: forgetPassword.value, validId: validId })
+					return true
+				}
+				// 否则就是登录校验验证码后进行登录操作
 				// 输入验证码后回调
-				const result = await userFetch.login({ userName: email.value, smsCode: code })
+				const result = await userFetch.login({ userName: email.value, validId: validId })
 				console.log('result de', FetchResultDto.OK, result)
 				if (result?.code == FetchResultDto.OK) {
-					useNuxtApp().$pop()
 					ElMessage({
 						message: '登录成功',
 						type: 'success'
 					})
-                    useUserStore().setUser(result.data)
+					useUserStore().setUser(result.data)
+					// 保存cookie
+					useCookie('token').value = result.data?.token
+					useNuxtApp().$pop()
+					useNuxtApp().$pop()
 					return true
 				} else {
 					throw new Error(result?.msg)
@@ -172,18 +196,21 @@ import { useUserStore } from '~/store/user'
 			}
 		})
 	}
+
+	
 </script>
 <template>
 	<div class="register-container">
 		<div class="global-form p-6">
 			<div class="form-item my-4">
 				<!-- <label>邮箱登录:</label> -->
-				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" />
+				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" />
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
 					<span v-if="error">{{ error }}</span>
 				</div>
+				
 			</div>
 
 			<div class="form-item mt-8">

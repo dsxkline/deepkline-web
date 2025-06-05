@@ -9,38 +9,20 @@
 	const menus = ref([
 		{
 			id: 1,
-			name: '昵称',
-			subName: '',
-			desc: useUserStore().user?.nickName,
+			name: '重置密码',
 			callback: () => {}
 		},
 		{
 			id: 1,
-			name: 'UID',
-			subName: '',
-			desc: useUserStore().user?.openId,
-			more: 'CopyDocument',
+			name: '绑定手机号',
+			desc: useUserStore().user?.tel || '未绑定',
 			callback: () => {}
 		},
 		{
 			id: 1,
-			name: '国家或地区',
+			name: '绑定邮箱',
 			subName: '',
-			desc: '中国',
-			callback: () => {}
-		},
-		{
-			id: 1,
-			name: '身份认证',
-			subName: '',
-			desc: '已认证',
-			callback: () => {}
-		},
-		{
-			id: 1,
-			name: '手续费等级',
-			subName: '',
-			desc: useUserStore().user?.levelCode,
+			desc: useUserStore().user?.email || '未绑定',
 			callback: () => {}
 		}
 	])
@@ -48,7 +30,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="个人资料" :hideBack="!push" />
+		<NavigationBar title="安全设置" :hideBack="!push" />
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
 			<MenuList :menus="menus" />
 		</ScrollBar>
