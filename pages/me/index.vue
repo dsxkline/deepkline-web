@@ -16,6 +16,7 @@
 	import { useUserStore } from '~/store/user'
 	import Security from './security.vue'
 import Notification from './notification.vue'
+import Avatar from './avatar.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -177,6 +178,7 @@ import Notification from './notification.vue'
 	function logout(){
 		useUserStore().logout()
 	}
+	
 	onMounted(() => {
 		// setTimeout(() => {
 		// 	useNuxtApp().$pop()

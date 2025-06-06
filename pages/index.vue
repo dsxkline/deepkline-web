@@ -8,6 +8,9 @@
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
 
+	useHead({
+		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
+	})
 	// 使用默认布局
 	definePageMeta({
 		layout: 'main'

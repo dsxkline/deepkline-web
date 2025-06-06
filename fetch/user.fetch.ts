@@ -13,6 +13,7 @@ const sendsmsApi = '/user/sendsms'
 const chackverificationcodeApi = '/user/checkverificationcode'
 const resetApi = '/user/reset'
 const userInfoApi = '/user/info'
+const nickFaceApi = '/user/update/nickface'
 
 export const userFetch = {
 	/**
@@ -77,5 +78,7 @@ export const userFetch = {
 			validId
 		}),
 
-	getUser: () => usePost<ApiResult<UserRespDto>>(baseUrl, userInfoApi, {})
+	getUser: () => usePost<ApiResult<UserRespDto>>(baseUrl, userInfoApi, {}),
+
+	updateNickFace: (nickName?: string,face?:string) => usePost<ApiResult<boolean>>(baseUrl, nickFaceApi, { nickName ,face})
 }

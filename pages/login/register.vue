@@ -8,9 +8,7 @@
 	import Password from './password.vue'
 	import ResetPassword from './reset-password.vue'
 	import clearPWACaches from '~/composable/clearPWACaches'
-	useHead({
-		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
-	})
+	
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
 		return (res: ICaptchaResult) => {

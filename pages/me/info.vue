@@ -1,18 +1,20 @@
 <script lang="ts" setup>
-	import { useStore } from '~/store'
-	import { useSymbolStore } from '~/store/symbol'
-	import UserFace from '~/components/user/UserFace.vue'
+	import NickName from '~/pages/me/nickname.vue'
 	import { useUserStore } from '~/store/user'
+	import { usePush } from '~/composable/usePush'
 	const props = defineProps<{
 		push?: boolean
 	}>()
-	const menus = ref([
+	const usepush = usePush()
+	const menus = computed(()=>[
 		{
 			id: 1,
 			name: '昵称',
 			subName: '',
 			desc: useUserStore().user?.nickName,
-			callback: () => {}
+			callback: () => {
+				usepush(NickName)
+			}
 		},
 		{
 			id: 1,
@@ -20,7 +22,21 @@
 			subName: '',
 			desc: useUserStore().user?.openId,
 			more: 'CopyDocument',
-			callback: () => {}
+			callback: () => {
+				copyText(useUserStore().user?.openId, (err: any) => {
+					if (!err) {
+						ElMessage({
+							message: '已复制到剪切板',
+							type: 'success'
+						})
+					} else {
+						ElMessage({
+							message: '复制失败',
+							type: 'error'
+						})
+					}
+				})
+			}
 		},
 		{
 			id: 1,
@@ -29,16 +45,16 @@
 			desc: '中国',
 			callback: () => {}
 		},
+		// {
+		// 	id: 1,
+		// 	name: '身份认证',
+		// 	subName: '',
+		// 	desc: '已认证',
+		// 	callback: () => {}
+		// },
 		{
 			id: 1,
-			name: '身份认证',
-			subName: '',
-			desc: '已认证',
-			callback: () => {}
-		},
-		{
-			id: 1,
-			name: '手续费等级',
+			name: '用户等级',
 			subName: '',
 			desc: useUserStore().user?.levelCode,
 			callback: () => {}
