@@ -7,23 +7,44 @@
 	import Captcha from './captcha.vue'
 	import type { ComponentInternalInstance } from 'vue'
 	import ResetPassword from './reset-password.vue'
+import clearPWACaches from '~/composable/clearPWACaches'
 
 	const props = defineProps<{
 		email: string
+		validId?: string
+		ticket?: string
+		randstr?: string
 	}>()
 	const usepush = usePush()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const password = ref('')
+	let forgetPassword = false
+	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
-	const nextStep = () => {
+	const next = ()=>{
+		if (requireCaptcha.value) {
+			// 如果需要用户行为验证
+			// 需要用户行为认证
+			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(false))
+			captcha.show()
+			return
+		}
+		nextStep(props.ticket, props.randstr)
+	}
+	const nextStep = (ticket?:string,randstr?:string) => {
+		forgetPassword = false
+		
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
 		userFetch
 			.login({
 				userName: props.email,
-				password: MD5(password.value + props.email).toString()
+				password: MD5(password.value + props.email).toString(),
+				validId: props.validId,
+				ticket,
+				randstr
 			})
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
@@ -35,8 +56,12 @@
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
+					clearPWACaches()
 					useNuxtApp().$popRoot(null, 1)
 				} else {
+					if (result?.code == 100027) {
+						requireCaptcha.value = true
+					}
 					setTimeout(() => {
 						loading.value = false
 						error.value = result?.msg
@@ -57,8 +82,13 @@
 			// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
-				// 验证成功进入发送验证码流程
-				nextSendEmailValidCode(isreset, res.ticket, res.randstr)
+				if (forgetPassword) {
+					// 验证成功进入发送验证码流程
+					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
+				}else{
+					// 直接进入登录
+					nextStep(res.ticket, res.randstr)
+				}
 			} else {
 				error.value = res.errMessage
 			}
@@ -80,16 +110,17 @@
 		})
 	}
 
-	const forgetPasswordHandle = (e:Event|null,isreset:boolean=false) => {
+	const forgetPasswordHandle = (e: Event | null, isreset: boolean = false) => {
 		error.value = ''
+		forgetPassword = true
 		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
 		try {
 			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
 			captcha.show()
 		} catch (err) {
-            console.log(err)
-            loadErrorCallback(isreset)
-        }
+			console.log(err)
+			loadErrorCallback(isreset)
+		}
 	}
 
 	const nextSendEmailValidCode = (isreset: boolean, ticket?: string, randstr?: string, userIp?: string) => {
@@ -141,15 +172,18 @@
 	const pushCaptchaView = () => {
 		captchaInstance = usepush(Captcha, {
 			email: props.email,
-			forgetPassword: true,
+			forgetPassword: forgetPassword,
 			successCallback: async (validId: string) => {
 				console.log('success callback:', validId)
-				// 如果是忘记密码，进入重置密码界面
-				usepush(ResetPassword, { email: props.email, forgetPassword: true, validId: validId })
+				if (forgetPassword) {
+					// 如果是忘记密码，进入重置密码界面
+					usepush(ResetPassword, { email: props.email, forgetPassword: true, validId: validId })
+				}
+				forgetPassword = false
 			},
 			resetCallback: async () => {
 				// 重新发送验证码
-				forgetPasswordHandle(null,true)
+				forgetPasswordHandle(null, true)
 				return true
 			}
 		})
@@ -177,7 +211,7 @@
 				<el-button
 					size="large"
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', password.length >= 8 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
-					@click="nextStep"
+					@click="next"
 					:loading="loading"
 					>登录</el-button
 				>

@@ -174,6 +174,9 @@ import Notification from './notification.vue'
 			})
 		}
 	)
+	function logout(){
+		useUserStore().logout()
+	}
 	onMounted(() => {
 		// setTimeout(() => {
 		// 	useNuxtApp().$pop()
@@ -193,7 +196,7 @@ import Notification from './notification.vue'
 			<UserFace />
 			<MenuList :menus="menus" />
 			<div class="my-3 px-3 flex flex-col items-center justify-center">
-				<button class="w-full bt-default !py-2 !rounded-full mb-3">退出登录</button>
+				<button class="w-full bt-default !py-2 !rounded-full mb-3" @click="logout" v-if="useUserStore().user">退出登录</button>
 				<el-divider class="!my-3" />
 				<div class="text-center text-xs text-muted">版本 1.0.0</div>
 			</div>

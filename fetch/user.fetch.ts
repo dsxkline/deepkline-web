@@ -17,9 +17,6 @@ const userInfoApi = '/user/info'
 export const userFetch = {
 	/**
 	 * 登录
-	 * @param userName 账号
-	 * @param password 密码
-	 * @param smsCode 验证码
 	 * @returns
 	 */
 	login: (params: LoginReqDto) =>

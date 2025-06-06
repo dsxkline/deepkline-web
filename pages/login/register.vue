@@ -7,17 +7,22 @@
 	import { useUserStore } from '~/store/user'
 	import Password from './password.vue'
 	import ResetPassword from './reset-password.vue'
+	import clearPWACaches from '~/composable/clearPWACaches'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
 	// 定义回调函数
-	function captchCallback(isreset: boolean) {
+	function captchCallback(isreset: boolean, isRegister?: boolean) {
 		return (res: ICaptchaResult) => {
 			// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
-				// 验证成功进入发送验证码流程
-				nextSendEmailValidCode(isreset, res.ticket, res.randstr)
+				if (isRegister) {
+					usepush(Password, { email: email.value,ticket:res.ticket, randstr:res.randstr })
+				} else {
+					// 验证成功进入发送验证码流程
+					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
+				}
 			} else {
 				error.value = res.errMessage
 			}
@@ -25,11 +30,11 @@
 	}
 
 	// 定义验证码js加载错误处理函数
-	function loadErrorCallback(isreset: boolean) {
+	function loadErrorCallback(isreset: boolean, isRegister?: boolean) {
 		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID
 		// 生成容灾票据或自行做其它处理
 		var ticket = createTicket(appid)
-		captchCallback(isreset)({
+		captchCallback(isreset,isRegister)({
 			ret: 0,
 			appid: appid,
 			randstr: '@' + Math.random().toString(36).substr(2),
@@ -55,10 +60,10 @@
 		next()
 	}
 	const next = (isreset: boolean = false) => {
-        if (loading.value) return
+		if (loading.value) return
 		loading.value = true
 		error.value = ''
-		const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
+
 		return userFetch
 			.checkEmail({ email: email.value })
 			.then(result => {
@@ -69,18 +74,19 @@
 					// 已注册，可以直接进入输入密码界面，触发安全风控就提示验证码62
 					// 调用方法，显示验证码
 					try {
-						if (isRegister) {
+						if (isRegister && !isValid) {
 							usepush(Password, { email: email.value })
 							return false
 						}
 						if (isValid) {
+							const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset, isRegister))
 							captcha.show()
 							return false
 						} else {
 							return nextSendEmailValidCode(isreset)
 						}
 					} catch (err) {
-						loadErrorCallback(isreset)
+						loadErrorCallback(isreset,isRegister)
 						ElMessage({
 							message: '验证码发送异常，请稍后再试',
 							type: 'error'
@@ -182,6 +188,7 @@
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
+					clearPWACaches()
 					useNuxtApp().$pop()
 					useNuxtApp().$pop()
 					return true
@@ -196,8 +203,6 @@
 			}
 		})
 	}
-
-	
 </script>
 <template>
 	<div class="register-container">
@@ -210,7 +215,6 @@
 				<div class="text-red">
 					<span v-if="error">{{ error }}</span>
 				</div>
-				
 			</div>
 
 			<div class="form-item mt-8">

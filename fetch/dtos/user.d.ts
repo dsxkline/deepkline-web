@@ -2,6 +2,8 @@ export class LoginReqDto {
 	userName: string
 	password?: string
 	validId?: string
+	ticket?: string
+	randstr?: string
 }
 
 export class UserRespDto {
@@ -16,10 +18,10 @@ export class UserRespDto {
 	coin: number
 	integs: number
 	openId: string
-    email:string
-    createdAt:string
-    updatedAt:string
-    cancelTime:string
-    levelCode:string
-    appleOpenId:string
+	email: string
+	createdAt: string
+	updatedAt: string
+	cancelTime: string
+	levelCode: string
+	appleOpenId: string
 }
