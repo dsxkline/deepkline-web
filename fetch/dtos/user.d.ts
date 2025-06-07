@@ -24,4 +24,5 @@ export class UserRespDto {
 	cancelTime: string
 	levelCode: string
 	appleOpenId: string
+	editNicknameTimes:number
 }

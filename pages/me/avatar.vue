@@ -5,6 +5,7 @@
 	import { useAvatar } from '~/composable/useAvatar'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
+	import type { UploadProps } from 'element-plus'
 
 	const props = defineProps<{}>()
 	const usepush = usePush()
@@ -45,7 +46,7 @@
 		'echohawk'
 	]
 
-	const avatarUrls = seeds.map(seed => `https://api.dicebear.com/9.x/big-smile/svg?seed=${seed}`)
+	const avatarUrls = seeds.map(seed => `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}`)
 
 	const selectAvatarHandle = (src: string) => {
 		selectAvatar.value = src
@@ -60,15 +61,23 @@
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
-					const user = useUserStore().user
-					if (user) user.face = selectAvatar.value
-                    ElMessage({
-                        message:"更新成功",
-                        type:"success"
-                    })
+					if (selectAvatar.value.indexOf('https://api.dicebear.com') >= 0) {
+						const user = useUserStore().user
+						if (user) user.face = selectAvatar.value
+						ElMessage({
+							message: '更新成功',
+							type: 'success'
+						})
+					} else {
+						ElMessage({
+							message: '头像修改请求已提交，请耐心等待审核通知',
+							type: 'success'
+						})
+					}
+
 					setTimeout(() => {
-                        useNuxtApp().$pop()
-                    }, 300);
+						useNuxtApp().$pop()
+					}, 300)
 				} else {
 					setTimeout(() => {
 						loading.value = false
@@ -82,6 +91,24 @@
 					error.value = '网络异常，请稍后再试'
 				}, 500)
 			})
+	}
+
+	const imageUrl = ref('')
+	const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+		imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+	}
+
+	const beforeAvatarUpload: UploadProps['beforeUpload'] = rawFile => {
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+		const isValidType = allowedTypes.includes(rawFile.type)
+		if (!isValidType) {
+			ElMessage.error('Avatar picture must be JPG/PNG/GIF/WEBP format!')
+			return false
+		} else if (rawFile.size / 1024 / 1024 > 2) {
+			ElMessage.error('Avatar picture size can not exceed 2MB!')
+			return false
+		}
+		return true
 	}
 </script>
 <template>
@@ -100,11 +127,20 @@
 			<div class="global-form p-6">
 				<div class="form-item my-4 justify-center items-center">
 					<div class="face-icon flex items-center justify-center relative">
-						<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
-						<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
-						<button class="absolute bottom-0 right-0" v-if="useUserStore()?.user?.id">
-							<el-icon><Edit /></el-icon>
-						</button>
+						<el-upload
+							class="avatar-uploader"
+							action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+							:show-file-list="false"
+							:on-success="handleAvatarSuccess"
+							:before-upload="beforeAvatarUpload"
+						>
+							<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
+							<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
+
+							<button class="absolute bottom-0 right-0" v-if="useUserStore()?.user?.id">
+								<el-icon><Edit /></el-icon>
+							</button>
+						</el-upload>
 					</div>
 				</div>
 				<div class="flex justify-center items-center text-grey text-sm pb-4">
@@ -122,7 +158,10 @@
 				<div>
 					<ul class="grid grid-cols-5 gap-1">
 						<template v-for="item in avatarUrls">
-							<li @click="selectAvatarHandle(item)" :class="['flex items-center justify-center p-3 border border-[--transparent01] bg-[--transparent01]',selectAvatar==item?'!bg-[--transparent10]':'']">
+							<li
+								@click="selectAvatarHandle(item)"
+								:class="['flex items-center justify-center p-3 border border-[--transparent01] bg-[--transparent01]', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+							>
 								<img :src="item" class="w-12" />
 							</li>
 						</template>

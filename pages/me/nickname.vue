@@ -23,13 +23,14 @@
 					loading.value = false
 					const user = useUserStore().user
 					if (user && nickName.value) user.nickName = nickName.value
+					if (user) user.editNicknameTimes = user.editNicknameTimes - 1
 					ElMessage({
-						message: '更新成功',
-						type: 'success'
+						message: '昵称修改请求已提交，请耐心等待审核通知',
+						type: 'success',
 					})
 					setTimeout(() => {
 						useNuxtApp().$pop()
-					}, 300)
+					}, 600)
 				} else {
 					setTimeout(() => {
 						loading.value = false
@@ -51,7 +52,7 @@
 
 		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<el-input v-model="nickName" :placeholder="'请输入昵称 8-20个字符'" size="large" maxlength="20" minlength="8" clearable show-word-limit></el-input>
+				<el-input v-model="nickName" :placeholder="'请输入昵称'" size="large" maxlength="20" minlength="3" clearable show-word-limit></el-input>
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
@@ -59,7 +60,8 @@
 				</div>
 			</div>
 			<ul class="text-sm text-grey list-disc pl-4 *:py-1">
-				<li>您今年还有10次机会修改</li>
+				<li>您今年还有{{useUserStore().user?.editNicknameTimes}}次机会修改</li>
+				<li>格式：由语言字母开头，可包含数字、emoji、_ - .和空格，长度限制3-30个字符</li>
 				<li>我们会审核您提交的昵称，过程需要一定时间，请耐心等待</li>
 				<li>创建昵称时，请勿使用不雅用词、官方名称和其他交易平台的名称</li>
 			</ul>

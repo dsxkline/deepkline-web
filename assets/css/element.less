@@ -433,7 +433,8 @@ body {
 		outline: none;
 	}
 	.el-message {
-		max-width: 90vw;
+		max-width: calc(var(--body-width) - 32px);
+		width: max-content;
 		overflow: hidden;
 		border-radius: 8px;
 		&::before {
