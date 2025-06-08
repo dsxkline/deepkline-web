@@ -6,6 +6,7 @@
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
 	import type { UploadFile, UploadProps, UploadProgressEvent } from 'element-plus'
+	import defaultAvatar from '~/assets/images/default-avatar.svg'
 
 	const props = defineProps<{}>()
 	const usepush = usePush()
@@ -174,6 +175,9 @@
 			})
 	}
 
+	const imageOnError = (event: Event) => {
+		if (event.target) (event.target as HTMLImageElement).src = defaultAvatar
+	}
 	onMounted(() => {
 		getFaceHistory()
 	})
@@ -206,7 +210,7 @@
 					:on-preview="handlePreview"
 					v-loading="loading"
 				>
-					<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
+					<img  @error="imageOnError" :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
 					<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
 
 					<button class="absolute bottom-0 right-0 rounded-full bg-[--transparent20] w-6 h-6 flex items-center justify-center" v-if="useUserStore()?.user?.id">
@@ -230,13 +234,17 @@
 
 				<h3 class="pt-6 pb-3" v-if="avatarList?.length">头像历史</h3>
 				<div v-if="avatarList?.length && !avatarLoading && !avatarError">
-					<ul class="flex justify-start items-center flex-wrap gap-5">
+					<ul class="grid grid-cols-5 justify-evenly flex-wrap gap-5">
 						<template v-for="item in avatarList">
 							<li
+                                v-if="item"
 								@click="selectAvatarHandle(item)"
-								:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+								:class="[
+									'flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12',
+									selectAvatar == item ? '!bg-[--transparent10]' : ''
+								]"
 							>
-								<img :src="item" class=" w-12 h-12" />
+								<img :src="item" class="w-12 h-12" @error="imageOnError" />
 							</li>
 						</template>
 					</ul>
@@ -248,21 +256,26 @@
 
 				<h3 class="pt-6 pb-3">选择头像</h3>
 				<div>
-					<ul class="flex items-center justify-between pb-4">
-						<template v-for="item in styles">
-							<li
-								@click="selectStyleHandle(item)"
-								:class="['flex items-center justify-center mr-2 border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden', selectStyle == item ? '!bg-[--transparent10]' : '']"
-							>
-								<img :src="`https://api.dicebear.com/9.x/${item}/svg?seed=default`" class="w-full" />
-							</li>
-						</template>
-					</ul>
+					<div class="w-full border-b border-[--transparent05] mb-4">
+						<ul class="flex items-center pb-3 justify-between gp-3">
+							<template v-for="item in styles">
+								<li
+									@click="selectStyleHandle(item)"
+									:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden', selectStyle == item ? '!bg-[--transparent10] !border-2 !border-[rgb(var(--color-brand))]' : '']"
+								>
+									<img :src="`https://api.dicebear.com/9.x/${item}/svg?seed=default`" class="w-5 h-5" />
+								</li>
+							</template>
+						</ul>
+					</div>
 					<ul class="flex flex-wrap justify-between gap-3">
 						<template v-for="item in avatarUrls">
 							<li
 								@click="selectAvatarHandle(item)"
-								:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+								:class="[
+									'flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12',
+									selectAvatar == item ? '!bg-[--transparent10]' : ''
+								]"
 							>
 								<img :src="item" class="w-12" />
 							</li>
