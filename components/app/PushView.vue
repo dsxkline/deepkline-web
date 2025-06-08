@@ -136,11 +136,30 @@
 	const setDrawerBodyStyle = (visible: boolean) => {
 		// 处理auto
 		if (drawerBody.value) {
-			const h = Math.min(drawerBody.value.getBoundingClientRect().height, window.innerHeight)
-			let size = props.size == 'auto' ? h + 'px' : props.size || '100%'
+			let h = Math.min(drawerBody.value.getBoundingClientRect().height || 0, window.innerHeight)
+			// let size = props.size == 'auto' ? h : props.size || '100%'
+			if (props.direction == 'rtl' || props.direction == 'ltr') {
+				drawerBody.value.style.height = 'var(--body-height)'
+			} else {
+				// console.log('props.size', props.size)
+				if (props.size) {
+					if (props.size.indexOf('%') > 0) {
+						h = (window.innerHeight * parseFloat(props.size)) / 100
+					} else if (props.size == 'auto') {
+					} else if (props.size?.indexOf('px')) {
+						// px 等
+						h = window.innerHeight * parseFloat(props.size)
+					} else if (props.size?.indexOf('vh')) {
+						// vh 等
+						h = (window.innerHeight * parseFloat(props.size)) / 100
+					}
+				}
+				drawerBody.value.style.height = h + 'px'
+			}
+
 			drawerBody.value.style.transform = visible
 				? props.direction == 'btt'
-					? 'translateY(calc(var(--body-height) - ' + size + '))'
+					? 'translateY(calc(var(--body-height) - 100%))'
 					: 'translateX(0)'
 				: props.direction == 'btt'
 				? 'translateY(var(--body-height))'
@@ -207,10 +226,9 @@
 			// 	}
 			// })
 
-			if (props.direction == 'rtl' || props.direction == 'ltr') {
-				drawerBody.value.style.height = 'var(--body-height)'
-			}
+			console.log('h >= window.innerHeight', props.size, h, window.innerHeight)
 			if (h >= window.innerHeight) bttFull.value = true
+			else bttFull.value = false
 		}
 		if (drawBg.value) {
 			drawBg.value.style.opacity = visible ? (props.direction == 'btt' ? '0.3' : '0') : '0'
@@ -280,7 +298,7 @@
 			:class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
 			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
 		>
-			<template v-if="direction == 'btt' && size != '100%' && !bttFull">
+			<template v-if="direction == 'btt' && !bttFull">
 				<div @click="hide"><DrawLine /></div>
 			</template>
 			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" />
