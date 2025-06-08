@@ -53,6 +53,7 @@
 	}
 	const next = () => {
 		if (!selectAvatar.value) return
+        if (selectAvatar.value==useUserStore().user?.face) return
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
@@ -145,7 +146,7 @@
 		<NavigationBar ref="navbar" title="更新头像">
 			<template #right>
 				<el-button
-					:class="['w-full transition-all !py-2 !h-8 !text-xs bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
+					:class="['w-full transition-all !py-2 !h-8 !text-sm bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 					@click="next"
 					:loading="loading"
 					>保存</el-button
