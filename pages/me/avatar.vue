@@ -12,6 +12,9 @@
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const selectAvatar = ref('')
+	const avatarList = ref<string[]>([])
+	const avatarLoading = ref(false)
+	const avatarError = ref('')
 
 	const seeds = [
 		'moonwalker',
@@ -46,14 +49,21 @@
 		'echohawk'
 	]
 
-	const avatarUrls = seeds.map(seed => `https://api.dicebear.com/9.x/bottts/svg?seed=${seed}`)
+	const styles = ['bottts', 'bottts-neutral', 'adventurer', 'avataaars-neutral', 'croodles', 'dylan', 'identicon', 'lorelei', 'notionists', 'pixel-art', 'thumbs']
+
+	const avatarUrls = computed(() => seeds.map(seed => `https://api.dicebear.com/9.x/${selectStyle.value}/svg?seed=${seed}`))
+
+	const selectStyle = ref(styles[0])
+	const selectStyleHandle = (item: string) => {
+		selectStyle.value = item
+	}
 
 	const selectAvatarHandle = (src: string) => {
 		selectAvatar.value = src
 	}
 	const next = () => {
 		if (!selectAvatar.value) return
-        if (selectAvatar.value==useUserStore().user?.face) return
+		if (selectAvatar.value == useUserStore().user?.face) return
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
@@ -140,6 +150,33 @@
 	function handleProgress(event: UploadProgressEvent, uploadFile: UploadFile) {
 		uploadPercent.value = Math.round((event.loaded / event.total) * 100)
 	}
+
+	function getFaceHistory() {
+		if (avatarLoading.value) return
+		avatarLoading.value = true
+		avatarError.value = ''
+		userFetch
+			.getFaceHistory()
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					avatarLoading.value = false
+					avatarList.value = result.data || []
+				} else {
+					avatarLoading.value = false
+					avatarError.value = result?.msg
+				}
+			})
+			.catch(err => {
+				setTimeout(() => {
+					avatarLoading.value = false
+					avatarError.value = '网络异常，请稍后再试'
+				}, 500)
+			})
+	}
+
+	onMounted(() => {
+		getFaceHistory()
+	})
 </script>
 <template>
 	<div class="nickname-container">
@@ -153,33 +190,33 @@
 				>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
-			<div class="global-form p-6">
-				<div class="form-item my-4 justify-center items-center">
-					<div class="face-icon flex items-center justify-center relative w-20 h-20 rounded-full">
-						<el-upload
-							class="avatar-uploader"
-							:action="userFetch.getUploadUrl()"
-							:headers="{
-								authorization: 'Bearer ' + useCookie('token').value
-							}"
-							:show-file-list="false"
-							:on-success="handleAvatarSuccess"
-							:before-upload="beforeAvatarUpload"
-							:on-progress="handleProgress"
-							:on-error="handleError"
-							:on-preview="handlePreview"
-							v-loading="loading"
-						>
-							<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
-							<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
+		<div class="avatar-container flex my-4 justify-center items-center w-full h-[80px]">
+			<div class="face-icon flex items-center justify-center relative w-20 h-20 rounded-full">
+				<el-upload
+					class="avatar-uploader"
+					:action="userFetch.getUploadUrl()"
+					:headers="{
+						authorization: 'Bearer ' + useCookie('token').value
+					}"
+					:show-file-list="false"
+					:on-success="handleAvatarSuccess"
+					:before-upload="beforeAvatarUpload"
+					:on-progress="handleProgress"
+					:on-error="handleError"
+					:on-preview="handlePreview"
+					v-loading="loading"
+				>
+					<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
+					<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
 
-							<button class="absolute bottom-0 right-0" v-if="useUserStore()?.user?.id">
-								<el-icon><Edit /></el-icon>
-							</button>
-						</el-upload>
-					</div>
-				</div>
+					<button class="absolute bottom-0 right-0 rounded-full bg-[--transparent20] w-6 h-6 flex items-center justify-center" v-if="useUserStore()?.user?.id">
+						<el-icon><Edit /></el-icon>
+					</button>
+				</el-upload>
+			</div>
+		</div>
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 100px)' }" :always="false">
+			<div class="global-form p-6">
 				<div class="flex justify-center items-center text-grey text-sm pb-4">
 					<div class="text-red">
 						<span v-if="error">{{ error }}</span>
@@ -191,8 +228,36 @@
 					<li>上传头像时，请勿使用不雅图片</li>
 				</ul>
 
+				<h3 class="pt-6 pb-3" v-if="avatarList?.length">头像历史</h3>
+				<div v-if="avatarList?.length && !avatarLoading && !avatarError">
+					<ul class="grid grid-cols-4 gap-1">
+						<template v-for="item in avatarList">
+							<li
+								@click="selectAvatarHandle(item)"
+								:class="['flex items-center justify-center p-3 border border-[--transparent01] bg-[--transparent01]', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+							>
+								<img :src="item" class="w-full" />
+							</li>
+						</template>
+					</ul>
+				</div>
+				<div v-if="avatarLoading" v-loading="avatarLoading" class="w-full min-h-[135px]"></div>
+				<Error v-if="avatarError" class="w-full min-h-[60px]">
+					<button @click="getFaceHistory">重新加载</button>
+				</Error>
+
 				<h3 class="pt-6 pb-3">选择头像</h3>
 				<div>
+					<ul class="flex items-center justify-between pb-3">
+						<template v-for="item in styles">
+							<li
+								@click="selectStyleHandle(item)"
+								:class="['flex items-center justify-center p-1 mr-1 rounded-sm border border-[--transparent01] bg-[--transparent01]', selectStyle == item ? '!bg-[--transparent10]' : '']"
+							>
+								<img :src="`https://api.dicebear.com/9.x/${item}/svg?seed=default`" class="w-full" />
+							</li>
+						</template>
+					</ul>
 					<ul class="grid grid-cols-5 gap-1">
 						<template v-for="item in avatarUrls">
 							<li
@@ -215,7 +280,7 @@
 			@apply flex flex-col;
 		}
 	}
-	:deep(.el-loading-mask) {
+	:deep(.avatar-uploader .el-loading-mask) {
 		border-radius: 999px;
 	}
 </style>

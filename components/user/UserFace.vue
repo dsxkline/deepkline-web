@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
             <div class="face-icon flex items-center justify-center relative">
                 <img :src="(useUserStore()?.user?.face || useAvatar())" alt="Face Icon" class="w-16 h-16 rounded-full bg-[--transparent05]" @click.stop="pushAvatar" v-if="useUserStore()?.user?.id"/>
                 <img src="~/assets/images/logo.png" alt="Face Icon" class="w-16 h-16 rounded-full" v-else/>
-                <button class="absolute bottom-0 right-0" @click.stop="pushAvatar" v-if="useUserStore()?.user?.id"><el-icon><Edit/></el-icon></button>
+                <button class="absolute bottom-0 right-0 rounded-full bg-[--transparent20] w-6 h-6 flex items-center justify-center" @click.stop="pushAvatar" v-if="useUserStore()?.user?.id"><el-icon><Edit/></el-icon></button>
             </div>
             <div class="face-text mt-4 text-center text-main text-lg font-semibold">
                 {{ useUserStore()?.user?.nickName || '登录/注册' }}

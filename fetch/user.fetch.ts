@@ -13,7 +13,8 @@ const sendsmsApi = '/user/sendsms'
 const chackverificationcodeApi = '/user/checkverificationcode'
 const resetApi = '/user/reset'
 const userInfoApi = '/user/info'
-const nickFaceApi = '/user/update/nickface'
+const nickFaceApi = '/user/nickface/update'
+const faceHistoryApi = '/user/face/history'
 const uploadPhotoApi = '/user/upload'
 
 export const userFetch = {
@@ -79,9 +80,29 @@ export const userFetch = {
 			validId
 		}),
 
+	/**
+	 * 获取用户详情
+	 * @returns 
+	 */
 	getUser: () => usePost<ApiResult<UserRespDto>>(baseUrl, userInfoApi, {}),
 
+	/**
+	 * 修改昵称或头像
+	 * @param nickName 昵称
+	 * @param face 头像
+	 * @returns 
+	 */
 	updateNickFace: (nickName?: string, face?: string) => usePost<ApiResult<boolean>>(baseUrl, nickFaceApi, { nickName, face }),
 
-	getUploadUrl: () => baseUrl + uploadPhotoApi
+	/**
+	 * 头像上传地址
+	 * @returns 
+	 */
+	getUploadUrl: () => baseUrl + uploadPhotoApi,
+
+	/**
+	 * 获取用户头像历史列表
+	 * @returns 头像历史列表
+	 */
+	getFaceHistory: () => usePost<ApiResult<string[]>>(baseUrl, faceHistoryApi, {})
 }
