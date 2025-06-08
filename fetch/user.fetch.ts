@@ -14,6 +14,7 @@ const chackverificationcodeApi = '/user/checkverificationcode'
 const resetApi = '/user/reset'
 const userInfoApi = '/user/info'
 const nickFaceApi = '/user/update/nickface'
+const uploadPhotoApi = '/user/upload'
 
 export const userFetch = {
 	/**
@@ -80,5 +81,7 @@ export const userFetch = {
 
 	getUser: () => usePost<ApiResult<UserRespDto>>(baseUrl, userInfoApi, {}),
 
-	updateNickFace: (nickName?: string,face?:string) => usePost<ApiResult<boolean>>(baseUrl, nickFaceApi, { nickName ,face})
+	updateNickFace: (nickName?: string, face?: string) => usePost<ApiResult<boolean>>(baseUrl, nickFaceApi, { nickName, face }),
+
+	getUploadUrl: () => baseUrl + uploadPhotoApi
 }

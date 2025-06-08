@@ -5,7 +5,7 @@
 	import { useAvatar } from '~/composable/useAvatar'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
-	import type { UploadProps } from 'element-plus'
+	import type { UploadFile, UploadProps, UploadProgressEvent } from 'element-plus'
 
 	const props = defineProps<{}>()
 	const usepush = usePush()
@@ -61,9 +61,9 @@
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
+					const user = useUserStore().user
+					if (user) user.face = selectAvatar.value
 					if (selectAvatar.value.indexOf('https://api.dicebear.com') >= 0) {
-						const user = useUserStore().user
-						if (user) user.face = selectAvatar.value
 						ElMessage({
 							message: '更新成功',
 							type: 'success'
@@ -95,7 +95,17 @@
 
 	const imageUrl = ref('')
 	const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-		imageUrl.value = URL.createObjectURL(uploadFile.raw!)
+		if (response?.code == FetchResultDto.OK) {
+			imageUrl.value = response?.data
+			loading.value = false
+			selectAvatar.value = imageUrl.value
+		} else {
+			setTimeout(() => {
+				error.value = response?.msg
+				imageUrl.value = ''
+				loading.value = false
+			}, 500)
+		}
 	}
 
 	const beforeAvatarUpload: UploadProps['beforeUpload'] = rawFile => {
@@ -108,7 +118,26 @@
 			ElMessage.error('Avatar picture size can not exceed 2MB!')
 			return false
 		}
+		loading.value = true
+		error.value = ''
+
 		return true
+	}
+	const handlePreview: UploadProps['onPreview'] = file => {
+		console.log(file)
+		imageUrl.value = URL.createObjectURL(file.raw!)
+	}
+
+	function handleError(err: Error) {
+		loading.value = false
+		error.value = err.message
+		imageUrl.value = ''
+	}
+
+	const uploadPercent = ref(0)
+
+	function handleProgress(event: UploadProgressEvent, uploadFile: UploadFile) {
+		uploadPercent.value = Math.round((event.loaded / event.total) * 100)
 	}
 </script>
 <template>
@@ -126,13 +155,20 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<div class="global-form p-6">
 				<div class="form-item my-4 justify-center items-center">
-					<div class="face-icon flex items-center justify-center relative">
+					<div class="face-icon flex items-center justify-center relative w-20 h-20 rounded-full">
 						<el-upload
 							class="avatar-uploader"
-							action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+							:action="userFetch.getUploadUrl()"
+							:headers="{
+								authorization: 'Bearer ' + useCookie('token').value
+							}"
 							:show-file-list="false"
 							:on-success="handleAvatarSuccess"
 							:before-upload="beforeAvatarUpload"
+							:on-progress="handleProgress"
+							:on-error="handleError"
+							:on-preview="handlePreview"
+							v-loading="loading"
 						>
 							<img :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
 							<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
@@ -177,5 +213,8 @@
 		.form-item {
 			@apply flex flex-col;
 		}
+	}
+	:deep(.el-loading-mask) {
+		border-radius: 999px;
 	}
 </style>
