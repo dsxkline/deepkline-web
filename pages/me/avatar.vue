@@ -215,7 +215,7 @@
 				</el-upload>
 			</div>
 		</div>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 100px)' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 120px)' }" :always="false">
 			<div class="global-form p-6">
 				<div class="flex justify-center items-center text-grey text-sm pb-4">
 					<div class="text-red">
@@ -230,13 +230,13 @@
 
 				<h3 class="pt-6 pb-3" v-if="avatarList?.length">头像历史</h3>
 				<div v-if="avatarList?.length && !avatarLoading && !avatarError">
-					<ul class="grid grid-cols-4 gap-1">
+					<ul class="flex justify-start items-center flex-wrap gap-5">
 						<template v-for="item in avatarList">
 							<li
 								@click="selectAvatarHandle(item)"
-								:class="['flex items-center justify-center p-3 border border-[--transparent01] bg-[--transparent01]', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+								:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12', selectAvatar == item ? '!bg-[--transparent10]' : '']"
 							>
-								<img :src="item" class="w-full" />
+								<img :src="item" class=" w-12 h-12" />
 							</li>
 						</template>
 					</ul>
@@ -248,21 +248,21 @@
 
 				<h3 class="pt-6 pb-3">选择头像</h3>
 				<div>
-					<ul class="flex items-center justify-between pb-3">
+					<ul class="flex items-center justify-between pb-4">
 						<template v-for="item in styles">
 							<li
 								@click="selectStyleHandle(item)"
-								:class="['flex items-center justify-center p-1 mr-1 rounded-sm border border-[--transparent01] bg-[--transparent01]', selectStyle == item ? '!bg-[--transparent10]' : '']"
+								:class="['flex items-center justify-center mr-2 border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden', selectStyle == item ? '!bg-[--transparent10]' : '']"
 							>
 								<img :src="`https://api.dicebear.com/9.x/${item}/svg?seed=default`" class="w-full" />
 							</li>
 						</template>
 					</ul>
-					<ul class="grid grid-cols-5 gap-1">
+					<ul class="flex flex-wrap justify-between gap-3">
 						<template v-for="item in avatarUrls">
 							<li
 								@click="selectAvatarHandle(item)"
-								:class="['flex items-center justify-center p-3 border border-[--transparent01] bg-[--transparent01]', selectAvatar == item ? '!bg-[--transparent10]' : '']"
+								:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12', selectAvatar == item ? '!bg-[--transparent10]' : '']"
 							>
 								<img :src="item" class="w-12" />
 							</li>
