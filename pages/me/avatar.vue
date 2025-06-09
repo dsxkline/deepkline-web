@@ -107,10 +107,10 @@
 	}
 
 	const imageUrl = ref('')
-	let rawFile: UploadRawFile|null = null // 原始上传的 file 文件
+	let rawFile: UploadRawFile | null = null // 原始上传的 file 文件
 	const elUploader = ref()
 	const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
-        rawFile = null;
+		rawFile = null
 		if (response?.code == FetchResultDto.OK) {
 			imageUrl.value = response?.data
 			loading.value = false
@@ -128,15 +128,15 @@
 		usepush(Cropper, {
 			img: img,
 			successCallback: (data: UploadRawFile) => {
-                const file = new File([data], 'avatar.png', {
-                    type: data.type,
-                    lastModified: Date.now()
-                });
-                rawFile = file as UploadRawFile;
+				const file = new File([data], 'avatar.png', {
+					type: data.type,
+					lastModified: Date.now()
+				})
+				rawFile = file as UploadRawFile
 				// 开始上传图片
 				elUploader.value && elUploader.value.handleStart(file)
 				elUploader.value && elUploader.value.submit()
-                
+				rawFile = null
 			}
 		})
 	}
@@ -153,7 +153,7 @@
 		}
 		loading.value = true
 		error.value = ''
-        console.log('file',file)
+
 		// 需要阻止默认上传，进入裁剪
 		if (!rawFile) {
 			const reader = new FileReader()
@@ -162,8 +162,8 @@
 			}
 			reader.readAsDataURL(file)
 		}
-
-		return rawFile
+		console.log('file', rawFile)
+		return rawFile?true:false
 	}
 	const handlePreview: UploadProps['onPreview'] = file => {
 		console.log(file)
