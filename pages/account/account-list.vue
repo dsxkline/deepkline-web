@@ -58,12 +58,12 @@
 								<span class="text-green"> +265.36 USDT / +12.30%</span>
 							</div>
 						</div>
-						<span v-if="item.isCurrent" class="current-item absolute right-0 top-0 text-xs px-3 bg-brand text-white rounded-bl-xl rounded-tr-xl">当前使用中</span>
+						<span v-if="item.isCurrent" class="current-item absolute right-0 top-0 text-xs px-3 bg-brand text-white rounded-bl-xl rounded-tr-lg">当前使用中</span>
 					</li>
 				</template>
 			</ul>
 		</ScrollBar>
-		<div class="w-full px-4  pt-[20px] pb-[40px]"><button class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]">+ 绑定新账号</button></div>
+		<div class="w-full px-4  pt-[20px] pb-[40px]"><button class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 绑定新账号</b></button></div>
 	</div>
 </template>
 <style lang="less" scoped>

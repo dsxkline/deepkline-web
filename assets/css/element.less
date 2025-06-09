@@ -82,7 +82,11 @@ html:root {
 		}
 	}
 
-	
+	.el-message-box{
+		&::before {
+			background-image: none;
+		}
+	}
 }
 body {
 	.el-input {
@@ -489,6 +493,7 @@ body {
 		background-color: rgb(var(--color-bg-base));
 		position: relative;
 		z-index: 1;
+		margin-top: -20vh;
 		&::before {
 			background-image: var(--bg-linear-180);
 			// filter: blur(60px);
@@ -501,6 +506,9 @@ body {
 			z-index: -1;
 			opacity: 0.1;
 		}
+		.el-message-box__header.show-close{
+			padding-right: 0;
+		}
 		.el-message-box__content{
 			padding: 20px 0;
 		}
@@ -509,7 +517,7 @@ body {
 			button{
 				flex: 1;
 				padding: 20px 10px;
-				border-radius: 66px;
+				border-radius: 6px;
 			}
 		}
 	}

@@ -213,9 +213,11 @@
 		// 检查是否修改了头像但是没保存
 		if (selectAvatar.value && useUserStore().user?.face != selectAvatar.value && alertOne) {
 			alertOne = false
-			ElMessageBox.confirm('头像未保存，是否保存后退出?')
+			ElMessageBox.confirm('头像未保存，是否保存后退出?',{
+				title:"提示",
+				center:true
+			})
 				.then(() => {
-					console.log('dddddd')
 					next()
 				})
 				.catch(() => {
