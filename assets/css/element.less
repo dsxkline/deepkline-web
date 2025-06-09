@@ -88,6 +88,11 @@ body {
 		--el-input-border-color-hover: var(--transparent10);
 		--el-input-text-color: rgb(var(--color-text-main));
 		--el-input-hover-border-color: var(--transparent30);
+		.el-input__count {
+			.el-input__count-inner {
+				background-color: transparent;
+			}
+		}
 	}
 	.el-input-number .el-input__inner {
 		text-align: left;
@@ -452,24 +457,23 @@ body {
 		&.el-message--info {
 			--el-message-border-color: var(--transparent00);
 			--el-message-text-color: rgb(var(--color-text-grey));
-			background: linear-gradient(to left,var(--transparent05),var(--transparent05)),linear-gradient(to left,rgb(var(--color-bg-base)),rgb(var(--color-bg-base)));
+			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 		}
 		&.el-message--success {
-			background: linear-gradient(to left,var(--transparent05),var(--transparent05)),linear-gradient(to left,rgb(var(--color-bg-base)),rgb(var(--color-bg-base)));
+			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 			--el-message-border-color: var(--transparent00);
 		}
 		&.el-message--warning {
-			background: linear-gradient(to left,var(--transparent05),var(--transparent05)),linear-gradient(to left,rgb(var(--color-bg-base)),rgb(var(--color-bg-base)));
+			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 			--el-message-border-color: var(--transparent00);
 		}
 		&.el-message--error {
-			background: linear-gradient(to left,var(--transparent05),var(--transparent05)),linear-gradient(to left,rgb(var(--color-bg-base)),rgb(var(--color-bg-base)));
+			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 			--el-message-border-color: var(--transparent00);
-		
 		}
 	}
 
-	.el-loading-mask{
+	.el-loading-mask {
 		background-color: rgb(var(--color-bg-mask) / 0.3);
 	}
 }

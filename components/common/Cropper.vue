@@ -18,12 +18,12 @@
 	}
 </script>
 <template>
-	<div class="h-[--body-height]">
+	<div class="h-[--body-height] cancel-stop-touch">
 		<NavigationBar ref="navbar" title="裁剪图片" :hideBack="true">
 			<template #right>
 				<el-button :class="['w-full transition-all !py-2 !h-8 !text-sm bt-default', '!bg-brand !text-white']" @click="save">保存</el-button>
 			</template>
 		</NavigationBar>
-		<VueCropper ref="cropper" :img="img" :outputSize="size || 1" :outputType="outputType || 'png'" :autoCrop="true" :fixed="true" :centerBox="true" class="w-full h-full"></VueCropper>
+		<VueCropper ref="cropper" mode="cover" :img="img" :outputSize="size || 1" :outputType="outputType || 'png'" :autoCrop="true" :fixed="true" :centerBox="true" :canMove="true" class="w-full h-full"></VueCropper>
 	</div>
 </template>

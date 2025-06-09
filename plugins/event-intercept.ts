@@ -60,10 +60,10 @@ class WindowsEvent {
 
 	clearWindowEvent() {
 		// 禁用双指放大
-		document.body.addEventListener('dblclick', this.dblclickHandle,{ passive: false })
-		document.body.addEventListener('touchstart', this.touchstartHandle, { passive: false })
-		document.body.addEventListener('touchmove', this.touchMoveHandle, { passive: false })
-		document.body.addEventListener('gesturestart', this.dblclickHandle,{ passive: false })
+		document.addEventListener('dblclick', this.dblclickHandle,{ passive: false })
+		document.addEventListener('touchstart', this.touchstartHandle, { passive: false })
+		document.addEventListener('touchmove', this.touchMoveHandle, { passive: false })
+		document.addEventListener('gesturestart', this.dblclickHandle,{ passive: false })
 
 		// 禁止右键点击
 		// document.addEventListener('contextmenu', function (event) {
@@ -75,12 +75,19 @@ class WindowsEvent {
 		event.preventDefault()
 	}
 	touchstartHandle(event: TouchEvent) {
+		// console.log('touchstart',event.target)
+		// 取消拦截
+		const cancelStop = (event.target as HTMLElement).closest('.cancel-stop-touch')
+		if(cancelStop) return;
 		if (event.touches.length > 1) {
 			event.preventDefault()
 		}
 		event.stopPropagation()
 	}
 	touchMoveHandle(event: TouchEvent) {
+		// 取消拦截
+		const cancelStop = (event.target as HTMLElement).closest('.cancel-stop-touch')
+		if(cancelStop) return;
 		event.stopPropagation()
 	}
 
@@ -194,10 +201,10 @@ class WindowsEvent {
 		document.removeEventListener('resume', this.resumeHandler)
 		window.removeEventListener('focus', this.focusHandler)
 		window.removeEventListener('pageshow', this.pageshowHandler)
-		document.body.removeEventListener('dblclick', this.dblclickHandle)
-		document.body.removeEventListener('touchstart', this.touchstartHandle)
-		document.body.removeEventListener('touchmove', this.touchMoveHandle)
-		document.body.removeEventListener('gesturestart', this.dblclickHandle)
+		document.removeEventListener('dblclick', this.dblclickHandle)
+		document.removeEventListener('touchstart', this.touchstartHandle)
+		document.removeEventListener('touchmove', this.touchMoveHandle)
+		document.removeEventListener('gesturestart', this.dblclickHandle)
 	}
 }
 const soundHandle = (audio: HTMLAudioElement) => () => {
