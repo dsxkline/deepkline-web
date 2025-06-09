@@ -76,6 +76,9 @@ import { usePush } from '~/composable/usePush'
 </template>
 <style lang="less" scoped>
 :deep(.menu-list){
-
+	&.large ul li .icon svg{
+		background-color: white;
+		border-radius: 999px;
+	}
 }
 </style>
