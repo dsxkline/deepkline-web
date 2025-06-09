@@ -3,7 +3,7 @@ import { UserRespDto } from '~/fetch/dtos/user'
 export const useUserStore = defineStore({
 	id: 'user',
 	state: () => ({
-		user: {} as UserRespDto | null
+		user: null as UserRespDto | null
 	}),
 	actions: {
 		setUser(payload: UserRespDto | null) {

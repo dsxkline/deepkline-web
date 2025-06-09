@@ -17,6 +17,7 @@
 	const avatarList = ref<string[]>([])
 	const avatarLoading = ref(false)
 	const avatarError = ref('')
+	let alertOne = true
 
 	const seeds = [
 		'moonwalker',
@@ -163,7 +164,7 @@
 			reader.readAsDataURL(file)
 		}
 		console.log('file', rawFile)
-		return rawFile?true:false
+		return rawFile ? true : false
 	}
 	const handlePreview: UploadProps['onPreview'] = file => {
 		console.log(file)
@@ -208,13 +209,30 @@
 	const imageOnError = (event: Event) => {
 		if (event.target) (event.target as HTMLImageElement).src = defaultAvatar
 	}
+	const returnBack = () => {
+		// 检查是否修改了头像但是没保存
+		if (selectAvatar.value && useUserStore().user?.face != selectAvatar.value && alertOne) {
+			alertOne = false
+			ElMessageBox.confirm('头像未保存，是否保存后退出?')
+				.then(() => {
+					console.log('dddddd')
+					next()
+				})
+				.catch(() => {
+					// catch error
+					useNuxtApp().$pop()
+				})
+			return true
+		}
+		return false;
+	}
 	onMounted(() => {
 		getFaceHistory()
 	})
 </script>
 <template>
 	<div class="nickname-container">
-		<NavigationBar ref="navbar" title="更新头像">
+		<NavigationBar ref="navbar" title="更新头像" :returnBack="returnBack">
 			<template #right>
 				<el-button
 					:class="['w-full transition-all !py-2 !h-8 !text-sm bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
@@ -256,15 +274,14 @@
 					</button>
 				</el-upload>
 			</div>
-            <div class="flex justify-center items-center text-grey text-sm pt-2" v-if="error">
-					<div class="text-red">
-						<span v-if="error">{{ error }}</span>
-					</div>
+			<div class="flex justify-center items-center text-grey text-sm pt-2" v-if="error">
+				<div class="text-red">
+					<span v-if="error">{{ error }}</span>
 				</div>
+			</div>
 		</div>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 140px)' }" :always="false">
 			<div class="global-form p-6">
-				
 				<ul class="text-sm text-grey list-disc pl-4 *:py-1">
 					<li>您今年可以上传10次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>
 					<li>我们会审核您上传的头像，过程需要一定时间，请耐心等待</li>

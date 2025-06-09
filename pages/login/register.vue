@@ -207,7 +207,7 @@
 		<div class="global-form p-6">
 			<div class="form-item my-4">
 				<!-- <label>邮箱登录:</label> -->
-				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" />
+				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" @keydown.enter="nextStep"/>
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">

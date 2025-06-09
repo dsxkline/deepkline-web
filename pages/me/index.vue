@@ -16,7 +16,7 @@
 	import { useUserStore } from '~/store/user'
 	import Security from './security.vue'
 	import Notification from './notification.vue'
-	import Avatar from './avatar.vue'
+	import LoginIndex from '../login/index.vue'
 	import AccountSyncIcon from '~/components/icons/account/AccountSyncIcon.vue'
 	import AccountList from '../account/account-list.vue'
 	const props = defineProps<{
@@ -182,7 +182,11 @@
 	}
 
 	function pushAccountList() {
-		usepush(AccountList)
+		if (useUserStore().user) {
+			usepush(AccountList)
+		}else{
+			pushUp(LoginIndex)
+		}
 	}
 
 	onMounted(() => {

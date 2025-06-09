@@ -19,6 +19,7 @@ import clearPWACaches from '~/composable/clearPWACaches'
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const password = ref('')
+	const passInput = ref()
 	let forgetPassword = false
 	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
@@ -188,6 +189,12 @@ import clearPWACaches from '~/composable/clearPWACaches'
 			}
 		})
 	}
+
+	onMounted(()=>{
+		setTimeout(() => {
+			passInput.value.focus()
+		}, 600);
+	})
 </script>
 <template>
 	<div class="password-container">
@@ -198,7 +205,7 @@ import clearPWACaches from '~/composable/clearPWACaches'
 		</h1>
 		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<el-input v-model="password" :placeholder="'请输入8-20位数字字母组合的密码'" size="large" type="password" clearable :show-password="true"></el-input>
+				<el-input ref="passInput" v-model="password" :placeholder="'请输入8-20位数字字母组合的密码'" size="large" type="password" clearable :show-password="true"  @keydown.enter="next"></el-input>
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
