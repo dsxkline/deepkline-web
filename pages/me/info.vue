@@ -2,6 +2,7 @@
 	import NickName from '~/pages/me/nickname.vue'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
+import Country from './country.vue';
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -43,7 +44,9 @@
 			name: '国家或地区',
 			subName: '',
 			desc: '中国',
-			callback: () => {}
+			callback: () => {
+				usepush(Country)
+			}
 		},
 		// {
 		// 	id: 1,
