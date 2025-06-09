@@ -224,7 +224,7 @@
 				>
 			</template>
 		</NavigationBar>
-		<div class="avatar-container flex my-4 justify-center items-center w-full h-[80px]">
+		<div class="avatar-container flex flex-col justify-center items-center w-full h-[140px] border-b border-[--transparent10]">
 			<div class="face-icon flex items-center justify-center relative w-20 h-20 rounded-full">
 				<el-upload
 					ref="elUploader"
@@ -256,14 +256,15 @@
 					</button>
 				</el-upload>
 			</div>
-		</div>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 120px)' }" :always="false">
-			<div class="global-form p-6">
-				<div class="flex justify-center items-center text-grey text-sm pb-4">
+            <div class="flex justify-center items-center text-grey text-sm pt-2" v-if="error">
 					<div class="text-red">
 						<span v-if="error">{{ error }}</span>
 					</div>
 				</div>
+		</div>
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 140px)' }" :always="false">
+			<div class="global-form p-6">
+				
 				<ul class="text-sm text-grey list-disc pl-4 *:py-1">
 					<li>您今年可以上传10次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>
 					<li>我们会审核您上传的头像，过程需要一定时间，请耐心等待</li>
