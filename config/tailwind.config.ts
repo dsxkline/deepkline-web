@@ -33,6 +33,7 @@ export default <Partial<Config>>{
 				green:withOpacityValue("--color-green"),
 				red:withOpacityValue("--color-red"),
 				brand:withOpacityValue("--color-brand"),
+				invert:withOpacityValue("--color-bg-invert"),
 			},
 			// 设置渐变颜色基础类
 			gradientColorStops: {

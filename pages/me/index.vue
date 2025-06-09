@@ -15,8 +15,10 @@
 	import Login from '../login/index.vue'
 	import { useUserStore } from '~/store/user'
 	import Security from './security.vue'
-import Notification from './notification.vue'
-import Avatar from './avatar.vue'
+	import Notification from './notification.vue'
+	import Avatar from './avatar.vue'
+	import AccountSyncIcon from '~/components/icons/account/AccountSyncIcon.vue'
+	import AccountList from '../account/account-list.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -175,10 +177,14 @@ import Avatar from './avatar.vue'
 			})
 		}
 	)
-	function logout(){
+	function logout() {
 		useUserStore().logout()
 	}
-	
+
+	function pushAccountList() {
+		usepush(AccountList)
+	}
+
 	onMounted(() => {
 		// setTimeout(() => {
 		// 	useNuxtApp().$pop()
@@ -193,7 +199,13 @@ import Avatar from './avatar.vue'
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="我的" :hideBack="!push" />
+		<NavigationBar title="我的" :hideBack="!push">
+			<template #right>
+				<button class="flex items-center p-2" @click="pushAccountList">
+					<AccountSyncIcon class="w-5 h-5" />
+				</button>
+			</template>
+		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace />
 			<MenuList :menus="menus" />
