@@ -5,8 +5,9 @@
 	import { useAvatar } from '~/composable/useAvatar'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
-	import type { UploadFile, UploadProps, UploadProgressEvent } from 'element-plus'
+	import type { UploadFile, UploadProps, UploadProgressEvent, UploadRawFile } from 'element-plus'
 	import defaultAvatar from '~/assets/images/default-avatar.svg'
+	import Cropper from '~/components/common/Cropper.vue'
 
 	const props = defineProps<{}>()
 	const usepush = usePush()
@@ -106,7 +107,10 @@
 	}
 
 	const imageUrl = ref('')
+	let rawFile: UploadRawFile|null = null // 原始上传的 file 文件
+	const elUploader = ref()
 	const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+        rawFile = null;
 		if (response?.code == FetchResultDto.OK) {
 			imageUrl.value = response?.data
 			loading.value = false
@@ -120,20 +124,46 @@
 		}
 	}
 
-	const beforeAvatarUpload: UploadProps['beforeUpload'] = rawFile => {
+	const pushCropper = (img: string | ArrayBuffer) => {
+		usepush(Cropper, {
+			img: img,
+			successCallback: (data: UploadRawFile) => {
+                const file = new File([data], 'avatar.png', {
+                    type: data.type,
+                    lastModified: Date.now()
+                });
+                rawFile = file as UploadRawFile;
+				// 开始上传图片
+				elUploader.value && elUploader.value.handleStart(file)
+				elUploader.value && elUploader.value.submit()
+                
+			}
+		})
+	}
+
+	const beforeAvatarUpload: UploadProps['beforeUpload'] = file => {
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-		const isValidType = allowedTypes.includes(rawFile.type)
+		const isValidType = allowedTypes.includes(file.type)
 		if (!isValidType) {
 			ElMessage.error('Avatar picture must be JPG/PNG/GIF/WEBP format!')
 			return false
-		} else if (rawFile.size / 1024 / 1024 > 2) {
+		} else if (file.size / 1024 / 1024 > 2) {
 			ElMessage.error('Avatar picture size can not exceed 2MB!')
 			return false
 		}
 		loading.value = true
 		error.value = ''
+        console.log('file',file)
+		// 需要阻止默认上传，进入裁剪
+		if (!rawFile) {
+			const reader = new FileReader()
+			reader.onload = e => {
+				e.target?.result && pushCropper(e.target.result)
+			}
+			reader.readAsDataURL(file)
+		}
 
-		return true
+		return rawFile
 	}
 	const handlePreview: UploadProps['onPreview'] = file => {
 		console.log(file)
@@ -197,6 +227,7 @@
 		<div class="avatar-container flex my-4 justify-center items-center w-full h-[80px]">
 			<div class="face-icon flex items-center justify-center relative w-20 h-20 rounded-full">
 				<el-upload
+					ref="elUploader"
 					class="avatar-uploader"
 					:action="userFetch.getUploadUrl()"
 					:headers="{
@@ -209,8 +240,15 @@
 					:on-error="handleError"
 					:on-preview="handlePreview"
 					v-loading="loading"
+					accept="image/*"
 				>
-					<img  @error="imageOnError" :src="selectAvatar || useUserStore()?.user?.face || useAvatar()" alt="Face Icon" class="w-20 h-20 rounded-full bg-[--transparent05]" v-if="useUserStore()?.user?.id" />
+					<img
+						@error="imageOnError"
+						:src="selectAvatar || useUserStore()?.user?.face || useAvatar()"
+						alt="Face Icon"
+						class="w-20 h-20 rounded-full bg-[--transparent05]"
+						v-if="useUserStore()?.user?.id"
+					/>
 					<img src="~/assets/images/logo.png" alt="Face Icon" class="w-20 h-20 rounded-full" v-else />
 
 					<button class="absolute bottom-0 right-0 rounded-full bg-[--transparent20] w-6 h-6 flex items-center justify-center" v-if="useUserStore()?.user?.id">
@@ -237,7 +275,7 @@
 					<ul class="grid grid-cols-5 justify-evenly flex-wrap gap-5">
 						<template v-for="item in avatarList">
 							<li
-                                v-if="item"
+								v-if="item"
 								@click="selectAvatarHandle(item)"
 								:class="[
 									'flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden w-12 h-12',
@@ -261,7 +299,10 @@
 							<template v-for="item in styles">
 								<li
 									@click="selectStyleHandle(item)"
-									:class="['flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden', selectStyle == item ? '!bg-[--transparent10] !border-2 !border-[rgb(var(--color-brand))]' : '']"
+									:class="[
+										'flex items-center justify-center border border-[--transparent01] bg-[--transparent01] rounded-full overflow-hidden',
+										selectStyle == item ? '!bg-[--transparent10] !border-2 !border-[rgb(var(--color-brand))]' : ''
+									]"
 								>
 									<img :src="`https://api.dicebear.com/9.x/${item}/svg?seed=default`" class="w-5 h-5" />
 								</li>
