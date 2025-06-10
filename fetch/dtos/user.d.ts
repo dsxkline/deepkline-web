@@ -25,4 +25,5 @@ export class UserRespDto {
 	levelCode: string
 	appleOpenId: string
 	editNicknameTimes:number
+	editFaceTimes:number
 }

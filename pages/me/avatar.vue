@@ -285,7 +285,7 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 140px)' }" :always="false">
 			<div class="global-form p-6">
 				<ul class="text-sm text-grey list-disc pl-4 *:py-1">
-					<li>您今年可以上传10次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>
+					<li>您今年可以上传 {{useUserStore().user?.editFaceTimes}} 次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>
 					<li>我们会审核您上传的头像，过程需要一定时间，请耐心等待</li>
 					<li>上传头像时，请勿使用不雅图片</li>
 				</ul>
