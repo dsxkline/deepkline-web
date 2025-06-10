@@ -4,9 +4,9 @@ const props = defineProps<{
 }>()
 </script>
 <template>
-    <div class="bg-[--transparent10] h-10 w-10 rounded-full overflow-hidden">
-        <BinanceIcon v-if="exchange=='binance'" class="h-10"/>
-        <OKXIcon v-if="exchange=='okx'" class="h-10"/>
-        <CoinBaseIcon  v-if="exchange=='coinbase'" class="h-10 bg-white"/>
+    <div class="bg-[--transparent10] rounded-full overflow-hidden">
+        <BinanceIcon v-if="exchange=='binance'"/>
+        <OKXIcon v-if="exchange=='okx'"/>
+        <CoinBaseIcon  v-if="exchange=='coinbase'" class="bg-white"/>
     </div>
 </template>

@@ -1,6 +1,7 @@
 import { number } from 'echarts'
 import moment from 'moment'
 import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
+import { isVNode } from 'vue';
 
 export const formatPrice = (value: any, precision: number, prefix: string = '') => {
 	if (!precision) return value + ''
@@ -114,4 +115,19 @@ export function emailStar(value: string) {
 	const preStr = value.split('@')[0]
 	const domainStr = value.split('@')[1]
 	return phoneStar(preStr) + '@' + domainStr
+}
+
+
+
+/**
+ * 判断是否是 VNode 或 VNode 数组
+ * @param value 任意值
+ * @returns boolean
+ */
+export function isVNodeLike(value: unknown): value is VNode | VNode[] {
+  if (isVNode(value)) return true;
+  if (Array.isArray(value)) {
+    return value.every(item => isVNode(item));
+  }
+  return false;
 }

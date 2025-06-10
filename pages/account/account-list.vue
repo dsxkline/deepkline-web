@@ -1,10 +1,14 @@
 <script lang="ts" setup>
+	import { usePush } from '~/composable/usePush'
 	import type { AccountDto } from '~/fetch/dtos/account.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
+	import AddAccount from './add-account.vue'
+	import AccountHelp from './account-help.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
+	const pushLeft = usePush()
 	const accounts = computed(
 		() =>
 			[
@@ -31,14 +35,19 @@
 				}
 			] as AccountDto[]
 	)
-	function pushAddAccount() {}
+	function pushAddAccount() {
+		pushLeft(AddAccount)
+	}
+	function pushHelp() {
+		pushLeft(AccountHelp)
+	}
 	onMounted(() => {})
 </script>
 <template>
 	<div class="w-full h-full">
 		<NavigationBar title="账号列表" :hideBack="!push">
 			<template #right>
-				<button class="flex items-center p-2" @click="pushAddAccount">
+				<button class="flex items-center p-2" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
 				</button>
 			</template>
@@ -48,7 +57,7 @@
 			<ul class="account-list mt-4 px-4 *:flex *:items-center *:py-3 [&_b]:flex [&_b]:items-center *:border *:border-[--transparent10] *:rounded-xl *:mb-4 *:px-2 *:relative">
 				<template v-for="item in accounts">
 					<li :class="[item.isCurrent ? 'active' : '']">
-						<ExchangeLogo :exchange="item.exchange" />
+						<ExchangeLogo :exchange="item.exchange" class="w-10 h-10"/>
 						<div class="flex flex-col px-2 justify-center">
 							<b class="text-xl flex items-center leading-none mb-1"
 								>{{ item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
@@ -63,20 +72,22 @@
 				</template>
 			</ul>
 		</ScrollBar>
-		<div class="w-full px-4  pt-[20px] pb-[40px]"><button class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 绑定新账号</b></button></div>
+		<div class="w-full px-4 pt-[20px] pb-[40px]">
+			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 绑定新账号</b></button>
+		</div>
 	</div>
 </template>
 <style lang="less" scoped>
 	.light {
 		.account-list {
 			.active {
-                border-color: rgb(var(--color-text-main));
+				border-color: rgb(var(--color-text-main));
 				&::before {
 					background-image: none;
 				}
-                .current-item{
-                    background-color: rgb(var(--color-text-main));
-                }
+				.current-item {
+					background-color: rgb(var(--color-text-main));
+				}
 			}
 		}
 		.add-account-bt {
@@ -87,7 +98,7 @@
 	}
 	.account-list {
 		.active {
-            border-color: rgb(var(--color-brand));
+			border-color: rgb(var(--color-brand));
 			&::before {
 				background-image: var(--bg-linear-90);
 				// filter: blur(60px);

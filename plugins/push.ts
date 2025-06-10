@@ -76,9 +76,9 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		parent: instance, // 传递父组件或上下文
 		direction: direction, // 传递方向
 		size: size, // 传递大小
-		destroy:()=>{
+		destroy: () => {
 			pushInstance.appContext = null
-			render(null,box)
+			render(null, box)
 			box.remove()
 		}
 	}
@@ -96,10 +96,10 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		box.classList.add('push-' + direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
-			console.log('parentDrawer instance',instance)
+			console.log('parentDrawer instance', instance)
 			if (instance?.vnode.el) {
 				const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
-				console.log('parentDrawer',parentDrawer)
+				console.log('parentDrawer', parentDrawer)
 				if (parentDrawer) {
 					parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
@@ -113,17 +113,17 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 	setTimeout(() => {
 		pushing = false
 	}, 400)
-	
+
 	return pushInstance
 }
 
-const pop = function (data = {}) {
+const pop = function (data:any) {
 	const store = usePushStore()
 	// 获得栈顶的实例
 	let topPush: any = store.getTopPush()
 	// 需要查找最顶部的push回传数据
 	// 回传数据
-	topPush && topPush?.exposed?.onPop?.(data)
+	if (topPush?.props && data) topPush.props.popData = data
 	// topPush.vnode = null
 	// topPush.component = null
 	topPush = null

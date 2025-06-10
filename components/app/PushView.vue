@@ -26,6 +26,8 @@
 	const show = ref(true)
 	const showComponent = ref(false)
 	const bttFull = ref(false)
+	// 是否vnode
+	const vnodeContainer = ref()
 	// 异步加载组件
 	const asyncComp = defineAsyncComponent(() => {
 		return new Promise((resolve, reject) => {
@@ -55,6 +57,8 @@
 		(val, old) => {
 			if (!val && old) setDrawerBodyStyle(val)
 			if (old && !val) {
+				// 处理返回逻辑
+				onReturnBackHandle()
 				setTimeout(() => {
 					props.destroy && props.destroy()
 				}, 500)
@@ -96,16 +100,7 @@
 		}
 	}
 
-	onBeforeUnmount(() => {
-		drawerContainer.value = null
-		drawerComponent.value = null
-		drawerBody.value = null
-		drawBg.value = null
-		showComponent.value = false
-		show.value = false
-	})
-
-	onUnmounted(() => {
+	function onReturnBackHandle() {
 		// 获取上一级
 		let parent = props.parent
 		if (parent) {
@@ -114,14 +109,26 @@
 			while (parent) {
 				// pop的时候返回执行自定义poped方法
 				// console.log("parent///test", parent, this.popData);
-				if (parent?.poped) {
-					parent?.poped(props.popData)
-					break
+				if (parent?.exposed?.onPop && props.popData) {
+					const result = parent?.exposed.onPop(props.popData)
+					// 默认不拦截
+					if (result) break
 				}
 				parent = parent.parent
 			}
 		}
+	}
 
+	onBeforeUnmount(() => {
+		drawerContainer.value = null
+		vnodeContainer.value = null
+		drawerBody.value = null
+		drawBg.value = null
+		showComponent.value = false
+		show.value = false
+	})
+
+	onUnmounted(() => {
 		childWillAppearlisteners.value = []
 		childWillDisAppearlisteners.value = []
 
@@ -243,10 +250,21 @@
 			setDrawerBodyStyle(true)
 		}
 	)
+	watch(
+		() => vnodeContainer.value,
+		async () => {
+			await nextTick()
+			// 组件已经渲染完成，可以访问 DOM 或 exposed 方法
+			setDrawerBodyStyle(true)
+		}
+	)
 
 	onMounted(() => {
 		// console.log('push mounted...', props.size, instance, drawer.value)
 		usePushStore().push(instance)
+		if (isVNodeLike(props.to) && vnodeContainer.value) {
+			render(h('div', props.params, props.to), vnodeContainer.value)
+		}
 		parentContainer.value = instance?.vnode.el?.parentNode
 		if (props.direction == 'rtl' || props.direction == 'ltr') nextTick(() => setDrawerBodyStyle(true))
 		new Promise(resolve => {
@@ -301,8 +319,10 @@
 			<template v-if="direction == 'btt' && !bttFull">
 				<div @click="hide"><DrawLine /></div>
 			</template>
-			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" />
+			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" v-if="!isVNodeLike(to)" />
 			<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
+			<!-- 直接渲染vnode -->
+			<div ref="vnodeContainer" v-else></div>
 		</div>
 		<div class="drawer-bg absolute top-0 left-0 w-full h-full z-0" @click="hide" ref="drawBg"></div>
 	</div>
@@ -321,6 +341,7 @@
 		.btt {
 			transform: translateY(var(--body-height));
 			border-radius: 16px 16px 0 0;
+			padding-bottom: var(--safe-bottom);
 		}
 		.btt-full {
 			border-radius: 0;
