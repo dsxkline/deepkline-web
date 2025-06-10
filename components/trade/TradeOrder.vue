@@ -208,7 +208,7 @@
 							<div class="pt-2">
 								<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
-										<div v-click-sound class="bg-[--transparent05] rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<div v-click-sound class="bg-[--transparent02] rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
 											<div v-if="!takeProfit">-</div>
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
@@ -218,7 +218,7 @@
 								</el-popover>
 								<el-popover placement="left" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
-										<div v-click-sound class="bg-[--transparent05] mt-1 rounded p-2 border border-[--transparent05] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<div v-click-sound class="bg-[--transparent02] mt-1 rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
 											<div v-if="!stopLoss">-</div>
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
