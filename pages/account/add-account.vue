@@ -14,6 +14,9 @@
 	const apiKey = ref('')
 	const secretKey = ref('')
 	const passPhrase = ref('')
+	const apiKeyInput = ref()
+	const secretKeyInput = ref()
+	const passInput = ref()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const next = () => {}
@@ -23,9 +26,21 @@
 			console.log('切换交易所', val, exchange.value)
 		}
 	)
+	async function pastedHandle(type: number) {
+		try {
+			const text = await navigator.clipboard.readText()
+			if (type == 0) apiKey.value = text
+			if (type == 1) secretKey.value = text
+			if (type == 2) passPhrase.value = text
+		} catch (err) {
+			console.log('paste error',err)
+		}
+	}
 	function pushHelp() {
 		pushLeft(AccountHelp)
 	}
+
+
 
 	onMounted(() => {})
 </script>
@@ -59,17 +74,29 @@
 					</Select>
 				</div>
 				<div class="form-item py-3 text-xs">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处</div>
-				<div class="form-item my-2">
+				<div class="form-item my-2" v-if="exchange.apiKeyRequired">
 					<label>API Key</label>
-					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable></el-input>
+					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable>
+						<template #suffix>
+							<button @click="pastedHandle(0)"><PastedIcon class="w-5" /></button>
+						</template>
+					</el-input>
 				</div>
-				<div class="form-item my-2">
+				<div class="form-item my-2" v-if="exchange.secretKeyRequired">
 					<label>Secret Key</label>
-					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Secret Key'" size="large" clearable></el-input>
+					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Secret Key'" size="large" clearable>
+						<template #suffix>
+							<button @click="pastedHandle(1)"><PastedIcon class="w-5" /></button>
+						</template>
+					</el-input>
 				</div>
-				<div class="form-item my-2">
+				<div class="form-item my-2" v-if="exchange.passphraseRequired">
 					<label>Passphrase</label>
-					<el-input ref="passInput" v-model="passPhrase" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Passphrase'" size="large" clearable></el-input>
+					<el-input ref="passInput" v-model="passPhrase" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Passphrase'" size="large" clearable>
+						<template #suffix>
+							<button @click="pastedHandle(2)"><PastedIcon class="w-5" /></button>
+						</template>
+					</el-input>
 				</div>
 
 				<div class="form-item py-3 text-xs *:flex *:items-center *:py-1 [&_i]:mr-1">

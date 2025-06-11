@@ -1,5 +1,6 @@
 import { accountFetch } from '~/fetch/account.fetch'
 import { FetchResultDto } from '~/fetch/dtos/common.d'
+import { exchangeFetch } from '~/fetch/exchange.fetch'
 import { InstanceType } from '~/fetch/okx/okx.type.d'
 import { publicFetch } from '~/fetch/public.fetch'
 import { userFetch } from '~/fetch/user.fetch'
@@ -42,7 +43,7 @@ async function getUser() {
 }
 
 async function getExchanges() {
-	const result = await accountFetch.exchanges()
+	const result = await exchangeFetch.list()
 	if (result?.code == FetchResultDto.OK) {
 		console.log('获取交易所信息', result.data)
 		const exchanges = result.data
