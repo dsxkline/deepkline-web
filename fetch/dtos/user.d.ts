@@ -6,7 +6,7 @@ export class LoginReqDto {
 	randstr?: string
 }
 
-export class UserRespDto {
+export class UserDto {
 	userName: string
 	nickName: string
 	token: string

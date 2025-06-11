@@ -3,11 +3,11 @@
 	import { usePushUp } from '~/composable/usePush'
 
 	const props = defineProps<{
-		modelValue?: string
+		modelValue?: any
 		title?: string
 	}>()
 	const emit = defineEmits<{
-		(e: 'update:modelValue', value: string): void
+		(e: 'update:modelValue', value: any): void
 	}>()
 	const pushUp = usePushUp()
 	const container = ref<HTMLElement>()

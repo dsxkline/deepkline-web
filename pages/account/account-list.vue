@@ -2,9 +2,9 @@
 	import { usePush } from '~/composable/usePush'
 	import type { AccountDto } from '~/fetch/dtos/account.d'
 	import { useStore } from '~/store'
-	import { useSymbolStore } from '~/store/symbol'
 	import AddAccount from './add-account.vue'
 	import AccountHelp from './account-help.vue'
+	import { useUserStore } from '~/store/user'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -57,10 +57,11 @@
 			<ul class="account-list mt-4 px-4 *:flex *:items-center *:py-3 [&_b]:flex [&_b]:items-center *:border *:border-[--transparent10] *:rounded-xl *:mb-4 *:px-2 *:relative">
 				<template v-for="item in accounts">
 					<li :class="[item.isCurrent ? 'active' : '']">
-						<ExchangeLogo :exchange="item.exchange" class="w-10 h-10"/>
+						<img :src="useUserStore().getExchange(item.exchange)?.logoUrl" v-if="useUserStore().getExchange(item.exchange)?.logoUrl" class="w-10 h-10 rounded-full" />
+						<ExchangeLogo :exchange="item.exchange" class="w-10 h-10" v-else />
 						<div class="flex flex-col px-2 justify-center">
 							<b class="text-xl flex items-center leading-none mb-1"
-								>{{ item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
+								>{{ useUserStore().getExchange(item.exchange)?.name || item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
 							>
 							<div class="text-xs">
 								<span>{{ item.accountId }} USDT</span>

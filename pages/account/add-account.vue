@@ -4,25 +4,13 @@
 	import AccountHelp from './account-help.vue'
 	import { usePush } from '~/composable/usePush'
 	import Select from '~/components/app/Select.vue'
+	import { useUserStore } from '~/store/user'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const pushLeft = usePush()
-	const exchanges = ref([
-		{
-			name: 'okx',
-			value: 'okx'
-		},
-		{
-			name: 'binance',
-			value: 'binance'
-		},
-		{
-			name: 'coinbase',
-			value: 'coinbase'
-		}
-	])
-	const exchange = ref('okx')
+	const exchanges = computed(() => useUserStore().exchanges)
+	const exchange = ref(exchanges.value[0])
 	const apiKey = ref('')
 	const secretKey = ref('')
 	const passPhrase = ref('')
@@ -57,28 +45,31 @@
 					<Select v-model="exchange">
 						<template #name>
 							<div class="flex items-center">
-								<ExchangeLogo :exchange="exchange" class="w-5 h-5 mr-2" /><span class="text-base font-bold">{{ exchange }}</span>
+								<img :src="useUserStore().getExchange(exchange.slug)?.logoUrl" v-if="useUserStore().getExchange(exchange.slug)?.logoUrl" class="w-5 h-5 mr-2 rounded-full" />
+								<ExchangeLogo :exchange="exchange.slug" class="w-5 h-5 mr-2" v-else />
+								<span class="text-base font-bold">{{ exchange.name }}</span>
 							</div>
 						</template>
-						<SelectOption v-for="item in exchanges" :key="item.value" :value="item.value">
+						<SelectOption v-for="item in exchanges" :key="item.slug" :value="item">
 							<div class="flex items-center">
-								<ExchangeLogo :exchange="item.value" class="w-5 h-5 mr-2" /><span class="text-base font-bold">{{ item.name }}</span>
+								<img :src="useUserStore().getExchange(exchange.slug)?.logoUrl" v-if="useUserStore().getExchange(exchange.slug)?.logoUrl" class="w-5 h-5 mr-2 rounded-full" />
+								<ExchangeLogo :exchange="item.slug" class="w-5 h-5 mr-2" v-else /><span class="text-base font-bold">{{ item.name }}</span>
 							</div>
 						</SelectOption>
 					</Select>
 				</div>
-				<div class="form-item py-3 text-xs">请在 {{ exchange }} 创建 API 密钥，并将以下信息粘贴至此处</div>
+				<div class="form-item py-3 text-xs">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处</div>
 				<div class="form-item my-2">
 					<label>API Key</label>
-					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange + ' 交易所API Key'" size="large" clearable></el-input>
+					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable></el-input>
 				</div>
 				<div class="form-item my-2">
 					<label>Secret Key</label>
-					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="'请粘贴 ' + exchange + ' 交易所 Secret Key'" size="large" clearable></el-input>
+					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Secret Key'" size="large" clearable></el-input>
 				</div>
 				<div class="form-item my-2">
 					<label>Passphrase</label>
-					<el-input ref="passInput" v-model="passPhrase" :placeholder="'请粘贴 ' + exchange + ' 交易所 Passphrase'" size="large" clearable></el-input>
+					<el-input ref="passInput" v-model="passPhrase" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Passphrase'" size="large" clearable></el-input>
 				</div>
 
 				<div class="form-item py-3 text-xs *:flex *:items-center *:py-1 [&_i]:mr-1">
