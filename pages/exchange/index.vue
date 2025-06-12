@@ -2,10 +2,12 @@
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { useStore } from '~/store'
 	import ExchangeList from './exchange-list.vue'
-
+	import { usePush } from '~/composable/usePush'
+    import AccountHelp from '../account/account-help.vue'
+	const pushLeft = usePush()
 	const tabbarHeight = ref(0)
 	const navbar = ref()
-    const exchangeHeader = ref()
+	const exchangeHeader = ref()
 	const menus = ref<MenuModel[]>([
 		{
 			name: '所有经纪商',
@@ -15,10 +17,10 @@
 			name: '加密',
 			contentComp: markRaw(ExchangeList)
 		},
-		{
-			name: '外汇',
-			contentComp: markRaw(ExchangeList)
-		}
+		// {
+		// 	name: '外汇',
+		// 	contentComp: markRaw(ExchangeList)
+		// }
 	])
 
 	watch(
@@ -27,6 +29,10 @@
 			tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) - (exchangeHeader.value?.clientHeight || 92)
 		}
 	)
+
+	function pushHelp() {
+		pushLeft(AccountHelp)
+	}
 
 	onMounted(() => {
 		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) - (exchangeHeader.value?.clientHeight || 92)
@@ -38,7 +44,13 @@
 </script>
 <template>
 	<div class="exchange-index-container">
-		<NavigationBar ref="navbar" :showClose="true" />
+		<NavigationBar ref="navbar">
+			<template #right>
+				<button class="flex items-center p-2" @click="pushHelp">
+					<HelpIcon class="w-5 h-5" />
+				</button>
+			</template>
+		</NavigationBar>
 		<h1 class="px-6 text-2xl font-bold pb-4 text-center" ref="exchangeHeader">
 			开设账户
 			<p class="text-sm font-normal text-grey py-1">实战才是检验真理的唯一标准</p>
@@ -46,3 +58,19 @@
 		<TabBar :menus="menus" :height="tabbarHeight" />
 	</div>
 </template>
+
+<style lang="less" scoped>
+	:deep(.tabbar-container) {
+		.tabbar-header {
+			@apply px-4 flex items-center border-b;
+			border-color: var(--transparent10);
+			overflow-x: unset;
+			height: var(--header-height);
+			ul {
+				li {
+					@apply text-base mx-3;
+				}
+			}
+		}
+	}
+</style>

@@ -74,7 +74,7 @@
 			</ul>
 		</ScrollBar>
 		<div class="w-full px-4 pt-[20px] pb-[40px]">
-			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 绑定新账号</b></button>
+			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账号</b></button>
 		</div>
 	</div>
 </template>

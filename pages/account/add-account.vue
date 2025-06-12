@@ -7,12 +7,15 @@
 	import { useUserStore } from '~/store/user'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import type { ExchangeDto } from '~/fetch/dtos/exchange'
+	import { Link } from '@element-plus/icons-vue'
 	const props = defineProps<{
 		push?: boolean
+		exchange: ExchangeDto
 	}>()
 	const pushLeft = usePush()
 	const exchanges = computed(() => useUserStore().exchanges)
-	const exchange = ref(exchanges.value[0])
+	const exchange = ref(props.exchange)
 	const apiKey = ref('')
 	const secretKey = ref('')
 	const passPhrase = ref('')
@@ -26,7 +29,7 @@
 		loading.value = true
 		error.value = ''
 		accountFetch
-			.connect(exchange.value.slug, apiKey.value, secretKey.value, passPhrase.value)
+			.connect(props.exchange.slug, apiKey.value, secretKey.value, passPhrase.value)
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
@@ -44,12 +47,7 @@
 				}, 500)
 			})
 	}
-	watch(
-		() => exchange.value,
-		val => {
-			console.log('切换交易所', val, exchange.value)
-		}
-	)
+
 	async function pastedHandle(type: number) {
 		try {
 			const text = await navigator.clipboard.readText()
@@ -62,6 +60,10 @@
 	}
 	function pushHelp() {
 		pushLeft(AccountHelp)
+	}
+
+	function openExchange(){
+		window.open(exchange.value.website,'_blank')
 	}
 
 	onMounted(() => {})
@@ -77,7 +79,7 @@
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<div class="global-form p-4">
-				<div class="form-item">
+				<!-- <div class="form-item">
 					<label>选择交易所</label>
 					<Select v-model="exchange">
 						<template #name>
@@ -94,6 +96,15 @@
 							</div>
 						</SelectOption>
 					</Select>
+				</div> -->
+				<div>
+					<div class="exchange-card flex rounded-2xl overflow-hidden p-4 mb-4 border border-[--transparent10]">
+						<ExchangeLogo :exchange="exchange.slug" class="w-12 h-12" />
+						<div class="flex flex-col px-2">
+							<b class="text-xl">{{ exchange.name }}</b>
+							<span class="text-sm">okx是简单易用经纪商</span>
+						</div>
+					</div>
 				</div>
 				<div class="form-item py-3 text-xs">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处</div>
 				<div class="form-item my-2" v-if="exchange.apiKeyRequired">
@@ -134,14 +145,14 @@
 					</p>
 				</div>
 
-				<div class="form-item mt-8">
-					<el-button
-						size="large"
-						:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', apiKey && secretKey ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
-						@click="next"
-						:loading="loading"
-						>确定</el-button
-					>
+				<div class="form-item mt-3">
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="next" :loading="loading">连接</el-button>
+				</div>
+				<div class="flex justify-center py-3 text-grey">
+					<span>或者</span>
+				</div>
+				<div class="form-item mt-0">
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-grey']" @click="openExchange" >去 {{exchange.name}} 开设新账户 <el-icon class="ml-1"><Link /></el-icon></el-button>
 				</div>
 			</div>
 		</ScrollBar>
@@ -153,6 +164,25 @@
 			label {
 				@apply text-main;
 			}
+		}
+	}
+
+	.exchange-card {
+		position: relative;
+		&::before {
+			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
+			background-image: var(--bg-linear-90);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.2;
+
+			// transition: all 0.3s ease;
 		}
 	}
 </style>
