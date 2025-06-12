@@ -14,6 +14,7 @@ html:root {
 	--el-bg-color-overlay: var(--transparent10);
 	--el-border-color: var(--transparent10);
 	--el-border-color-light: var(--transparent10);
+	--el-border-radius-base:4px;
 
 	--el-switch-off-color: var(--el-menu-bg-color);
 
@@ -90,6 +91,7 @@ html:root {
 }
 body {
 	.el-input {
+		
 		--el-input-border-color: var(--transparent10);
 		--el-input-border-color-hover: var(--transparent20);
 		--el-input-text-color: rgb(var(--color-text-main));
@@ -524,6 +526,9 @@ body {
 }
 
 @media (max-width: 999px) {
+	html:root{
+		--el-border-radius-base:8px;
+	}
 	.el-dialog {
 		min-width: 90%;
 	}

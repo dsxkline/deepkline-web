@@ -6,7 +6,7 @@
 	border: 1px solid var(--transparent10);
 	color: var(--color-text-main);
 	padding: 4px 12px;
-	border-radius: 3px;
+	border-radius: var(--el-border-radius-base);
 	font-size: 12px;
 	&:hover {
 		background-color: var(--transparent10);
@@ -24,7 +24,7 @@
 	border: 1px solid rgb(var(--color-green));
 	color: white;
 	padding: 4px 12px;
-	border-radius: 3px;
+	border-radius: var(--el-border-radius-base);
 	font-size: 12px;
 	&:hover {
 		background-color: rgb(var(--color-green) / 0.9);
@@ -39,7 +39,7 @@
 	border: 1px solid rgb(var(--color-red));
 	color: white;
 	padding: 4px 12px;
-	border-radius: 3px;
+	border-radius: var(--el-border-radius-base);
 	font-size: 12px;
 	&:hover {
 		background-color: rgb(var(--color-red) / 0.9);
@@ -67,7 +67,7 @@
 .binance-card {
 	position: relative;
 	&::before {
-		background-image: linear-gradient(130deg, rgba(243, 186, 46), #d7cc69, #b9cb86);
+		background-image: linear-gradient(130deg, #f3ba2f, #c5b842, #b9cb86);
 		// filter: blur(60px);
 		position: absolute;
 		top: 0;
@@ -83,7 +83,7 @@
 .coinbase-card {
 	position: relative;
 	&::before {
-		background-image: linear-gradient(130deg, rgb(46, 92, 243), #674dcd, #ad82f3);
+		background-image: linear-gradient(130deg, #0052ff, #674dcd, #ad82f3);
 		// filter: blur(60px);
 		position: absolute;
 		top: 0;
@@ -110,6 +110,19 @@
 		z-index: -1;
 		opacity: 0.2;
 	}
+}
+
+.binance-bt {
+	background-color: #f3ba2f !important;
+	color: white!important;
+}
+.okx-bt {
+	background-image: linear-gradient(130deg, #000000, #0c081c, #150946);
+	color: white!important;
+}
+.coinbase-bt {
+	background-color: #0052ff !important;
+	color: white!important;
 }
 
 .global-form {

@@ -20,7 +20,7 @@
 		<ScrollBar class="w-full h-full" :height="height + 'px'" :always="false">
 			<ul class="p-4 flex flex-col *:rounded-2xl *:overflow-hidden *:p-4 *:my-4 *:border *:border-[--transparent05]">
 				<template v-for="item in exchanges">
-					<li :class="[item.slug+'-card']" @click="pushAddAccount(item)">
+					<li :class="[item.slug + '-card']" @click="pushAddAccount(item)">
 						<div class="flex">
 							<ExchangeLogo :exchange="item.slug" class="w-12 h-12" />
 							<div class="flex flex-col px-2">
@@ -45,7 +45,7 @@
 							</dl>
 						</div>
 						<div>
-							<button class="exchange-open-bt bt-default w-full h-10 !rounded-full !text-sm !border-[--transparent05]" @click="pushAddAccount(item)">开设账户</button>
+							<button class="exchange-open-bt bt-default w-full h-10 !text-sm !border-[--transparent05]" @click="pushAddAccount(item)">开设账户</button>
 						</div>
 					</li>
 				</template>
@@ -58,14 +58,7 @@
 		.exchange-list-container {
 			.exchange-open-bt {
 				background-color: white;
-              
-			}
-			ul {
-				li {
-                    
-				}
 			}
 		}
 	}
-	
 </style>

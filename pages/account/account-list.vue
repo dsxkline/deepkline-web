@@ -74,7 +74,7 @@
 			</ul>
 		</ScrollBar>
 		<div class="w-full px-4 pt-[20px] pb-[40px]">
-			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账户</b></button>
+			<button @click="pushAddAccount" class="add-account-bt h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账户</b></button>
 		</div>
 	</div>
 </template>
@@ -116,6 +116,7 @@
 	}
 	.add-account-bt {
 		position: relative;
+		border-radius: var(--el-border-radius-base);
 		&::before {
 			background-image: var(--bg-linear-90);
 			// filter: blur(60px);
@@ -127,7 +128,7 @@
 			content: '';
 			z-index: -1;
 			opacity: 0.1;
-			border-radius: 999px;
+			border-radius: var(--el-border-radius-base);
 		}
 	}
 </style>

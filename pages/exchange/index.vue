@@ -3,7 +3,7 @@
 	import { useStore } from '~/store'
 	import ExchangeList from './exchange-list.vue'
 	import { usePush } from '~/composable/usePush'
-    import AccountHelp from '../account/account-help.vue'
+	import AccountHelp from '../account/account-help.vue'
 	const pushLeft = usePush()
 	const tabbarHeight = ref(0)
 	const navbar = ref()
@@ -16,7 +16,7 @@
 		{
 			name: '加密',
 			contentComp: markRaw(ExchangeList)
-		},
+		}
 		// {
 		// 	name: '外汇',
 		// 	contentComp: markRaw(ExchangeList)
@@ -51,9 +51,15 @@
 				</button>
 			</template>
 		</NavigationBar>
-		<h1 class="px-6 text-2xl font-bold py-5 text-center" ref="exchangeHeader">
-            连接全球顶尖经纪商
-			<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
+		<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
+			<div>
+				连接全球顶尖经纪商
+				<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
+			</div>
+
+			<div class="w-20 h-20 relative">
+				<ExchangeBannerIcon class="absolute right-[-30%] top-[-30%] w-32"/>
+			</div>
 		</h1>
 		<TabBar :menus="menus" :height="tabbarHeight" />
 	</div>

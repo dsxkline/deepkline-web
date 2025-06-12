@@ -151,7 +151,7 @@
 				</div>
 
 				<div class="form-item mt-3">
-					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', '!bg-brand !text-white']" @click="next" :loading="loading">连接</el-button>
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', exchange.slug+'-bt']" @click="next" :loading="loading">连接</el-button>
 					<p class="py-3 text-xs text-grey">点击"连接"即表示我确认已阅读<span class="text-main"> 警告 </span>和<span class="text-main"> 使用条款 </span>并接受所有风险</p>
 				</div>
 				<div class="flex justify-center py-3 text-grey text-sm">
@@ -175,6 +175,7 @@
 				@apply text-main;
 			}
 		}
+		
 	}
 
 	
