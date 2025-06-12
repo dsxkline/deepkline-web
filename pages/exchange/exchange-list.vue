@@ -18,9 +18,9 @@
 <template>
 	<div class="exchange-list-container">
 		<ScrollBar class="w-full h-full" :height="height + 'px'" :always="false">
-			<ul class="p-4 flex flex-col *:rounded-2xl *:overflow-hidden *:p-4 *:my-4 *:border *:border-[--transparent10]">
+			<ul class="p-4 flex flex-col *:rounded-2xl *:overflow-hidden *:p-4 *:my-4 *:border *:border-[--transparent05]">
 				<template v-for="item in exchanges">
-					<li>
+					<li :class="[item.slug+'-card']" @click="pushAddAccount(item)">
 						<div class="flex">
 							<ExchangeLogo :exchange="item.slug" class="w-12 h-12" />
 							<div class="flex flex-col px-2">
@@ -45,7 +45,7 @@
 							</dl>
 						</div>
 						<div>
-							<button class="exchange-open-bt bt-default w-full h-10 !rounded-full !text-sm border" @click="pushAddAccount(item)">开设账户</button>
+							<button class="exchange-open-bt bt-default w-full h-10 !rounded-full !text-sm !border-[--transparent05]" @click="pushAddAccount(item)">开设账户</button>
 						</div>
 					</li>
 				</template>
@@ -58,38 +58,14 @@
 		.exchange-list-container {
 			.exchange-open-bt {
 				background-color: white;
-                border: none;
+              
 			}
 			ul {
 				li {
-                    border: none;
-					&::before {
-						opacity: 1;
-					}
+                    
 				}
 			}
 		}
 	}
-	.exchange-list-container {
-		ul {
-			li {
-				position: relative;
-				&::before {
-					// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-					background-image: var(--bg-linear-90);
-					// filter: blur(60px);
-					position: absolute;
-					top: 0;
-					left: 0;
-					width: 100%;
-					height: 100%;
-					content: '';
-					z-index: -1;
-					opacity: 0.2;
-
-					// transition: all 0.3s ease;
-				}
-			}
-		}
-	}
+	
 </style>

@@ -44,16 +44,16 @@
 </script>
 <template>
 	<div class="exchange-index-container">
-		<NavigationBar ref="navbar">
+		<NavigationBar ref="navbar" title="开设账户">
 			<template #right>
 				<button class="flex items-center p-2" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
 				</button>
 			</template>
 		</NavigationBar>
-		<h1 class="px-6 text-2xl font-bold pb-4 text-center" ref="exchangeHeader">
-			开设账户
-			<p class="text-sm font-normal text-grey py-1">实战才是检验真理的唯一标准</p>
+		<h1 class="px-6 text-2xl font-bold py-5 text-center" ref="exchangeHeader">
+            连接全球顶尖经纪商
+			<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
 		</h1>
 		<TabBar :menus="menus" :height="tabbarHeight" />
 	</div>

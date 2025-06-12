@@ -98,7 +98,7 @@
 					</Select>
 				</div> -->
 				<div>
-					<div class="exchange-card flex rounded-2xl overflow-hidden p-4 mb-4 border border-[--transparent10]">
+					<div :class="['exchange-card flex rounded-2xl overflow-hidden p-4 mb-4 border border-[--transparent05]',exchange.slug+'-card']">
 						<ExchangeLogo :exchange="exchange.slug" class="w-12 h-12" />
 						<div class="flex flex-col px-2">
 							<b class="text-xl">{{ exchange.name }}</b>
@@ -152,6 +152,7 @@
 
 				<div class="form-item mt-3">
 					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', '!bg-brand !text-white']" @click="next" :loading="loading">连接</el-button>
+					<p class="py-3 text-xs text-grey">点击"连接"即表示我确认已阅读<span class="text-main"> 警告 </span>和<span class="text-main"> 使用条款 </span>并接受所有风险</p>
 				</div>
 				<div class="flex justify-center py-3 text-grey text-sm">
 					<span>或者</span>
@@ -166,14 +167,7 @@
 	</div>
 </template>
 <style lang="less" scoped>
-	.light {
-		.exchange-card {
-			border: none;
-			&::before {
-				opacity: 1;
-			}
-		}
-	}
+	
 
 	.global-form {
 		.form-item {
@@ -183,22 +177,5 @@
 		}
 	}
 
-	.exchange-card {
-		position: relative;
-		&::before {
-			// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-			background-image: var(--bg-linear-90);
-			// filter: blur(60px);
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			content: '';
-			z-index: -1;
-			opacity: 0.2;
-
-			// transition: all 0.3s ease;
-		}
-	}
+	
 </style>

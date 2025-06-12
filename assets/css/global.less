@@ -64,15 +64,63 @@
 	}
 }
 
+.binance-card {
+	position: relative;
+	&::before {
+		background-image: linear-gradient(130deg, rgba(243, 186, 46), #d7cc69, #b9cb86);
+		// filter: blur(60px);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		content: '';
+		z-index: -1;
+		opacity: 0.1;
+	}
+}
+
+.coinbase-card {
+	position: relative;
+	&::before {
+		background-image: linear-gradient(130deg, rgb(46, 92, 243), #674dcd, #ad82f3);
+		// filter: blur(60px);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		content: '';
+		z-index: -1;
+		opacity: 0.1;
+	}
+}
+
+.okx-card {
+	position: relative;
+	&::before {
+		background-image: linear-gradient(130deg, rgb(0, 0, 0), #150946, #a692f0);
+		// filter: blur(60px);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		content: '';
+		z-index: -1;
+		opacity: 0.1;
+	}
+}
+
 .global-form {
 	.form-item {
 		@apply flex flex-col;
 		label {
 			@apply py-2;
 		}
-        label{
-            @apply text-grey;
-        }
+		label {
+			@apply text-grey;
+		}
 		.el-input {
 			--el-color-primary: rgb(var(--color-brand));
 			.el-input__wrapper {
@@ -81,7 +129,6 @@
 					@apply text-lg;
 					&::placeholder {
 						@apply text-sm;
-
 					}
 				}
 			}
