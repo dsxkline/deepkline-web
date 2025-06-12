@@ -2,7 +2,7 @@
 	import { usePush } from '~/composable/usePush'
 	import type { AccountDto } from '~/fetch/dtos/account.d'
 	import { useStore } from '~/store'
-	import AddAccount from './add-account.vue'
+	import ExchangeIndex from '../exchange/index.vue'
 	import AccountHelp from './account-help.vue'
 	import { useUserStore } from '~/store/user'
 	const props = defineProps<{
@@ -36,7 +36,7 @@
 			] as AccountDto[]
 	)
 	function pushAddAccount() {
-		pushLeft(AddAccount)
+		pushLeft(ExchangeIndex)
 	}
 	function pushHelp() {
 		pushLeft(AccountHelp)

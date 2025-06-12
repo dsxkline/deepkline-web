@@ -5,6 +5,8 @@
 	import { usePush } from '~/composable/usePush'
 	import Select from '~/components/app/Select.vue'
 	import { useUserStore } from '~/store/user'
+	import { accountFetch } from '~/fetch/account.fetch'
+	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -19,7 +21,29 @@
 	const passInput = ref()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
-	const next = () => {}
+	const next = () => {
+		if (loading.value) return
+		loading.value = true
+		error.value = ''
+		accountFetch
+			.connect(exchange.value.slug, apiKey.value, secretKey.value, passPhrase.value)
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					loading.value = false
+				} else {
+					setTimeout(() => {
+						loading.value = false
+						error.value = result?.msg
+					}, 500)
+				}
+			})
+			.catch(err => {
+				setTimeout(() => {
+					loading.value = false
+					error.value = '网络异常，请稍后再试'
+				}, 500)
+			})
+	}
 	watch(
 		() => exchange.value,
 		val => {
@@ -33,14 +57,12 @@
 			if (type == 1) secretKey.value = text
 			if (type == 2) passPhrase.value = text
 		} catch (err) {
-			console.log('paste error',err)
+			console.log('paste error', err)
 		}
 	}
 	function pushHelp() {
 		pushLeft(AccountHelp)
 	}
-
-
 
 	onMounted(() => {})
 </script>
