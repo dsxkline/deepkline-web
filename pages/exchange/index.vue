@@ -39,7 +39,7 @@
 <template>
 	<div class="exchange-index-container">
 		<NavigationBar ref="navbar" :showClose="true" />
-		<h1 class="px-6 text-2xl font-bold py-4 text-center" ref="exchangeHeader">
+		<h1 class="px-6 text-2xl font-bold pb-4 text-center" ref="exchangeHeader">
 			开设账户
 			<p class="text-sm font-normal text-grey py-1">实战才是检验真理的唯一标准</p>
 		</h1>

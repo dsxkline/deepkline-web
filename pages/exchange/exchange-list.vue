@@ -28,9 +28,9 @@ import type { ExchangeDto } from '~/fetch/dtos/exchange';
 								<span>okx是简单易用经纪商</span>
 							</div>
 						</div>
-						<div class="py-2">介绍</div>
+						<div class="py-3">介绍</div>
 						<div>
-							<button class="bt-default w-full h-10 !rounded-full !bg-white !text-invert !text-base" @click="pushAddAccount(item)">开设账户</button>
+							<button class="bt-default w-full h-10 !rounded-full !bg-white !text-black !text-base" @click="pushAddAccount(item)">开设账户</button>
 						</div>
 					</li>
 				</template>
