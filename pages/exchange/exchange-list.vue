@@ -29,23 +29,23 @@
 							</div>
 						</div>
 						<div class="py-4">
-                            <dl class="text-xl flex items-center justify-between *:flex *:flex-col [&_span]:text-xs [&_span]:text-grey [&_b]:text-center">
-                                <dt>
-                                    <b>$0</b>
-                                    <span>最小入金</span>
-                                </dt>
-                                <dt>
-                                    <b>125:1</b>
-                                    <span>最大杠杆</span>
-                                </dt>
-                                <dt>
-                                    <b>$0</b>
-                                    <span>费用</span>
-                                </dt>
-                            </dl>
-                        </div>
+							<dl class="text-sm flex items-center justify-between *:flex *:flex-col [&_span]:text-xs [&_span]:text-grey [&_b]:text-center">
+								<dt>
+									<b>$0</b>
+									<span>最小入金</span>
+								</dt>
+								<dt>
+									<b>125:1</b>
+									<span>最大杠杆</span>
+								</dt>
+								<dt>
+									<b>$0</b>
+									<span>费用</span>
+								</dt>
+							</dl>
+						</div>
 						<div>
-							<button class="exchange-open-bt bt-default w-full h-10 !rounded-full !text-base border" @click="pushAddAccount(item)">开设账户</button>
+							<button class="exchange-open-bt bt-default w-full h-10 !rounded-full !text-sm border" @click="pushAddAccount(item)">开设账户</button>
 						</div>
 					</li>
 				</template>
@@ -55,8 +55,19 @@
 </template>
 <style lang="less" scoped>
 	.light {
-		.exchange-open-bt {
-            background-color: white;
+		.exchange-list-container {
+			.exchange-open-bt {
+				background-color: white;
+                border: none;
+			}
+			ul {
+				li {
+                    border: none;
+					&::before {
+						opacity: 1;
+					}
+				}
+			}
 		}
 	}
 	.exchange-list-container {
@@ -81,5 +92,4 @@
 			}
 		}
 	}
-
 </style>

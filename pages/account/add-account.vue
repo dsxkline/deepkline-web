@@ -62,8 +62,8 @@
 		pushLeft(AccountHelp)
 	}
 
-	function openExchange(){
-		window.open(exchange.value.website,'_blank')
+	function openExchange() {
+		window.open(exchange.value.website, '_blank')
 	}
 
 	onMounted(() => {})
@@ -106,7 +106,12 @@
 						</div>
 					</div>
 				</div>
-				<div class="form-item py-3 text-xs flex !flex-row leading-none">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处 <span class="px-2 text-brand flex items-center justify-center leading-none">教程<el-icon class="ml-1"><ArrowRight /></el-icon></span></div>
+				<div class="form-item py-3 text-xs flex !flex-row leading-none justify-between">
+					请在 {{ exchange.name }} 创建 API 密钥，并粘贴至此处
+					<span class="px-2 text-brand flex items-center justify-center leading-none" @click="pushHelp"
+						>教程<el-icon class="ml-1"><ArrowRight /></el-icon
+					></span>
+				</div>
 				<div class="form-item my-2" v-if="exchange.apiKeyRequired">
 					<label>API Key</label>
 					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable>
@@ -146,19 +151,30 @@
 				</div>
 
 				<div class="form-item mt-3">
-					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="next" :loading="loading">连接</el-button>
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', '!bg-brand !text-white']" @click="next" :loading="loading">连接</el-button>
 				</div>
-				<div class="flex justify-center py-3 text-grey">
+				<div class="flex justify-center py-3 text-grey text-sm">
 					<span>或者</span>
 				</div>
 				<div class="form-item mt-0">
-					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-main']" @click="openExchange" >去 {{exchange.name}} 开设新账户 <el-icon class="ml-1"><Link /></el-icon></el-button>
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-main']" @click="openExchange"
+						>去 {{ exchange.name }} 开设新账户 <el-icon class="ml-1"><Link /></el-icon
+					></el-button>
 				</div>
 			</div>
 		</ScrollBar>
 	</div>
 </template>
 <style lang="less" scoped>
+	.light {
+		.exchange-card {
+			border: none;
+			&::before {
+				opacity: 1;
+			}
+		}
+	}
+
 	.global-form {
 		.form-item {
 			label {
