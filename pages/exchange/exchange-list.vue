@@ -25,11 +25,11 @@
 							<ExchangeLogo :exchange="item.slug" class="w-12 h-12" />
 							<div class="flex flex-col px-2">
 								<b class="text-xl">{{ item.name }}</b>
-								<span class="text-sm">okx是简单易用经纪商</span>
+								<span class="text-sm text-grey">okx是简单易用经纪商</span>
 							</div>
 						</div>
 						<div class="py-4">
-                            <dl class="text-xl flex items-center justify-between *:flex *:flex-col [&_span]:text-sm [&_b]:text-center">
+                            <dl class="text-xl flex items-center justify-between *:flex *:flex-col [&_span]:text-xs [&_span]:text-grey [&_b]:text-center">
                                 <dt>
                                     <b>$0</b>
                                     <span>最小入金</span>

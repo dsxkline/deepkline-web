@@ -45,7 +45,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="账号列表" :hideBack="!push">
+		<NavigationBar title="账户列表" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
@@ -74,7 +74,7 @@
 			</ul>
 		</ScrollBar>
 		<div class="w-full px-4 pt-[20px] pb-[40px]">
-			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账号</b></button>
+			<button @click="pushAddAccount" class="add-account-bt rounded-full h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账户</b></button>
 		</div>
 	</div>
 </template>

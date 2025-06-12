@@ -102,11 +102,11 @@
 						<ExchangeLogo :exchange="exchange.slug" class="w-12 h-12" />
 						<div class="flex flex-col px-2">
 							<b class="text-xl">{{ exchange.name }}</b>
-							<span class="text-sm">okx是简单易用经纪商</span>
+							<span class="text-sm text-grey">okx是简单易用经纪商</span>
 						</div>
 					</div>
 				</div>
-				<div class="form-item py-3 text-xs">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处</div>
+				<div class="form-item py-3 text-xs flex !flex-row leading-none">请在 {{ exchange.name }} 创建 API 密钥，并将以下信息粘贴至此处 <span class="px-2 text-brand flex items-center justify-center leading-none">教程<el-icon class="ml-1"><ArrowRight /></el-icon></span></div>
 				<div class="form-item my-2" v-if="exchange.apiKeyRequired">
 					<label>API Key</label>
 					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable>
@@ -152,7 +152,7 @@
 					<span>或者</span>
 				</div>
 				<div class="form-item mt-0">
-					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-grey']" @click="openExchange" >去 {{exchange.name}} 开设新账户 <el-icon class="ml-1"><Link /></el-icon></el-button>
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-main']" @click="openExchange" >去 {{exchange.name}} 开设新账户 <el-icon class="ml-1"><Link /></el-icon></el-button>
 				</div>
 			</div>
 		</ScrollBar>
