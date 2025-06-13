@@ -113,7 +113,7 @@
 	<div class="w-full h-full">
 		<NavigationBar v-if="useStore().isH5" ref="navbar">
 			<template #left>
-				<button class="flex items-center pr-2 h-full" @click="returnBack">
+				<button class="flex items-center px-4 h-full" @click="returnBack">
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
 				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
@@ -124,7 +124,7 @@
 				</button>
 			</template>
 			<template #right>
-				<SymbolFavoriteButton :symbol="currentSymbol" />
+				<SymbolFavoriteButton :symbol="currentSymbol" class="mx-4"/>
 			</template>
 		</NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight" />

@@ -52,7 +52,7 @@
 	<div class="w-full h-full">
 		<NavigationBar title="账户列表" :hideBack="!push">
 			<template #right>
-				<button class="flex items-center p-2" @click="pushHelp">
+				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
 				</button>
 			</template>

@@ -173,7 +173,7 @@ import { usePop } from '~/composable/usePush'
 					background-color: transparent;
 					:deep(.el-input) {
 						.el-input__wrapper {
-							border-radius: 888px;
+							border-radius: var(--el-border-radius-base);
 						}
 					}
 					.search-list-content {

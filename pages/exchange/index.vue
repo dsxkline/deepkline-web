@@ -55,7 +55,7 @@
 	<div class="exchange-index-container">
 		<NavigationBar ref="navbar" title="开设账户" :hideBack="!push">
 			<template #right>
-				<button class="flex items-center p-2" @click="pushHelp">
+				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
 				</button>
 			</template>

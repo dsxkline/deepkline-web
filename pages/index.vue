@@ -4,11 +4,12 @@
 	import AccountIndex from '@/pages/account/index.vue'
 	import StrategyIndex from '@/pages/strategy/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled } from '@element-plus/icons-vue'
+	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled, HomeFilled } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
 	import AssetsIcon from '~/components/icons/AssetsIcon.vue'
 	import TradeIcon from '~/components/icons/TradeIcon.vue'
+	import Home from './home.vue'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
@@ -18,12 +19,13 @@
 	})
 
 	const active = ref(0)
-	const activeMenu = computed(() => menus.value && menus.value[active.value])
+	const activeMenu = computed(() => useStore().isH5?menus5.value && menus5.value[active.value]:menus.value && menus.value[active.value])
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
+		
 		{
 			name: '行情',
-			iconSelected: markRaw(Logo),
+			// iconSelected: markRaw(Logo),
 			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
@@ -34,12 +36,47 @@
 			contentComp: markRaw(TradeIndex),
 			contentParams: {}
 		},
+		// {
+		// 	name: '策略',
+		// 	icon: markRaw(Opportunity),
+		// 	contentComp: markRaw(StrategyIndex),
+		// 	contentParams: {}
+		// },
 		{
-			name: '策略',
-			icon: markRaw(Opportunity),
-			contentComp: markRaw(StrategyIndex),
+			name: '资产',
+			icon: markRaw(AssetsIcon),
+			contentComp: markRaw(AccountIndex),
+			contentParams: {}
+		}
+	])
+
+	const menus5 = ref<MenuModel[] | null>([
+		{
+			name: '首页',
+			iconSelected: markRaw(Logo),
+			icon: markRaw(HomeFilled),
+			contentComp: markRaw(Home),
 			contentParams: {}
 		},
+		{
+			name: '行情',
+			// iconSelected: markRaw(Logo),
+			icon: markRaw(Histogram),
+			contentComp: markRaw(MarketIndex),
+			contentParams: {}
+		},
+		{
+			name: '交易',
+			icon: markRaw(TradeIcon),
+			contentComp: markRaw(TradeIndex),
+			contentParams: {}
+		},
+		// {
+		// 	name: '策略',
+		// 	icon: markRaw(Opportunity),
+		// 	contentComp: markRaw(StrategyIndex),
+		// 	contentParams: {}
+		// },
 		{
 			name: '资产',
 			icon: markRaw(AssetsIcon),
@@ -61,7 +98,8 @@
 </script>
 <template>
 	<div class="main-container flex justify-between flex-row w-full h-full">
-		<LeftMenu @menuHandler="menuHandler" :menus="menus" v-if="menus"></LeftMenu>
+		<LeftMenu @menuHandler="menuHandler" :menus="menus" v-if="menus" v-show="!useStore().isH5"></LeftMenu>
+		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5" v-show="useStore().isH5"></LeftMenu>
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>

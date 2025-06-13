@@ -38,10 +38,10 @@
 				</li>
 			</ul>
 
-			<ul class="menu-list-h5 w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
+			<ul :style="['grid-template-columns:'+(menus.map(()=>1/menus.length*100+'%').join(' '))]" class="menu-list-h5 w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li
 					:class="menuActive == index ? '!text-brand font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
-					v-for="(menu, index) in props.menus"
+					v-for="(menu, index) in menus"
 					:key="menu.name"
 					v-click-sound
 					@click="handleOpen(menu, index)"
@@ -128,7 +128,7 @@
 					flex-direction: row;
 					align-items: center;
 					display: grid;
-					grid-template-columns: 25% 25% 25% 25%;
+					
 					li {
 						height: var(--menu-height);
 						min-height: auto;

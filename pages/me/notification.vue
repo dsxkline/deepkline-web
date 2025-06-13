@@ -64,7 +64,7 @@ import { usePush } from '~/composable/usePush'
 	<div class="w-full h-full">
 		<NavigationBar title="消息通知" :hideBack="!push">
 			<template #right>
-				<button @click="pushNotificationSetting">
+				<button @click="pushNotificationSetting" class="px-4">
 					<el-icon class="!w-5 !h-5"><Setting class="!w-5 !h-5"/></el-icon>
 				</button>
 			</template>

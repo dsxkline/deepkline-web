@@ -48,7 +48,6 @@
 	let push = usePush()
 	function pushSearch() {
 		push(SymbolSearch, {})
-		
 	}
 	function pushMe() {
 		push(MeIndex, {})
@@ -60,12 +59,11 @@
 <template>
 	<div>
 		<div class="search-container flex px-4 w-full">
-			
-			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-full flex items-center justify-center text-grey text-sm h-9 m-3 ml-0" @click="pushSearch">
-				<el-icon class="!w-4 !h-4"><Search class="!w-4 !h-4" /></el-icon>
-				<span class="px-2">搜索币对</span>
+			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-md flex items-center justify-between text-grey text-sm h-8 my-3 mr-3 px-3">
+				<span class="flex items-center leading-none"><HotIcon class="w-4 mr-2" />BTC/USDT</span>
+				<el-icon class="!w-4 !h-4 !text-main"><Search class="!w-4 !h-4" /></el-icon>
 			</div>
-			<button @click="pushMe"><MenuIcon /></button>
+			<button @click="pushMe"><ExchangeLogo exchange="okx" class="w-7" /></button>
 		</div>
 
 		<TabBar ref="tabbar" :menus="menus" :hideLine="true" :height="tabbarHeight" :active="active" />
@@ -105,7 +103,7 @@
 	}
 
 	@media (max-width: 999px) {
-		.search-container{
+		.search-container {
 			display: flex;
 		}
 		.search-enter {
@@ -123,7 +121,7 @@
 				content: '';
 				z-index: -1;
 				opacity: 0.2;
-				border-radius: 99999px;
+				border-radius: var(--el-border-radius-base);
 
 				// transition: all 0.3s ease;
 			}

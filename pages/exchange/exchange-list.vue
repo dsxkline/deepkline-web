@@ -50,7 +50,7 @@
 						</dl>
 					</div>
 					<div>
-						<button class="exchange-open-bt bt-default w-full h-10 !text-sm !border-[--transparent05]" @click="pushAddAccount(item)">开设账户</button>
+						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0',item.slug+'-bt']" @click="pushAddAccount(item)">开设账户</button>
 					</div>
 				</li>
 			</template>

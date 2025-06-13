@@ -237,7 +237,7 @@
 		<NavigationBar ref="navbar" title="更新头像" :returnBack="returnBack">
 			<template #right>
 				<el-button
-					:class="['w-full transition-all !py-2 !h-8 !text-sm bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
+					:class="['w-full transition-all !py-2 mx-4 !h-8 !text-sm bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 					@click="next"
 					:loading="loading"
 					>保存</el-button

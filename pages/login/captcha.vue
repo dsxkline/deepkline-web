@@ -174,7 +174,7 @@
 	<div class="login-index-container">
 		<NavigationBar ref="navbar">
 			<template #right>
-				<button class="flex items-center p-2">
+				<button class="flex items-center p-2 px-4">
 					<el-icon class="!w-5 !h-5"><Service class="!w-5 !h-5" /></el-icon>
 				</button>
 			</template>

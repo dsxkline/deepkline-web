@@ -20,7 +20,7 @@
 		<template v-else>
 			<NavigationBar title="账户" :hideBack="!push">
 				<template #right>
-					<button class="flex items-center p-2" @click="pushAccountList">
+					<button class="flex items-center p-2 px-4" @click="pushAccountList">
 						<AccountSyncIcon class="w-5 h-5" />
 					</button>
 				</template>

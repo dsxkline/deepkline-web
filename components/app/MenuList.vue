@@ -21,7 +21,7 @@
 	})
 </script>
 <template>
-	<div :class="['menu-list w-full h-full flex flex-col',size]" v-if="menus && menus.length > 0">
+	<div :class="['menu-list w-full flex flex-col',size]" v-if="menus && menus.length > 0">
 		<ul>
 			<template  v-for="(item, index) in menus">
 				<li :key="index" v-if="!item.hide" class="flex justify-between items-center p-3 hover:bg-[var(--transparent05)] cursor-pointer" @click="item.callback">
