@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 <template>
 	<div class="empty-container w-full h-full flex flex-col items-center justify-center">
-		<EmptyIcon />
+		<EmptyIcon class="w-60" />
 		<p class="text-sm text-grey">{{ content}}</p>
 	</div>
 </template>

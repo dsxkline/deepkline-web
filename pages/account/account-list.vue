@@ -5,43 +5,48 @@
 	import ExchangeIndex from '../exchange/index.vue'
 	import AccountHelp from './account-help.vue'
 	import { useUserStore } from '~/store/user'
+	import { accountFetch } from '~/fetch/account.fetch'
+	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const pushLeft = usePush()
-	const accounts = computed(
-		() =>
-			[
-				{
-					exchange: 'okx',
-					accountId: 123456,
-					isCurrent: true,
-					bindTime: '2025-06-08 12:33:21',
-					accountName: 'new hans'
-				},
-				{
-					exchange: 'binance',
-					accountId: 123456,
-					isCurrent: false,
-					bindTime: '2025-06-08 12:33:21',
-					accountName: 'new hans'
-				},
-				{
-					exchange: 'coinbase',
-					accountId: 123456,
-					isCurrent: false,
-					bindTime: '2025-06-08 12:33:21',
-					accountName: 'new hans'
+	const loading = ref(true)
+	const error = ref<string | undefined>('')
+	const accounts = ref<AccountDto[] | null>([])
+	function getAccounts() {
+		if (loading.value) return
+		loading.value = true
+		error.value = ''
+		accountFetch
+			.list()
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					loading.value = false
+
+					accounts.value = result.data
+				} else {
+					loading.value = false
+					error.value = result?.msg
 				}
-			] as AccountDto[]
-	)
+			})
+			.catch(err => {
+				setTimeout(() => {
+					loading.value = false
+					error.value = '网络异常，请稍后再试'
+				}, 500)
+			})
+	}
 	function pushAddAccount() {
 		pushLeft(ExchangeIndex)
 	}
 	function pushHelp() {
 		pushLeft(AccountHelp)
 	}
-	onMounted(() => {})
+	onMounted(() => {
+		loading.value = false
+		getAccounts()
+	})
 </script>
 <template>
 	<div class="w-full h-full">
@@ -54,7 +59,33 @@
 		</NavigationBar>
 
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--nav-height) - 60px)' }" :always="false">
-			<ul class="account-list mt-4 px-4 *:flex *:items-center *:py-3 [&_b]:flex [&_b]:items-center *:border *:border-[--transparent10] *:rounded-xl *:mb-4 *:px-2 *:relative">
+			<Error :content="error" v-if="!loading && error">
+				<template #default>
+					<el-button @click.stop="getAccounts()">点击刷新</el-button>
+				</template>
+			</Error>
+
+			<Empty :content="'开设新账户，体验一键速达全球交易！'" v-if="!loading && !error && !accounts?.length">
+				
+			</Empty>
+
+			<ul class="account-list mt-4 px-4 flex flex-col *:border *:border-[--transparent10] *:rounded-xl *:mb-4" v-if="loading && !error">
+				<li class="w-full flex items-center hover:bg-[--transparent03] px-4 py-3" v-for="item in 3">
+					<el-skeleton style="--el-skeleton-circle-size: 40px" animated class="flex-1 pr-2 flex items-center">
+						<template #template>
+							<el-skeleton-item variant="circle" />
+						</template>
+					</el-skeleton>
+					<el-skeleton :rows="0" animated class="flex flex-col !justify-start">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 40%; height: 24px" />
+							<el-skeleton-item variant="p" style="width: 80%; height: 10px" class="mt-1" />
+						</template>
+					</el-skeleton>
+				</li>
+			</ul>
+
+			<ul v-if="accounts?.length" class="account-list mt-4 px-4 *:flex *:items-center *:py-3 [&_b]:flex [&_b]:items-center *:border *:border-[--transparent10] *:rounded-xl *:mb-4 *:px-2 *:relative">
 				<template v-for="item in accounts">
 					<li :class="[item.isCurrent ? 'active' : '']">
 						<img :src="useUserStore().getExchange(item.exchange)?.logoUrl" v-if="useUserStore().getExchange(item.exchange)?.logoUrl" class="w-10 h-10 rounded-full" />

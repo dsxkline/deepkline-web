@@ -25,6 +25,18 @@
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const next = () => {
+		if (exchange.value.apiKeyRequired && !apiKey.value) {
+			error.value = 'API key should not be empty'
+			return
+		}
+		if (exchange.value.secretKeyRequired && !secretKey.value) {
+			error.value = 'Secret key should not be empty'
+			return
+		}
+		if (exchange.value.passphraseRequired && !passPhrase.value) {
+			error.value = 'Passphrase should not be empty'
+			return
+		}
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
@@ -33,7 +45,25 @@
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
+					ElMessage({
+						message: '账户连接成功',
+						type: 'success'
+					})
+					setTimeout(() => {
+						useNuxtApp().$popRoot(null,-2)
+					}, 500)
 				} else {
+					if (result?.code == 100029) {
+						ElMessage({
+							message: '账户已连接',
+							type: 'success'
+						})
+						setTimeout(() => {
+							loading.value = false
+							error.value = result?.msg
+							useNuxtApp().$popRoot(null,-2)
+						}, 500)
+					}
 					setTimeout(() => {
 						loading.value = false
 						error.value = result?.msg
@@ -98,7 +128,7 @@
 					</Select>
 				</div> -->
 				<div>
-					<div :class="['exchange-card flex rounded-2xl overflow-hidden p-4 mb-4 border border-[--transparent05]',exchange.slug+'-card']">
+					<div :class="['exchange-card flex rounded-2xl overflow-hidden p-4 mb-4 border border-[--transparent05]', exchange.slug + '-card']">
 						<ExchangeLogo :exchange="exchange.slug" class="w-12 h-12" />
 						<div class="flex flex-col px-2">
 							<b class="text-xl">{{ exchange.name }}</b>
@@ -151,9 +181,11 @@
 				</div>
 
 				<div class="form-item mt-3">
-					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', exchange.slug+'-bt']" @click="next" :loading="loading">连接</el-button>
+					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', exchange.slug + '-bt']" @click="next" :loading="loading">连接</el-button>
+					<div class="text-red text-sm pt-2" v-if="error"><el-alert :title="error" type="error" /></div>
 					<p class="py-3 text-xs text-grey">点击"连接"即表示我确认已阅读<span class="text-main"> 警告 </span>和<span class="text-main"> 使用条款 </span>并接受所有风险</p>
 				</div>
+
 				<div class="flex justify-center py-3 text-grey text-sm">
 					<span>或者</span>
 				</div>
@@ -167,16 +199,11 @@
 	</div>
 </template>
 <style lang="less" scoped>
-	
-
 	.global-form {
 		.form-item {
 			label {
 				@apply text-main;
 			}
 		}
-		
 	}
-
-	
 </style>
