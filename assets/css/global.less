@@ -50,8 +50,9 @@
 	position: relative;
 	&::before {
 		// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
-		background-image: linear-gradient(90deg, #1e6f4d, #309993, #112d6b);
-		filter: blur(60px);
+		background-image: var(--bg-linear-90);
+		// filter: blur(60px);
+		border-radius: 999px;
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -59,7 +60,7 @@
 		height: 100%;
 		content: '';
 		z-index: -1;
-		opacity: 0.6;
+		opacity: 0.2;
 		// transition: all 0.3s ease;
 	}
 }
@@ -123,6 +124,10 @@
 .coinbase-bt {
 	background-color: #0052ff !important;
 	color: white!important;
+}
+
+.logout-bt{
+
 }
 
 .global-form {

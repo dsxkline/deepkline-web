@@ -4,6 +4,9 @@
 	import ExchangeList from './exchange-list.vue'
 	import { usePush } from '~/composable/usePush'
 	import AccountHelp from '../account/account-help.vue'
+	const props = defineProps<{
+		push?: boolean
+	}>()
 	const pushLeft = usePush()
 	const tabbarHeight = ref(0)
 	const navbar = ref()
@@ -26,7 +29,10 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) - (exchangeHeader.value?.clientHeight || 92)
+			tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+			if (!props.push) {
+				tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 0
+			}
 		}
 	)
 
@@ -35,7 +41,10 @@
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) - (exchangeHeader.value?.clientHeight || 92)
+		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+		if (!props.push) {
+			tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 0
+		}
 	})
 	onUnmounted(() => {
 		menus.value = []
@@ -44,24 +53,26 @@
 </script>
 <template>
 	<div class="exchange-index-container">
-		<NavigationBar ref="navbar" title="开设账户">
+		<NavigationBar ref="navbar" title="开设账户" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
 				</button>
 			</template>
 		</NavigationBar>
-		<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
-			<div>
-				连接全球顶尖经纪商
-				<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
-			</div>
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight+'px' }" :always="false">
+			<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
+				<div>
+					连接全球顶尖经纪商
+					<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
+				</div>
 
-			<div class="w-20 h-20 relative">
-				<ExchangeBannerIcon class="absolute right-[-30%] top-[-30%] w-32"/>
-			</div>
-		</h1>
-		<TabBar :menus="menus" :height="tabbarHeight" />
+				<div class="w-20 h-20 relative">
+					<ExchangeBannerIcon class="absolute right-[-30%] top-[-30%] w-32" />
+				</div>
+			</h1>
+			<TabBar :menus="menus" />
+		</ScrollBar>
 	</div>
 </template>
 

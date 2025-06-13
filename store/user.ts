@@ -15,6 +15,7 @@ export const useUserStore = defineStore({
 		},
 		logout() {
 			this.user = null
+			this.accounts = []
 			useCookie('token').value = null
 		},
 		setAccounts(payload: AccountDto[]) {

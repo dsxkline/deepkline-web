@@ -7,7 +7,8 @@
 	import Captcha from './captcha.vue'
 	import type { ComponentInternalInstance } from 'vue'
 	import ResetPassword from './reset-password.vue'
-import clearPWACaches from '~/composable/clearPWACaches'
+	import clearPWACaches from '~/composable/clearPWACaches'
+	import { accountFetch } from '~/fetch/account.fetch'
 
 	const props = defineProps<{
 		email: string
@@ -23,7 +24,7 @@ import clearPWACaches from '~/composable/clearPWACaches'
 	let forgetPassword = false
 	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
-	const next = ()=>{
+	const next = () => {
 		if (requireCaptcha.value) {
 			// 如果需要用户行为验证
 			// 需要用户行为认证
@@ -33,9 +34,9 @@ import clearPWACaches from '~/composable/clearPWACaches'
 		}
 		nextStep(props.ticket, props.randstr)
 	}
-	const nextStep = (ticket?:string,randstr?:string) => {
+	const nextStep = (ticket?: string, randstr?: string) => {
 		forgetPassword = false
-		
+
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
@@ -47,18 +48,22 @@ import clearPWACaches from '~/composable/clearPWACaches'
 				ticket,
 				randstr
 			})
-			.then(result => {
+			.then(async result => {
 				if (result?.code == FetchResultDto.OK) {
-					// 登录成功
-					ElMessage({
-						message: '登录成功',
-						type: 'success'
-					})
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
-					clearPWACaches()
-					useNuxtApp().$popRoot(null, 1)
+					setTimeout(async () => {
+						await getUserAccounts()
+						// 登录成功
+						ElMessage({
+							message: '登录成功',
+							type: 'success'
+						})
+
+						clearPWACaches()
+						useNuxtApp().$popRoot(null, -2)
+					}, 100)
 				} else {
 					if (result?.code == 100027) {
 						requireCaptcha.value = true
@@ -77,6 +82,20 @@ import clearPWACaches from '~/composable/clearPWACaches'
 			})
 	}
 
+	async function getUserAccounts() {
+		if (!useUserStore().user) return
+		const result = await accountFetch.list()
+		if (result?.code == FetchResultDto.OK) {
+			console.log('获取账户信息', result.data)
+			const accounts = result.data
+			if (accounts) {
+				useUserStore().setAccounts(accounts)
+			}
+		} else {
+			throw new Error(result?.msg)
+		}
+	}
+
 	// 定义回调函数
 	function captchCallback(isreset: boolean) {
 		return (res: ICaptchaResult) => {
@@ -86,7 +105,7 @@ import clearPWACaches from '~/composable/clearPWACaches'
 				if (forgetPassword) {
 					// 验证成功进入发送验证码流程
 					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
-				}else{
+				} else {
 					// 直接进入登录
 					nextStep(res.ticket, res.randstr)
 				}
@@ -190,10 +209,10 @@ import clearPWACaches from '~/composable/clearPWACaches'
 		})
 	}
 
-	onMounted(()=>{
+	onMounted(() => {
 		setTimeout(() => {
 			passInput.value.focus()
-		}, 600);
+		}, 600)
 	})
 </script>
 <template>
@@ -205,7 +224,7 @@ import clearPWACaches from '~/composable/clearPWACaches'
 		</h1>
 		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<el-input ref="passInput" v-model="password" :placeholder="'请输入8-20位数字字母组合的密码'" size="large" type="password" clearable :show-password="true"  @keydown.enter="next"></el-input>
+				<el-input ref="passInput" v-model="password" :placeholder="'请输入8-20位数字字母组合的密码'" size="large" type="password" clearable :show-password="true" @keydown.enter="next"></el-input>
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">

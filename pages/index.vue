@@ -4,10 +4,11 @@
 	import AccountIndex from '@/pages/account/index.vue'
 	import StrategyIndex from '@/pages/strategy/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { UserFilled, Histogram, Monitor,Opportunity, HelpFilled } from '@element-plus/icons-vue'
+	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
-
+	import AssetsIcon from '~/components/icons/AssetsIcon.vue'
+	import TradeIcon from '~/components/icons/TradeIcon.vue'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
@@ -23,13 +24,13 @@
 		{
 			name: '行情',
 			iconSelected: markRaw(Logo),
-			icon:markRaw(Histogram),
+			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
 		},
 		{
 			name: '交易',
-			icon: markRaw(HelpFilled),
+			icon: markRaw(TradeIcon),
 			contentComp: markRaw(TradeIndex),
 			contentParams: {}
 		},
@@ -40,8 +41,8 @@
 			contentParams: {}
 		},
 		{
-			name: '账户',
-			icon: markRaw(UserFilled),
+			name: '资产',
+			icon: markRaw(AssetsIcon),
 			contentComp: markRaw(AccountIndex),
 			contentParams: {}
 		}
@@ -64,14 +65,14 @@
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>
-				<component :is="activeMenu.contentComp" v-if="activeMenu"  :key="activeMenu.name"/>
+				<component :is="activeMenu.contentComp" v-if="activeMenu" :key="activeMenu.name" />
 			</KeepAlive>
 		</div>
 	</div>
 </template>
 
 <style scoped lang="less">
-	.light .main-container{
+	.light .main-container {
 		&::before {
 			background-image: unset;
 		}
@@ -104,6 +105,5 @@
 				width: 100%;
 			}
 		}
-		
 	}
 </style>

@@ -213,8 +213,8 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace />
 			<MenuList :menus="menus" />
-			<div class="my-3 px-3 flex flex-col items-center justify-center">
-				<button class="w-full bt-default !py-2 !rounded-full mb-3" @click="logout" v-if="useUserStore().user">退出登录</button>
+			<div class="my-3 px-3 pb-5 flex flex-col items-center justify-center">
+				<button class="logout-bt glass w-full bt-default !py-3 !rounded-full mb-3 !text-sm" @click="logout" v-if="useUserStore().user">退出登录 <LogoutIcon class="w-4 ml-2"/></button>
 				<el-divider class="!my-3" />
 				<div class="text-center text-xs text-muted">版本 1.0.0</div>
 			</div>

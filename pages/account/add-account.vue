@@ -25,6 +25,7 @@
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	const next = () => {
+		error.value = ''
 		if (exchange.value.apiKeyRequired && !apiKey.value) {
 			error.value = 'API key should not be empty'
 			return
@@ -39,7 +40,7 @@
 		}
 		if (loading.value) return
 		loading.value = true
-		error.value = ''
+		
 		accountFetch
 			.connect(props.exchange.slug, apiKey.value, secretKey.value, passPhrase.value)
 			.then(result => {
@@ -182,7 +183,7 @@
 
 				<div class="form-item mt-3">
 					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', exchange.slug + '-bt']" @click="next" :loading="loading">连接</el-button>
-					<div class="text-red text-sm pt-2" v-if="error"><el-alert :title="error" type="error" /></div>
+					<div class="text-red text-sm pt-2" v-if="error"><el-alert :title="error" type="error" :closable="false" /></div>
 					<p class="py-3 text-xs text-grey">点击"连接"即表示我确认已阅读<span class="text-main"> 警告 </span>和<span class="text-main"> 使用条款 </span>并接受所有风险</p>
 				</div>
 

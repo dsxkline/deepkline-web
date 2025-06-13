@@ -8,7 +8,8 @@
 	import Password from './password.vue'
 	import ResetPassword from './reset-password.vue'
 	import clearPWACaches from '~/composable/clearPWACaches'
-	
+	import { accountFetch } from '~/fetch/account.fetch'
+
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
 		return (res: ICaptchaResult) => {
@@ -16,7 +17,7 @@
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
 				if (isRegister) {
-					usepush(Password, { email: email.value,ticket:res.ticket, randstr:res.randstr })
+					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr })
 				} else {
 					// 验证成功进入发送验证码流程
 					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
@@ -32,7 +33,10 @@
 		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID
 		// 生成容灾票据或自行做其它处理
 		var ticket = createTicket(appid)
-		captchCallback(isreset,isRegister)({
+		captchCallback(
+			isreset,
+			isRegister
+		)({
 			ret: 0,
 			appid: appid,
 			randstr: '@' + Math.random().toString(36).substr(2),
@@ -84,7 +88,7 @@
 							return nextSendEmailValidCode(isreset)
 						}
 					} catch (err) {
-						loadErrorCallback(isreset,isRegister)
+						loadErrorCallback(isreset, isRegister)
 						ElMessage({
 							message: '验证码发送异常，请稍后再试',
 							type: 'error'
@@ -179,16 +183,20 @@
 				const result = await userFetch.login({ userName: email.value, validId: validId })
 				console.log('result de', FetchResultDto.OK, result)
 				if (result?.code == FetchResultDto.OK) {
-					ElMessage({
-						message: '登录成功',
-						type: 'success'
-					})
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
-					clearPWACaches()
-					useNuxtApp().$pop()
-					useNuxtApp().$pop()
+					setTimeout(async () => {
+						await getUserAccounts()
+						ElMessage({
+							message: '登录成功',
+							type: 'success'
+						})
+
+						clearPWACaches()
+						useNuxtApp().$pop()
+						useNuxtApp().$pop()
+					})
 					return true
 				} else {
 					throw new Error(result?.msg)
@@ -201,13 +209,27 @@
 			}
 		})
 	}
+
+	async function getUserAccounts() {
+		if (!useUserStore().user) return
+		const result = await accountFetch.list()
+		if (result?.code == FetchResultDto.OK) {
+			console.log('获取账户信息', result.data)
+			const accounts = result.data
+			if (accounts) {
+				useUserStore().setAccounts(accounts)
+			}
+		} else {
+			throw new Error(result?.msg)
+		}
+	}
 </script>
 <template>
 	<div class="register-container">
 		<div class="global-form p-6">
 			<div class="form-item my-4">
 				<!-- <label>邮箱登录:</label> -->
-				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" @keydown.enter="nextStep"/>
+				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" @keydown.enter="nextStep" />
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">

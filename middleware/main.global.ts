@@ -31,6 +31,7 @@ function getDefaultInstruments(InstanceType: InstanceType) {
 }
 
 async function getUser() {
+	if (!useCookie('token').value) return
 	const result = await userFetch.getUser()
 	if (result?.code == FetchResultDto.OK) {
 		console.log('获取用户信息', result.data)
@@ -38,6 +39,18 @@ async function getUser() {
 		if (user) {
 			user.token = user?.token || useCookie('token').value || ''
 			useUserStore().setUser(user)
+		}
+	}
+}
+
+async function getUserAccounts() {
+	if (!useUserStore().user) return
+	const result = await accountFetch.list()
+	if (result?.code == FetchResultDto.OK) {
+		console.log('获取账户信息', result.data)
+		const accounts = result.data
+		if (accounts) {
+			useUserStore().setAccounts(accounts)
 		}
 	}
 }
@@ -68,6 +81,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (process.client) {
 		await getUser()
 		await getExchanges()
+		await getUserAccounts()
 		const state = useStore()
 		if (state.apiSource == ApiSource.OKX) {
 			await getDefaultInstruments(InstanceType.SPOT)
