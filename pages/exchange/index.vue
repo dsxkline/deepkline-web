@@ -29,9 +29,9 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+			tabbarHeight.value = n - (navbar.value?.clientHeight || 50) + 5
 			if (!props.push) {
-				tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 0
+				tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
 			}
 		}
 	)
@@ -41,9 +41,9 @@
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) + 5
 		if (!props.push) {
-			tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 0
+			tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
 		}
 	})
 	onUnmounted(() => {
