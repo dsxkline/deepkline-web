@@ -50,7 +50,8 @@
 <style lang="less" scoped>
 	.scroll-bar-inner {
 		position: relative;
-		overflow: auto;
+		overflow-y: auto;
+		overflow-x: hidden;
 		width: 100%;
 		height: 100%;
 		// 隐藏滚动条
