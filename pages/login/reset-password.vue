@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { MD5 } from 'crypto-js'
+	import pkg from 'crypto-js'
+	const { MD5 } = pkg
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	import { userFetch } from '~/fetch/user.fetch'
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import { MD5 } from 'crypto-js'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	import { userFetch } from '~/fetch/user.fetch'
 	import { useAvatar } from '~/composable/useAvatar'
