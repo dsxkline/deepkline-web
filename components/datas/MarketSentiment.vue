@@ -18,7 +18,7 @@
 	onMounted(() => {
 		setTimeout(() => {
 			loading.value = false
-			setValue(150)
+			setValue(120)
 		}, 0)
 	})
 	onBeforeUnmount(() => {
