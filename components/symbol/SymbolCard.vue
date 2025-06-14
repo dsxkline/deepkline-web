@@ -34,7 +34,7 @@
 		rate.value = (change.value / parseFloat(data?.sodUtc8 || '0')) * 100
 		item.value = data
 
-		loading.value = false;
+		loading.value = false
 	}
 
 	let subHandle = ''
@@ -101,37 +101,39 @@
 	})
 </script>
 <template>
-	<div :class="['symbol-card flex flex-col justify-between p-2 rounded-md', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']" @click="clickSymbol(symbolObj)">
-		<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
-			<SymbolName :symbol="symbolObj" v-if="item?.last" />
-			<span v-else>--</span>
-			<b v-autosize="18" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
-				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
-				<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="18" />
-			</b>
-			<span v-else>-</span>
-			<div v-if="item?.last" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')">
-				<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }}</span
-				><span>{{ formatChangeRate(rate, 2) }}%</span>
+	<div :class="['symbol-card rounded-md overflow-hidden p-[1px]', rate > 0 ? 'green-linear-border' : rate < 0 ? 'red-linear-border' : 'default-linear-border']">
+		<div :class="['flex flex-col justify-between p-2 rounded-md overflow-hidden', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']" @click="clickSymbol(symbolObj)">
+			<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
+				<SymbolName :symbol="symbolObj" v-if="item?.last" />
+				<span v-else>--</span>
+				<b v-autosize="18" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+					<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
+					<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="18" />
+				</b>
+				<span v-else>-</span>
+				<div v-if="item?.last" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')">
+					<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }}</span
+					><span>{{ formatChangeRate(rate, 2) }}%</span>
+				</div>
+				<div class="text-[10px]" v-else>--</div>
 			</div>
-			<div class="text-[10px]" v-else>--</div>
-		</div>
-		<div class="flex flex-col items-center justify-between text-sm text-center min-h-16" v-else>
-			<el-skeleton :rows="0" animated>
-				<template #template>
-					<el-skeleton-item variant="p" style="width: 40%; height: 50%" />
-				</template>
-			</el-skeleton>
-			<el-skeleton :rows="0" animated>
-				<template #template>
-					<el-skeleton-item variant="p" style="width: 100%; height: 70%" />
-				</template>
-			</el-skeleton>
-			<el-skeleton :rows="0" animated>
-				<template #template>
-					<el-skeleton-item variant="p" style="width: 40%; height: 40%" />
-				</template>
-			</el-skeleton>
+			<div class="flex flex-col items-center justify-between text-sm text-center min-h-16" v-else>
+				<el-skeleton :rows="0" animated>
+					<template #template>
+						<el-skeleton-item variant="p" style="width: 40%; height: 50%" />
+					</template>
+				</el-skeleton>
+				<el-skeleton :rows="0" animated>
+					<template #template>
+						<el-skeleton-item variant="p" style="width: 100%; height: 70%" />
+					</template>
+				</el-skeleton>
+				<el-skeleton :rows="0" animated>
+					<template #template>
+						<el-skeleton-item variant="p" style="width: 40%; height: 40%" />
+					</template>
+				</el-skeleton>
+			</div>
 		</div>
 	</div>
 </template>
@@ -140,10 +142,13 @@
 	.default-linear {
 		background: linear-gradient(to bottom, rgb(var(--color-text-main) / 0.05), rgb(var(--color-text-main) / 0));
 	}
+
 	.green-linear {
-		background: linear-gradient(to bottom, rgb(var(--color-green) / 0.1), rgb(var(--color-green) / 0));
+		background: linear-gradient(to bottom, rgb(var(--color-green) / 0.15), rgb(var(--color-green) / 0));
 	}
+
 	.red-linear {
-		background: linear-gradient(to bottom, rgb(var(--color-red) / 0.1), rgb(var(--color-red) / 0));
+		background:linear-gradient(to bottom, rgb(var(--color-red) / 0.15), rgb(var(--color-red) / 0));
 	}
+	
 </style>

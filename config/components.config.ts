@@ -11,5 +11,6 @@ export default [
     "~/components/icons/social",
     "~/components/icons/login",
     "~/components/icons/account",
-    "~/components/user"
+    "~/components/user",
+    "~/components/datas",
 ];

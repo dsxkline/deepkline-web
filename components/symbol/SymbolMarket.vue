@@ -59,11 +59,8 @@
 <template>
 	<div>
 		<div class="search-container flex px-4 w-full">
-			<div ref="search" class="flex-1 search-enter bg-[--transparent05] rounded-md flex items-center justify-between text-grey text-sm h-8 my-3 mr-3 px-3" @click="pushSearch">
-				<span class="flex items-center leading-none"><HotIcon class="w-4 mr-2" />BTC/USDT</span>
-				<el-icon class="!w-4 !h-4 !text-main"><Search class="!w-4 !h-4" /></el-icon>
-			</div>
-			<button @click="pushMe"><ExchangeLogo exchange="okx" class="w-7" /></button>
+			<SymbolSearchBar/>
+			<button @click="pushMe" class="ml-4"><ExchangeLogo exchange="okx" class="w-7" /></button>
 		</div>
 
 		<TabBar ref="tabbar" :menus="menus" :hideLine="true" :height="tabbarHeight" :active="active" />

@@ -37,8 +37,8 @@ onBeforeUnmount(() => {
 			</div>
 		</h1>
 		<div class="flex items-center justify-between px-4 gap-3">
-			<button class="bt-default flex-1 !py-2 !text-sm" @click="clickHandle">注册</button>
-			<button class="bt-brand flex-1 !py-2 !text-sm" @click="clickHandle">登录</button>
+			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="clickHandle">注册</button>
+			<button class="bt-brand flex-1 !py-2 !text-sm !border-0" @click="clickHandle">登录</button>
 		</div>
 	</div>
 </template>
