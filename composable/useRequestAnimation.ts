@@ -2,6 +2,7 @@ type AnimationOptions = {
 	from: number
 	to: number
 	duration?: number // ms，默认 300
+	loop?: boolean // 是否循环
 	easing?: (t: number) => number // 自定义缓动函数（默认线性）
 	onUpdate: (value: number) => void
 	onFinish?: () => void
@@ -25,14 +26,16 @@ export function useRequestAnimation() {
 	let _onFinish: (() => void) | undefined = undefined
 	let _from: any = null
 	let _to: any = null
+	let _loop: boolean | undefined = false
 
-	const start = ({ from, to, duration = 300, easing = defaultEasing, onUpdate, onFinish }: AnimationOptions) => {
+	const start = ({ from, to, duration = 300, easing = defaultEasing, onUpdate, onFinish, loop }: AnimationOptions) => {
 		_from = from
 		_to = to
 		_duration = duration
 		_easing = easing
 		_onUpdate = onUpdate
 		_onFinish = onFinish
+		_loop = loop
 		// 先取消上一个动画
 		stop()
 		startTimestamp = null
@@ -47,16 +50,24 @@ export function useRequestAnimation() {
 
 		const currentValue = _from + (_to - _from) * easedProgress
 		_onUpdate && _onUpdate(currentValue)
-
 		if (progress < 1) {
 			animationFrameId = requestAnimationFrame(step)
 		} else {
 			_onFinish?.()
-			stop()
+			if (!_loop) stop()
+			else {
+				const to = _to
+				_to = _from
+				_from = to
+				// 循环往复
+				startTimestamp = timestamp
+				animationFrameId = requestAnimationFrame(step)
+			}
 		}
 	}
 
 	const stop = () => {
+		
 		if (animationFrameId !== null) {
 			cancelAnimationFrame(animationFrameId)
 			animationFrameId = null

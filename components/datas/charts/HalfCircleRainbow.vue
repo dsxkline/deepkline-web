@@ -20,23 +20,47 @@
 					<stop offset="0%" :stop-color="red" />
 					<stop offset="100%" :stop-color="color" />
 				</radialGradient>
+
+				<!-- 模糊滤镜 -->
+				<filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+					<feGaussianBlur in="SourceGraphic" stdDeviation="8" />
+				</filter>
+
+				<!-- 渐变 -->
+				<radialGradient id="pulseGradient" cx="50%" cy="50%" r="50%">
+					<stop offset="0%" :stop-color="red" stop-opacity="1" />
+					<stop offset="100%" :stop-color="color" stop-opacity="0" />
+				</radialGradient>
 			</defs>
 
 			<!-- 半圆渐变弧 -->
 			<path :d="describeArc(100, 100, radius, -90, 90)" fill="none" stroke="url(#rainbowGradient)" stroke-width="10" />
 
-			<!-- 圆点指示当前值 -->
-			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="8" fill="rgba(0,0,0,0)" stroke="#000000" stroke-width="3" />
-			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="6" fill="rgba(0,0,0,0)" stroke="#ffffff" stroke-width="3" />
-
 			<!-- 扇形区域 -->
 			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad1)" fill-opacity="0.1" />
+
+			<!-- 背后柔光扩散圈 -->
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.6">
+				<animate attributeName="r" values="12;30;12" dur="1s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="0.3;0.1;0.3" dur="1s" repeatCount="indefinite" />
+			</circle>
+
+			<!-- 中间呼吸灯 -->
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#pulseGradient)" filter="url(#blur)">
+				<animate attributeName="r" values="12;30;12" dur="1s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite" />
+			</circle>
+
+            <!-- 圆点指示当前值 -->
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="8" fill="rgba(0,0,0,0)" stroke="#000000" stroke-width="3" />
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="6" fill="rgba(0,0,0,0)" stroke="#ffffff" stroke-width="3" />
 		</svg>
 	</div>
 </template>
 
 <script setup lang="ts">
 	import { computed } from 'vue'
+	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 
 	const props = defineProps<{
 		value: number // 0 ~ 100
@@ -55,10 +79,14 @@
 	const cx = 100
 	const cy = 100
 
+	const moveVal = ref(0)
+
 	// 计算对应角度（0~100 映射 180° ~ 0°）
 	const angle = computed(() => 270 + (props.value / 180) * 180)
+	const angleMove = computed(() => 270 + (moveVal.value / 180) * 180)
 
 	const pointerPos = computed(() => polarToCartesian(cx, cy, radius, angle.value))
+	const movePos = computed(() => polarToCartesian(cx, cy, radius, angleMove.value))
 
 	function describeArc(x: number, y: number, r: number, start: number, end: number) {
 		const startPoint = polarToCartesian(x, y, r, start)
@@ -134,9 +162,28 @@
 
 	watch(
 		() => props.value,
-		(val) => {
+		val => {
 			const color = getColorFromFourStops(val / 180) // 结果接近黄绿之间的颜色
 			emit('update:color', color)
 		}
 	)
+
+	const animation = useRequestAnimation()
+
+	onMounted(() => {
+		// let from = 0
+		// let to = 20
+		// animation.start({
+		// 	from: from,
+		// 	to: to,
+		// 	duration: 900,
+		// 	loop: true,
+		// 	onUpdate: (val: number) => {
+		// 		moveVal.value = val
+		// 	}
+		// })
+	})
+	onBeforeUnmount(() => {
+		animation.stop()
+	})
 </script>
