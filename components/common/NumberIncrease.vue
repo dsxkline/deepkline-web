@@ -220,7 +220,7 @@
 				document.body.appendChild(span)
 				const width = span.offsetWidth
 				const height = span.offsetHeight
-				console.log('textheight',width,height)
+				// console.log('textheight',width,height)
 				document.body.removeChild(span)
 				return { width, height }
 			}

@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-	import { usePush } from '~/composable/usePush'
+	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import MeIndex from '~/pages/me/index.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 	import SymbolSearch from '~/components/symbol/SymbolSearch.vue'
-import Notification from './me/notification.vue'
+	import Notification from './me/notification.vue'
+	const subSymbolCodes = ref(["BTC-USDT","ETH-USDT","OKB-USDT"])
 	let push = usePush()
 	function pushSearch() {
 		push(SymbolSearch, {})
@@ -12,10 +13,55 @@ import Notification from './me/notification.vue'
 	function pushMe() {
 		push(MeIndex, {})
 	}
-    function pushNotification(){
-        push(Notification)
-    }
-	onMounted(() => {})
+	function pushNotification() {
+		push(Notification)
+	}
+
+	let subHandle = ''
+	function subSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (!subSymbolCodes.value?.length) return
+		useSymbolStore().setSubSymbols(subSymbolCodes.value)
+		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
+			if (message.data)
+				message.data.forEach(item => {
+					$ws.setTickers(item.instId, item)
+				})
+		})
+	}
+
+	function unSubSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (subHandle) {
+			$ws.unsubscribe(subHandle)
+		}
+	}
+
+	onMounted(() => {
+        subSymbols()
+    })
+
+	useWillDisappear(() => {
+		console.log('home useWillDisappear....')
+		unSubSymbols()
+	})
+	useWillAppear(() => {
+		console.log('home useWillAppear....')
+		subSymbols()
+	})
+
+	onActivated(() => {
+        console.log('home onActivated....')
+		subSymbols()
+	})
+	onDeactivated(() => {
+        console.log('home onDeactivated....')
+		unSubSymbols()
+	})
+
+	onBeforeUnmount(() => {
+		unSubSymbols()
+	})
 </script>
 <template>
 	<div class="w-full h-full">
@@ -40,15 +86,13 @@ import Notification from './me/notification.vue'
 				</div>
 			</template>
 		</NavigationBar>
-        <ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
-            <LoginCard/>
-            <div class="px-4 flex justify-between gap-3 py-2 overflow-x-auto scrollbar-hide">
-                <SymbolCard :symbol="'BTC-USDT'" class="flex-1"/>
-                <SymbolCard :symbol="'ETH-USDT'" class="flex-1"/>
-                <SymbolCard :symbol="'OKB-USDT'" class="flex-1"/>
-            </div>
-        </ScrollBar>
-		
-        
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
+			<LoginCard />
+			<div class="px-4 flex justify-between gap-3 py-2 overflow-x-auto scrollbar-hide">
+				<SymbolCard :symbol="'BTC-USDT'" class="flex-1" />
+				<SymbolCard :symbol="'ETH-USDT'" class="flex-1" />
+				<SymbolCard :symbol="'OKB-USDT'" class="flex-1" />
+			</div>
+		</ScrollBar>
 	</div>
 </template>
