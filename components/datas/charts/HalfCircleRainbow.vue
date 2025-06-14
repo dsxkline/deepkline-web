@@ -28,7 +28,7 @@
 
 				<!-- 渐变 -->
 				<radialGradient id="pulseGradient" cx="50%" cy="50%" r="50%">
-					<stop offset="0%" :stop-color="red" stop-opacity="1" />
+					<stop offset="0%" :stop-color="color" stop-opacity="1" />
 					<stop offset="100%" :stop-color="color" stop-opacity="0" />
 				</radialGradient>
 			</defs>
@@ -41,14 +41,14 @@
 
 			<!-- 背后柔光扩散圈 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.6">
-				<animate attributeName="r" values="12;30;12" dur="1s" repeatCount="indefinite" />
-				<animate attributeName="opacity" values="0.3;0.1;0.3" dur="1s" repeatCount="indefinite" />
+				<animate attributeName="r" values="12;30;12" dur="3s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
 			</circle>
 
 			<!-- 中间呼吸灯 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#pulseGradient)" filter="url(#blur)">
-				<animate attributeName="r" values="12;30;12" dur="1s" repeatCount="indefinite" />
-				<animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite" />
+				<animate attributeName="r" values="12;30;12" dur="2s" repeatCount="indefinite"  />
+				<animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
 			</circle>
 
             <!-- 圆点指示当前值 -->
