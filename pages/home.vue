@@ -42,6 +42,11 @@ import Notification from './me/notification.vue'
 		</NavigationBar>
         <ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
             <LoginCard/>
+            <div class="px-4 flex justify-between gap-3 py-2 overflow-x-auto scrollbar-hide">
+                <SymbolCard :symbol="'BTC-USDT'" class="flex-1"/>
+                <SymbolCard :symbol="'ETH-USDT'" class="flex-1"/>
+                <SymbolCard :symbol="'OKB-USDT'" class="flex-1"/>
+            </div>
         </ScrollBar>
 		
         

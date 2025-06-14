@@ -1,0 +1,127 @@
+<script setup lang="ts">
+	import { useSymbolStore } from '~/store/symbol'
+	import { type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { useStore } from '~/store/index'
+	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
+	import SymbolDetail from './SymbolDetail.vue'
+	const props = defineProps<{
+		symbol: string
+	}>()
+	const item = ref<Ticker | null>(null)
+	const change = ref<number>(0)
+	const rate = ref<number>(0)
+	const containerRef = ref(null)
+	const loading = ref(true)
+	const { $wsb, $ws } = useNuxtApp()
+	watch(
+		() => props.symbol,
+		(val, old) => {
+			$ws.removeTickerHandler(old, tickerHandler)
+			$ws.addTickerHandler(val, tickerHandler)
+			item.value = null
+			nextTick(() => {
+				tickerHandler($ws?.getTickers(props.symbol) || {})
+			})
+		}
+	)
+	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol] || {})
+
+	const tickerHandler = (data: Ticker) => {
+		// console.log('symbol', symbol, '行情tick', item.value);
+		// 涨跌额
+		change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8 || '0')
+		// 涨跌幅
+		rate.value = (change.value / parseFloat(data?.sodUtc8 || '0')) * 100
+		item.value = data
+	}
+
+	let subHandle = ''
+
+	function subSymbols() {
+		// h5 spa模式
+		if (!useStore().isH5) return
+		const { $wsb, $ws } = useNuxtApp()
+
+		subHandle = $ws.subTickers([props.symbol], (message, error) => {
+			if (useStore().isLeave) return
+			// console.log("subTickers", message.data, error);
+			if (message.data)
+				message.data.forEach(item => {
+					// console.log('subitem',item.instId,item)
+					// 同步到store
+					// useSymbolStore().setTickets(item.instId, item)
+					$ws.setTickers(item.instId, item)
+
+					// bgFlicker(item)
+				})
+		})
+	}
+
+	function unSubSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (subHandle) {
+			$ws.unsubscribe(subHandle)
+		}
+	}
+
+	const push = usePush()
+	function clickSymbol(item?: Instruments) {
+		// 是否选中返回
+		if (useStore().isH5) {
+			const params = {
+				symbol: item?.instId
+			}
+			push(SymbolDetail, params)
+			return
+		}
+	}
+
+	onMounted(() => {
+		$ws.addTickerHandler(props.symbol, tickerHandler)
+		tickerHandler($ws.getTickers(props.symbol))
+		subSymbols()
+	})
+
+	useWillDisappear(() => {
+		console.log('symbol-market-datas useWillDisappear....')
+		unSubSymbols()
+	})
+	useWillAppear(() => {
+		console.log('symbol-market-datas useWillAppear....')
+		subSymbols()
+	})
+
+	onBeforeUnmount(() => {
+		unSubSymbols()
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		item.value = null
+		containerRef.value = null
+	})
+</script>
+<template>
+	<div :class="['symbol-card flex flex-col justify-between p-2 rounded-md', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']" @click="clickSymbol(symbolObj)">
+		<div class="flex flex-col items-center justify-center text-sm">
+			<SymbolName :symbol="symbolObj" v-if="item?.last" />
+			<span v-else>--</span>
+			<b v-autosize="18" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
+				<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="18" />
+			</b>
+			<span v-else>-</span>
+			<div v-if="item?.last" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')"><span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz,'')  }}</span><span>{{formatChangeRate(rate, 2)}}%</span></div>
+			<div class="text-[10px]" v-else>--</div>
+		</div>
+	</div>
+</template>
+
+<style lang="less" scoped>
+	.default-linear {
+		background: linear-gradient(to bottom, rgb(var(--color-text-main) / 0.05), rgb(var(--color-text-main) / 0));
+	}
+	.green-linear {
+		background: linear-gradient(to bottom, rgb(var(--color-green) / 0.1), rgb(var(--color-green) / 0));
+	}
+	.red-linear {
+		background: linear-gradient(to bottom, rgb(var(--color-red) / 0.1), rgb(var(--color-red) / 0));
+	}
+</style>

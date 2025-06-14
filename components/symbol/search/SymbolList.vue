@@ -445,7 +445,7 @@
 					>
 						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.instId" /></div>
 						<div class="col-span-2 text-grey flex items-center">
-							<SymbolName :symbol="item" />
+							<SymbolName :symbol="item" :volume="true"/>
 						</div>
 						<div class="justify-end pr-2"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>
