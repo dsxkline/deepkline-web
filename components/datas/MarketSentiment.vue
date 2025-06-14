@@ -31,14 +31,14 @@
 		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading">
 			<div class="sentiment-chart relative w-3/5">
 				<div class="absolute w-full h-full flex flex-col items-center justify-end" :style="'color:' + color">
-					<b class="pt-6 text-xl">{{ value }}</b>
+					<b class="pt-6 text-xl font-extrabold roboto-bold">{{ value }}</b>
 					<span class="text-xs" v-if="value">贪婪</span>
 					<span class="text-xs" v-else> - </span>
 				</div>
 				<ChartsHalfCircleRainbow :value="value" v-model:color="color" class="w-full" />
 			</div>
 			<div class="flex items-center justify-center pt-2">
-				<span class="text-xs px-3">过渡贪婪表明投资者过于乐观，行情丞待修正。</span>
+				<span class="text-xs px-3 leading-5">过渡贪婪表明投资者过于乐观，行情丞待修正。</span>
 			</div>
 		</div>
 		<div class="rounded-md bg-[--transparent03] flex justify-start items-center px-4 min-h-[100px]" v-else>
