@@ -106,7 +106,7 @@
 		</div>
 	</div>
 
-	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5 && useNuxtApp().$isMobile.value">
+	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5">
 		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
 		<!-- 使用缓存 -->
 		<div class="right-container">

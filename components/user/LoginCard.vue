@@ -40,8 +40,8 @@ onBeforeUnmount(() => {
 			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="clickHandle">开设账户</button>
 			<button class="bt-brand flex-1 !py-2 !text-sm !border-0" @click="clickHandle">登录/注册</button>
 		</div>
-		<div class="flex items-center justify-between px-4 gap-3 mb-4" v-else-if="!hideButtons">
-			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="pushAddAccount">开设账户</button>
+		<div class="flex items-center px-4 gap-3 mb-4" v-else-if="!hideButtons">
+			<button class="bt-brand !py-2 !text-sm !border-0 !w-max !px-7" @click="pushAddAccount">开设账户</button>
 		</div>
 	</div>
 </template>
