@@ -1,7 +1,7 @@
 <!-- CryptoChangeChart.vue -->
 <template>
 	<div ref="chartRef" class="w-full py-2">
-		<div class="w-full h-4 text-[10px] text-white rounded-md overflow-hidden flex justify-between items-center" v-if="!loading">
+		<div class="w-full h-4 text-[10px] text-white rounded-sm overflow-hidden flex justify-between items-center" v-if="!loading">
 			<div
 				class="bg-green/70 flex justify-start items-center h-full relative"
 				:style="{
@@ -42,7 +42,7 @@
 			</div>
 		</div>
 
-    <div class="w-full h-4 text-[10px] text-white rounded-md overflow-hidden flex justify-between items-center" v-else>
+    <div class="w-full h-4 text-[10px] text-white rounded-sm overflow-hidden flex justify-between items-center" v-else>
 			<el-skeleton :rows="0" animated>
 				<template #template>
 					<el-skeleton-item variant="p" style="width: 100%; height: 10px" />
