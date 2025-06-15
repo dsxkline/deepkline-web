@@ -16,14 +16,18 @@
 				</linearGradient>
 
                 <linearGradient id="innerLine" gradientUnits="userSpaceOnUse" x1="40" y1="100" x2="180" y2="100">
-					<stop offset="0%" stop-color="#ffffff" stop-opacity="0.3"/>
-					<stop offset="100%" stop-color="#ffffff" stop-opacity="0.0"/>
+					<stop offset="0%" :stop-color="red" stop-opacity="0.3"/>
+					<stop offset="100%" :stop-color="color" stop-opacity="0.1"/>
 				</linearGradient>
 
 				<!-- 定义从圆心发散的径向渐变 -->
 				<radialGradient id="grad1"  cx="50%" cy="50%" r="50%">
 					<stop offset="0%" :stop-color="red" stop-opacity="1"/>
 					<stop offset="100%" :stop-color="color" stop-opacity="0.5"/>
+				</radialGradient>
+                <radialGradient id="grad2"  cx="100%" cy="100%" r="100%">
+					<stop offset="0%" :stop-color="red" stop-opacity="0"/>
+					<stop offset="100%" :stop-color="color" stop-opacity="1"/>
 				</radialGradient>
 
 				<!-- 模糊滤镜 -->
@@ -43,7 +47,7 @@
             <path :d="describeArc(100, 100, radius-10, -90, 90)" fill="none" stroke="url(#innerLine)" stroke-width="1" />
 
 			<!-- 扇形区域 -->
-			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad1)" fill-opacity="0.1" />
+			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad2)" fill-opacity="0.2" />
 
 			<!-- 背后柔光扩散圈 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#grad1)" filter="url(#blur)" opacity="1">
