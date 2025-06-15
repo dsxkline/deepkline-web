@@ -57,8 +57,8 @@
 
 			<!-- 中间呼吸灯 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#grad1)" filter="url(#blur)">
-				<animate attributeName="r" values="6;20;6" dur="3s" repeatCount="indefinite"  />
-				<animate attributeName="opacity" values="1;0.0;0" dur="3s" repeatCount="indefinite" />
+				<animate attributeName="r" values="6;30" dur="3s" repeatCount="indefinite"  />
+				<animate attributeName="opacity" values="1;0.5;0" dur="3s" repeatCount="indefinite" />
 			</circle>
 
             <!-- 圆点指示当前值 -->

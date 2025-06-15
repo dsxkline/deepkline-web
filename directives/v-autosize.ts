@@ -19,12 +19,12 @@ export const vAutosize: Directive<HTMLElement, number> = {
 
       el.style.fontSize = `${defaultSize}px`
       el.style.whiteSpace = 'nowrap'
-      el.style.display = 'inline-block'
+      // el.style.display = 'inline-block'
 
       const scale = contentWidth / el.scrollWidth
 
       if (scale < 1) {
-        el.style.fontSize = `${defaultSize * scale}px`
+        el.style.fontSize = `${Math.max(8,defaultSize * scale)}px`
       } else {
         el.style.fontSize = `${defaultSize}px`
       }

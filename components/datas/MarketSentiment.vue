@@ -54,5 +54,8 @@
 				</template>
 			</el-skeleton>
 		</div>
+
+        <!-- 涨跌分布 -->
+         <ChartsCryptoChangeChart/>
 	</div>
 </template>
