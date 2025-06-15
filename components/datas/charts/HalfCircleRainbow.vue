@@ -40,15 +40,15 @@
 			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad1)" fill-opacity="0.1" />
 
 			<!-- 背后柔光扩散圈 -->
-			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.6">
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.5">
 				<animate attributeName="r" values="12;40;12" dur="4s" repeatCount="indefinite" />
-				<animate attributeName="opacity" values="0.6;0.1;0.6" dur="4s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="0.6;0.1;0.0" dur="4s" repeatCount="indefinite" />
 			</circle>
 
 			<!-- 中间呼吸灯 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#pulseGradient)" filter="url(#blur)">
-				<animate attributeName="r" values="12;20;12" dur="2s" repeatCount="indefinite"  />
-				<animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+				<animate attributeName="r" values="12;25;12" dur="4s" repeatCount="indefinite"  />
+				<animate attributeName="opacity" values="1;0.3;0" dur="4s" repeatCount="indefinite" />
 			</circle>
 
             <!-- 圆点指示当前值 -->
@@ -168,7 +168,7 @@
 		}
 	)
 
-	const animation = useRequestAnimation()
+	// const animation = useRequestAnimation()
 
 	onMounted(() => {
 		// let from = 0
@@ -184,6 +184,6 @@
 		// })
 	})
 	onBeforeUnmount(() => {
-		animation.stop()
+		// animation.stop()
 	})
 </script>
