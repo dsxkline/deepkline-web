@@ -22,9 +22,9 @@
 				</radialGradient>
 
 				<!-- 模糊滤镜 -->
-				<filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+				<!-- <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
 					<feGaussianBlur in="SourceGraphic" stdDeviation="8" />
-				</filter>
+				</filter> -->
 
 				<!-- 渐变 -->
 				<radialGradient id="pulseGradient" cx="50%" cy="50%" r="50%">
@@ -41,13 +41,13 @@
 
 			<!-- 背后柔光扩散圈 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.6">
-				<animate attributeName="r" values="12;30;12" dur="3s" repeatCount="indefinite" />
-				<animate attributeName="opacity" values="0.3;0.1;0.3" dur="3s" repeatCount="indefinite" />
+				<animate attributeName="r" values="12;40;12" dur="4s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="0.6;0.1;0.6" dur="4s" repeatCount="indefinite" />
 			</circle>
 
 			<!-- 中间呼吸灯 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#pulseGradient)" filter="url(#blur)">
-				<animate attributeName="r" values="12;30;12" dur="2s" repeatCount="indefinite"  />
+				<animate attributeName="r" values="12;20;12" dur="2s" repeatCount="indefinite"  />
 				<animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
 			</circle>
 
