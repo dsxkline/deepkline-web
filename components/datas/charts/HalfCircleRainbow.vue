@@ -16,9 +16,9 @@
 				</linearGradient>
 
 				<!-- 定义从圆心发散的径向渐变 -->
-				<radialGradient id="grad1" cx="100" cy="100" r="80" gradientUnits="userSpaceOnUse">
-					<stop offset="0%" :stop-color="red" />
-					<stop offset="100%" :stop-color="color" />
+				<radialGradient id="grad1"  cx="50%" cy="50%" r="50%">
+					<stop offset="0%" :stop-color="red" stop-opacity="1"/>
+					<stop offset="100%" :stop-color="color" stop-opacity="0.5"/>
 				</radialGradient>
 
 				<!-- 模糊滤镜 -->
@@ -40,15 +40,15 @@
 			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad1)" fill-opacity="0.1" />
 
 			<!-- 背后柔光扩散圈 -->
-			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#pulseGradient)" filter="url(#blur)" opacity="0.5">
-				<animate attributeName="r" values="12;40;12" dur="4s" repeatCount="indefinite" />
-				<animate attributeName="opacity" values="0.6;0.1;0.0" dur="4s" repeatCount="indefinite" />
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#grad1)" filter="url(#blur)" opacity="1">
+				<animate attributeName="r" values="12;40;12" dur="3s" repeatCount="indefinite" />
+				<animate attributeName="opacity" values="0.6;0.0;0.0" dur="3s" repeatCount="indefinite" />
 			</circle>
 
 			<!-- 中间呼吸灯 -->
-			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#pulseGradient)" filter="url(#blur)">
-				<animate attributeName="r" values="12;25;12" dur="4s" repeatCount="indefinite"  />
-				<animate attributeName="opacity" values="1;0.3;0" dur="4s" repeatCount="indefinite" />
+			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="12" fill="url(#grad1)" filter="url(#blur)">
+				<animate attributeName="r" values="6;20;6" dur="3s" repeatCount="indefinite"  />
+				<animate attributeName="opacity" values="1;0.0;0" dur="3s" repeatCount="indefinite" />
 			</circle>
 
             <!-- 圆点指示当前值 -->
