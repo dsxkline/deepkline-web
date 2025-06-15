@@ -177,7 +177,7 @@
 	})
 </script>
 <template>
-	<div class="w-full h-full flex flex-col justify-between" ref="containerRef">
+	<div class="flex flex-col justify-between" ref="containerRef">
 		<div class="container w-full h-full flex-1" v-show="!loading && !error" :style="{ width: width > 0 ? width + 'px' : '100%', height: height > 0 ? height + 'px' : '100%' }">
 			<div class="chart w-full h-full" ref="chart"></div>
 		</div>

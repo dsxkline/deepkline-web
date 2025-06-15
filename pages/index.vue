@@ -19,10 +19,9 @@
 	})
 
 	const active = ref(0)
-	const activeMenu = computed(() => useStore().isH5?menus5.value && menus5.value[active.value]:menus.value && menus.value[active.value])
+	const activeMenu = computed(() => (useStore().isH5 && useNuxtApp().$isMobile.value ? menus5.value && menus5.value[active.value] : menus.value && menus.value[active.value]))
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
-		
 		{
 			name: '行情',
 			// iconSelected: markRaw(Logo),
@@ -97,9 +96,18 @@
 	})
 </script>
 <template>
-	<div class="main-container flex justify-between flex-row w-full h-full">
-		<LeftMenu @menuHandler="menuHandler" :menus="menus" v-if="menus" v-show="!useStore().isH5"></LeftMenu>
-		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5" v-show="useStore().isH5"></LeftMenu>
+	<div class="main-web main-container flex justify-between flex-row w-full h-full" v-if="!useStore().isH5 || !useNuxtApp().$isMobile.value">
+		<LeftMenu @menuHandler="menuHandler" :menus="menus" v-if="menus"></LeftMenu>
+		<!-- 使用缓存 -->
+		<div class="right-container">
+			<KeepAlive>
+				<component :is="activeMenu.contentComp" v-if="activeMenu" :key="activeMenu.name" />
+			</KeepAlive>
+		</div>
+	</div>
+
+	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5 && useNuxtApp().$isMobile.value">
+		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>
@@ -135,7 +143,17 @@
 		}
 	}
 
+	.main-h5 {
+		display: none;
+	}
+
 	@media (max-width: 999px) {
+		.main-h5 {
+			display: flex;
+		}
+		.main-web {
+			display: none;
+		}
 		.main-container {
 			height: var(--body-height);
 			width: 100%;
