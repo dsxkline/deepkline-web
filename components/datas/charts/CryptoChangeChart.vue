@@ -3,7 +3,7 @@
 	<div ref="chartRef" class="w-full py-2">
 		<div class="w-full h-4 text-[10px] text-white rounded-md overflow-hidden flex justify-between items-center" v-if="!loading">
 			<div
-				class="bg-green/50 flex justify-start items-center h-full relative"
+				class="bg-green/70 flex justify-start items-center h-full relative"
 				:style="{
 					width: `${upValue}%`,
 					'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)'
@@ -27,7 +27,7 @@
 				</div>
 			</div>
 			<div
-				class="bg-red/50 flex justify-end items-center h-full relative"
+				class="bg-red/70 flex justify-end items-center h-full relative"
 				:style="{
 					width: `${downValue}%`,
 					'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)'
