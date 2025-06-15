@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { useAvatar } from '~/composable/useAvatar';
 import { usePush, usePushUp } from '~/composable/usePush';
+import ExchangeIndex from '~/pages/exchange/index.vue';
 import Login from '~/pages/login/index.vue';
-import Avatar from '~/pages/me/avatar.vue';
 import { useUserStore } from '~/store/user';
-import defaultAvatar from '~/assets/images/default-avatar.svg'
+const props = defineProps<{
+	hideButtons?:boolean
+	title?:string
+	desc?:string
+}>();
 const pushUp = usePushUp()
 const clickHandle = ()=>{
     if(!useUserStore()?.user?.id){
@@ -12,12 +15,9 @@ const clickHandle = ()=>{
     }
 }
 const usepush = usePush()
-function pushAvatar(){
-		usepush(Avatar)
-	}
-const imageOnError = (event: Event) => {
-		if (event.target) (event.target as HTMLImageElement).src = defaultAvatar
-	}
+const pushAddAccount = ()=>{
+	usepush(ExchangeIndex)
+}
 onBeforeUnmount(() => {
     // Cleanup or additional logic if needed
     console.log('UserFace component is being destroyed');
@@ -25,20 +25,23 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-	<div class="pb-4">
+	<div>
 		<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
 			<div>
-				连接全球顶尖经纪商
-				<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
+				{{ title }}
+				<p class="text-sm font-normal text-grey py-2" v-if="desc">{{ desc }}</p>
 			</div>
 
 			<div class="w-20 h-20 relative">
 				<ExchangeBannerIcon class="absolute right-[-30%] top-[-30%] w-32" />
 			</div>
 		</h1>
-		<div class="flex items-center justify-between px-4 gap-3">
-			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="clickHandle">注册</button>
-			<button class="bt-brand flex-1 !py-2 !text-sm !border-0" @click="clickHandle">登录</button>
+		<div class="flex items-center justify-between px-4 gap-3 mb-4" v-if="!useUserStore().user">
+			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="clickHandle">开设账户</button>
+			<button class="bt-brand flex-1 !py-2 !text-sm !border-0" @click="clickHandle">登录/注册</button>
+		</div>
+		<div class="flex items-center justify-between px-4 gap-3 mb-4" v-else-if="!hideButtons">
+			<button class="bt-default flex-1 !py-2 !text-sm !border-0 glass overflow-hidden" @click="pushAddAccount">开设账户</button>
 		</div>
 	</div>
 </template>

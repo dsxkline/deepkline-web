@@ -26,7 +26,7 @@
 	})
 </script>
 <template>
-	<div class="market-sentiment p-4">
+	<div class="market-sentiment px-4 py-2">
 		<h3 class="pb-3">市场情绪</h3>
 		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading">
 			<div class="sentiment-chart relative w-3/5">

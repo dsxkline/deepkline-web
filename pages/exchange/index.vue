@@ -61,16 +61,7 @@
 			</template>
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight+'px' }" :always="false">
-			<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
-				<div>
-					连接全球顶尖经纪商
-					<p class="text-sm font-normal text-grey py-2">实战才是检验真理的唯一标准</p>
-				</div>
-
-				<div class="w-20 h-20 relative">
-					<ExchangeBannerIcon class="absolute right-[-30%] top-[-30%] w-32" />
-				</div>
-			</h1>
+			<LoginCard :hide-buttons="true" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'"/>
 			<TabBar :menus="menus" />
 		</ScrollBar>
 	</div>

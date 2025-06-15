@@ -2,14 +2,10 @@
 	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import MeIndex from '~/pages/me/index.vue'
 	import { useSymbolStore } from '~/store/symbol'
-	import { useStore } from '~/store'
-	import SymbolSearch from '~/components/symbol/SymbolSearch.vue'
+	import { useUserStore } from '~/store/user'
 	import Notification from './me/notification.vue'
-	const subSymbolCodes = ref(["BTC-USDT","ETH-USDT","OKB-USDT"])
+	const subSymbolCodes = ref(['BTC-USDT', 'ETH-USDT', 'OKB-USDT'])
 	let push = usePush()
-	function pushSearch() {
-		push(SymbolSearch, {})
-	}
 	function pushMe() {
 		push(MeIndex, {})
 	}
@@ -38,8 +34,8 @@
 	}
 
 	onMounted(() => {
-        subSymbols()
-    })
+		subSymbols()
+	})
 
 	useWillDisappear(() => {
 		console.log('home useWillDisappear....')
@@ -51,11 +47,11 @@
 	})
 
 	onActivated(() => {
-        console.log('home onActivated....')
+		console.log('home onActivated....')
 		subSymbols()
 	})
 	onDeactivated(() => {
-        console.log('home onDeactivated....')
+		console.log('home onDeactivated....')
 		unSubSymbols()
 	})
 
@@ -69,7 +65,7 @@
 			<template #left>
 				<div class="flex items-center w-full">
 					<button @click="pushMe" class="mx-4"><MenuIcon class="w-6 h-6 text-brand" /></button>
-					<SymbolSearchBar/>
+					<SymbolSearchBar />
 				</div>
 			</template>
 			<template #right>
@@ -81,10 +77,13 @@
 				</div>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
-			<LoginCard />
-			<SymbolCards/>
-            <MarketSentiment/>
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height))' }" :always="false">
+			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) + 1px)' }">
+				<LoginCard v-if="!useUserStore().accounts?.length" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'" />
+				<SymbolCards />
+				<MarketSentiment />
+                <MarketCategories/>
+			</div>
 		</ScrollBar>
 	</div>
 </template>

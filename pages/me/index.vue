@@ -212,7 +212,7 @@
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
 			<UserFace v-if="useUserStore().user" />
-			<LoginCard v-else/>
+			<LoginCard v-else :title="'欢迎回来'" :desc="'实战才是检验真理的唯一标准'"/>
 			<MenuList :menus="menus" :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height) - 170px)' }"/>
 			<div class="my-3 px-3 pb-5 flex flex-col items-center justify-center">
 				<button class="logout-bt glass w-full bt-default !py-3 !rounded-full mb-3 !text-sm" @click="logout" v-if="useUserStore().user">退出登录 <LogoutIcon class="w-4 ml-2"/></button>
