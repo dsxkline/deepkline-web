@@ -19,7 +19,8 @@
 	})
 
 	const active = ref(0)
-	const activeMenu = computed(() => (useStore().isH5 && useNuxtApp().$isMobile.value ? menus5.value && menus5.value[active.value] : menus.value && menus.value[active.value]))
+	const activeMenu = computed(() => (menus.value && menus.value[active.value]))
+	const activeMenuH5 = computed(() => (menus5.value && menus5.value[active.value]))
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
 		{
@@ -92,6 +93,7 @@
 
 	onBeforeUnmount(() => {
 		menus.value = null
+		menus5.value = null
 		console.log('onBeforeUnmount.............................')
 	})
 </script>
@@ -111,7 +113,7 @@
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>
-				<component :is="activeMenu.contentComp" v-if="activeMenu" :key="activeMenu.name" />
+				<component :is="activeMenuH5.contentComp" v-if="activeMenuH5" :key="activeMenuH5.name" />
 			</KeepAlive>
 		</div>
 	</div>
