@@ -41,16 +41,16 @@
 				<span class="text-xs px-3 leading-5">过渡贪婪表明投资者过于乐观，行情丞待修正。</span>
 			</div>
 		</div>
-		<div class="rounded-md bg-[--transparent03] flex justify-start items-center px-4 min-h-[100px]" v-else>
-			<el-skeleton animated>
-				<template #template style="--el-skeleton-circle-size: 100px">
-					<el-skeleton-item variant="circle" style="width: 60px; height: 60px" />
+		<div class="rounded-md bg-[--transparent03] flex justify-center items-center px-4 min-h-[75px]" v-else>
+			<el-skeleton animated class="flex items-center">
+				<template #template style="--el-skeleton-circle-size: 100px" >
+					<el-skeleton-item variant="circle" style="width: 60px; height: 60px"/>
 				</template>
 			</el-skeleton>
-			<el-skeleton :rows="0" animated>
+			<el-skeleton :rows="0" animated class="flex flex-col justify-center">
 				<template #template>
 					<el-skeleton-item variant="p" style="width: 100%; height: 14px" />
-					<el-skeleton-item variant="p" style="width: 40%; height: 14px" />
+					<el-skeleton-item variant="p" style="width: 40%; height: 14px" class="mt-2" />
 				</template>
 			</el-skeleton>
 		</div>
