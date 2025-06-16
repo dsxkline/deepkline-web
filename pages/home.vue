@@ -81,6 +81,7 @@
 				<SymbolCards />
 				<MarketSentiment />
                 <MarketCategories/>
+                <MarketVolatility/>
 			</div>
 		</ScrollBar>
 	</div>

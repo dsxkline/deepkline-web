@@ -8,7 +8,7 @@
 		titleComp?: Component
 		contentComp?: Component
 		contentParams?: Record<any, any>
-		onClick?: () => {}
+		onClick?: () => void
 	}
 	const props = defineProps({
 		menus: {
@@ -149,7 +149,7 @@
 </script>
 
 <template>
-	<div class="tabbar-container flex overflow-hidden flex-col" :style="[height ? `height:${height}px` : 'auto']">
+	<div class="tabbar-container flex overflow-hidden flex-col overflow-x-scroll scrollbar-hide" :style="[height ? `height:${height}px` : 'auto']">
 		<div class="tabbar-header px-4 w-full relative" ref="tabbarHeader">
 			<ul class="flex py-1 w-max h-full text-base *:mx-2">
 				<li v-for="(item, index) in menus" :key="index" v-click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
