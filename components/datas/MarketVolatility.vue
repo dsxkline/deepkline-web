@@ -48,8 +48,8 @@
 	onMounted(() => {})
 </script>
 <template>
-	<div class="w-full h-full px-4 py-2">
-		<h3 class="pb-0 flex justify-between items-center">
+	<div class="w-full h-full px-4 py-4">
+		<h3 class="pb-0 flex justify-between items-center font-bold">
 			异动信号 <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
 		<TabBar :menus="menus" />

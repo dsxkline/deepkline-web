@@ -12,7 +12,7 @@
 </script>
 <template>
 	<div class="market-category px-4 py-2">
-		<h3 class="pb-3 flex justify-between items-center">
+		<h3 class="pb-3 flex justify-between items-center font-bold">
 			热门板块 <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
 		<div class="w-full overflow-x-scroll scrollbar-hide">
