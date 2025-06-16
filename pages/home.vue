@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
+	import { useActivated, useDeactivated, usePush, useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import MeIndex from '~/pages/me/index.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useUserStore } from '~/store/user'
@@ -46,17 +46,15 @@
 		subSymbols()
 	})
 
-	onActivated(() => {
-		console.log('home onActivated....')
-		subSymbols()
-	})
-	onDeactivated(() => {
-		console.log('home onDeactivated....')
-		unSubSymbols()
-	})
+	useActivated()
+	useDeactivated()
 
 	onBeforeUnmount(() => {
 		unSubSymbols()
+	})
+
+    defineExpose({
+		...useRefreshChildEvent()
 	})
 </script>
 <template>

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+	import { useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const mainSplit = ref()
@@ -9,19 +9,18 @@
 		mainSplit.value && useStore().addSplitScreen(mainSplit.value)
 		twoSplit.value && useStore().addSplitScreen(twoSplit.value)
 		if (useStore().bodyWidth < 1400 && mainSplit.value) useStore().setSplitScreen(2)
-		
 	})
 	onBeforeUnmount(() => {
 		mainSplit.value = null
 		twoSplit.value = null
 	})
 
-	useWillDisappear(()=>{
+	useWillDisappear(() => {
 		// 写hook方法
 		console.log('page market willdisappear...')
 	})
 
-	useWillAppear(()=>{
+	useWillAppear(() => {
 		console.log('page market willappear...')
 	})
 
@@ -40,7 +39,9 @@
 			}
 		}
 	)
-
+	defineExpose({
+		...useRefreshChildEvent()
+	})
 </script>
 <template>
 	<div class="pc-market w-full h-full" v-if="!useNuxtApp().$isMobile.value && !useStore().isH5">
@@ -92,7 +93,7 @@
 			display: none;
 		}
 		.h5-market {
-			display:unset;
+			display: unset;
 		}
 	}
 </style>

@@ -5,6 +5,7 @@
 	import { Period, type Instruments } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const chart = ref(null)
 	const period = ref('1D')
 	const loading = ref(true)
@@ -135,7 +136,7 @@
 			const parentElement = containerRef.value as HTMLElement
 			width.value = parentElement.offsetWidth
 			height.value = parentElement.offsetHeight
-			echart && echart.resize({ width: width.value,height:height.value })
+			echart && echart.resize({ width: width.value, height: height.value })
 		}
 	}
 
@@ -156,14 +157,11 @@
 			}
 		}
 	})
-	onDeactivated(() => {
-		if (echart) {
-			echart.dispose()
-		}
-		if (resizeObserver) {
-			resizeObserver.disconnect()
-		}
+
+	useWillAppear(() => {
+		createEchart()
 	})
+
 	onBeforeUnmount(() => {
 		chart.value = null
 		echart && echart.dispose()

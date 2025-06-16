@@ -3,6 +3,7 @@
 	import type { DrawerProps } from 'element-plus'
 	import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import { getParentRefreshComponent, useRefreshChildEvent } from '~/composable/usePush'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
@@ -104,7 +105,7 @@
 		// 获取上一级
 		let parent = props.parent
 		if (parent) {
-			const app = getAppComponent(parent)
+			const app = getParentRefreshComponent(parent)
 			if (app.exposed?.refreshChildWillAppear) app.exposed?.refreshChildWillAppear()
 			while (parent) {
 				// pop的时候返回执行自定义poped方法
@@ -129,16 +130,9 @@
 	})
 
 	onUnmounted(() => {
-		childWillAppearlisteners.value = []
-		childWillDisAppearlisteners.value = []
-
 		usePushStore().setPushState(false)
-
 		console.log('push onUnmounted')
 	})
-
-	const animation = useRequestAnimation()
-	const animationParent = useRequestAnimation()
 
 	const setDrawerBodyStyle = (visible: boolean) => {
 		// 处理auto
@@ -172,68 +166,6 @@
 				? 'translateY(var(--body-height))'
 				: 'translateX(var(--body-width))'
 
-			// let from = window.innerWidth
-			// let to = 0
-			// if (props.direction == 'rtl') {
-			// 	from = visible ? window.innerWidth : 0
-			// 	to = visible ? 0 : window.innerWidth
-			// }
-			// if (props.direction == 'ltr') {
-			// 	from = visible ? -window.innerWidth : 0
-			// 	to = visible ? 0 : -window.innerWidth
-			// }
-			// if (props.direction == 'btt') {
-			// 	from = visible ? window.innerHeight : window.innerHeight - h
-			// 	to = visible ? window.innerHeight - h : window.innerHeight
-			// }
-
-			// animation.start({
-			// 	from: from,
-			// 	to: to,
-			// 	duration: 500,
-			// 	onUpdate: (value: number) => {
-			// 		const transform = props.direction == 'btt' ? `translateY(${value}px)` : `translateX(${value}px)`
-			// 		if (drawerBody.value) {
-			// 			drawerBody.value.style.transform = transform
-			// 		}
-			// 	}
-			// })
-
-			// // 上一个轻微退出
-			// nextTick(() => {
-			// 	if (props.parent?.vnode.el && props.direction == 'rtl') {
-			// 		const parentDrawer = props.parent.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
-			// 		console.log('parentDrawer', parentDrawer)
-			// 		if (parentDrawer) {
-			// 			// parentDrawer.style.transform = 'translateX(-30%)'
-			// 			animationParent.start({
-			// 				from: visible ? 0 : -(window.innerWidth * 0.3),
-			// 				to: visible ? -(window.innerWidth * 0.3) : 0,
-			// 				duration: 500,
-			// 				onUpdate: (value: number) => {
-			// 					const transform = `translateX(${value}px)`
-			// 					parentDrawer.style.transform = transform
-			// 				}
-			// 			})
-			// 		} else {
-			// 			const __nuxt = document.querySelector('#__nuxt') as HTMLElement
-			// 			if (__nuxt) {
-			// 				// __nuxt.style.transform = 'translateX(-30%)'
-			// 				animationParent.start({
-			// 					from: visible ? 0 : -(window.innerWidth * 0.3),
-			// 					to: visible ? -(window.innerWidth * 0.3) : 0,
-			// 					duration: 500,
-			// 					onUpdate: (value: number) => {
-			// 						const transform = `translateX(${value}px)`
-			// 						__nuxt.style.transform = transform
-			// 					}
-			// 				})
-			// 			}
-			// 		}
-			// 	}
-			// })
-
-			console.log('h >= window.innerHeight', props.size, h, window.innerHeight)
 			if (h >= window.innerHeight) bttFull.value = true
 			else bttFull.value = false
 		}
@@ -275,37 +207,9 @@
 		})
 	})
 
-	function getAppComponent(instance: ComponentInternalInstance) {
-		let inst = instance
-		while (inst?.parent) {
-			inst = inst.parent
-			if (inst?.type.__name == 'app') break
-			// console.log('parent.....',inst)
-		}
-		return inst
-	}
-
-	// 控制子组件将要显示回调
-	const childWillAppearlisteners = ref<(() => void)[]>([])
-	provide('registerChildWillAppear', (refreshFn: () => void) => {
-		// console.log('注册进来了吗',refreshFn)
-		childWillAppearlisteners.value.push(refreshFn)
-	})
-	let refreshChildWillAppear = () => {
-		childWillAppearlisteners.value.forEach(fn => fn())
-	}
-	// 控制子组件将要隐藏回调
-	const childWillDisAppearlisteners = ref<(() => void)[]>([])
-	provide('registerChildWillDisAppear', (refreshFn: () => void) => {
-		childWillDisAppearlisteners.value.push(refreshFn)
-	})
-	let refreshChildWillDisAppear = () => {
-		childWillDisAppearlisteners.value.forEach(fn => fn())
-	}
 
 	defineExpose({
-		refreshChildWillAppear,
-		refreshChildWillDisAppear
+		...useRefreshChildEvent()
 	})
 </script>
 

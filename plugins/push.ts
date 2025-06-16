@@ -3,6 +3,7 @@ import { defineComponent, ref, h, render, createVNode, type ComponentInstance, t
 import { usePushStore } from '@/store/push'
 import Push from '~/components/app/Push.vue'
 import PushView from '~/components/app/PushView.vue'
+import { getParentRefreshComponent } from '~/composable/usePush'
 
 function findRoute(path: string, routes: any) {
 	try {
@@ -29,23 +30,14 @@ function findRoute(path: string, routes: any) {
 	return {}
 }
 
-function getAppComponent(instance: ComponentInternalInstance) {
-	let inst = instance
-	while (inst?.parent) {
-		inst = inst.parent
-		if (inst?.type.__name == 'app') break
-	}
-	return inst
-}
-
 let pushing = false
 const pushHandle = function (this: ComponentInternalInstance | null, comp: any, params = {}, direction = 'rtl', size = '100%') {
 	if (pushing) return
 	pushing = true
-	// 执行目标willDisappear方法
+	// 执行上一个组件实例的willDisappear方法
 	let instance = this
 	if (instance) {
-		const app = getAppComponent(instance)
+		const app = getParentRefreshComponent(instance)
 		if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
 	}
 	const pushStore = usePushStore()

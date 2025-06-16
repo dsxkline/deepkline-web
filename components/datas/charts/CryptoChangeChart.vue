@@ -1,4 +1,35 @@
 <!-- CryptoChangeChart.vue -->
+<script setup lang="ts">
+	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+
+	const upValue = ref(0)
+	const downValue = ref(0)
+	const animation = useRequestAnimation()
+	const loading = ref(true)
+	function setValue(up: number, down: number) {
+		animation.start({
+			from: 0,
+			to: up,
+			duration: 600,
+			onUpdate: (val: number) => {
+				upValue.value = val
+        downValue.value = val * down/up
+			}
+		})
+	}
+
+	
+
+	onMounted(() => {
+		setTimeout(() => {
+			loading.value = false
+			setValue(54.5, 15.8)
+		}, 0)
+	})
+	onBeforeUnmount(() => {
+		animation.stop()
+	})
+</script>
 <template>
 	<div ref="chartRef" class="w-full py-2">
 		<div class="w-full h-4 text-[10px] text-white rounded-sm overflow-hidden flex justify-between items-center" v-if="!loading">
@@ -54,34 +85,7 @@
 	</div>
 </template>
 
-<script setup lang="ts">
-	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 
-	const upValue = ref(0)
-	const downValue = ref(0)
-	const animation = useRequestAnimation()
-	const loading = ref(true)
-	function setValue(up: number, down: number) {
-		animation.start({
-			from: 0,
-			to: up,
-			duration: 600,
-			onUpdate: (val: number) => {
-				upValue.value = val
-        downValue.value = val * down/up
-			}
-		})
-	}
-	onMounted(() => {
-		setTimeout(() => {
-			loading.value = false
-			setValue(54.5, 15.8)
-		}, 0)
-	})
-	onBeforeUnmount(() => {
-		animation.stop()
-	})
-</script>
 
 <style scoped>
 	/* 保证图表容器有尺寸 */
