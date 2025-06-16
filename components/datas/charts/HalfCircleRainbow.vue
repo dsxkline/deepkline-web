@@ -80,10 +80,10 @@
 	const emit = defineEmits(['update:color'])
 
 	// 红
-	const red = ref('#FF4500')
-	const orange = ref('#FFA500')
+	const red = ref('#db1b5d')
+	const orange = ref('#db401b')
 	const yellow = ref('#EEB422')
-	const green = ref('#32CD32')
+	const green = ref('#2dbd85')
 
 	const radius = 80
 	const cx = 100
