@@ -75,7 +75,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		htmlAttrs: {
 			class: colorMode.value
 		},
-		meta: [{ name: 'theme-color', content: colorMode.value == 'dark' ? '#1e0b2c' : '#ffffff' }]
+		meta: [{ name: 'theme-color', content: colorMode.value == 'dark' ? '#1e0b2c' : '#ffffff' }],
+		link: [
+			{
+				rel: 'manifest',
+				href: '/api/manifest.webmanifest?theme='+colorMode.value
+			}
+		]
 	})
 
 	if (process.client) {

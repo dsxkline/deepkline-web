@@ -86,7 +86,7 @@ async function sendRequest(event: any) {
 }
 export default defineEventHandler(event => {
 	// const path = event.node.req.headers.path;
-	// console.log('New request: ' + path)
+	console.log('New request: ' + event.node.req.headers)
 	// if(path){
 	//     // 区分多个请求
 	//     // return sendRequest(event)
