@@ -26,6 +26,9 @@ export const useSymbolStore = defineStore({
 		getActiveSymbol() {
 			return this.symbols[this.activeSymbol]
 		},
+		getSymbol(instId:string) {
+			return this.symbols[instId]
+		},
 		setSubSymbols(symbol: any) {
 			if (typeof symbol == 'string') {
 				this.subSymbols[symbol] = symbol

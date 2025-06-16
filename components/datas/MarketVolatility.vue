@@ -9,12 +9,6 @@
 	const usepush = usePush()
 	const menus = ref<MenuModel[]>([
 		{
-			name: '量价齐升',
-			contentComp: markRaw(TableList),
-			contentParams: {},
-			onClick: () => {}
-		},
-		{
 			name: '主力追踪',
 			contentComp: markRaw(TableList),
 			contentParams: {},
