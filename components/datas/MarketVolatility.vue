@@ -4,6 +4,7 @@
 	import { usePush } from '~/composable/usePush'
 	import TabBar, { type MenuModel } from '../common/TabBar.vue'
 	import PriceBreakoutList from './tables/PriceBreakoutList.vue'
+    import FundingRateList from './tables/FundingRateList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -22,7 +23,7 @@
 		},
 		{
 			name: '资金费率',
-			contentComp: markRaw(WhaleTrackingList),
+			contentComp: markRaw(FundingRateList),
 			contentParams: {}
 		},
 		{

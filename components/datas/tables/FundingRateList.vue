@@ -67,8 +67,7 @@
 		loading.value = false
 	}
 
-	onMounted(() => {
-	})
+	onMounted(() => {})
 
 	defineExpose({
 		update
@@ -82,17 +81,18 @@
 					<div class="col-span-2 flex items-center" v-autosize="16">
 						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" />
 					</div>
-					<div class="col-span-1 flex items-center" v-autosize="10">
-						<SymbolPrice :symbol="useSymbolStore().getSymbol(item.instId)" class="!text-xs leading-normal" />
-					</div>
-					<div class="col-span-2 w-full text-[10px] *:py-1 *:rounded-sm items-center flex relative">
-						<div class="h-1 w-1 absolute left-0 bg-red" :style="[item.left != undefined?item.left<0?'left:'+Math.abs(item.left/2)+'%':'':'']"></div>
-						<div class="h-1 w-1 absolute right-0 bg-green" :style="[item.right != undefined?item.right<0?'right:'+Math.abs(item.right/2)+'%':'':'']"></div>
+					<div class="h-full col-span-3 w-full text-[10px] leading-normal *:rounded-sm items-center flex relative">
+						<div class="h-4 absolute left-1/2 flex items-center text-grey">
+							<div class="w-1 h-2 bg-[--transparent10] rounded-sm mr-1"></div>
+							<span class="px-1 flex items-center h-full">0</span>
+						</div>
 						<div
-							:class="['h-3 w-1/2 absolute', item.left != undefined && 'breakout-down', item.right != undefined && 'breakout-up', item.right == 50 || item.left == 50 ? 'breakout-none' : '']"
-							:style="[item.left != undefined ? 'left:' + Math.max(0,item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0,item.right) + '%' : '']"
-						></div>
-						<div class="h-3 bg-[--transparent05] w-full"></div>
+							:class="['h-4 w-1/3 flex items-center absolute', item.left != undefined && 'funding-down', item.right != undefined && 'funding-up']"
+							:style="[item.left != undefined ? 'left:' + Math.max(0, item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0, item.right) + '%;justify-content:end;' : '']"
+						>
+							<span class="px-1 flex items-center h-full">0.0005%</span>
+						</div>
+						<div class="h-4 funding-bg w-full"></div>
 					</div>
 				</li>
 			</template>
@@ -116,14 +116,13 @@
 	</div>
 </template>
 <style lang="less" scoped>
-	.breakout-down {
+	.funding-down {
 		background: linear-gradient(to right, rgb(var(--color-red) / 0.5), rgb(var(--color-red) / 0));
 	}
-	.breakout-up {
+	.funding-up {
 		background: linear-gradient(to left, rgb(var(--color-green) / 0.5), rgb(var(--color-green) / 0));
 	}
-	.breakout-none {
-		background: linear-gradient(to left, rgb(var(--color-text-main) / 0.5), rgb(var(--color-green) / 0.5));
-		width: 5px;
+	.funding-bg {
+		background: linear-gradient(to left, var(--transparent00), var(--transparent10), var(--transparent00));
 	}
 </style>
