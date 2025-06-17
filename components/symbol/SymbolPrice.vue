@@ -25,8 +25,8 @@ onUnmounted(() => {
 })
 </script>
 <template>
-    <div>
-        <b class="text-sm" v-if="!ticker?.last">-</b>
-        <b class="text-sm" v-else>{{ formatPrice(ticker.last,props.symbol.tickSz)}}</b>
+    <div class="text-sm">
+        <b v-if="!ticker?.last">-</b>
+        <b v-else>{{ formatPrice(ticker.last,props.symbol.tickSz)}}</b>
     </div>
 </template>

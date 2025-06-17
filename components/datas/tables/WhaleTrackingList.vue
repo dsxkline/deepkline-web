@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
-
+	const loading = ref(true)
 	const datas = ref([
 		{
 			instId: 'BTC-USDT',
@@ -73,10 +73,21 @@
 			bullTrap: 100 // 诱多期
 		}
 	])
+
+	function update() {
+		loading.value = false
+	}
+
+	onMounted(() => {
+	})
+
+	defineExpose({
+		update
+	})
 </script>
 <template>
 	<div class="py-2">
-		<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between">
+		<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-if="!loading">
 			<template v-for="item in datas">
 				<li>
 					<div class="col-span-2" v-autosize="16">
@@ -95,6 +106,22 @@
 				</li>
 			</template>
 		</ul>
+		<div class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-else>
+			<template v-for="item in 10">
+				<div class="h-10 flex items-center">
+					<el-skeleton :rows="0" animated class="col-span-2 flex flex-col justify-center">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 70%; height: 10px" />
+						</template>
+					</el-skeleton>
+					<el-skeleton :rows="0" animated class="col-span-3 flex flex-col justify-center">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 100%; height: 10px" />
+						</template>
+					</el-skeleton>
+				</div>
+			</template>
+		</div>
 	</div>
 </template>
 <style lang="less" scoped>

@@ -3,40 +3,37 @@
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
 	import TabBar, { type MenuModel } from '../common/TabBar.vue'
+	import PriceBreakoutList from './tables/PriceBreakoutList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const usepush = usePush()
+	const loading = ref(true)
 	const menus = ref<MenuModel[]>([
 		{
 			name: '主力追踪',
 			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {},
-			onClick: () => {}
+			contentParams: {}
 		},
 		{
 			name: '价格突破',
-			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {},
-			onClick: () => {}
+			contentComp: markRaw(PriceBreakoutList),
+			contentParams: {}
 		},
 		{
 			name: '资金费率',
 			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {},
-			onClick: () => {}
+			contentParams: {}
 		},
 		{
 			name: '清算排行',
 			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {},
-			onClick: () => {}
+			contentParams: {}
 		},
 		{
 			name: '舆情热度',
 			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {},
-			onClick: () => {}
+			contentParams: {}
 		}
 	])
 	onMounted(() => {})
@@ -47,7 +44,9 @@
 			异动信号 <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
 		<TabBar :menus="menus" />
-        <button class="w-full !py-2 text-center text-sm bt-default glass !border-none overflow-hidden !text-grey">更多<el-icon><ElIconArrowRight /></el-icon></button>
+		<button class="w-full !py-2 text-center text-sm bt-default glass !border-none overflow-hidden !text-grey">
+			更多<el-icon><ElIconArrowRight /></el-icon>
+		</button>
 	</div>
 </template>
 <style lang="less" scoped>
