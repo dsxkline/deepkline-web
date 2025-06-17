@@ -67,8 +67,7 @@
 		loading.value = false
 	}
 
-	onMounted(() => {
-	})
+	onMounted(() => {})
 
 	defineExpose({
 		update
@@ -82,17 +81,19 @@
 					<div class="col-span-2 flex items-center" v-autosize="16">
 						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" />
 					</div>
-					<div class="col-span-1 flex items-center" v-autosize="10">
-						<SymbolPrice :symbol="useSymbolStore().getSymbol(item.instId)" class="!text-xs leading-normal" />
-					</div>
-					<div class="col-span-2 w-full text-[10px] *:py-1 *:rounded-sm items-center flex relative">
-						<div class="h-1 w-1 absolute left-0 bg-red" :style="[item.left != undefined?item.left<0?'left:'+Math.abs(item.left/2)+'%':'':'']"></div>
-						<div class="h-1 w-1 absolute right-0 bg-green" :style="[item.right != undefined?item.right<0?'right:'+Math.abs(item.right/2)+'%':'':'']"></div>
+
+					<div class="col-span-3 w-full text-[10px] *:rounded-sm items-center flex relative">
+						<div class="h-1 w-1 absolute left-5 bg-red" :style="[item.left != undefined ? (item.left < 0 ? 'left:' + Math.abs(item.left / 2) + '%' : '') : '']"></div>
+						<div class="h-1 w-1 absolute right-5 bg-green" :style="[item.right != undefined ? (item.right < 0 ? 'right:' + Math.abs(item.right / 2) + '%' : '') : '']"></div>
 						<div
-							:class="['h-3 w-1/2 absolute', item.left != undefined && 'breakout-down', item.right != undefined && 'breakout-up', item.right == 50 || item.left == 50 ? 'breakout-none' : '']"
-							:style="[item.left != undefined ? 'left:' + Math.max(0,item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0,item.right) + '%' : '']"
-						></div>
-						<div class="h-3 bg-[--transparent05] w-full"></div>
+							:class="['h-4 w-1/2 absolute flex items-center', item.left != undefined && 'breakout-down', item.right != undefined && 'breakout-up', item.right == 50 || item.left == 50 ? 'breakout-none' : '']"
+							:style="[item.left != undefined ? 'left:' + Math.max(0, item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0, item.right) + '%;justify-content:end;' : '']"
+						>
+							<div class="flex items-center px-1 h-full" v-autosize="10">
+								<SymbolPrice :symbol="useSymbolStore().getSymbol(item.instId)" class="!text-[10px] h-full leading-normal *:!font-normal"/>
+							</div>
+						</div>
+						<div class="h-4 bg-[--transparent05] w-full"></div>
 					</div>
 				</li>
 			</template>
@@ -123,7 +124,7 @@
 		background: linear-gradient(to left, rgb(var(--color-green) / 0.5), rgb(var(--color-green) / 0));
 	}
 	.breakout-none {
-		background: linear-gradient(to left, rgb(var(--color-text-main) / 0.5), rgb(var(--color-green) / 0.5));
+		background: transparent;
 		width: 5px;
 	}
 </style>

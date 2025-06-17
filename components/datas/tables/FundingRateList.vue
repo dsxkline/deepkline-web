@@ -84,13 +84,13 @@
 					<div class="h-full col-span-3 w-full text-[10px] leading-normal *:rounded-sm items-center flex relative">
 						<div class="h-4 absolute left-1/2 flex items-center text-grey">
 							<div class="w-1 h-2 bg-[--transparent10] rounded-sm mr-1"></div>
-							<span class="px-1 flex items-center h-full">0</span>
+							<span class="px-0 flex items-center h-full">0</span>
 						</div>
 						<div
 							:class="['h-4 w-1/3 flex items-center absolute', item.left != undefined && 'funding-down', item.right != undefined && 'funding-up']"
 							:style="[item.left != undefined ? 'left:' + Math.max(0, item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0, item.right) + '%;justify-content:end;' : '']"
 						>
-							<span class="px-1 flex items-center h-full">0.0005%</span>
+							<span class="px-1 flex items-center h-full">{{item.left!=undefined?'-':item.right != undefined?'+':''}}0.0005%</span>
 						</div>
 						<div class="h-4 funding-bg w-full"></div>
 					</div>
