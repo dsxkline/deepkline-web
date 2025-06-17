@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import TableList from './tables/TableList.vue'
+	import WhaleTrackingList from './tables/WhaleTrackingList.vue'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
 	import TabBar, { type MenuModel } from '../common/TabBar.vue'
@@ -10,31 +10,31 @@
 	const menus = ref<MenuModel[]>([
 		{
 			name: '主力追踪',
-			contentComp: markRaw(TableList),
+			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {},
 			onClick: () => {}
 		},
 		{
 			name: '价格突破',
-			contentComp: markRaw(TableList),
+			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {},
 			onClick: () => {}
 		},
 		{
 			name: '资金费率',
-			contentComp: markRaw(TableList),
+			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {},
 			onClick: () => {}
 		},
 		{
 			name: '清算排行',
-			contentComp: markRaw(TableList),
+			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {},
 			onClick: () => {}
 		},
 		{
 			name: '舆情热度',
-			contentComp: markRaw(TableList),
+			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {},
 			onClick: () => {}
 		}

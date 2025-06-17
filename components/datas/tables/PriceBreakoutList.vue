@@ -35,7 +35,7 @@
 			accumulating: 0, // 吸筹期
 			markingUp: 20, // 拉升期
 			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
+			bullTrap: 100 // 诱多期
 		},
 		{
 			instId: 'MEME-USDT',
@@ -49,7 +49,7 @@
 			accumulating: 0, // 吸筹期
 			markingUp: 20, // 拉升期
 			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
+			bullTrap: 90 // 诱多期
 		}
 	])
 </script>
