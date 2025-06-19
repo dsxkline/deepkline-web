@@ -40,14 +40,14 @@
 						<div class="text-sm flex flex-col py-3">
 							<el-skeleton :rows="0" animated class="flex flex-col justify-center gap-2">
 								<template #template>
-									<el-skeleton-item variant="p" style="width: 40%; height: 5px" />
-									<el-skeleton-item variant="p" style="width: 30%; height: 5px" />
+									<el-skeleton-item variant="p" style="width: 40%; height: 8px" />
+									<el-skeleton-item variant="p" style="width: 30%; height: 8px" />
 								</template>
 							</el-skeleton>
 						</div>
 						<el-skeleton :rows="0" animated>
 							<template #template>
-								<el-skeleton-item variant="p" style="width: 50%; height: 5px" />
+								<el-skeleton-item variant="p" style="width: 50%; height: 8px" />
 							</template>
 						</el-skeleton>
 					</li>

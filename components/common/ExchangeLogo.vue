@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const props = defineProps<{
-    exchange:string
+    exchange?:string
 }>()
 </script>
 <template>

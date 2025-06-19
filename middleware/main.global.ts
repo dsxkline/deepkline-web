@@ -5,6 +5,7 @@ import { InstanceType } from '~/fetch/okx/okx.type.d'
 import { publicFetch } from '~/fetch/public.fetch'
 import { userFetch } from '~/fetch/user.fetch'
 import { useStore } from '~/store'
+import { useAccountStore } from '~/store/account'
 import { useSymbolStore } from '~/store/symbol'
 import { useUserStore } from '~/store/user'
 import { ApiSource } from '~/types/types.d'
@@ -37,7 +38,6 @@ async function getUser() {
 		console.log('获取用户信息', result.data)
 		const user = result.data
 		if (user) {
-			user.token = user?.token || useCookie('token').value || ''
 			useUserStore().setUser(user)
 		}
 	}
@@ -50,7 +50,20 @@ async function getUserAccounts() {
 		console.log('获取账户信息', result.data)
 		const accounts = result.data
 		if (accounts) {
-			useUserStore().setAccounts(accounts)
+			useAccountStore().setAccounts(accounts)
+		}
+	}
+}
+
+async function getUserAccountBalance() {
+	if (!useUserStore().user) return
+	if (!useAccountStore().accounts?.length) return
+	const result = await accountFetch.balance(useAccountStore().currentAccount?.accountId)
+	if (result?.code == FetchResultDto.OK) {
+		console.log('获取账户余额', result.data)
+		const balance = result.data
+		if (balance) {
+			useAccountStore().setBalance(balance)
 		}
 	}
 }
@@ -61,7 +74,7 @@ async function getExchanges() {
 		console.log('获取交易所信息', result.data)
 		const exchanges = result.data
 		if (exchanges) {
-			useUserStore().setExchanges(exchanges)
+			useAccountStore().setExchanges(exchanges)
 		}
 	}
 }
@@ -79,15 +92,18 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		link: [
 			{
 				rel: 'manifest',
-				href: '/api/manifest.webmanifest?theme='+colorMode.value
+				href: '/api/manifest.webmanifest?theme=' + colorMode.value
 			}
 		]
 	})
 
-	if (process.client) {
+	if (process.server) {
 		await getUser()
 		await getExchanges()
 		await getUserAccounts()
+		await getUserAccountBalance()
+	}
+	if (process.client) {
 		const state = useStore()
 		if (state.apiSource == ApiSource.OKX) {
 			await getDefaultInstruments(InstanceType.SPOT)

@@ -7,8 +7,9 @@
 	import { useUserStore } from '~/store/user'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
-		push?: boolean
+		push?: string
 	}>()
 	const pushLeft = usePush()
 	const loading = ref(true)
@@ -50,7 +51,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="账户列表" :hideBack="!push">
+		<NavigationBar title="账户列表" :hideBack="push!='rtl'">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
@@ -58,16 +59,14 @@
 			</template>
 		</NavigationBar>
 
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--nav-height) - 60px)' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(100% - var(--nav-height) - var(--nav-height) - 60px)' }" :always="false">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
 					<el-button @click.stop="getAccounts()">点击刷新</el-button>
 				</template>
 			</Error>
 
-			<Empty :content="'开设新账户，体验一键速达全球交易！'" v-if="!loading && !error && !accounts?.length">
-				
-			</Empty>
+			<Empty :content="'开设新账户，体验一键速达全球交易！'" v-if="!loading && !error && !accounts?.length"> </Empty>
 
 			<ul class="account-list mt-4 px-4 flex flex-col *:border *:border-[--transparent10] *:rounded-xl *:mb-4" v-if="loading && !error">
 				<li class="w-full flex items-center hover:bg-[--transparent03] px-4 py-3" v-for="item in 3">
@@ -88,11 +87,11 @@
 			<ul v-if="accounts?.length" class="account-list mt-4 px-4 *:flex *:items-center *:py-3 [&_b]:flex [&_b]:items-center *:border *:border-[--transparent10] *:rounded-xl *:mb-4 *:px-2 *:relative">
 				<template v-for="item in accounts">
 					<li :class="[item.isCurrent ? 'active' : '']">
-						<img :src="useUserStore().getExchange(item.exchange)?.logoUrl" v-if="useUserStore().getExchange(item.exchange)?.logoUrl" class="w-10 h-10 rounded-full" />
+						<img :src="useAccountStore().getExchange(item.exchange)?.logoUrl" v-if="useAccountStore().getExchange(item.exchange)?.logoUrl" class="w-10 h-10 rounded-full" />
 						<ExchangeLogo :exchange="item.exchange" class="w-10 h-10" v-else />
 						<div class="flex flex-col px-2 justify-center">
 							<b class="text-xl flex items-center leading-none mb-1"
-								>{{ useUserStore().getExchange(item.exchange)?.name || item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
+								>{{ useAccountStore().getExchange(item.exchange)?.name || item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
 							>
 							<div class="text-xs">
 								<span>{{ item.accountId }} USDT</span>

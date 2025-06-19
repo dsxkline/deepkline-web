@@ -2,29 +2,49 @@
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	import AccountList from './account-list.vue'
-	import { usePush } from '~/composable/usePush'
+	import { usePush, usePushUp } from '~/composable/usePush'
 	import ExchangeIndex from '../exchange/index.vue'
 	import { useUserStore } from '~/store/user'
+	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const pushLeft = usePush()
+	const pushUp = usePushUp()
 	function pushAccountList() {
 		pushLeft(AccountList)
+	}
+	function pushAccounts() {
+		pushUp(AccountList, {}, 'auto')
 	}
 	onMounted(() => {})
 </script>
 <template>
 	<div class="w-full h-full">
-		<ExchangeIndex v-if="!useUserStore().accounts?.length" />
+		<ExchangeIndex v-if="!useAccountStore().accounts?.length" />
 		<template v-else>
-			<NavigationBar title="账户" :hideBack="!push">
+			<NavigationBar title="" :hideBack="!push">
+				<template #left>
+					<div class="flex justify-center items-center px-4" @click="pushAccounts">
+						<div class="flex items-center pr-1">
+							<ExchangeLogo :exchange="useAccountStore().currentAccount?.exchange" class="w-4 h-4 mr-1" />
+							{{ useAccountStore().currentAccount?.accountId }}
+						</div>
+						<span class="tag-real mr-2">实盘</span>
+						<el-icon><ElIconArrowDownBold /></el-icon>
+					</div>
+				</template>
 				<template #right>
 					<button class="flex items-center p-2 px-4" @click="pushAccountList">
 						<AccountSyncIcon class="w-5 h-5" />
 					</button>
 				</template>
 			</NavigationBar>
+			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
+				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height - var(--safe-bottom)) + 1px)' }">
+					<AccountBalanceCard />
+				</div>
+			</ScrollBar>
 		</template>
 	</div>
 </template>

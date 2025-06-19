@@ -223,7 +223,7 @@
 			<template v-if="direction == 'btt' && !bttFull">
 				<div @click="hide"><DrawLine /></div>
 			</template>
-			<component :is="asyncComp" :push="true" @close="close" v-bind="props.params" ref="drawerComponent" v-if="!isVNodeLike(to)" />
+			<component :is="asyncComp" :push="direction" @close="close" v-bind="params" ref="drawerComponent" v-if="!isVNodeLike(to)" />
 			<!-- <WebView :url="url" v-if="!to && url"></WebView> -->
 			<!-- 直接渲染vnode -->
 			<div ref="vnodeContainer" v-else></div>

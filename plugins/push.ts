@@ -93,7 +93,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 				const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
 				console.log('parentDrawer', parentDrawer)
 				if (parentDrawer) {
-					parentDrawer.style.transform = 'translateX(-30%)'
+					if (parentDrawer.classList.contains('rtl')) parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
 					const __nuxt = document.querySelector('#__nuxt') as HTMLElement
 					if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
@@ -109,7 +109,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 	return pushInstance
 }
 
-const pop = function (data:any) {
+const pop = function (data: any) {
 	const store = usePushStore()
 	// 获得栈顶的实例
 	let topPush: any = store.getTopPush()
@@ -127,7 +127,7 @@ const pop = function (data:any) {
 
 	if (topPush) {
 		const parentDrawer = topPush.vnode.el.querySelector('.drawer-body') as HTMLElement
-		if (parentDrawer && parentDrawer instanceof HTMLElement) {
+		if (parentDrawer && parentDrawer instanceof HTMLElement && (parentDrawer.classList.contains('rtl')) ) {
 			parentDrawer.style.transform = 'translateX(0)'
 		}
 	} else {

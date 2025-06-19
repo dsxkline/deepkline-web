@@ -93,7 +93,7 @@
 								<SymbolPrice :symbol="useSymbolStore().getSymbol(item.instId)" class="!text-[10px] h-full leading-normal *:!font-normal"/>
 							</div>
 						</div>
-						<div class="h-4 bg-[--transparent05] w-full"></div>
+						<div class="h-4 breakout-bg w-full"></div>
 					</div>
 				</li>
 			</template>
@@ -126,5 +126,8 @@
 	.breakout-none {
 		background: transparent;
 		width: 5px;
+	}
+	.breakout-bg{
+		background: linear-gradient(to left, var(--transparent00), var(--transparent10), var(--transparent00));
 	}
 </style>
