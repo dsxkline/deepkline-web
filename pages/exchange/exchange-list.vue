@@ -4,13 +4,14 @@
 	import AddAccount from '../account/add-account.vue'
 	import type { ExchangeDto } from '~/fetch/dtos/exchange'
     import LoginIndex from '../login/index.vue'
+import { useAccountStore } from '~/store/account'
 
 	const props = defineProps<{
 		height: number
 	}>()
 	const pushLeft = usePush()
 	const pushUp = usePushUp()
-	const exchanges = computed(() => useUserStore().exchanges)
+	const exchanges = computed(() => useAccountStore().exchanges)
 	const pushAddAccount = (exchange: ExchangeDto) => {
 		if (!useUserStore().user) {
 			pushUp(LoginIndex)

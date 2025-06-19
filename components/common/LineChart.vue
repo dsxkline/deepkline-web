@@ -65,7 +65,7 @@
 						}
 					])
 				},
-				data: seriesData
+				data: []
 			}
 		]
 	}
@@ -74,6 +74,16 @@
 		echart && echart.dispose()
 		echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light')
 		echart.setOption(option)
+	}
+
+	function updateEChart(seriesData: any) {
+		echart && echart.setOption({
+			series:[
+				{
+					data:seriesData
+				}
+			]
+		})
 		resetSize()
 	}
 
@@ -94,10 +104,8 @@
 					res.data.slice(0, 50).forEach(([ts, longShortAccountRatio]: any) => {
 						seriesData && seriesData.push(longShortAccountRatio)
 					})
-
-					option.series[0].data = seriesData.reverse()
-
-					createEchart()
+					// option.series[0].data = seriesData.reverse()
+					updateEChart(seriesData.reverse())
 					// console.log(xAxisData,seriesData);
 				} else {
 					error.value = res?.msg || '获取数据失败'
@@ -127,6 +135,7 @@
 		() => useStore().theme,
 		() => {
 			createEchart()
+			updateEChart(option)
 		}
 	)
 
@@ -136,11 +145,15 @@
 			const parentElement = containerRef.value as HTMLElement
 			width.value = parentElement.offsetWidth
 			height.value = parentElement.offsetHeight
-			echart && echart.resize({ width: width.value, height: height.value })
+			echart && echart.resize({ width: width.value, height: height.value,animation:{
+				duration:200,
+				easing:'bounceIn',
+			} })
 		}
 	}
 
 	onMounted(() => {
+		createEchart()
 		nextTick(() => {
 			fetchData(period.value as Period)
 		})
@@ -156,10 +169,12 @@
 				resizeObserver.observe(parentElement.parentNode as HTMLElement)
 			}
 		}
+		
 	})
 
 	useWillAppear(() => {
 		createEchart()
+		updateEChart(seriesData)
 	})
 
 	onBeforeUnmount(() => {
@@ -176,7 +191,7 @@
 </script>
 <template>
 	<div class="flex flex-col justify-between" ref="containerRef">
-		<div class="container w-full h-full flex-1" v-show="!loading && !error" :style="{ width: width > 0 ? width + 'px' : '100%', height: height > 0 ? height + 'px' : '100%' }">
+		<div class="container w-full h-full" v-show="!loading && !error" :style="{ width: width > 0 ? width + 'px' : '100%', height: height > 0 ? height + 'px' : '100%' }">
 			<div class="chart w-full h-full" ref="chart"></div>
 		</div>
 	</div>

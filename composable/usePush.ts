@@ -48,6 +48,8 @@ export function poped(cb: (...args: any[]) => void) {
 
 // 是否启用对子组件的事件传递，例如让子组件执行useWillAppear事件
 export function useRefreshChildEvent() {
+	useActivated()
+	useDeactivated()
 	const instance = getCurrentInstance()
 	// 控制子组件将要显示回调
 	let childWillAppearlisteners = [] as any[]

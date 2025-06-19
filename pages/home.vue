@@ -47,8 +47,7 @@ import { useAccountStore } from '~/store/account'
 		subSymbols()
 	})
 
-	useActivated()
-	useDeactivated()
+	
 
 	onBeforeUnmount(() => {
 		unSubSymbols()
@@ -77,7 +76,7 @@ import { useAccountStore } from '~/store/account'
 			</template>
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
-			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height - var(--safe-bottom)) + 1px)' }">
+			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
 				<LoginCard v-if="!useAccountStore().accounts?.length" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'" />
 				<SymbolCards />
 				<MarketSentiment />

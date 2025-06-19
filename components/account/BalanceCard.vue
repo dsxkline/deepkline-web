@@ -17,6 +17,5 @@
 			<NumberIncrease :value="formatPrice(parseFloat(balance?.totalEq || '0'), 0.01)" unit="" :fontSize="25" />
 		</b>
 		<div class="text-sm pt-1 text-grey"><span>收益</span><span class="px-1 text-red"> - $70.67 (-33.28%)</span></div>
-		<LineChart symbol="BTC-USDT" class="absolute right-0 top-0 w-1/3 h-2/3 translate-y-1/3 mx-3" />
 	</div>
 </template>

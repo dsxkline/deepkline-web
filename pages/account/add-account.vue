@@ -9,12 +9,13 @@
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
 	import type { ExchangeDto } from '~/fetch/dtos/exchange'
 	import { Link } from '@element-plus/icons-vue'
+	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: boolean
 		exchange: ExchangeDto
 	}>()
 	const pushLeft = usePush()
-	const exchanges = computed(() => useUserStore().exchanges)
+	const exchanges = computed(() => useAccountStore().exchanges)
 	const exchange = ref(props.exchange)
 	const apiKey = ref('')
 	const secretKey = ref('')
@@ -40,7 +41,7 @@
 		}
 		if (loading.value) return
 		loading.value = true
-		
+
 		accountFetch
 			.connect(props.exchange.slug, apiKey.value, secretKey.value, passPhrase.value)
 			.then(result => {
@@ -51,7 +52,7 @@
 						type: 'success'
 					})
 					setTimeout(() => {
-						useNuxtApp().$popRoot(null,-2)
+						useNuxtApp().$popRoot(null, -2)
 					}, 500)
 				} else {
 					if (result?.code == 100029) {
@@ -62,7 +63,7 @@
 						setTimeout(() => {
 							loading.value = false
 							error.value = result?.msg
-							useNuxtApp().$popRoot(null,-2)
+							useNuxtApp().$popRoot(null, -2)
 						}, 500)
 					}
 					setTimeout(() => {
