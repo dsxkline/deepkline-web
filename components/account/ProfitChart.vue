@@ -1,5 +1,5 @@
 <template>
-    <div class="p-4 my-2">
+    <div class="px-4 my-4 flex flex-col">
         <h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
         <LineChart symbol="BTC-USDT" class="w-full h-full" />
         <div class="py-3 border-t border-[--transparent05]">
