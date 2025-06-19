@@ -44,13 +44,14 @@
 
 		accountFetch
 			.connect(props.exchange.slug, apiKey.value, secretKey.value, passPhrase.value)
-			.then(result => {
+			.then(async result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
 					ElMessage({
 						message: '账户连接成功',
 						type: 'success'
 					})
+					await getUserAccounts()
 					setTimeout(() => {
 						useNuxtApp().$popRoot(null, -2)
 					}, 500)
@@ -97,6 +98,19 @@
 	function openExchange() {
 		window.open(exchange.value.website, '_blank')
 	}
+
+	async function getUserAccounts() {
+		const result = await accountFetch.list()
+		if (result?.code == FetchResultDto.OK) {
+			console.log('获取账户信息', result.data)
+			const accounts = result.data
+			if (accounts) {
+				useAccountStore().setAccounts(accounts)
+			}
+		}
+	}
+
+	
 
 	onMounted(() => {})
 </script>

@@ -1,10 +1,7 @@
 <script lang="ts" setup>
-	import { useStore } from '~/store'
-	import { useSymbolStore } from '~/store/symbol'
 	import AccountList from './account-list.vue'
 	import { usePush, usePushUp, useRefreshChildEvent } from '~/composable/usePush'
 	import ExchangeIndex from '../exchange/index.vue'
-	import { useUserStore } from '~/store/user'
 	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: boolean
@@ -17,7 +14,11 @@
 	function pushAccounts() {
 		pushUp(AccountList, {}, 'auto')
 	}
-	onMounted(() => {})
+	
+	
+	onMounted(() => {
+
+	})
 
 	defineExpose({
 		...useRefreshChildEvent()
@@ -31,8 +32,8 @@
 				<template #left>
 					<div class="flex justify-center items-center px-4" @click="pushAccounts">
 						<div class="flex items-center pr-1 text-base">
-							<ExchangeLogo :exchange="useAccountStore().currentAccount?.exchange" class="w-5 h-5 mr-1" />
-							{{ useAccountStore().currentAccount?.accountId }}
+							<ExchangeLogo :exchange="useAccountStore().currentAccount?.exchange" class="w-4 h-4 mr-1" />
+							<b>{{ useAccountStore().currentAccount?.accountId }}</b>
 						</div>
 						<span class="tag-real mr-2">实盘</span>
 						<el-icon><ElIconArrowDownBold /></el-icon>
@@ -47,7 +48,7 @@
 			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
 				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
 					<AccountBalanceCard />
-					<AccountProfitChart class="h-[200px]"/>
+					<AccountProfitChart class="h-[200px]" />
 				</div>
 			</ScrollBar>
 		</template>
