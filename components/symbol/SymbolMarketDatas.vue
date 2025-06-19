@@ -3,7 +3,7 @@
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	import Trades from './Trades.vue'
 	import { useStore } from '~/store/index'
-import { useWillAppear, useWillDisappear } from '~/composable/usePush';
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -14,7 +14,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	const containerRef = ref(null)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return (props.height || 10000)
+		return props.height || 10000
 	})
 	watch(
 		() => props.symbol,
@@ -22,7 +22,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
 			item.value = null
-			nextTick(()=>{
+			nextTick(() => {
 				tickerHandler($ws?.getTickers(props.symbol) || {})
 			})
 		}
@@ -30,7 +30,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol] || {})
 	const { $wsb, $ws } = useNuxtApp()
 	const tickerHandler = (data: Ticker) => {
-		
 		// console.log('symbol', symbol, '行情tick', item.value);
 		// 涨跌额
 		change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8 || '0')
@@ -43,9 +42,9 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 
 	function subSymbols() {
 		// h5 spa模式
-		if(!useStore().isH5) return;
+		if (!useStore().isH5) return
 		const { $wsb, $ws } = useNuxtApp()
-		
+
 		subHandle = $ws.subTickers([props.symbol], (message, error) => {
 			if (useStore().isLeave) return
 			// console.log("subTickers", message.data, error);
@@ -55,7 +54,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 					// 同步到store
 					// useSymbolStore().setTickets(item.instId, item)
 					$ws.setTickers(item.instId, item)
-					
+
 					// bgFlicker(item)
 				})
 		})
@@ -65,21 +64,20 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		const { $wsb, $ws } = useNuxtApp()
 		if (subHandle) {
 			$ws.unsubscribe(subHandle)
-			
 		}
 	}
-	
+
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		tickerHandler($ws.getTickers(props.symbol))
 		subSymbols()
 	})
 
-	useWillDisappear(()=>{
+	useWillDisappear(() => {
 		console.log('symbol-market-datas useWillDisappear....')
 		unSubSymbols()
 	})
-	useWillAppear(()=>{
+	useWillAppear(() => {
 		console.log('symbol-market-datas useWillAppear....')
 		subSymbols()
 	})
@@ -89,8 +87,6 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		item.value = null
 		containerRef.value = null
-		
-		
 	})
 </script>
 <template>
@@ -103,7 +99,9 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 						<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="30" />
 					</b>
 					<b :class="'text-3xl ' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>--</b>
-					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz,'') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span>
+					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change"
+						>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
+					>
 					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 				</div>
 
@@ -188,8 +186,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 		display: none;
 	}
 
-	:deep(.ScrollBar__bar){
-		.ScrollBar__thumb{
+	:deep(.ScrollBar__bar) {
+		.ScrollBar__thumb {
 			display: none;
 		}
 	}
@@ -212,7 +210,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 				min-width: 40%;
 				flex-shrink: 0;
 				height: 100%;
-				gap:0;
+				gap: 0;
 				@apply mt-3 mb-2;
 				li {
 					width: 100%;
@@ -220,7 +218,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 					justify-content: space-between;
 					align-items: center;
 					line-height: normal;
-					&.show{
+					&.show {
 						display: flex;
 					}
 					span {
@@ -228,7 +226,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush';
 						font-size: 0.65rem;
 						&:first-child {
 							@apply text-muted pr-2;
-							text-align-last:unset;
+							text-align-last: unset;
 							min-width: auto;
 						}
 					}

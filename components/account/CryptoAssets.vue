@@ -14,14 +14,14 @@
             </li>
 			<template v-for="item in useAccountStore().balance?.details">
 				<li>
-					<div class="col-span-1 text-base">{{ item.ccy }}</div>
+					<b class="col-span-1 text-base">{{ item.ccy }}</b>
 					<div class="flex flex-col col-span-1 text-xs items-end">
 						<span class="text-sm">{{ parseFloat(formatPrice(item.eq, point)) }}</span>
 						<span class="text-grey">{{ parseFloat(formatPrice(item.eqUsd, point)) }}</span>
 					</div>
 					<div class="flex flex-col col-span-1 text-xs items-end" v-if="item.totalPnl">
-						<span :class="['text-sm',(item.spotUpl || item.totalPnl)>0?'text-green':'text-red']">{{ parseFloat(formatPrice(item.spotUpl || item.totalPnl, 2)) }}</span>
-						<span :class="(item.spotUpl || item.totalPnl)>0?'text-green':'text-red'">{{ parseFloat(formatPrice(item.spotUplRatio || item.totalPnlRatio*100, 2)) }}%</span>
+						<span :class="['text-sm',(item.spotUpl || item.totalPnl)>0?'text-green':'text-red']">{{ parseFloat(formatPrice((item.spotUpl || item.totalPnl), 2)) }}</span>
+						<span :class="(item.spotUpl || item.totalPnl)>0?'text-green':'text-red'">{{ parseFloat(formatPrice((item.spotUplRatio || item.totalPnlRatio)*100, 2)) }}%</span>
 					</div>
                     <div class="flex flex-col col-span-1 text-xs items-end" v-else>
 						<span :class="['text-sm']">--</span>

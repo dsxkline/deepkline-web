@@ -71,7 +71,7 @@
 	const popProfit = ref()
 	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
-	const ticker = ref<Ticker|null>($ws && $ws.getTickers(props.symbol))
+	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 		if (canChangePrice.value) {
@@ -101,7 +101,7 @@
 				buyDes.value = 'MARKET'
 				sellDes.value = 'MARKET'
 			} else {
-				if(ticker.value)price.value = parseFloat(ticker.value?.last)
+				if (ticker.value) price.value = parseFloat(ticker.value?.last)
 				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
@@ -147,7 +147,7 @@
 			<client-only>
 				<ScrollBar :height="contentHeight + 'px'" v-show="!loading && !error">
 					<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']" v-if="contentHeight">
-						<div class="pb-[200px]" v-if="!loading">
+						<div class="pb-[200px] trade-box" v-if="!loading">
 							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
 								<el-radio-button :label="buyText" value="buy" class="*:w-full" />
 								<el-radio-button :label="sellText" value="sell" class="*:w-full" />
@@ -184,7 +184,7 @@
 									</button>
 								</div>
 							</div>
-							<div class="py-3">
+							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
 								<el-input v-click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 								<div class="slider-demo-block">
@@ -192,7 +192,7 @@
 								</div>
 							</div>
 
-							<div class="py-3">
+							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
 								<el-input v-click-sound v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
@@ -205,7 +205,7 @@
 								</div>
 							</div>
 
-							<div class="pt-2">
+							<div class="pt-2 stop-container">
 								<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
@@ -230,7 +230,7 @@
 						</div>
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
-							<button size="large" :class="['w-full !h-auto !py-3',side==Sides.SELL?'bt-red':'bt-green']" v-click-sound>
+							<button size="large" :class="['w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound>
 								<div class="flex flex-col items-center">
 									<b class="text-base"
 										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
@@ -274,6 +274,13 @@
 			--el-radio-button-checked-text-color: var(--el-color-white);
 			--el-radio-button-checked-border-color: rgb(var(--color-red));
 			--el-radio-button-disabled-checked-fill: var(--el-border-color-extra-light);
+		}
+	}
+	.buy {
+		.el-radio-button {
+			--el-radio-button-checked-bg-color: var(--el-color-primary);
+			--el-radio-button-checked-text-color: var(--el-color-white);
+			--el-radio-button-checked-border-color: var(--el-color-primary);
 		}
 	}
 	.sell-bt {
@@ -400,6 +407,77 @@
 
 				.el-checkbox {
 					--el-checkbox-font-size: 12px;
+				}
+			}
+		}
+	}
+
+	@media (max-width: 999px) {
+		.trade-container {
+			height: auto !important;
+			.trade-box {
+				padding-bottom: 0;
+			}
+			.trade-type {
+				margin: 8px 0;
+			}
+			.price-input {
+				padding-bottom: 5px;
+			}
+			.amount-container {
+				padding: 0 0 5px 0;
+			}
+			.money-container {
+				padding: 0 0 5px 0;
+			}
+			.trade-av {
+				@apply text-xs;
+			}
+			.trade-bts {
+				position: unset;
+				padding: 5px 0;
+				button {
+					padding: 4px 10px !important;
+					width: 100% !important;
+					border-radius: 999px;
+					b,
+					p {
+						@apply text-sm;
+					}
+				}
+			}
+			.stop-container {
+				:deep(.el-tooltip__trigger) {
+					flex-direction: row;
+					justify-content: space-between;
+					margin-bottom: 10px;
+					h6 {
+						padding-bottom: 0;
+					}
+				}
+			}
+			padding-top: 0;
+			:deep(.el-radio-button) {
+				--el-border-radius-base: 999px;
+
+				.el-radio-button__inner {
+					padding: 4px 10px;
+					font-size: 12px;
+					line-height: 1;
+				}
+			}
+			:deep(.el-input) {
+				.el-input__wrapper {
+					.el-input__inner {
+						--el-input-inner-height: 30px;
+						font-size: 12px;
+					}
+				}
+			}
+			:deep(.el-input-number) {
+				&.is-controls-right[class*='large'] [class*='decrease'],
+				&.is-controls-right[class*='large'] [class*='increase'] {
+					--el-input-number-controls-height: 15px;
 				}
 			}
 		}

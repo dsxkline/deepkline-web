@@ -5,11 +5,14 @@
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
-import { useRequestAnimation } from '~/composable/useRequestAnimation'
-import { use } from 'echarts'
+	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import { use } from 'echarts'
 
 	const props = defineProps<{
 		symbol: string
+		limitPoint?: number
+		isH5?: boolean
+		limitCount?: number
 	}>()
 
 	const orderBook = ref<{ asks: Map<number, BookEntry>; bids: Map<number, BookEntry> } | null>({
@@ -24,7 +27,7 @@ import { use } from 'echarts'
 	let totalBids = ref(0)
 	// 小数点
 	const point = ref(0)
-	const showNumber = 8
+	const showNumber = computed(() => props.limitCount || 16)
 
 	const loading = ref(true)
 	const error = ref('')
@@ -34,8 +37,14 @@ import { use } from 'echarts'
 
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws?.getTickers(props.symbol) || {})
+	const change = ref<number>(0)
+	const rate = ref<number>(0)
 	const tickerHandler = (data: Ticker) => {
 		if (useStore().isLeave) return
+		// 涨跌额
+		change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8 || '0')
+		// 涨跌幅
+		rate.value = (change.value / parseFloat(data?.sodUtc8 || '0')) * 100
 		ticker.value = data
 	}
 	// 订阅句柄
@@ -153,7 +162,7 @@ import { use } from 'echarts'
 			totalAsks.value = 0
 			totalBids.value = 0
 		}
-		point.value = symbolObj.value?.lotSz || 0
+		point.value = props.limitPoint || symbolObj.value?.lotSz || 0
 
 		updates.asks.forEach(([px, sz]) => {
 			let price = parseFloat(px)
@@ -221,33 +230,36 @@ import { use } from 'echarts'
 		// 倒序排列
 		let ask = Array.from(orderBook.value.asks.values())
 			.sort((a, b) => a.px - b.px)
-			.filter(item => ticker.value && item.px > parseFloat(ticker.value.last))
-		if (activeBook.value == 0) ask = ask.slice(0, showNumber).reverse()
-		else ask = ask.slice(0, 2 * showNumber + 1).reverse()
+			.filter(item => ticker.value && item.px >= parseFloat(ticker.value.last))
+
+		if (activeBook.value == 0) ask = ask.slice(0, showNumber.value)
+		else ask = ask.slice(0, 2 * showNumber.value + 1)
+
 		for (let index = ask.length - 1; index >= 0; index--) {
 			const item = ask[index]
 			item.total = totalAsks.value += item.sz
 		}
-		asks.value = ask
 
 		// 倒序排列
 		let bid = Array.from(orderBook.value.bids.values())
 			.sort((a, b) => b.px - a.px)
-			.filter(item => ticker.value && item.px < parseFloat(ticker.value.last))
-		if (activeBook.value == 0) bid = bid.slice(0, showNumber)
-		else bid = bid.slice(0, 2 * showNumber + 1)
+			.filter(item => ticker.value && item.px <= parseFloat(ticker.value.last))
+
+		if (activeBook.value == 0) bid = bid.slice(0, showNumber.value)
+		else bid = bid.slice(0, 2 * showNumber.value + 1)
 		for (let index = 0; index < bid.length; index++) {
 			const item = bid[index]
 			item.total = totalBids.value += item.sz
 		}
-		bids.value = bid
 
-		trimMap(orderBook.value.asks, 100)
-		trimMap(orderBook.value.bids, 100)
+		asks.value = bid
+		bids.value = ask
+
+		trimMap(orderBook.value.asks, 500)
+		trimMap(orderBook.value.bids, 500)
 
 		bookAnimation()
-
-	}, 300)
+	}, 100)
 
 	// 每个订单的占比动画
 	function bookAnimation() {
@@ -255,31 +267,31 @@ import { use } from 'echarts'
 		if (totalAsks.value + totalBids.value <= 0) return
 		// 计算每个订单的占比
 		// transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
-		asks.value.forEach((item,index) => {
-			const ratio = item.total / (totalBids.value + totalAsks.value)
+		asks.value.forEach((item, index) => {
+			const ratio = item.sz / totalAsks.value
 			// 上一次比例
-			const lastRatio = lastAsks.value && lastAsks.value[index]?.ratio || 0;
+			const lastRatio = (lastAsks.value && lastAsks.value[index]?.ratio) || 0
 			useRequestAnimation().start({
 				from: lastRatio,
 				to: ratio,
 				duration: 200,
-				onUpdate: (value) => {
+				onUpdate: value => {
 					// 更新dom
-					item.ratio = value;
+					item.ratio = value
 				}
 			})
 		})
-		bids.value.forEach((item,index) => {
-			const ratio = item.total / (totalBids.value + totalAsks.value)
+		bids.value.forEach((item, index) => {
+			const ratio = item.sz / totalBids.value
 			// 上一次比例
-			const lastRatio = lastBids.value && lastBids.value[index]?.ratio || 0;
+			const lastRatio = (lastBids.value && lastBids.value[index]?.ratio) || 0
 			useRequestAnimation().start({
 				from: lastRatio,
 				to: ratio,
 				duration: 200,
-				onUpdate: (value) => {
+				onUpdate: value => {
 					// 更新dom
-					item.ratio = value;
+					item.ratio = value
 				}
 			})
 		})
@@ -288,7 +300,7 @@ import { use } from 'echarts'
 			from: calculateBuySellRatioValue.value,
 			to: calculateBuySellRatio.value,
 			duration: 200,
-			onUpdate: (value) => {
+			onUpdate: value => {
 				calculateBuySellRatioValue.value = value
 			}
 		})
@@ -301,7 +313,7 @@ import { use } from 'echarts'
 	const calculateBuySellRatio = computed(() => {
 		const totalBids = (bids.value && bids.value.reduce((sum, entry) => sum + entry.sz, 0)) || 1
 		const totalAsks = (asks.value && asks.value.reduce((sum, entry) => sum + entry.sz, 0)) || 1
-		return (totalBids / (totalBids + totalAsks)) * 100
+		return (totalAsks / (totalBids + totalAsks)) * 100
 	})
 	const calculateBuySellRatioValue = ref(calculateBuySellRatio.value)
 
@@ -326,9 +338,11 @@ import { use } from 'echarts'
 	// 滚动到显示触发
 	function onObserveVisible(visible: boolean) {
 		interVisible.value = visible
+		if (props.isH5) interVisible.value = true
 	}
 	function onObserveVisibleBottom(visible: boolean) {
 		interVisibleBottom.value = visible
+		if (props.isH5) interVisibleBottom.value = true
 	}
 
 	const { $windowEvent } = useNuxtApp()
@@ -354,7 +368,6 @@ import { use } from 'echarts'
 		asks.value = null
 		bids.value = null
 		ticker.value = null
-		
 	})
 	useWillDisappear(() => {
 		console.log('booksfull useWillDisappear....')
@@ -370,14 +383,14 @@ import { use } from 'echarts'
 </script>
 <template>
 	<div class="w-full h-full min-h-[400px]">
-		<div class="flex items-center justify-between mb-2">
+		<div class="flex items-center justify-between mb-2" v-if="!isH5">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b>订单表</b>
-				<div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
+				<b class="books-title">订单表</b>
+				<!-- <div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
 					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" v-click-sound><BooksListIcon /></button>
 					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" v-click-sound><BooksBuyListIcon /></button>
 					<button :class="['hover:opacity-80', activeBook == 2 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 2" v-click-sound><BooksSellListIcon /></button>
-				</div>
+				</div> -->
 			</h3>
 			<!-- <el-select v-model="pointLevel" style="width: 100px;" v-if="!loading" v-click-sound>
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item"  v-click-sound/>
@@ -390,67 +403,133 @@ import { use } from 'echarts'
 		</Error>
 		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		<template v-else-if="!error">
-			<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
-				<li class="text-grey" v-observe-visible.multi="onObserveVisible">
-					<div>价格(USDT)</div>
-					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
-					<div class="text-right">合计({{ symbolObj?.baseCcy }})</div>
-				</li>
-				<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && asks" :key="index">
-					<template v-if="asks[index]">
-						<div class="text-red">{{ formatPrice(asks[index].px, pricePoint) }}</div>
-						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
-						<div class="text-right">{{ moneyFormat(formatPrice(asks[index].total, point), '', point) }}</div>
-						<div
-							v-if="interVisible"
-							class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-right"
-							:style="{
-								transform: `scaleX(${asks[index].ratio})`
-							}"
-						></div>
-					</template>
-				</li>
+			<div v-if="isH5">
+				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
+					<li class="text-grey">
+						<div>价格</div>
+						<div class="text-right">数量(USDT)</div>
 
-				<li v-observe-visible.multi="onObserveVisibleBottom" class="!flex" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
-					<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
-						<div
-							class="bg-green/50 flex justify-start items-center w-full h-full absolute left-0 top-0 origin-left"
-							:style="{
-								transform: `translate3d(calc(-${100 - calculateBuySellRatioValue}% + 5px),0,0)`,
-								'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)'
-							}"
-						></div>
-						<div
-							class="bg-red/50 flex justify-end items-center w-full h-full absolute right-0 top-0 origin-right"
-							:style="{
-								transform: `translate3d(calc(${calculateBuySellRatioValue}% + 5px),0,0)`,
-								'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)'
-							}"
-						></div>
-						<div class="absolute left-0 top-0 h-full flex items-center">
-							<b class="px-2">B</b><span>{{ calculateBuySellRatioValue.toFixed(2) }}%</span>
-						</div>
-						<div class="absolute right-0 top-0 h-full flex items-center">
-							<span>{{ (100 - calculateBuySellRatioValue).toFixed(2) }}%</span><b class="px-2">S</b>
-						</div>
+						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
+					</li>
+				</ul>
+			</div>
+			<div class="flex gap-3 book-container">
+				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
+					<li class="text-grey !pb-1" v-observe-visible.multi="onObserveVisible">
+						<div>买入(USDT)</div>
+						<div class="text-right">价格</div>
+						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
+					</li>
+
+					<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && asks" :key="index">
+						<template v-if="asks[index]">
+							<div class="">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
+							<div class="text-green text-right">{{ formatPrice(asks[index].px, pricePoint) }}</div>
+							<!-- <div class="text-right">{{ moneyFormat(formatPrice(bids[index].total, point), '', point) }}</div> -->
+							<div
+								v-if="interVisible && interVisibleBottom"
+								class="bg absolute top-0 right-0 h-full w-full bg-green/20 origin-right"
+								:style="{
+									transform: `scaleX(${asks[index].ratio})`
+								}"
+							></div>
+						</template>
+					</li>
+				</ul>
+				<div class="books-realtime justify-between items-center">
+					<div class="flex flex-col items-start justify-center">
+						<b :class="['text-base', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b>
+						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change"
+							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
+						>
+						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 					</div>
-				</li>
-
-				<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && bids" :key="index">
-					<template v-if="bids[index]">
-						<div class="text-green">{{ formatPrice(bids[index].px, pricePoint) }}</div>
-						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
-						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].total, point), '', point) }}</div>
-						<div
-							v-if="interVisible && interVisibleBottom"
-							class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-right"
-							:style="{
-								transform: `scaleX(${bids[index].ratio})`
-							}"
-						></div>
-					</template>
-				</li>
-			</ul>
+					<el-icon><ElIconArrowRight /></el-icon>
+				</div>
+				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
+					<li class="text-grey !pb-1" v-observe-visible.multi="onObserveVisible">
+						<div>价格</div>
+						<div class="text-right">卖出({{ symbolObj?.baseCcy }})</div>
+						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
+					</li>
+					<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && bids" :key="index">
+						<template v-if="bids[index]">
+							<div class="text-red">{{ formatPrice(bids[index].px, pricePoint) }}</div>
+							<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
+							<!-- <div class="text-right">{{ moneyFormat(formatPrice(asks[index].total, point), '', point) }}</div> -->
+							<div
+								v-if="interVisible"
+								class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-left"
+								:style="{
+									transform: `scaleX(${bids[index].ratio})`
+								}"
+							></div>
+						</template>
+					</li>
+				</ul>
+			</div>
+			<div v-observe-visible.multi="onObserveVisibleBottom" class="!flex pt-2" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
+				<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
+					<div
+						class="bg-green/50 flex justify-start items-center w-full h-full absolute left-0 top-0 origin-left"
+						:style="{
+							transform: `translate3d(calc(-${100 - calculateBuySellRatioValue}% + 5px),0,0)`,
+							'clip-path': 'polygon(0px 0px, 0 100%, calc(100% - 5px) 100%, 100% 0%)'
+						}"
+					></div>
+					<div
+						class="bg-red/50 flex justify-end items-center w-full h-full absolute right-0 top-0 origin-right"
+						:style="{
+							transform: `translate3d(calc(${calculateBuySellRatioValue}% + 5px),0,0)`,
+							'clip-path': 'polygon(5px 0px, 0px 100%, 100% 100%, 100% 0%)'
+						}"
+					></div>
+					<div class="absolute left-0 top-0 h-full flex items-center">
+						<b class="px-2">B</b><span>{{ calculateBuySellRatioValue.toFixed(2) }}%</span>
+					</div>
+					<div class="absolute right-0 top-0 h-full flex items-center">
+						<span>{{ (100 - calculateBuySellRatioValue).toFixed(2) }}%</span><b class="px-2">S</b>
+					</div>
+				</div>
+			</div>
 		</template>
 	</div>
 </template>
+
+<style lang="less" scoped>
+	
+	.books-realtime {
+		display: none;
+	}
+	@media (max-width: 999px) {
+		.books-realtime {
+			display: flex;
+		}
+		.book-container {
+			flex-direction: column-reverse;
+			ul:first-child {
+				li {
+					&:first-child {
+						display: none;
+					}
+					display: flex;
+					flex-direction: row-reverse;
+					.bg {
+						transform-origin: right;
+					}
+				}
+			}
+			ul:last-child {
+				flex-direction: column-reverse;
+				li:first-child {
+					display: none;
+				}
+				li {
+					.bg {
+						transform-origin: right;
+					}
+				}
+			}
+		}
+	}
+</style>
