@@ -536,10 +536,10 @@
 			.books-process {
 				border-radius: 66px;
 				div:first-child {
-					background-color: rgb(var(--color-green) / 0.2);
+					background-color: rgb(var(--color-green) / 0.3);
 				}
 				div:nth-child(2) {
-					background-color: rgb(var(--color-red) / 0.2);
+					background-color: rgb(var(--color-red) / 0.3);
 				}
 			}
 		}

@@ -205,7 +205,7 @@
 									<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
 								</el-radio-group>
 
-								<Select v-model="lotSize" class="!min-h-0 !py-1 gap-1">
+								<Select v-model="lotSize" class="!min-h-0 !p-1  gap-1">
 									<template #name>{{ lotSize }}x</template>
 									<div class="px-4 w-full text-center">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
@@ -467,6 +467,8 @@
 
 	@media (max-width: 999px) {
 		.trade-small {
+			min-width: 210px;
+			
 			.trade-container {
 				height: 100% !important;
 				padding-top: 0;
