@@ -254,22 +254,23 @@
 			item.total = totalBids.value += item.sz
 		}
 
+		bookAnimation(ask, bid)
+
+		// 反过来才对
 		asks.value = bid
 		bids.value = ask
 
 		trimMap(orderBook.value.asks, 500)
 		trimMap(orderBook.value.bids, 500)
-
-		bookAnimation()
 	}, 300)
 
 	// 每个订单的占比动画
-	function bookAnimation() {
-		if (!asks.value || !bids.value) return
+	function bookAnimation(asks: BookEntry[], bids: BookEntry[]) {
+		if (!asks || !bids) return
 		if (totalAsks.value + totalBids.value <= 0) return
 		// 计算每个订单的占比
 		// transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
-		asks.value.forEach((item, index) => {
+		asks.forEach((item, index) => {
 			const ratio = item.sz / totalAsks.value
 			// 上一次比例
 			const lastRatio = (lastAsks.value && lastAsks.value[index]?.ratio) || 0
@@ -283,7 +284,7 @@
 				}
 			})
 		})
-		bids.value.forEach((item, index) => {
+		bids.forEach((item, index) => {
 			const ratio = item.sz / totalBids.value
 			// 上一次比例
 			const lastRatio = (lastBids.value && lastBids.value[index]?.ratio) || 0
@@ -307,8 +308,8 @@
 			}
 		})
 
-		lastAsks.value = [...asks.value]
-		lastBids.value = [...bids.value]
+		lastAsks.value = [...asks]
+		lastBids.value = [...bids]
 	}
 
 	// bid/ask
@@ -436,7 +437,7 @@
 				</ul>
 				<div class="books-realtime justify-between items-center">
 					<div class="flex flex-col items-start justify-center">
-						<b :class="['text-base', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b>
+						<b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b>
 						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change"
 							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
 						>
@@ -532,13 +533,13 @@
 					}
 				}
 			}
-			.books-process{
+			.books-process {
 				border-radius: 66px;
-				div:first-child{
-					background-color: rgb(var(--color-green)/0.2);
+				div:first-child {
+					background-color: rgb(var(--color-green) / 0.2);
 				}
-				div:nth-child(2){
-					background-color: rgb(var(--color-red)/0.2);
+				div:nth-child(2) {
+					background-color: rgb(var(--color-red) / 0.2);
 				}
 			}
 		}

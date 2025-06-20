@@ -45,7 +45,7 @@
 			异动信号 <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
 		<TabBar :menus="menus" />
-		<button class="w-full !py-2 text-center text-sm bt-default glass !border-none overflow-hidden !text-grey">
+		<button class="w-full !py-2 text-center text-sm bt-default !bg-transparent !border-[--transparent05] !rounded-full overflow-hidden !text-grey">
 			更多<el-icon><ElIconArrowRight /></el-icon>
 		</button>
 	</div>

@@ -138,7 +138,7 @@
 						<TradeOrder :symbol="'BTC-USDT'" :isH5="true"/>
 					</div>
 					<div class="w-2/5 pr-4">
-						<BooksFull :symbol="'BTC-USDT'" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="9" />
+						<BooksFull :symbol="'BTC-USDT'" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="10" />
 					</div>
 				</div>
 			</div>

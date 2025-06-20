@@ -5,7 +5,7 @@
 	const props = defineProps<{
 		height?: number
 		symbol: string
-		isH5?:boolean
+		isH5?: boolean
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -74,6 +74,45 @@
 	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
+	const lotSize = ref(5)
+	const lotSizes = ref([
+		{
+			label: 'x1',
+			value: 1
+		},
+		{
+			label: 'x2',
+			value: 2
+		},
+		{
+			label: 'x3',
+			value: 3
+		},
+		{
+			label: 'x5',
+			value: 5
+		},
+		{
+			label: 'x10',
+			value: 10
+		},
+		{
+			label: 'x20',
+			value: 20
+		},
+		{
+			label: 'x30',
+			value: 30
+		},
+		{
+			label: 'x50',
+			value: 50
+		},
+		{
+			label: 'x100',
+			value: 100
+		}
+	])
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 		if (canChangePrice.value) {
@@ -147,19 +186,31 @@
 	<div>
 		<div :class="['w-full h-full wrapper trade-order', isH5 ? 'trade-small' : '']">
 			<client-only>
-				<ScrollBar :height="isH5?'100%':contentHeight + 'px'" v-show="!loading && !error">
-					<div ref="tradeContainer" :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + (isH5?'100%':contentHeight + 'px')]" v-if="contentHeight">
+				<ScrollBar :height="isH5 ? '100%' : contentHeight + 'px'" v-show="!loading && !error">
+					<div
+						ref="tradeContainer"
+						:class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]"
+						:style="['height:' + (isH5 ? '100%' : contentHeight + 'px')]"
+						v-if="contentHeight"
+					>
 						<div class="pb-[200px] trade-box" v-if="!loading">
 							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
 								<el-radio-button :label="buyText" value="buy" class="*:w-full" />
 								<el-radio-button :label="sellText" value="sell" class="*:w-full" />
 							</el-radio-group>
 
-							<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" v-click-sound>
-								<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
-								<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
-							</el-radio-group>
+							<div class="flex items-center justify-between">
+								<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" v-click-sound>
+									<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
+									<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
+								</el-radio-group>
 
+								<Select v-model="lotSize" class="!min-h-0 !py-1 gap-1">
+									<template #name>{{ lotSize }}x</template>
+									<div class="px-4 w-full text-center">杠杆</div>
+									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
+								</Select>
+							</div>
 							<!-- <el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
 							<el-option v-for="item in ordTypeOptions" :key="item.value" :label="item.name" :value="item.value" />
 						</el-select> -->
@@ -172,7 +223,7 @@
 									v-model="price"
 									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
 									:precision="point"
-									:controls-position="isH5?'':'right'"
+									:controls-position="isH5 ? '' : 'right'"
 									size="large"
 									class="!w-full"
 									v-click-sound
@@ -423,8 +474,15 @@
 				.trade-box {
 					padding-bottom: 0;
 				}
+				.trade-side {
+					border-radius: 999px;
+					background: var(--transparent10);
+				}
 				.trade-type {
 					margin: 8px 0;
+					border-radius: 999px;
+					width: max-content;
+					background: var(--transparent10);
 				}
 				.price-input {
 					padding-bottom: 5px;
@@ -433,16 +491,16 @@
 					padding: 0 0 5px 0;
 				}
 				.money-container {
-					padding: 0 0 5px 0;
+					padding: 0;
 				}
 				.trade-av {
 					display: flex;
 					flex-direction: column;
 					font-size: 10px;
-					.av-item{
+					.av-item {
 						display: flex;
 						justify-content: space-between;
-						b{
+						b {
 							text-align: right;
 							flex: auto;
 						}
@@ -452,12 +510,12 @@
 					position: unset;
 					padding: 5px 0 0 0;
 					button {
-						padding: 4px 10px !important;
+						@apply !py-2 !px-3 !text-sm;
 						width: 100% !important;
 						border-radius: 999px;
 						b,
 						p {
-							@apply text-sm;
+							@apply !text-sm;
 						}
 					}
 				}
@@ -471,21 +529,28 @@
 						}
 					}
 				}
-				
-				:deep(.el-radio-button) {
-					--el-border-radius-base: 999px;
 
-					.el-radio-button__inner {
-						padding: 4px 10px;
-						font-size: 12px;
-						line-height: 1;
+				:deep(.el-radio-group) {
+					--el-border-radius-base: 999px;
+					.el-radio-button {
+						&:not(.is-active) {
+							.el-radio-button__inner {
+								background: transparent;
+							}
+						}
+						.el-radio-button__inner {
+							@apply py-2 px-3 text-xs;
+							line-height: 1;
+							border: none;
+							border-radius: 999px;
+						}
 					}
 				}
 				:deep(.el-input) {
 					.el-input__wrapper {
 						.el-input__inner {
 							--el-input-inner-height: 30px;
-							font-size: 12px;
+							@apply text-xs;
 						}
 					}
 				}
