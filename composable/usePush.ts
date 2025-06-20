@@ -48,8 +48,6 @@ export function poped(cb: (...args: any[]) => void) {
 
 // 是否启用对子组件的事件传递，例如让子组件执行useWillAppear事件
 export function useRefreshChildEvent() {
-	useActivated()
-	useDeactivated()
 	const instance = getCurrentInstance()
 	// 控制子组件将要显示回调
 	let childWillAppearlisteners = [] as any[]
@@ -72,6 +70,10 @@ export function useRefreshChildEvent() {
 		;(instance as any)?.onWillDisAppear && (instance as any)?.onWillDisAppear()
 		childWillDisAppearlisteners.forEach(fn => fn())
 	}
+
+	useActivated()
+	useDeactivated()
+
 	onBeforeUnmount(() => {
 		childWillDisAppearlisteners = []
 		childWillAppearlisteners = []
@@ -96,6 +98,7 @@ export function getParentRefreshComponent(instance: ComponentInternalInstance) {
 // 当页面重新激活的时候，也激活所有willAppear事件 如果定义了willAppear就不需要再重复定义useActiveted函数了
 export function useActivated(cb?: (...args: any[]) => void) {
 	const instance = getCurrentInstance()
+	// 必须初始化后才能触发
 	onActivated(() => {
 		cb && cb()
 		// 需要触发子组件的useWillAppear

@@ -103,18 +103,20 @@
 		}
 	}, 10)
 
-	function getBooksFull() {
-		loading.value = true
-		error.value = ''
-		orderBook.value = {
-			asks: new Map<number, BookEntry>(),
-			bids: new Map<number, BookEntry>()
+	function getBooksFull(noloading?: boolean) {
+		if (!noloading) {
+			loading.value = true
+			error.value = ''
+			orderBook.value = {
+				asks: new Map<number, BookEntry>(),
+				bids: new Map<number, BookEntry>()
+			}
+			asks.value = []
+			bids.value = []
+			totalAsks.value = 0
+			totalBids.value = 0
+			point.value = 0
 		}
-		asks.value = []
-		bids.value = []
-		totalAsks.value = 0
-		totalBids.value = 0
-		point.value = 0
 
 		if (subHandle) $ws.unsubscribe(subHandle)
 		$ws.addTickerHandler(props.symbol, tickerHandler)
@@ -259,7 +261,7 @@
 		trimMap(orderBook.value.bids, 500)
 
 		bookAnimation()
-	}, 100)
+	}, 300)
 
 	// 每个订单的占比动画
 	function bookAnimation() {
@@ -347,15 +349,11 @@
 
 	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
+		console.log('booksfull onMounted....')
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz
-		new Promise(resolve => {
-			setTimeout(() => {
-				getBooksFull()
-				resolve(true)
-			}, 300)
-		})
+		getBooksFull()
 	})
 	onBeforeUnmount(() => {
 		$ws.removeSignalState(wsError)
@@ -378,11 +376,11 @@
 	})
 	useWillAppear(() => {
 		console.log('booksfull useWillAppear....')
-		if (!loading.value) getBooksFull()
+		if (!loading.value) getBooksFull(true)
 	})
 </script>
 <template>
-	<div class="w-full h-full min-h-[400px]">
+	<div :class="['w-full h-full min-h-[400px]', isH5 ? 'books-small' : '']">
 		<div class="flex items-center justify-between mb-2" v-if="!isH5">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="books-title">订单表</b>
@@ -469,7 +467,7 @@
 				</ul>
 			</div>
 			<div v-observe-visible.multi="onObserveVisibleBottom" class="!flex pt-2" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
-				<div class="w-full h-5 text-xs text-white rounded-sm relative overflow-hidden">
+				<div class="w-full h-5 text-white rounded-sm relative overflow-hidden books-process">
 					<div
 						class="bg-green/50 flex justify-start items-center w-full h-full absolute left-0 top-0 origin-left"
 						:style="{
@@ -485,10 +483,10 @@
 						}"
 					></div>
 					<div class="absolute left-0 top-0 h-full flex items-center">
-						<b class="px-2">B</b><span>{{ calculateBuySellRatioValue.toFixed(2) }}%</span>
+						<b class="px-2">B</b><span>{{ calculateBuySellRatioValue.toFixed(0) }}%</span>
 					</div>
 					<div class="absolute right-0 top-0 h-full flex items-center">
-						<span>{{ (100 - calculateBuySellRatioValue).toFixed(2) }}%</span><b class="px-2">S</b>
+						<span>{{ (100 - calculateBuySellRatioValue).toFixed(0) }}%</span><b class="px-2">S</b>
 					</div>
 				</div>
 			</div>
@@ -497,37 +495,50 @@
 </template>
 
 <style lang="less" scoped>
-	
 	.books-realtime {
 		display: none;
 	}
 	@media (max-width: 999px) {
-		.books-realtime {
+		.books-small {
 			display: flex;
-		}
-		.book-container {
-			flex-direction: column-reverse;
-			ul:first-child {
-				li {
-					&:first-child {
+			flex-direction: column;
+			justify-content: space-between;
+			.books-realtime {
+				display: flex;
+			}
+			.book-container {
+				flex-direction: column-reverse;
+				ul:first-child {
+					li {
+						&:first-child {
+							display: none;
+						}
+						display: flex;
+						flex-direction: row-reverse;
+						.bg {
+							transform-origin: right;
+						}
+					}
+				}
+				ul:last-child {
+					flex-direction: column-reverse;
+					li:first-child {
 						display: none;
 					}
-					display: flex;
-					flex-direction: row-reverse;
-					.bg {
-						transform-origin: right;
+					li {
+						.bg {
+							transform-origin: right;
+						}
 					}
 				}
 			}
-			ul:last-child {
-				flex-direction: column-reverse;
-				li:first-child {
-					display: none;
+			.books-process{
+				border-radius: 66px;
+				div:first-child{
+					background-color: rgb(var(--color-green)/0.2);
 				}
-				li {
-					.bg {
-						transform-origin: right;
-					}
+				div:nth-child(2){
+					background-color: rgb(var(--color-red)/0.2);
 				}
 			}
 		}

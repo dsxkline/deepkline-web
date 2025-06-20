@@ -5,9 +5,11 @@
 	const props = defineProps<{
 		height?: number
 		symbol: string
+		isH5?:boolean
 	}>()
 	const loading = ref(true)
 	const error = ref('')
+	const tradeContainer = ref()
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
 		let h = props.height
@@ -143,10 +145,10 @@
 </script>
 <template>
 	<div>
-		<div class="w-full h-full wrapper trade-order">
+		<div :class="['w-full h-full wrapper trade-order', isH5 ? 'trade-small' : '']">
 			<client-only>
-				<ScrollBar :height="contentHeight + 'px'" v-show="!loading && !error">
-					<div :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + contentHeight + 'px']" v-if="contentHeight">
+				<ScrollBar :height="isH5?'100%':contentHeight + 'px'" v-show="!loading && !error">
+					<div ref="tradeContainer" :class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]" :style="['height:' + (isH5?'100%':contentHeight + 'px')]" v-if="contentHeight">
 						<div class="pb-[200px] trade-box" v-if="!loading">
 							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
 								<el-radio-button :label="buyText" value="buy" class="*:w-full" />
@@ -170,7 +172,7 @@
 									v-model="price"
 									:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
 									:precision="point"
-									controls-position="right"
+									:controls-position="isH5?'':'right'"
 									size="large"
 									class="!w-full"
 									v-click-sound
@@ -413,71 +415,85 @@
 	}
 
 	@media (max-width: 999px) {
-		.trade-container {
-			height: auto !important;
-			.trade-box {
+		.trade-small {
+			.trade-container {
+				height: 100% !important;
+				padding-top: 0;
 				padding-bottom: 0;
-			}
-			.trade-type {
-				margin: 8px 0;
-			}
-			.price-input {
-				padding-bottom: 5px;
-			}
-			.amount-container {
-				padding: 0 0 5px 0;
-			}
-			.money-container {
-				padding: 0 0 5px 0;
-			}
-			.trade-av {
-				@apply text-xs;
-			}
-			.trade-bts {
-				position: unset;
-				padding: 5px 0;
-				button {
-					padding: 4px 10px !important;
-					width: 100% !important;
-					border-radius: 999px;
-					b,
-					p {
-						@apply text-sm;
+				.trade-box {
+					padding-bottom: 0;
+				}
+				.trade-type {
+					margin: 8px 0;
+				}
+				.price-input {
+					padding-bottom: 5px;
+				}
+				.amount-container {
+					padding: 0 0 5px 0;
+				}
+				.money-container {
+					padding: 0 0 5px 0;
+				}
+				.trade-av {
+					display: flex;
+					flex-direction: column;
+					font-size: 10px;
+					.av-item{
+						display: flex;
+						justify-content: space-between;
+						b{
+							text-align: right;
+							flex: auto;
+						}
 					}
 				}
-			}
-			.stop-container {
-				:deep(.el-tooltip__trigger) {
-					flex-direction: row;
-					justify-content: space-between;
-					margin-bottom: 10px;
-					h6 {
-						padding-bottom: 0;
+				.trade-bts {
+					position: unset;
+					padding: 5px 0 0 0;
+					button {
+						padding: 4px 10px !important;
+						width: 100% !important;
+						border-radius: 999px;
+						b,
+						p {
+							@apply text-sm;
+						}
 					}
 				}
-			}
-			padding-top: 0;
-			:deep(.el-radio-button) {
-				--el-border-radius-base: 999px;
+				.stop-container {
+					:deep(.el-tooltip__trigger) {
+						flex-direction: row;
+						justify-content: space-between;
+						margin-bottom: 10px;
+						h6 {
+							padding-bottom: 0;
+						}
+					}
+				}
+				
+				:deep(.el-radio-button) {
+					--el-border-radius-base: 999px;
 
-				.el-radio-button__inner {
-					padding: 4px 10px;
-					font-size: 12px;
-					line-height: 1;
-				}
-			}
-			:deep(.el-input) {
-				.el-input__wrapper {
-					.el-input__inner {
-						--el-input-inner-height: 30px;
+					.el-radio-button__inner {
+						padding: 4px 10px;
 						font-size: 12px;
+						line-height: 1;
 					}
 				}
-			}
-			:deep(.el-input-number) {
-				&.is-controls-right[class*='large'] [class*='decrease'],
-				&.is-controls-right[class*='large'] [class*='increase'] {
-					--el-input-number-controls-height: 15px;
+				:deep(.el-input) {
+					.el-input__wrapper {
+						.el-input__inner {
+							--el-input-inner-height: 30px;
+							font-size: 12px;
+						}
+					}
+				}
+				:deep(.el-input-number) {
+					&.is-controls-right[class*='large'] [class*='decrease'],
+					&.is-controls-right[class*='large'] [class*='increase'] {
+						--el-input-number-controls-height: 15px;
+					}
 				}
 			}
 		}

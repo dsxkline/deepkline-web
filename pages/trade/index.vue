@@ -82,9 +82,9 @@
 	}
 
 	onMounted(() => {
+		console.log('trade-index onMounted....')
 		$ws.addTickerHandler(symbol.value, tickerHandler)
 		tickerHandler($ws.getTickers(symbol.value))
-		subSymbols()
 	})
 
 	useWillDisappear(() => {
@@ -130,12 +130,12 @@
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
 			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
-				<div class="h-[200px]" v-if="showKline">
-					<KlineChart :symbol="symbol" />
+				<div class="h-[200px] mb-4" v-if="showKline">
+					<KlineChart :symbol="symbol" :sides="['MACD']"/>
 				</div>
 				<div class="w-full flex">
 					<div class="w-3/5">
-						<TradeOrder :symbol="'BTC-USDT'" />
+						<TradeOrder :symbol="'BTC-USDT'" :isH5="true"/>
 					</div>
 					<div class="w-2/5 pr-4">
 						<BooksFull :symbol="'BTC-USDT'" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="9" />

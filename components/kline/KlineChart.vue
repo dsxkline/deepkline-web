@@ -7,6 +7,7 @@
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
+		sides?: string[]
 	}>()
 	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol])
 	declare var window: DsxWindow
@@ -89,7 +90,7 @@
 			paddingTop: 0,
 			// paddingMiddle: 0,
 			main: ['MA'], // 主图指标
-			sides: ['MACD', 'KDJ', 'RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
+			sides: props.sides || ['MACD', 'KDJ', 'RSI'], // 副图显示指标(两个副图，第一个显示MACD，第二个显示KDJ)
 			isShowTips: true,
 			allMin: false,
 			ask: parseFloat(ticker?.last || '0'),
