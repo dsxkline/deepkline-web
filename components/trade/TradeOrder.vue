@@ -268,7 +268,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							</div>
 							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input type="number" inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" size="large" class="w-full" />
+								<el-input inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" size="large" class="w-full" :clearable="!isH5" />
 								<div class="slider-demo-block">
 									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
@@ -276,7 +276,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input-number inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'"  size="large" class="w-full" />
+								<el-input inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'"  size="large" class="w-full" :clearable="!isH5" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
@@ -290,7 +290,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							<div class="pt-2 stop-container" v-if="!useStore().isH5">
 								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
-										<div v-click-sound class="bg-[--transparent02] rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
 											<div v-if="!takeProfit">-</div>
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
@@ -300,7 +300,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 								</el-popover>
 								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
-										<div v-click-sound class="bg-[--transparent02] mt-1 rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
+										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
 											<div v-if="!stopLoss">-</div>
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
@@ -310,12 +310,12 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>
-								<div v-click-sound @click="pushStopProfitLoss(0)" class="bg-[--transparent02] mb-3 rounded p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+								<div v-click-sound @click="pushStopProfitLoss(0)" class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
 									<h6 class="pb-0 text-grey">止盈</h6>
 									<div v-if="!takeProfit">-</div>
 									<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 								</div>
-								<div v-click-sound @click="pushStopProfitLoss(1)" class="bg-[--transparent02] mb-3 rounded p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+								<div v-click-sound @click="pushStopProfitLoss(1)" class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
 									<h6 class="pb-0 text-grey">止损</h6>
 									<div v-if="!stopLoss">-</div>
 									<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
