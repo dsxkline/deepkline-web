@@ -249,6 +249,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 									v-click-sound
 									v-show="ordType != OrderType.MARKET"
 									ref="priceInput"
+									 inputmode="decimal"
 								/>
 								<el-input placeholder="MARKET" size="large" class="!w-full" v-click-sound @click="changePriceType" v-show="ordType == OrderType.MARKET" />
 								<div class="flex items-center justify-center py-1 trade-ordtype-small" v-click-sound v-if="ordType != OrderType.MARKET">
@@ -260,7 +261,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							</div>
 							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input inputmode="numeric" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+								<el-input inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 								<div class="slider-demo-block">
 									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
@@ -268,7 +269,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input inputmode="numeric" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
+								<el-input inputmode="decimal" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>

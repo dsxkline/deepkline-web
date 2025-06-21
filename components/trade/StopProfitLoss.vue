@@ -73,7 +73,9 @@
 		if(price.value){
 			priceChange(price.value,0)
 		}
-		priceInput.value.focus()
+		setTimeout(() => {
+			priceInput.value.focus()
+		}, 500);
 	})
 
 	onBeforeUnmount(() => {
@@ -96,6 +98,7 @@
 				class="!w-full price-input"
 				v-click-sound
 				autofocus
+				inputmode="decimal"
 			/>
 		</div>
 		<h3>点数</h3>
@@ -112,6 +115,7 @@
 				size="large"
 				class="!w-full"
 				v-click-sound
+				inputmode="decimal"
 			/>
 		</div>
 		<div class="py-2">
