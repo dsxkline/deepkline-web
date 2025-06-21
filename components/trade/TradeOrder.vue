@@ -196,7 +196,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 			initPrice:parseFloat(ticker.value?.last||'0'),
 			price:type==0?takeProfit.value:stopLoss.value,
 			onClose:type==0?confirmProfit:confirmLoss
-		})
+		},'80%')
 	}
 </script>
 <template>
