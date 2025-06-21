@@ -198,6 +198,13 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 			onClose:type==0?confirmProfit:confirmLoss
 		},'80%')
 	}
+	// ios 移动端 input需要点击两次，fix
+	function handleFocusFix(e:Event){
+		console.log('handleFocusFix',e)
+		nextTick(()=>{
+			e.target && (e.target as HTMLInputElement).focus()
+		})
+	}
 </script>
 <template>
 	<div>
@@ -261,7 +268,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							</div>
 							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input type="text" autofocus inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+								<el-input @click.native="handleFocusFix" type="text" inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 								<div class="slider-demo-block">
 									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
@@ -269,7 +276,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input type="text" autofocus inputmode="decimal" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
+								<el-input type="text" inputmode="decimal" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
