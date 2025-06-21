@@ -75,7 +75,7 @@
 		}
 		setTimeout(() => {
 			priceInput.value.focus()
-		}, 500);
+		}, 600);
 	})
 
 	onBeforeUnmount(() => {
