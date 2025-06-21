@@ -268,7 +268,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							</div>
 							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input @click.native="handleFocusFix" type="text" inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+								<el-input type="number" inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 								<div class="slider-demo-block">
 									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
@@ -276,7 +276,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input type="text" inputmode="decimal" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
+								<el-input-number inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
@@ -486,6 +486,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 					}
 
 					.el-input__wrapper {
+						transition: none;
 						padding: 0 5px;
 						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 						box-shadow: none;
