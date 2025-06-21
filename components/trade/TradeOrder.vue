@@ -1,7 +1,10 @@
 <script setup lang="ts">
-	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue';
+import { usePushUp } from '~/composable/usePush';
+import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
+	const pushUp = usePushUp()
 	const props = defineProps<{
 		height?: number
 		symbol: string
@@ -66,6 +69,7 @@
 		return symbolObj.value?.instType == InstanceType.SPOT ? '卖出' : '平仓'
 	})
 	const openStopProfitLoss = ref(false)
+	const priceInput = ref()
 	const takeProfit = ref()
 	const stopLoss = ref()
 	const buyDes = ref('MARKET')
@@ -167,6 +171,10 @@
 		buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 		sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 	}
+	function changePriceType() {
+		ordType.value = OrderType.LIMIT
+		priceInput.value.focus()
+	}
 	function priceFocus() {
 		canChangePrice.value = false
 	}
@@ -174,12 +182,21 @@
 	function confirmProfit(price: number, point: number) {
 		if (point > 0) takeProfit.value = price
 		else takeProfit.value = 0
-		popProfit.value.hide()
+		popProfit.value && popProfit.value.hide()
 	}
 	function confirmLoss(price: number, point: number) {
 		if (point > 0) stopLoss.value = price
 		else stopLoss.value = 0
-		popLoss.value.hide()
+		popLoss.value && popLoss.value.hide()
+	}
+	function pushStopProfitLoss(type:number){
+		pushUp(StopProfitLoss,{
+			type:type,
+			symbol:props.symbol,
+			initPrice:parseFloat(ticker.value?.last||'0'),
+			price:type==0?takeProfit.value:stopLoss.value,
+			onClose:type==0?confirmProfit:confirmLoss
+		})
 	}
 </script>
 <template>
@@ -200,20 +217,23 @@
 							</el-radio-group>
 
 							<div class="flex items-center justify-between">
-								<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-5 w-full" v-click-sound>
+								<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-3 w-full" v-click-sound>
 									<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
 									<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
 								</el-radio-group>
 
-								<Select v-model="lotSize" class="!min-h-0 !p-1  gap-1">
-									<template #name>{{ lotSize }}x</template>
+								<!-- <el-select v-model="lotSize" class="trade-lotsize-select w-full">
+									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
+								</el-select> -->
+
+								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
+									<template #name
+										><span class="text-grey" v-if="!isH5">杠杆</span> <span class="flex-auto text-right">{{ lotSize }}x</span></template
+									>
 									<div class="px-4 w-full text-center">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
-							<!-- <el-select v-model="ordType" class="trade-ordtype-select w-full mb-3">
-							<el-option v-for="item in ordTypeOptions" :key="item.value" :label="item.name" :value="item.value" />
-						</el-select> -->
 
 							<div class="pb-3 relative price-input">
 								<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
@@ -227,9 +247,10 @@
 									size="large"
 									class="!w-full"
 									v-click-sound
-									v-if="ordType != OrderType.MARKET"
+									v-show="ordType != OrderType.MARKET"
+									ref="priceInput"
 								/>
-								<el-input placeholder="MARKET" size="large" class="!w-full" v-click-sound @click="ordType = OrderType.LIMIT" v-else />
+								<el-input placeholder="MARKET" size="large" class="!w-full" v-click-sound @click="changePriceType" v-show="ordType == OrderType.MARKET" />
 								<div class="flex items-center justify-center py-1 trade-ordtype-small" v-click-sound v-if="ordType != OrderType.MARKET">
 									<span class="text-grey">Pending</span>
 									<button class="px-1 flex items-center" @click="ordType = OrderType.MARKET">
@@ -239,7 +260,7 @@
 							</div>
 							<div class="py-3 amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input v-click-sound v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
+								<el-input inputmode="numeric" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" clearable size="large" class="w-full" />
 								<div class="slider-demo-block">
 									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
@@ -247,7 +268,7 @@
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input v-click-sound v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
+								<el-input inputmode="numeric" v-model="money" :placeholder="'请输入金额'" clearable size="large" class="w-full" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
@@ -258,8 +279,8 @@
 								</div>
 							</div>
 
-							<div class="pt-2 stop-container">
-								<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0">
+							<div class="pt-2 stop-container" v-if="!useStore().isH5">
+								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
@@ -267,9 +288,9 @@
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmProfit" v-if="!loading" />
+									<StopProfitLoss :type="0" :symbol="symbol" :initPrice="parseFloat(ticker?.last)" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
-								<el-popover placement="left" trigger="click" ref="popLoss" :hide-after="0">
+								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] mt-1 rounded p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
@@ -277,8 +298,20 @@
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :price="parseFloat(ticker?.last)" @onClose="confirmLoss" v-if="!loading" />
+									<StopProfitLoss :type="1" :symbol="symbol" :initPrice="parseFloat(ticker?.last)" @close="confirmLoss" v-if="!loading" />
 								</el-popover>
+							</div>
+							<div class="pt-2 stop-container" v-else>
+								<div v-click-sound @click="pushStopProfitLoss(0)" class="bg-[--transparent02] mb-3 rounded p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+									<h6 class="pb-0 text-grey">止盈</h6>
+									<div v-if="!takeProfit">-</div>
+									<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
+								</div>
+								<div v-click-sound @click="pushStopProfitLoss(1)" class="bg-[--transparent02] mb-3 rounded p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+									<h6 class="pb-0 text-grey">止损</h6>
+									<div v-if="!stopLoss">-</div>
+									<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
+								</div>
 							</div>
 						</div>
 
@@ -328,6 +361,11 @@
 			--el-radio-button-checked-border-color: rgb(var(--color-red));
 			--el-radio-button-disabled-checked-fill: var(--el-border-color-extra-light);
 		}
+		:deep(.el-radio-button--small) {
+			.el-radio-button__inner {
+				padding: 6px 10px;
+			}
+		}
 	}
 	.buy {
 		.el-radio-button {
@@ -335,7 +373,13 @@
 			--el-radio-button-checked-text-color: var(--el-color-white);
 			--el-radio-button-checked-border-color: var(--el-color-primary);
 		}
+		:deep(.el-radio-button--small) {
+			.el-radio-button__inner {
+				padding: 6px 10px;
+			}
+		}
 	}
+
 	.sell-bt {
 		display: none;
 	}
@@ -359,6 +403,14 @@
 
 	@container (max-width: 200px) {
 		.trade-order {
+			.lotsize-select {
+				width: 100%;
+				padding: 8px !important;
+				margin-bottom: 8px;
+				span {
+					color: rgb(var(--color-text-main));
+				}
+			}
 			.trade-container {
 				padding: 16px 8px;
 				.trade-side {
@@ -468,7 +520,7 @@
 	@media (max-width: 999px) {
 		.trade-small {
 			min-width: 210px;
-			
+
 			.trade-container {
 				height: 100% !important;
 				padding-top: 0;
@@ -478,13 +530,13 @@
 				}
 				.trade-side {
 					border-radius: 999px;
-					background: var(--transparent10);
+					background: var(--transparent05);
 				}
 				.trade-type {
 					margin: 8px 0;
 					border-radius: 999px;
 					width: max-content;
-					background: var(--transparent10);
+					background: var(--transparent05);
 				}
 				.price-input {
 					padding-bottom: 5px;

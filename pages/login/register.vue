@@ -9,6 +9,7 @@
 	import ResetPassword from './reset-password.vue'
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
+import { useAccountStore } from '~/store/account'
 
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
@@ -217,7 +218,7 @@
 			console.log('获取账户信息', result.data)
 			const accounts = result.data
 			if (accounts) {
-				useUserStore().setAccounts(accounts)
+				useAccountStore().setAccounts(accounts)
 			}
 		} else {
 			throw new Error(result?.msg)
