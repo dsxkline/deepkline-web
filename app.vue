@@ -12,5 +12,5 @@
 		</NuxtLayout>
 	</template>
 
-	<StartupImages v-else v-model="isStartup" />
+	<StartupImages v-model="isStartup" />
 </template>
