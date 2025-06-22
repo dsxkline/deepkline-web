@@ -78,8 +78,12 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
-	const lotSize = ref(5)
+	const lotSize = ref(0)
 	const lotSizes = ref([
+		{
+			label: '无杠杆',
+			value: 0
+		},
 		{
 			label: 'x1',
 			value: 1
@@ -121,7 +125,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 		ticker.value = data
 		if (canChangePrice.value) {
 			price.value = parseFloat(data.last)
-			sz.value = symbolObj.value?.lotSz
+			// sz.value = symbolObj.value?.lotSz
 			if (ordType.value != OrderType.MARKET) {
 				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
@@ -235,7 +239,10 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
 									<template #name
-										><span class="text-grey" v-if="!isH5">杠杆</span> <span class="flex-auto text-right">{{ lotSize }}x</span></template
+										><span class="text-grey" v-if="!isH5">杠杆</span>
+										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
+										<span class="flex-auto text-right" v-else>无</span>
+										</template
 									>
 									<div class="px-4 w-full text-center">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>

@@ -437,7 +437,12 @@
 				</ul>
 				<div class="books-realtime justify-between items-center">
 					<div class="flex flex-col items-start justify-center">
-						<b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b>
+						<!-- <b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b> -->
+						<b v-autosize="20" :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">
+							<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
+							<NumberIncrease :value="formatPrice(ticker?.last, symbolObj.tickSz)" :fontSize="20" />
+						</b>
+
 						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change"
 							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
 						>

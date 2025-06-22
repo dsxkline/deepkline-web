@@ -17,10 +17,10 @@
 	definePageMeta({
 		layout: 'main'
 	})
-
+	
 	const active = ref(0)
-	const activeMenu = computed(() => (menus.value && menus.value[active.value]))
-	const activeMenuH5 = computed(() => (menus5.value && menus5.value[active.value]))
+	const activeMenu = computed(() => menus.value && menus.value[active.value])
+	const activeMenuH5 = computed(() => menus5.value && menus5.value[active.value])
 	// 定义菜单及对应的组件
 	const menus = ref<MenuModel[] | null>([
 		{
@@ -29,25 +29,25 @@
 			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
-		},
-		{
-			name: '交易',
-			icon: markRaw(TradeIcon),
-			contentComp: markRaw(TradeIndex),
-			contentParams: {}
-		},
+		}
+		// {
+		// 	name: '交易',
+		// 	icon: markRaw(TradeIcon),
+		// 	contentComp: markRaw(TradeIndex),
+		// 	contentParams: {}
+		// },
 		// {
 		// 	name: '策略',
 		// 	icon: markRaw(Opportunity),
 		// 	contentComp: markRaw(StrategyIndex),
 		// 	contentParams: {}
 		// },
-		{
-			name: '资产',
-			icon: markRaw(AssetsIcon),
-			contentComp: markRaw(AccountIndex),
-			contentParams: {}
-		}
+		// {
+		// 	name: '资产',
+		// 	icon: markRaw(AssetsIcon),
+		// 	contentComp: markRaw(AccountIndex),
+		// 	contentParams: {}
+		// }
 	])
 
 	const menus5 = ref<MenuModel[] | null>([
@@ -109,13 +109,15 @@
 	</div>
 
 	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5">
-		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
-		<!-- 使用缓存 -->
-		<div class="right-container">
-			<KeepAlive>
-				<component :is="activeMenuH5.contentComp" v-if="activeMenuH5" :key="activeMenuH5.name" />
-			</KeepAlive>
-		</div>
+		
+			<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
+			<!-- 使用缓存 -->
+			<div class="right-container">
+				<KeepAlive>
+					<component :is="activeMenuH5.contentComp" v-if="activeMenuH5" :key="activeMenuH5.name" />
+				</KeepAlive>
+			</div>
+		
 	</div>
 </template>
 
