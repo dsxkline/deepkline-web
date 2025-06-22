@@ -6,8 +6,8 @@
 	let timer: NodeJS.Timeout | null = null
 	const timeout = 3
 	const second = ref(timeout)
-    const opacity = ref(1)
-    const closed = ref(false)
+	const opacity = ref(1)
+	const closed = ref(false)
 	function createTimer() {
 		clearTimer()
 		timer = setInterval(() => {
@@ -22,12 +22,11 @@
 		if (timer) clearInterval(timer)
 	}
 	function hide() {
-        opacity.value = 0
-        emit('update:modelValue', true)
-        setTimeout(() => {
-            closed.value = true;
-        }, 200);
-		
+		opacity.value = 0
+		emit('update:modelValue', true)
+		setTimeout(() => {
+			closed.value = true
+		}, 200)
 	}
 	onMounted(() => {
 		createTimer()
@@ -37,12 +36,39 @@
 	})
 </script>
 <template>
-	<div class="fixed top-0 left-0 w-full h-full z-[999999] transition-all" v-if="!closed" :style="{
-        opacity:opacity
-    }">
-		<img src="/images/pwa/launch-iphonexsmax-1242x2688.png" class="w-full h-full object-cover" />
+	<div
+		class="startup-container bg-base fixed top-0 left-0 w-full h-full z-[999999] transition-all flex items-center justify-center"
+		v-if="!closed"
+		:style="{
+			opacity: opacity
+		}"
+	>
+		<LogoFace />
+		<!-- <img src="/images/pwa/launch-iphonexsmax-1242x2688.png" class="w-full h-full object-cover" /> -->
 		<ClientOnly>
 			<span class="absolute top-4 right-4 px-4 py-2 bg-[--transparent10] rounded-full text-xs" @click="hide">跳过 {{ second }}s</span>
 		</ClientOnly>
 	</div>
 </template>
+<style scoped lang="less">
+	.light .startup-container {
+		&::before {
+			background-image: unset;
+		}
+	}
+	.startup-container {
+		&::before {
+			background-image: var(--bg-linear-180);
+			// filter: blur(60px);
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			content: '';
+			z-index: -1;
+			opacity: 0.15;
+		}
+	}
+
+</style>
