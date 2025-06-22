@@ -12,8 +12,7 @@
                 DeepKline
             </div>
             <div class="face-button mt-1 text-muted text-sm">
-                
-                版本：1.2.3
+                打造最丝滑的交易系统
             </div>
         </div>
     </div>
