@@ -36,7 +36,7 @@
 	})
 </script>
 <template>
-	<div class="bg-[--transparent02] px-3 py-1 min-h-12 border border-[--transparent10] rounded-md flex items-center justify-between" @click="pushUpContainer">
+	<div v-click-sound class="bg-[--transparent02] px-3 py-1 min-h-12 border border-[--transparent10] hover:border-[--transparent30] rounded-md flex items-center justify-between cursor-pointer" @click="pushUpContainer">
 		<div class="flex items-center" v-if="!slots.name">
 			<div v-if="title" class="text-sm py-2 pr-3 text-grey">{{ title }}</div>
 			<div class="py-2">{{ modelValue }}</div>
