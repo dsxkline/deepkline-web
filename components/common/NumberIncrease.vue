@@ -127,7 +127,7 @@
 			},
 			onObserveVisible(visible) {
 				this.interVisible = visible
-				// console.log('inview numberincrease',this.interVisible)
+				console.log('inview numberincrease',this.interVisible)
 			},
 			setDefaultDisplay() {
 				this.setNumberWidth()
@@ -138,7 +138,8 @@
 				})
 			},
 			updateNumbers() {
-				// if (!this.isTopLayer()) return;
+				if (!this.interVisible) return;
+				console.log('updateNumbers.....',this.interVisible)
 				this.setNumberList()
 				this.setNumberWidth()
 				this.$nextTick(() => {

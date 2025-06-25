@@ -163,6 +163,9 @@
 				</li>
 			</ul>
 			<div class="line" ref="bottomLine" v-show="!hideLine"></div>
+			<div class="absolute right-0 top-0 h-full flex items-center px-4">
+				<slot name="right"></slot>
+			</div>
 		</div>
 		<div class="tabbar-content" ref="tabbarContent" :style="{ height: contentHeight ? `${contentHeight}px` : 'auto' }">
 			<div class="tabbar-content-item" v-for="(item, index) in menus">

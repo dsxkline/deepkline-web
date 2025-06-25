@@ -1,7 +1,7 @@
 <script setup lang="ts">
-	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue';
-import { usePushUp } from '~/composable/usePush';
-import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
+	import { usePushUp } from '~/composable/usePush'
+	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const pushUp = usePushUp()
@@ -25,7 +25,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 		return h
 	})
 
-	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
+	const symbolObj = computed(() => useSymbolStore().getSymbol(props.symbol))
 	const point = computed(() => {
 		let p = String(symbolObj.value?.tickSz).split('.')
 		if (p.length > 1) {
@@ -81,7 +81,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 	const lotSize = ref(0)
 	const lotSizes = ref([
 		{
-			label: '无杠杆',
+			label: '无',
 			value: 0
 		},
 		{
@@ -193,19 +193,23 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 		else stopLoss.value = 0
 		popLoss.value && popLoss.value.hide()
 	}
-	function pushStopProfitLoss(type:number){
-		pushUp(StopProfitLoss,{
-			type:type,
-			symbol:props.symbol,
-			initPrice:parseFloat(ticker.value?.last||'0'),
-			price:type==0?takeProfit.value:stopLoss.value,
-			onClose:type==0?confirmProfit:confirmLoss
-		},'80%')
+	function pushStopProfitLoss(type: number) {
+		pushUp(
+			StopProfitLoss,
+			{
+				type: type,
+				symbol: props.symbol,
+				initPrice: parseFloat(ticker.value?.last || '0'),
+				price: type == 0 ? takeProfit.value : stopLoss.value,
+				onClose: type == 0 ? confirmProfit : confirmLoss
+			},
+			'80%'
+		)
 	}
 	// ios 移动端 input需要点击两次，fix
-	function handleFocusFix(e:Event){
-		console.log('handleFocusFix',e)
-		nextTick(()=>{
+	function handleFocusFix(e: Event) {
+		console.log('handleFocusFix', e)
+		nextTick(() => {
 			e.target && (e.target as HTMLInputElement).focus()
 		})
 	}
@@ -238,13 +242,11 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 								</el-select> -->
 
 								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
-									<template #name
-										>
+									<template #name>
 										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
 										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
-										<span class="flex-auto text-right" v-else>无</span>
-										</template
-									>
+										<span class="flex-auto text-righ text-grey" v-else>杠杆</span>
+									</template>
 									<div class="px-4 w-full text-center">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
@@ -264,7 +266,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 									v-click-sound
 									v-show="ordType != OrderType.MARKET"
 									ref="priceInput"
-									 inputmode="decimal"
+									inputmode="decimal"
 								/>
 								<el-input placeholder="MARKET" size="large" class="!w-full" v-click-sound @click="changePriceType" v-show="ordType == OrderType.MARKET" />
 								<div class="flex items-center justify-center py-1 trade-ordtype-small" v-click-sound v-if="ordType != OrderType.MARKET">
@@ -284,7 +286,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 
 							<div class="py-3 money-container">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input v-click-sound inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'"  size="large" class="w-full" :clearable="!isH5" />
+								<el-input v-click-sound inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'" size="large" class="w-full" :clearable="!isH5" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
@@ -296,7 +298,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 							</div>
 
 							<div class="pt-2 stop-container" v-if="!useStore().isH5">
-								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popProfit" :hide-after="0">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
@@ -306,7 +308,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 									</template>
 									<StopProfitLoss :type="0" :symbol="symbol" :initPrice="parseFloat(ticker?.last)" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
-								<el-popover :placement="isH5?'right':'left'" trigger="click" ref="popLoss" :hide-after="0">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
@@ -318,12 +320,20 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>
-								<div v-click-sound @click="pushStopProfitLoss(0)" class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+								<div
+									v-click-sound
+									@click="pushStopProfitLoss(0)"
+									class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
+								>
 									<h6 class="pb-0 text-grey">止盈</h6>
 									<div v-if="!takeProfit">-</div>
 									<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 								</div>
-								<div v-click-sound @click="pushStopProfitLoss(1)" class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer">
+								<div
+									v-click-sound
+									@click="pushStopProfitLoss(1)"
+									class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
+								>
 									<h6 class="pb-0 text-grey">止损</h6>
 									<div v-if="!stopLoss">-</div>
 									<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
@@ -417,7 +427,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 		display: none;
 	}
 
-	.lotsize-title{
+	.lotsize-title {
 		display: none;
 	}
 
@@ -430,7 +440,7 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 				span {
 					color: rgb(var(--color-text-main));
 				}
-				.lotsize-title{
+				.lotsize-title {
 					display: unset;
 				}
 			}
@@ -501,7 +511,6 @@ import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.typ
 					}
 
 					.el-input__wrapper {
-						
 						padding: 0 5px;
 						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 						box-shadow: none;
