@@ -48,5 +48,3 @@
 		</TabBar>
 	</div>
 </template>
-
-<style lang="less" scoped></style>

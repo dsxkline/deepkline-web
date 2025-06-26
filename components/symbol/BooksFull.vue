@@ -5,8 +5,9 @@
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
-	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import { useRequestAnimation, type requestAnimationType } from '~/composable/useRequestAnimation'
 	import { use } from 'echarts'
+	import type { ComponentPublicInstance } from 'vue'
 
 	const props = defineProps<{
 		symbol: string
@@ -21,10 +22,10 @@
 	})
 	const asks = ref<BookEntry[] | null>([])
 	const bids = ref<BookEntry[] | null>([])
-	const lastAsks = ref<BookEntry[] | null>([])
-	const lastBids = ref<BookEntry[] | null>([])
-	let totalAsks = ref(0)
-	let totalBids = ref(0)
+	let lastAsks = <BookEntry[] | null>[]
+	let lastBids = <BookEntry[] | null>[]
+	let totalAsks = 0
+	let totalBids = 0
 	// 小数点
 	const point = ref(0)
 	const showNumber = computed(() => props.limitCount || 16)
@@ -68,6 +69,27 @@
 	})
 	const pricePoint = ref(symbolObj.value?.tickSz || 0)
 	const activeBook = ref(0)
+	// 保存动画句柄
+	// let animationAskHandler: requestAnimationType[] | null = []
+	// let animationBidHandler: requestAnimationType[] | null = []
+	const animationAskBidHandler = useRequestAnimation()
+	// 在 setup 中维护 ref 映射表
+	// const askBarBgRefs = ref<HTMLElement[] | Element[] | ComponentPublicInstance[] | null>([])
+	// const setAskBarBgRef = (index: number, el: HTMLElement | Element | ComponentPublicInstance | null) => {
+	// 	if (el && askBarBgRefs.value) askBarBgRefs.value[index] = el
+	// }
+	// const askBarAmountRefs = ref<HTMLElement[] | Element[] | ComponentPublicInstance[] | null>([])
+	// const setAskBarAmountRef = (index: number, el: HTMLElement | Element | ComponentPublicInstance | null) => {
+	// 	if (el && askBarAmountRefs.value) askBarAmountRefs.value[index] = el
+	// }
+	// const askBarPriceRefs = ref<HTMLElement[] | Element[] | ComponentPublicInstance[] | null>([])
+	// const setAskBarPriceRef = (index: number, el: HTMLElement | Element | ComponentPublicInstance | null) => {
+	// 	if (el && askBarPriceRefs.value) askBarPriceRefs.value[index] = el
+	// }
+	// const bidBarRefs = ref<HTMLElement[] | Element[] | ComponentPublicInstance[] | null>([])
+	// const setBidBarRef = (index: number, el: HTMLElement | Element | ComponentPublicInstance | null) => {
+	// 	if (el && bidBarRefs.value) bidBarRefs.value[index] = el
+	// }
 
 	watch(
 		() => pointLevel.value,
@@ -111,10 +133,10 @@
 				asks: new Map<number, BookEntry>(),
 				bids: new Map<number, BookEntry>()
 			}
-			asks.value = []
-			bids.value = []
-			totalAsks.value = 0
-			totalBids.value = 0
+			// asks.value = []
+			// bids.value = []
+			totalAsks = 0
+			totalBids = 0
 			point.value = 0
 		}
 
@@ -161,8 +183,8 @@
 				asks: new Map<number, BookEntry>(),
 				bids: new Map<number, BookEntry>()
 			}
-			totalAsks.value = 0
-			totalBids.value = 0
+			totalAsks = 0
+			totalBids = 0
 		}
 		point.value = props.limitPoint || symbolObj.value?.lotSz || 0
 
@@ -222,24 +244,28 @@
 		})
 		// point.value = 1 / 10 ** point.value
 
+		updates.asks = []
+		updates.bids = []
+
 		throttleAskBid()
 		// console.log('Array.from(orderBook.value.bids.values())',Array.from(orderBook.value.bids.values()).length)
 	}
 	const throttleAskBid = throttle(() => {
-		totalAsks.value = 0
-		totalBids.value = 0
+		totalAsks = 0
+		totalBids = 0
 		if (!orderBook.value) return
 		// 倒序排列
 		let ask = Array.from(orderBook.value.asks.values())
-			.sort((a, b) => a.px - b.px)
+			.sort((a, b) =>(a.px - b.px))
 			.filter(item => ticker.value && item.px >= parseFloat(ticker.value.last))
 
 		if (activeBook.value == 0) ask = ask.slice(0, showNumber.value)
 		else ask = ask.slice(0, 2 * showNumber.value + 1)
+		if(props.isH5) ask = ask.reverse()
 
 		for (let index = ask.length - 1; index >= 0; index--) {
 			const item = ask[index]
-			item.total = totalAsks.value += item.sz
+			totalAsks += item.sz * item.px
 		}
 
 		// 倒序排列
@@ -251,7 +277,7 @@
 		else bid = bid.slice(0, 2 * showNumber.value + 1)
 		for (let index = 0; index < bid.length; index++) {
 			const item = bid[index]
-			item.total = totalBids.value += item.sz
+			totalBids += item.sz * item.px
 		}
 
 		bookAnimation(ask, bid)
@@ -262,44 +288,132 @@
 
 		trimMap(orderBook.value.asks, 500)
 		trimMap(orderBook.value.bids, 500)
+
+		ask = []
+		bid = []
+
 	}, 300)
+
+	// 初始化动画
+	// function createStartAnimations() {
+	// 	for (let index = 0; index < showNumber.value; index++) {
+	// 		animationAskHandler && animationAskHandler.push(useRequestAnimation())
+	// 		animationBidHandler && animationBidHandler.push(useRequestAnimation())
+	// 	}
+	// }
+	// function clearAnimations() {
+	// 	animationAskHandler &&
+	// 		animationAskHandler.forEach(animation => {
+	// 			animation.stop()
+	// 		})
+	// 	animationBidHandler &&
+	// 		animationBidHandler.forEach(animation => {
+	// 			animation.stop()
+	// 		})
+	// 	animationAskHandler = null
+	// 	animationBidHandler = null
+	// }
 
 	// 每个订单的占比动画
 	function bookAnimation(asks: BookEntry[], bids: BookEntry[]) {
 		if (!asks || !bids) return
-		if (totalAsks.value + totalBids.value <= 0) return
+		if (totalAsks + totalBids <= 0) return
 		// 计算每个订单的占比
 		// transform: `scaleX(${(bids[index].total / (totalBids + totalAsks)) * 100 + '%'})`
-		asks.forEach((item, index) => {
-			const ratio = item.sz / totalAsks.value
-			// 上一次比例
-			const lastRatio = (lastAsks.value && lastAsks.value[index]?.ratio) || 0
-			useRequestAnimation().start({
-				from: lastRatio,
-				to: ratio,
-				duration: 200,
-				onUpdate: value => {
-					// 更新dom
-					item.ratio = value
-				}
-			})
-		})
-		bids.forEach((item, index) => {
-			const ratio = item.sz / totalBids.value
-			// 上一次比例
-			const lastRatio = (lastBids.value && lastBids.value[index]?.ratio) || 0
-			useRequestAnimation().start({
-				from: lastRatio,
-				to: ratio,
-				duration: 200,
-				onUpdate: value => {
-					// 更新dom
-					item.ratio = value
-				}
-			})
-		})
+		// asks.forEach((item, index) => {
+		// 	const el = askBarRefs.value && askBarRefs.value[index]
+		// 	if (!el) return
+		// 	const ratio = ((item.sz * item.px) / totalAsks) * 2
+		// 	// 上一次比例
+		// 	const lastRatio = (lastAsks && lastAsks[index]?.ratio) || 0
+		// 	animationAskHandler &&
+		// 		animationAskHandler[index].start({
+		// 			from: lastRatio,
+		// 			to: ratio,
+		// 			duration: 200,
+		// 			onUpdate: value => {
+		// 				// 更新dom
+		// 				// item.ratio = value
+		// 				;(el as HTMLElement).style.transform = `scaleX(${value})`
+		// 				if (lastAsks) lastAsks[index].ratio = value
+		// 			}
+		// 		})
+		// })
+		// bids.forEach((item, index) => {
+		// 	const el = bidBarRefs.value && bidBarRefs.value[index]
+		// 	if (!el) return
+		// 	const ratio = ((item.sz * item.px) / totalBids) * 2
+		// 	// 上一次比例
+		// 	const lastRatio = (lastBids && lastBids[index]?.ratio) || 0
+		// 	animationBidHandler &&
+		// 		animationBidHandler[index].start({
+		// 			from: lastRatio,
+		// 			to: ratio,
+		// 			duration: 200,
+		// 			onUpdate: value => {
+		// 				// 更新dom
+		// 				// item.ratio = value
+		// 				;(el as HTMLElement).style.transform = `scaleX(${value})`
+		// 				if (lastBids) lastBids[index].ratio = value
+		// 			}
+		// 		})
+		// })
 
-		useRequestAnimation().start({
+		// for (let index = 0; index < showNumber.value; index++) {
+		// 	const ask = asks[index]
+		// 	const bid = bids[index]
+		// 	if (ask) {
+		// 		const price = askBarPriceRefs.value && askBarPriceRefs.value[index]
+		// 		if (price) {
+		// 			(price as HTMLElement).innerText = formatPrice(ask.px, pricePoint.value)
+		// 		}
+		// 		const amount = askBarAmountRefs.value && askBarAmountRefs.value[index]
+		// 		if (amount) {
+		// 			(amount as HTMLElement).innerText = moneyFormat(formatPrice(ask.sz, point.value), '', point.value)
+		// 		}
+		// 		const el = askBarBgRefs.value && askBarBgRefs.value[index]
+		// 		if (!el) return
+		// 		const ratio = ((ask.sz * ask.px) / totalAsks) * 2
+		// 		// 上一次比例
+		// 		const lastRatio = (lastAsks && lastAsks[index]?.ratio) || 0
+		// 		// animationAskHandler &&
+		// 		// 	animationAskHandler[index].start({
+		// 		// 		from: lastRatio,
+		// 		// 		to: ratio,
+		// 		// 		duration: 200,
+		// 		// 		onUpdate: value => {
+		// 		// 			// 更新dom
+		// 		// 			// item.ratio = value
+		// 		// 			;(el as HTMLElement).style.transform = `scaleX(${value})`
+		// 		// 			if (lastAsks && lastAsks[index]) lastAsks[index].ratio = value
+		// 		// 		}
+		// 		// 	})
+		// 		;(el as HTMLElement).style.transform = `scaleX(${ratio})`
+		// 	}
+		// 	if (bid) {
+		// 		const el = bidBarRefs.value && bidBarRefs.value[index]
+		// 		if (!el) return
+		// 		const ratio = ((bid.sz * bid.px) / totalBids) * 2
+		// 		// 上一次比例
+		// 		const lastRatio = (lastBids && lastBids[index]?.ratio) || 0
+		// 		// animationBidHandler &&
+		// 		// 	animationBidHandler[index].start({
+		// 		// 		from: lastRatio,
+		// 		// 		to: ratio,
+		// 		// 		duration: 200,
+		// 		// 		onUpdate: value => {
+		// 		// 			// 更新dom
+		// 		// 			// item.ratio = value
+		// 		// 			;(el as HTMLElement).style.transform = `scaleX(${value})`
+		// 		// 			if (lastBids && lastBids[index]) lastBids[index].ratio = value
+		// 		// 		}
+		// 		// 	})
+
+		// 		;(el as HTMLElement).style.transform = `scaleX(${ratio})`
+		// 	}
+		// }
+
+		animationAskBidHandler.start({
 			from: calculateBuySellRatioValue.value,
 			to: calculateBuySellRatio.value,
 			duration: 200,
@@ -308,8 +422,8 @@
 			}
 		})
 
-		lastAsks.value = [...asks]
-		lastBids.value = [...bids]
+		// lastAsks = [...asks]
+		// lastBids = [...bids]
 	}
 
 	// bid/ask
@@ -351,12 +465,18 @@
 	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
 		console.log('booksfull onMounted....')
+		// createStartAnimations()
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
 		pointLevel.value = symbolObj.value?.tickSz
 		getBooksFull()
 	})
 	onBeforeUnmount(() => {
+		//clearAnimations()
+		// askBarBgRefs.value = null
+		// askBarAmountRefs.value = null
+		// askBarPriceRefs.value = null
+		// bidBarRefs.value = null
 		$ws.removeSignalState(wsError)
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
@@ -381,7 +501,7 @@
 	})
 </script>
 <template>
-	<div :class="['w-full h-full min-h-[400px]', isH5 ? 'books-small' : '']">
+	<div :class="['w-full h-full min-h-[400px] flex flex-col justify-between', isH5 ? 'books-small' : '']">
 		<div class="flex items-center justify-between mb-2" v-if="!isH5">
 			<h3 class="text-sm mb-1 flex items-center">
 				<b class="books-title">订单表</b>
@@ -412,65 +532,79 @@
 					</li>
 				</ul>
 			</div>
-			<div class="flex gap-3 book-container">
+			<div v-else class="flex gap-3">
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
-					<li class="text-grey !pb-1" v-observe-visible.multi="onObserveVisible">
-						<div>买入(USDT)</div>
-						<div class="text-right">价格</div>
+					<li class="text-grey">
+						<div>价格</div>
+						<div class="text-right">数量(USDT)</div>
+
 						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
 					</li>
+				</ul>
+				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
+					<li class="text-grey">
+						<div>价格</div>
+						<div class="text-right">数量(USDT)</div>
 
-					<li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && asks" :key="index">
-						<template v-if="asks[index]">
-							<div class="">{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
-							<div class="text-green text-right">{{ formatPrice(asks[index].px, pricePoint) }}</div>
-							<!-- <div class="text-right">{{ moneyFormat(formatPrice(bids[index].total, point), '', point) }}</div> -->
-							<div
-								v-if="interVisible && interVisibleBottom"
-								class="bg absolute top-0 right-0 h-full w-full bg-green/20 origin-right"
-								:style="{
-									transform: `scaleX(${asks[index].ratio})`
-								}"
-							></div>
-						</template>
+						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
 					</li>
 				</ul>
+			</div>
+			<div class="flex-auto flex gap-3 book-container">
+				<!-- <ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden"> -->
+					<!-- <li class="text-grey !pb-1" v-observe-visible.multi="onObserveVisible">
+						<div>买入(USDT)</div>
+						<div class="text-right">价格</div>
+					</li> -->
+
+					<!-- <li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1) && asks">
+						<div>{{ moneyFormat(formatPrice(asks[index].sz, point), '', point) }}</div>
+						<div class="text-green text-right">{{ formatPrice(asks[index].px, pricePoint) }}</div>
+						<div class="bg absolute top-0 right-0 h-full w-full bg-green/20 origin-right" :ref="el => setAskBarRef(index, el)"></div>
+					</li> -->
+
+					<!-- <li v-for="(n, index) in activeBook == 1 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 1)">
+						<div :ref="el => setAskBarAmountRef(index, el)"></div>
+						<div class="text-green text-right" :ref="el => setAskBarPriceRef(index, el)"></div>
+						<div class="bg absolute top-0 right-0 h-full w-full bg-green/20 origin-right transition-all duration-200" :ref="el => setAskBarBgRef(index, el)"></div>
+					</li> -->
+					
+				<!-- </ul> -->
+				<BooksCanvas type="ask" :datas="asks" :point="point" :pricePoint="pricePoint" v-if="asks"/>
 				<div class="books-realtime justify-between items-center">
 					<div class="flex flex-col items-start justify-center">
 						<!-- <b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b> -->
 						<b v-autosize="20" :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">
 							<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
-							<NumberIncrease :value="formatPrice(ticker?.last, symbolObj.tickSz)" :fontSize="20" />
+							<NumberIncrease :value="formatPrice(ticker?.last, symbolObj.tickSz)" :fontSize="20" v-if="ticker?.last && symbolObj"/>
+							<span v-else>--</span>
 						</b>
 
-						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change"
+						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change && symbolObj"
 							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
 						>
 						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 					</div>
 					<el-icon><ElIconArrowRight /></el-icon>
 				</div>
-				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
+				<!-- <ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey !pb-1" v-observe-visible.multi="onObserveVisible">
 						<div>价格</div>
 						<div class="text-right">卖出({{ symbolObj?.baseCcy }})</div>
-						<!-- <div class="text-right">合计({{ symbolObj?.baseCcy }})</div> -->
+			
 					</li>
 					<li v-for="(n, index) in activeBook == 2 ? 2 * showNumber + 2 : showNumber" v-if="(activeBook == 0 || activeBook == 2) && bids" :key="index">
-						<template v-if="bids[index]">
-							<div class="text-red">{{ formatPrice(bids[index].px, pricePoint) }}</div>
-							<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
-							<!-- <div class="text-right">{{ moneyFormat(formatPrice(asks[index].total, point), '', point) }}</div> -->
-							<div
-								v-if="interVisible"
-								class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-left"
-								:style="{
-									transform: `scaleX(${bids[index].ratio})`
-								}"
-							></div>
-						</template>
+						<div class="text-red">{{ formatPrice(bids[index].px, pricePoint) }}</div>
+						<div class="text-right">{{ moneyFormat(formatPrice(bids[index].sz, point), '', point) }}</div>
+			
+						<div
+							class="bg absolute top-0 right-0 h-full w-full bg-red/20 origin-left transition-all duration-200"
+							:ref="el => setBidBarRef(index, el)"
+						></div>
 					</li>
-				</ul>
+				</ul> -->
+
+				<BooksCanvas type="bid" :datas="bids" v-if="bids" :point="point" :pricePoint="pricePoint"/>
 			</div>
 			<div v-observe-visible.multi="onObserveVisibleBottom" class="!flex pt-2" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
 				<div class="w-full h-5 text-white rounded-sm relative overflow-hidden books-process">
@@ -504,6 +638,12 @@
 	.books-realtime {
 		display: none;
 	}
+	.book-container {
+		display: grid;
+		grid-template-columns: calc(50% - 5px) calc(50% - 5px);
+		justify-content: space-between;
+		gap: 0;
+	}
 	@media (max-width: 999px) {
 		.books-small {
 			display: flex;
@@ -511,9 +651,13 @@
 			justify-content: space-between;
 			.books-realtime {
 				display: flex;
+				align-items: center;
+				padding: 5px 0 5px 0;
 			}
 			.book-container {
+				display: flex;
 				flex-direction: column-reverse;
+				justify-content: space-between;
 				ul:first-child {
 					li {
 						&:first-child {

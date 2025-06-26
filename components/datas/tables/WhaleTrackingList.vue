@@ -91,7 +91,8 @@
 			<template v-for="item in datas">
 				<li>
 					<div class="col-span-2" v-autosize="16">
-						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" />
+						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" v-if="useSymbolStore().getSymbol(item.instId)" />
+						<span v-else> -- </span>
 					</div>
 					<div class="col-span-3 flex-auto grid grid-cols-4 w-full text-[10px] *:py-1 *:rounded-sm *:bg-[--transparent02] *:text-[--transparent10] gap-2">
 						<button :style="[item.accumulating ? 'background:rgb(var(--color-brand) / ' + item.accumulating / 100 + ');color:rgb(var(--color-text-main)/' + item.accumulating / 100 + ')' : '']">

@@ -16,17 +16,23 @@ export function easeInOut(t: number) {
 }
 export const liner = (t: number) => t // 线性过渡
 
-export function useRequestAnimation() {
+export type requestAnimationType = {
+	start: (options: AnimationOptions) => void
+	stop: () => void
+}
+
+export function useRequestAnimation(): requestAnimationType {
 	const defaultEasing = easeInOut // (t: number) => t // 线性过渡
 	let animationFrameId: number | null = null
 	let startTimestamp: number | null = null
 	let _duration: number = 300 // 默认 300ms
 	let _easing: (t: number) => number = defaultEasing
 	let _onUpdate: ((value: number) => void) | null = null
-	let _onFinish: (() => void) | undefined = undefined
+	let _onFinish: (() => void) | undefined | null = undefined
 	let _from: any = null
 	let _to: any = null
 	let _loop: boolean | undefined = false
+	let _isStop :boolean = false
 
 	const start = ({ from, to, duration = 300, easing = defaultEasing, onUpdate, onFinish, loop }: AnimationOptions) => {
 		_from = from
@@ -38,6 +44,7 @@ export function useRequestAnimation() {
 		_loop = loop
 		// 先取消上一个动画
 		stop()
+		_isStop = false
 		startTimestamp = null
 		animationFrameId = requestAnimationFrame(step)
 	}
@@ -50,6 +57,7 @@ export function useRequestAnimation() {
 
 		const currentValue = _from + (_to - _from) * easedProgress
 		_onUpdate && _onUpdate(currentValue)
+		if(_isStop) return
 		if (progress < 1) {
 			animationFrameId = requestAnimationFrame(step)
 		} else {
@@ -67,10 +75,13 @@ export function useRequestAnimation() {
 	}
 
 	const stop = () => {
-		
+		_isStop = true
 		if (animationFrameId !== null) {
 			cancelAnimationFrame(animationFrameId)
 			animationFrameId = null
+			_onUpdate && _onUpdate(_to)
+			_onUpdate = null
+			_onFinish = null
 		}
 		startTimestamp = null
 	}

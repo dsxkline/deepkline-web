@@ -215,7 +215,7 @@
 	}
 </script>
 <template>
-	<div>
+	<div class="h-full w-full">
 		<div :class="['w-full h-full wrapper trade-order', isH5 ? 'trade-small' : '']">
 			<client-only>
 				<ScrollBar :height="isH5 ? '100%' : contentHeight + 'px'" v-show="!loading && !error">

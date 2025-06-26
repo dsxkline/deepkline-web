@@ -76,15 +76,16 @@
 		echart.setOption(option)
 	}
 
-	function updateEChart(seriesData: any) {
-		echart && echart.setOption({
-			series:[
-				{
-					data:seriesData
-				}
-			]
-		})
-		resetSize()
+	function updateEChart(seriesData: any, animation: boolean = false) {
+		echart &&
+			echart.setOption({
+				series: [
+					{
+						data: seriesData
+					}
+				]
+			})
+		resetSize(animation)
 	}
 
 	function fetchData(p: Period, load = false) {
@@ -105,7 +106,7 @@
 						seriesData && seriesData.push(longShortAccountRatio)
 					})
 					// option.series[0].data = seriesData.reverse()
-					updateEChart(seriesData.reverse())
+					updateEChart(seriesData.reverse(), true)
 					// console.log(xAxisData,seriesData);
 				} else {
 					error.value = res?.msg || '获取数据失败'
@@ -139,16 +140,19 @@
 		}
 	)
 
-	function resetSize() {
+	function resetSize(animation: boolean = false) {
 		// 获取父级的宽度和内边距paddingLeft
 		if (containerRef.value) {
 			const parentElement = containerRef.value as HTMLElement
 			width.value = parentElement.offsetWidth
 			height.value = parentElement.offsetHeight
-			echart && echart.resize({ width: width.value, height: height.value,animation:{
-				duration:200,
-				easing:'bounceIn',
-			} })
+			const animationOption: any = animation
+				? {
+						duration: 200,
+						easing: 'bounceIn'
+				  }
+				: null
+			echart && echart.resize({ width: width.value, height: height.value, animation: animationOption })
 		}
 	}
 
@@ -160,7 +164,7 @@
 		if (containerRef.value) {
 			resizeObserver = new ResizeObserver(entries => {
 				for (let entry of entries) {
-					resetSize()
+					resetSize(false)
 				}
 			})
 			// 监听父级元素宽度变化
@@ -169,11 +173,10 @@
 				resizeObserver.observe(parentElement.parentNode as HTMLElement)
 			}
 		}
-		
 	})
 
 	useWillAppear(() => {
-		createEchart()
+		// createEchart()
 		updateEChart(seriesData)
 	})
 

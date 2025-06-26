@@ -20,17 +20,17 @@ onUnmounted(() => {
 </script>
 <template>
     <div class="flex items-center">
-        <img :src="props.symbol?.icon" class="w-[20px] px-2" v-if="props.symbol?.icon" />
+        <img :src="symbol?.icon" class="w-[20px] px-2" v-if="symbol?.icon" />
         <!-- 现货 -->
-        <div class="flex flex-col items-start" v-if="props.symbol?.instType === InstanceType.SPOT">
-            <div class="flex items-center"><b class="text-main">{{props.symbol?.baseCcy}}</b><span class="text-xs text-grey px-1"> / </span><span class="text-xs text-grey">{{props.symbol?.quoteCcy}}</span>
+        <div class="flex flex-col items-start" v-if="symbol?.instType === InstanceType.SPOT">
+            <div class="flex items-center"><b class="text-main">{{symbol?.baseCcy}}</b><span class="text-xs text-grey px-1"> / </span><span class="text-xs text-grey">{{props.symbol?.quoteCcy}}</span>
                 <!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
             </div>
             <span class="text-xs text-grey font-light" v-if="volume">{{ moneyFormat(price,"$")||'-' }}</span>
         </div>
         <!-- 合约 -->
-        <div class="flex flex-col items-start" v-else-if="props.symbol?.instType === InstanceType.SWAP">
-            <div class="flex items-center"><b class="text-main">{{props.symbol?.ctValCcy}}{{props.symbol.settleCcy}}</b>
+        <div class="flex flex-col items-start" v-else-if="symbol?.instType === InstanceType.SWAP">
+            <div class="flex items-center"><b class="text-main">{{symbol?.ctValCcy}}{{symbol.settleCcy}}</b>
                 <!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
             </div>
             <span class="text-xs text-grey font-light" v-if="volume">{{ moneyFormat(price,"$")||'-' }}</span>

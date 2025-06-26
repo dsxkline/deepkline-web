@@ -35,12 +35,17 @@
 	watch(
 		() => symbol.value,
 		(val, old) => {
+			unSubSymbols()
+			
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
 			item.value = null
 			nextTick(() => {
 				tickerHandler($ws?.getTickers(symbol.value) || {})
 			})
+			setTimeout(() => {
+				subSymbols()
+			}, 600);
 		}
 	)
 	const { $wsb, $ws } = useNuxtApp()

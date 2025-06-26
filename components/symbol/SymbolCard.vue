@@ -81,7 +81,7 @@
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		tickerHandler($ws.getTickers(props.symbol))
-		subSymbols()
+		// subSymbols()
 	})
 
 	useWillDisappear(() => {
@@ -98,20 +98,21 @@
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		item.value = null
 		containerRef.value = null
+
 	})
 </script>
 <template>
 	<div :class="['symbol-card flex flex-col justify-between p-2 py-3 rounded-md overflow-hidden', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']" @click="clickSymbol(symbolObj)">
 		<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
-			<SymbolName :symbol="symbolObj" v-if="item?.last" />
+			<SymbolName :symbol="symbolObj" v-if="item?.last  && symbolObj?.instId" />
 			<span v-else>--</span>
 			<b v-autosize="20" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 				<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="20" />
 			</b>
 			<span v-else>-</span>
-			<div v-if="item?.last" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')">
-				<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }}</span
+			<div v-if="item?.last && symbolObj && change" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')">
+				<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz||0.01, '') }}</span
 				><span>{{ formatChangeRate(rate, 2) }}%</span>
 			</div>
 			<div class="text-[10px]" v-else>--</div>

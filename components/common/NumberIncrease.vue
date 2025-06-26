@@ -26,7 +26,7 @@
 					height: fontHeight + 'px'
 				}"
 			>
-				<span :class="'numdom-' + index" v-if="!isNaN(item)" :data-index="index" :data-number="item">
+				<span :class="'numdom-' + index" v-if="!isNaN(item)" :data-index="index" :data-number="item" :ref="el => setDigitRef(index, el)">
 					<i
 						v-for="(i, index) in 10"
 						:key="index"
@@ -37,7 +37,7 @@
 						{{ index }}
 					</i>
 				</span>
-				<span :class="'comma numdom-' + index" v-else>
+				<span :class="'comma numdom-' + index" v-else  :ref="el => setDigitRef(index, el)">
 					<i>{{ item }}</i>
 				</span>
 			</li>
@@ -78,7 +78,8 @@
 		},
 		watch: {
 			value: function (val) {
-				if (window.dsxKlineScrolling) return
+				// if (window.dsxKlineScrolling) return
+				if (this.orderNumOld?.length && !this.interVisible) return
 				if (this.fontWidth > 0 && this.inited) this.updateNumbers()
 			}
 		},
@@ -96,12 +97,14 @@
 				interVisible: false,
 				startAnimations: {},
 				lastTransitionY: {},
-				lastNumber:{}
+				lastNumber: {},
+				digitRefs: {} // 用于存储每个数字节点
 			}
 		},
 		beforeUnmount() {
-			Object.values(this.startAnimations).forEach(animation => {
+			Object.values(this.startAnimations).forEach((animation,i) => {
 				if (animation) animation.stop()
+				this.startAnimations[i] = null
 			})
 			this.startAnimations = {}
 			this.lastTransitionY = {}
@@ -110,6 +113,7 @@
 			this.orderNum = []
 			this.orderNumOld = []
 			if (this.timer) clearTimeout(this.timer)
+			this.digitRefs = {}
 		},
 		mounted() {
 			//console.log("this.value", this.value);
@@ -119,6 +123,13 @@
 			}, this.time * 1000)
 		},
 		methods: {
+			setDigitRef(index, el) {
+				if (el) {
+					this.digitRefs[index] = el
+				} else {
+					delete this.digitRefs[index] // 清除被卸载的节点
+				}
+			},
 			createStartAnimations() {
 				this.orderNum.forEach((n, i) => {
 					if (this.startAnimations[i]) return
@@ -127,7 +138,7 @@
 			},
 			onObserveVisible(visible) {
 				this.interVisible = visible
-				console.log('inview numberincrease',this.interVisible)
+				console.log('inview numberincrease', this.interVisible)
 			},
 			setDefaultDisplay() {
 				this.setNumberWidth()
@@ -138,8 +149,7 @@
 				})
 			},
 			updateNumbers() {
-				if (!this.interVisible) return;
-				console.log('updateNumbers.....',this.interVisible)
+				console.log('updateNumbers.....', this.interVisible)
 				this.setNumberList()
 				this.setNumberWidth()
 				this.$nextTick(() => {
@@ -158,14 +168,15 @@
 				this.textHeight = this.fontSize * 10
 				// 重置每个数字的位置
 				this.orderNum.forEach((n, i) => {
-					const ndom = this.$el.querySelector('.numdom-' + i)
+					// const ndom = this.$el.querySelector('.numdom-' + i)
+					const ndom = this.digitRefs[i]
 					if (ndom) {
 						let translateY = 0
 						if (!isNaN(n) && n != '.' && n != ',') {
 							translateY = this.getNumberY(n, ndom)
 						}
 
-						if(this.lastNumber[i] == n) return;
+						if (this.lastNumber[i] == n) return
 
 						const startAnimation = this.startAnimations[i]
 						if (startAnimation) {
@@ -188,10 +199,10 @@
 				number = parseInt(number)
 				// 设置某个数字所在的偏移距离
 				// 每个数字的高度
-				const nHeight = this.fontSize
-				// 每个字的间距
-				const space = (this.textHeight - 10 * this.fontHeight) / 8
-				const translateY = 'translateY(calc(' + (45 - (number / 10) * 100) + '%)'
+				// const nHeight = this.fontSize
+				// // 每个字的间距
+				// const space = (this.textHeight - 10 * this.fontHeight) / 8
+				// const translateY = 'translateY(calc(' + (45 - (number / 10) * 100) + '%)'
 				//   const translateY =
 				//     "calc(-" +
 				//     (number / 10.0) * this.textHeight +
@@ -241,7 +252,7 @@
 			display: flex;
 			align-items: center;
 			span {
-				transform: translateY(45%);
+				// transform: translateY(45%);
 
 				display: flex;
 				align-items: center;
