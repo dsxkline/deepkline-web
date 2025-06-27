@@ -8,7 +8,7 @@
 			<template v-for="item in 3">
 				<li class="border-b border-[--transparent05] py-3">
 					<div class="flex justify-between">
-						<SymbolName :symbol="useSymbolStore().getSymbol('BTC-USDT')" class="text-base" />
+						<SymbolName :symbol="useSymbolStore().getSymbol('BTC-USDT')" class="text-base roboto-bold" />
 						<div class="flex justify-between items-center gap-4">
 							<button class="flex items-center">
 								<el-icon><Edit /></el-icon>

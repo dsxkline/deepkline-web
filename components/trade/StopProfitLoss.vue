@@ -139,8 +139,8 @@
 			.el-input__wrapper {
 				padding: 0 5px;
 				// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
-				box-shadow: none;
-				border: 1px solid rgb(var(--color-green));
+				// box-shadow: none;
+				// border: 1px solid rgb(var(--color-green));
 			}
 		}
 	}
@@ -151,16 +151,16 @@
 			:deep(.el-input-number) {
 				&.price-input {
 					.el-input__wrapper {
-						box-shadow: none;
-						border: 1px solid var(--transparent10);
+						// box-shadow: none;
+						// border: none;
 					}
 				}
 				.el-input__wrapper {
-					box-shadow: none;
-					border: 1px solid var(--transparent10);
-					&.is-focus {
-						box-shadow: 0 0 0 1px rgb(var(--color-brand)) inset;
-					}
+					// box-shadow: none;
+					// border: none;
+					// &.is-focus {
+					// 	box-shadow: 0 0 0 1px rgb(var(--color-brand)) inset;
+					// }
 					.el-input__inner {
 						text-align: center;
 					}
