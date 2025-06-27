@@ -245,7 +245,8 @@
 									<template #name>
 										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
 										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
-										<span class="flex-auto text-righ text-grey" v-else>杠杆</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
+										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
 									<div class="px-4 w-full text-center">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
@@ -306,7 +307,7 @@
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :initPrice="parseFloat(ticker?.last)" @close="confirmProfit" v-if="!loading" />
+									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
 								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0">
 									<template #reference>
@@ -316,7 +317,7 @@
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :initPrice="parseFloat(ticker?.last)" @close="confirmLoss" v-if="!loading" />
+									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>

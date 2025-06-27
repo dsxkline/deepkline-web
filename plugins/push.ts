@@ -115,7 +115,7 @@ const pop = function (data: any) {
 	let topPush: any = store.getTopPush()
 	// 需要查找最顶部的push回传数据
 	// 回传数据
-	if (topPush?.props && data) topPush.props.popData = data
+	if (topPush?.props && data!=undefined) topPush.props.popData = data
 	// topPush.vnode = null
 	// topPush.component = null
 	topPush = null

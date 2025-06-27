@@ -110,7 +110,7 @@
 			while (parent) {
 				// pop的时候返回执行自定义poped方法
 				// console.log("parent///test", parent, this.popData);
-				if (parent?.exposed?.onPop && props.popData) {
+				if (parent?.exposed?.onPop && props.popData!=undefined) {
 					const result = parent?.exposed.onPop(props.popData)
 					// 默认不拦截
 					if (result) break

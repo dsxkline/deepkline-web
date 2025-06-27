@@ -33,10 +33,12 @@
 	})
 	// 点数
 	const amount = ref(0)
-	const symbolObj = computed(() => useSymbolStore().getActiveSymbol())
+	const symbolObj = computed(() => useSymbolStore().getSymbol(props.symbol))
 	function priceChange(currentValue: number, oldValue: number) {
+		updateInitPrice()
 		if (!amount.value) amount.value = 0
 		if (price.value - symbolObj.value.tickSz <= 0) price.value = initPrice.value
+		console.log('priceChange',price.value,initPrice.value)
 		// 价格变化，点数跟着变化
 		nextTick(() => {
 			if (!props.type) {
@@ -49,6 +51,7 @@
 	}
 	function priceFocus() {}
 	function amountChange() {
+		updateInitPrice()
 		if (!amount.value) amount.value = 0
 		if (price.value - symbolObj.value.tickSz <= 0) price.value = initPrice.value
 		// 点数变化，价格跟着变化
@@ -65,6 +68,13 @@
 	function confirm() {
 		emit('close', price.value, amount.value)
 		if(props.push) useNuxtApp().$pop({price:price.value, amount:amount.value})
+	}
+	function updateInitPrice(){
+		if(!initPrice.value){
+			const {$ws} = useNuxtApp()
+			const ticker = $ws.getTickers(props.symbol)
+			if(ticker) initPrice.value = parseFloat(ticker.last)
+		}
 	}
 	onMounted(() => {
 		console.log('stopLoss',props.price,props.initPrice,props.push)

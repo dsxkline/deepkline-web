@@ -5,7 +5,7 @@
 
 	const props = defineProps<{
 		datas: BookEntry[]
-		point: number
+		point: any
 		pricePoint: number
 		type: 'ask' | 'bid'
 		isH5?: boolean
@@ -64,16 +64,13 @@
 			const y = titleHeight + i * rowHeight
 			const ratio = lastRatio[i] || 0
 			const barWidth = ratio * width
-
-			
-
-			
 			const price = formatPrice(data.px, props.pricePoint)
 			const amount = moneyFormat(formatPrice(data.sz, props.point), '', props.point)
+
 			if (props.isH5) {
-                ctx.fillStyle = 'rgb(' + color + '/0.2)'
-			    ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
-                ctx.fillStyle = 'rgb(' + color + ')'
+				ctx.fillStyle = 'rgb(' + color + '/0.2)'
+				ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
+				ctx.fillStyle = 'rgb(' + color + ')'
 				ctx.textAlign = 'left'
 				ctx.fillText(price, 0, y + rowHeight / 2)
 				ctx.fillStyle = 'rgb(' + amountColor + ')'
@@ -81,18 +78,18 @@
 				ctx.fillText(amount, width - 0, y + rowHeight / 2)
 			} else {
 				if (props.type == 'ask') {
-                    ctx.fillStyle = 'rgb(' + color + '/0.2)'
-			        ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
-                    ctx.fillStyle = 'rgb(' + color + ')'
+					ctx.fillStyle = 'rgb(' + color + '/0.2)'
+					ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
+					ctx.fillStyle = 'rgb(' + color + ')'
 					ctx.textAlign = 'right'
 					ctx.fillText(price, width, y + rowHeight / 2)
 					ctx.fillStyle = 'rgb(' + amountColor + ')'
 					ctx.textAlign = 'left'
 					ctx.fillText(amount, 0, y + rowHeight / 2)
 				} else {
-                    ctx.fillStyle = 'rgb(' + color + '/0.2)'
-			        ctx.fillRect(0, y + 1, barWidth, rowHeight - 2)
-                    ctx.fillStyle = 'rgb(' + color + ')'
+					ctx.fillStyle = 'rgb(' + color + '/0.2)'
+					ctx.fillRect(0, y + 1, barWidth, rowHeight - 2)
+					ctx.fillStyle = 'rgb(' + color + ')'
 					ctx.textAlign = 'left'
 					ctx.fillText(price, 0, y + rowHeight / 2)
 					ctx.fillStyle = 'rgb(' + amountColor + ')'

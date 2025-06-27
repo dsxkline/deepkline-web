@@ -162,7 +162,7 @@
 			totalAsks = 0
 			totalBids = 0
 		}
-		point.value = parseFloat(String(props.limitPoint || symbolObj.value?.lotSz || '0'))
+		point.value = props.limitPoint || symbolObj.value?.lotSz || 0
 
 		updates.asks.forEach(([px, sz]) => {
 			let price = parseFloat(px)
