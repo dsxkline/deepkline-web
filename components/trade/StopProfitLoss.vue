@@ -5,7 +5,7 @@
 		symbol: string
 		type: number
 		price?: number
-		initPrice:number
+		initPrice: number
 		push?: string
 	}>()
 	const emit = defineEmits<{
@@ -38,7 +38,7 @@
 		updateInitPrice()
 		if (!amount.value) amount.value = 0
 		if (price.value - symbolObj.value.tickSz <= 0) price.value = initPrice.value
-		console.log('priceChange',price.value,initPrice.value)
+		console.log('priceChange', price.value, initPrice.value)
 		// 价格变化，点数跟着变化
 		nextTick(() => {
 			if (!props.type) {
@@ -67,25 +67,25 @@
 	function amountFocus() {}
 	function confirm() {
 		emit('close', price.value, amount.value)
-		if(props.push) useNuxtApp().$pop({price:price.value, amount:amount.value})
+		if (props.push) useNuxtApp().$pop({ price: price.value, amount: amount.value })
 	}
-	function updateInitPrice(){
-		if(!initPrice.value){
-			const {$ws} = useNuxtApp()
+	function updateInitPrice() {
+		if (!initPrice.value) {
+			const { $ws } = useNuxtApp()
 			const ticker = $ws.getTickers(props.symbol)
-			if(ticker) initPrice.value = parseFloat(ticker.last)
+			if (ticker) initPrice.value = parseFloat(ticker.last)
 		}
 	}
 	onMounted(() => {
-		console.log('stopLoss',props.price,props.initPrice,props.push)
-		price.value = props.price||0
+		console.log('stopLoss', props.price, props.initPrice, props.push)
+		price.value = props.price || 0
 		initPrice.value = props.initPrice
-		if(price.value){
-			priceChange(price.value,0)
+		if (price.value) {
+			priceChange(price.value, 0)
 		}
 		setTimeout(() => {
 			priceInput.value.focus()
-		}, 600);
+		}, 600)
 	})
 
 	onBeforeUnmount(() => {
@@ -128,8 +128,8 @@
 				inputmode="decimal"
 			/>
 		</div>
-		<div class="py-2">
-			<el-button type="primary" size="large" class="w-full !h-auto" v-click-sound @click="confirm">确定</el-button>
+		<div class="py-3">
+			<button class="bt-green w-full !py-2" v-click-sound @click="confirm">确定</button>
 		</div>
 	</div>
 </template>
@@ -149,7 +149,18 @@
 		.stopprofit-h5 {
 			@apply px-4 pb-5;
 			:deep(.el-input-number) {
+				&.price-input {
+					.el-input__wrapper {
+						box-shadow: none;
+						border: 1px solid var(--transparent10);
+					}
+				}
 				.el-input__wrapper {
+					box-shadow: none;
+					border: 1px solid var(--transparent10);
+					&.is-focus {
+						box-shadow: 0 0 0 1px rgb(var(--color-brand)) inset;
+					}
 					.el-input__inner {
 						text-align: center;
 					}

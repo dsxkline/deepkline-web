@@ -136,7 +136,7 @@
 		() => useStore().theme,
 		() => {
 			createEchart()
-			updateEChart(option)
+			// updateEChart(option)
 		}
 	)
 

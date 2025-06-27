@@ -383,7 +383,7 @@
 				<div class="books-realtime justify-between items-center">
 					<div class="flex flex-col items-start justify-center">
 						<!-- <b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b> -->
-						<b v-autosize="20" :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">
+						<b v-autosize="20" :class="['text-base font-extrabold roboto-bold', change > 0 ? 'text-green' : 'text-red']">
 							<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 							<NumberIncrease :value="formatPrice(ticker?.last, symbolObj.tickSz)" :fontSize="20" v-if="ticker?.last && symbolObj" />
 							<span v-else>--</span>

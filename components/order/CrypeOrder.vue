@@ -48,3 +48,14 @@
 		</TabBar>
 	</div>
 </template>
+<style lang="less" scoped>
+:deep(.tabbar-container){
+    .tabbar-header{
+        @apply border-b pb-2;
+        border-color: var(--transparent10);
+        ul{
+            @apply text-sm;
+        }
+    }
+}
+</style>

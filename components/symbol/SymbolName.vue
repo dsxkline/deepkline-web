@@ -23,7 +23,7 @@ onUnmounted(() => {
         <img :src="symbol?.icon" class="w-[20px] px-2" v-if="symbol?.icon" />
         <!-- 现货 -->
         <div class="flex flex-col items-start" v-if="symbol?.instType === InstanceType.SPOT">
-            <div class="flex items-center"><b class="text-main">{{symbol?.baseCcy}}</b><span class="text-grey px-1"> / </span><span class="text-grey">{{props.symbol?.quoteCcy}}</span>
+            <div class="flex items-center"><b class="text-main">{{symbol?.baseCcy}}</b><span class="text-grey px-[2px] scale-90"> / </span><span class="text-grey scale-90">{{props.symbol?.quoteCcy}}</span>
                 <!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
             </div>
             <span class="text-xs text-grey font-light" v-if="volume">{{ moneyFormat(price,"$")||'-' }}</span>

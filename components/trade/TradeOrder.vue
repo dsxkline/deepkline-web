@@ -626,6 +626,11 @@
 								background: transparent;
 							}
 						}
+						&.is-active {
+							.el-radio-button__inner {
+								color: white;
+							}
+						}
 						.el-radio-button__inner {
 							@apply py-2 px-3 text-xs;
 							line-height: 1;

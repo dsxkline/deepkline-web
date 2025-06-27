@@ -136,7 +136,7 @@
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
 			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
-				<div class="h-[200px] mb-4" v-if="showKline">
+				<div class="h-[250px] mb-4" v-if="showKline">
 					<KlineChart :symbol="symbol" :sides="['MACD']" />
 				</div>
 				<div class="w-full flex">
