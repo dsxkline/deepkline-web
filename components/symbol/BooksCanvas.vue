@@ -8,6 +8,7 @@
 		point: number
 		pricePoint: number
 		type: 'ask' | 'bid'
+		isH5?: boolean
 	}>()
 
 	const canvasRef = ref<HTMLCanvasElement | null>(null)
@@ -20,6 +21,7 @@
 	let resizeObserver: ResizeObserver | null = null
 
 	let lastRatio: Record<number, number> = {}
+	const interVisible = ref(false)
 
 	function resizeAndDraw() {
 		const canvas = canvasRef.value
@@ -30,6 +32,7 @@
 
 		const rootStyles = getComputedStyle(document.documentElement)
 		const color = props.type == 'bid' ? rootStyles.getPropertyValue('--color-red').trim() : rootStyles.getPropertyValue('--color-green').trim()
+		const amountColor = rootStyles.getPropertyValue('--color-text-main').trim()
 
 		// 物理分辨率适配 Retina
 		canvas.width = width * dpr
@@ -62,56 +65,74 @@
 			const ratio = lastRatio[i] || 0
 			const barWidth = ratio * width
 
-			ctx.fillStyle = 'rgb(' + color + '/0.2)'
-			ctx.fillRect(width - barWidth, y+1, barWidth, rowHeight-2)
-
-			ctx.fillStyle = 'rgb(' + color + ')'
-			const price = formatPrice(data.px, props.pricePoint)
-			const amount = moneyFormat(formatPrice(data.sz, props.point), '', props.point)
-			ctx.textAlign = 'left'
-			ctx.fillText(price, 0, y + rowHeight / 2)
-			ctx.textAlign = 'right'
-			ctx.fillText(amount, width - 0, y + rowHeight / 2)
-		})
-	}
-	let animations: Record<number,requestAnimationType> = {}
-	function createAnimations() {
-		props.datas.forEach((data, i) => {
-			if(!animations[i]) animations[i] = useRequestAnimation()
-		})
-	}
-    function clearAnimations(){
-        Object.values(animations).forEach((animation,i) => {
-            animation.stop()
-            delete animations[i]
-        });
-        animations = {}
-    }
-	function animationUpdate() {
-        createAnimations()
-        const maxSize = Math.max(...props.datas.map(a => a.sz), 1)
-       
-		props.datas.forEach((data, i) => {
-			const ratio = (data.sz / maxSize) * 2
-            const lRatio = lastRatio[i]
-            const animation = animations[i]
-			animation.start({
-				from: lRatio,
-				to: ratio,
-				duration: 200,
-				onUpdate: value => {
-                    lastRatio[i] = value
-					resizeAndDraw()
-				}
-			})
+			
 
 			
+			const price = formatPrice(data.px, props.pricePoint)
+			const amount = moneyFormat(formatPrice(data.sz, props.point), '', props.point)
+			if (props.isH5) {
+                ctx.fillStyle = 'rgb(' + color + '/0.2)'
+			    ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
+                ctx.fillStyle = 'rgb(' + color + ')'
+				ctx.textAlign = 'left'
+				ctx.fillText(price, 0, y + rowHeight / 2)
+				ctx.fillStyle = 'rgb(' + amountColor + ')'
+				ctx.textAlign = 'right'
+				ctx.fillText(amount, width - 0, y + rowHeight / 2)
+			} else {
+				if (props.type == 'ask') {
+                    ctx.fillStyle = 'rgb(' + color + '/0.2)'
+			        ctx.fillRect(width - barWidth, y + 1, barWidth, rowHeight - 2)
+                    ctx.fillStyle = 'rgb(' + color + ')'
+					ctx.textAlign = 'right'
+					ctx.fillText(price, width, y + rowHeight / 2)
+					ctx.fillStyle = 'rgb(' + amountColor + ')'
+					ctx.textAlign = 'left'
+					ctx.fillText(amount, 0, y + rowHeight / 2)
+				} else {
+                    ctx.fillStyle = 'rgb(' + color + '/0.2)'
+			        ctx.fillRect(0, y + 1, barWidth, rowHeight - 2)
+                    ctx.fillStyle = 'rgb(' + color + ')'
+					ctx.textAlign = 'left'
+					ctx.fillText(price, 0, y + rowHeight / 2)
+					ctx.fillStyle = 'rgb(' + amountColor + ')'
+					ctx.textAlign = 'right'
+					ctx.fillText(amount, width - 0, y + rowHeight / 2)
+				}
+			}
 		})
+	}
+	let animation = useRequestAnimation()
+	function animationUpdate() {
+		const maxSize = Math.max(...props.datas.map(a => a.sz), 1)
+
+		resizeAndDraw()
+
+		if (!interVisible.value) return
+
+		animation.start({
+			from: 0,
+			to: 1,
+			duration: 200,
+			onUpdate: value => {
+				props.datas.forEach((data, i) => {
+					const ratio = (data.sz / maxSize) * 2 - (lastRatio[i] || 0)
+					const lRatio = (lastRatio[i] || 0) + ratio * value
+					lastRatio[i] = lRatio
+				})
+				resizeAndDraw()
+			}
+		})
+	}
+
+	// 滚动到显示触发
+	function onObserveVisible(visible: boolean) {
+		interVisible.value = visible
 	}
 
 	onMounted(() => {
 		resizeAndDraw()
-		
+
 		resizeObserver = new ResizeObserver(resizeAndDraw)
 		if (containerRef.value) {
 			resizeObserver.observe(containerRef.value)
@@ -120,13 +141,13 @@
 
 	onBeforeUnmount(() => {
 		resizeObserver?.disconnect()
-        clearAnimations()
+		animation.stop()
 	})
 
 	watch(() => props.datas, animationUpdate, { deep: true })
 </script>
 <template>
-	<div ref="containerRef" class="canvas-container w-full h-full">
+	<div ref="containerRef" class="canvas-container w-full h-full" v-observe-visible.multi="onObserveVisible">
 		<canvas ref="canvasRef" />
 	</div>
 </template>
