@@ -55,7 +55,7 @@ export const moneyFormat = (value: any, currency: string = '', precision: number
 		value = value / 10000
 		unit = k
 	}
-	return currency + value.toFixed(point) + unit
+	return currency + parseFloat(value.toFixed(point)) + unit
 }
 
 export function noExponents(num: number) {
