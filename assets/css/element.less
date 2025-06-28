@@ -551,15 +551,26 @@ body {
 		}
 	}
 	.el-input-number {
+		overflow: hidden;
+
 		.el-input-number__decrease,
 		.el-input-number__increase {
 			width: 30px !important;
+			background: var(--transparent03);
+			border-radius: 4px;
 		}
 	}
-	.el-input__wrapper:hover {
-		box-shadow: 0 0 0 1px var(--el-input-border-color) inset !important;
+	body .el-input-number--large .el-input--large .el-input__wrapper {
+		padding-left: 40px;
+		padding-right: 40px;
 	}
-	.el-input-number__increase:hover ~ .el-input:not(.is-disabled) .el-input__wrapper {
-		box-shadow: 0 0 0 1px var(--el-input-border-color) inset !important;
-	}
+	// .el-input__wrapper:hover {
+	// 	box-shadow: 0 0 0 1px var(--el-input-border-color) inset !important;
+	// }
+	// .el-input-number__increase:hover ~ .el-input:not(.is-disabled) .el-input__wrapper {
+	// 	box-shadow: 0 0 0 1px var(--el-input-border-color) inset !important;
+	// }
+	// .el-input-number__decrease:hover~.el-input:not(.is-disabled) .el-input__wrapper, .el-input-number__increase:hover~.el-input:not(.is-disabled) .el-input__wrapper {
+	// 	box-shadow: 0 0 0 1px var(--el-input-border-color) inset !important;
+	// }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+import { useStore } from '~/store';
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		symbol: string
@@ -34,6 +35,40 @@
 	// 点数
 	const amount = ref(0)
 	const symbolObj = computed(() => useSymbolStore().getSymbol(props.symbol))
+	const szPercent = ref(0)
+	const marks = computed(() => {
+		if(!useStore().isH5){
+			return !props.type
+			? {
+					'0': '0%',
+					'50': '50%',
+					'100': '100%'
+			  }
+			: {
+					'0': '0%',
+					'-50': '-50%',
+					'-100': '-100%'
+			  }
+		}
+		return !props.type
+			? {
+					'0': '0%',
+					'20': '20%',
+					'40': '40%',
+					'60': '60%',
+					'80': '80%',
+					'100': '100%'
+			  }
+			: {
+					'0': '0%',
+					'-20': '-20%',
+					'-40': '-40%',
+					'-60': '-60%',
+					'-80': '-80%',
+					'-100': '-100%'
+			  }
+	})
+
 	function priceChange(currentValue: number, oldValue: number) {
 		updateInitPrice()
 		if (!amount.value) amount.value = 0
@@ -46,6 +81,7 @@
 			} else {
 				amount.value = Math.floor((initPrice.value - price.value) / symbolObj.value.tickSz)
 			}
+			setPercent(price.value)
 			// useNuxtApp().$clickSound();
 		})
 	}
@@ -61,10 +97,11 @@
 			} else {
 				price.value = initPrice.value - amount.value * symbolObj.value.tickSz
 			}
+			setPercent(price.value)
 			// useNuxtApp().$clickSound();
 		})
 	}
-	function amountFocus() {}
+
 	function confirm() {
 		emit('close', price.value, amount.value)
 		if (props.push) useNuxtApp().$pop({ price: price.value, amount: amount.value })
@@ -76,6 +113,57 @@
 			if (ticker) initPrice.value = parseFloat(ticker.last)
 		}
 	}
+
+	const percentChange = (val: number) => {
+		setPriceWithPercent(val)
+	}
+
+	const setPercent = (price: number) => {
+		let val = 0
+		if (!props.type) {
+			// 止盈
+			val = ((price - initPrice.value) / initPrice.value) * 100
+		} else {
+			// 止损
+			val = ((initPrice.value - price) / initPrice.value) * 100
+		}
+		console.log('setPercent,,,,,,', val, price, initPrice.value)
+		szPercent.value = parseFloat(val.toFixed(2))
+	}
+	const setPriceWithPercent = (percent: number) => {
+		if (percent != undefined) {
+			if (!props.type) {
+				// 止盈
+				price.value = initPrice.value + (percent / 100) * initPrice.value
+			} else {
+				// 止损
+				price.value = initPrice.value + (percent / 100) * initPrice.value
+			}
+		} else {
+			price.value = initPrice.value
+		}
+		if (!props.type) {
+			amount.value = Math.floor((price.value - initPrice.value) / symbolObj.value.tickSz)
+		} else {
+			amount.value = Math.floor((initPrice.value - price.value) / symbolObj.value.tickSz)
+		}
+	}
+	watch(
+		() => szPercent.value,
+		val => {
+			console.log('szPercent', val)
+			setPriceWithPercent(val)
+		}
+	)
+
+	const onProgress = (val: number) => {
+		if (val != undefined) {
+			console.log('onProgress', val)
+			// szPercent.value = parseFloat(val.toFixed(2))
+			// setPriceWithPercent(szPercent.value)
+		}
+	}
+
 	onMounted(() => {
 		console.log('stopLoss', props.price, props.initPrice, props.push)
 		price.value = props.price || 0
@@ -93,7 +181,7 @@
 	})
 </script>
 <template>
-	<div :class="['pt-1', 'stopprofit-h5']">
+	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
 		<h3>{{ !type ? '止盈' : '止损' }}价</h3>
 		<div class="py-2">
 			<el-input-number
@@ -116,7 +204,6 @@
 			<el-input-number
 				@change="amountChange"
 				@input="amountChange"
-				@focus="amountFocus"
 				v-model="amount"
 				:min="0"
 				:step="1"
@@ -128,12 +215,71 @@
 				inputmode="decimal"
 			/>
 		</div>
+		<div class="slider-wrapper py-2">
+			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }}预览</h3>
+			<div class="slider-box flex flex-col items-center justify-between gap-4">
+				<el-input-number
+					@change="percentChange"
+					@input="percentChange"
+					v-model="szPercent"
+					:step="0.01"
+					:precision="2"
+					:controls-position="push == 'btt' ? '' : 'right'"
+					size="large"
+					class="!w-[200px] max-w-full"
+					v-click-sound
+					inputmode="decimal"
+				>
+					<template #suffix>
+						<span>%</span>
+					</template>
+				</el-input-number>
+
+				<slider v-model="szPercent" :step="0.01" :marks="marks" :showTooltip="false" @progress="onProgress" />
+			</div>
+		</div>
 		<div class="py-3">
-			<button class="bt-green w-full !py-2" v-click-sound @click="confirm">确定</button>
+			<button class="stop-bt bt-green w-full !py-2" v-click-sound @click="confirm">确定</button>
 		</div>
 	</div>
 </template>
 <style lang="less" scoped>
+	.stoploss {
+		--el-color-primary: rgb(var(--color-red));
+		:deep(.slider-container) {
+			.slider-progress {
+				background-color: rgb(var(--color-red));
+			}
+			.slider-progress-stops {
+				background-color: rgb(var(--color-red));
+			}
+			.slider-tooltip {
+				background-color: rgb(var(--color-red));
+			}
+		}
+		.stop-bt {
+			background-color: rgb(var(--color-red));
+			border-color: rgb(var(--color-red));
+		}
+	}
+	.stopprofit {
+		--el-color-primary: rgb(var(--color-green));
+		:deep(.slider-container) {
+			.slider-progress {
+				background-color: rgb(var(--color-green));
+			}
+			.slider-progress-stops {
+				background-color: rgb(var(--color-green));
+			}
+			.slider-tooltip {
+				background-color: rgb(var(--color-green));
+			}
+		}
+		.stop-bt {
+			background-color: rgb(var(--color-green));
+			border-color: rgb(var(--color-green));
+		}
+	}
 	:deep(.el-input-number) {
 		&.price-input {
 			.el-input__wrapper {
@@ -165,6 +311,11 @@
 						text-align: center;
 					}
 				}
+			}
+		}
+		.slider-wrapper {
+			.slider-box {
+				@apply flex-row;
 			}
 		}
 	}

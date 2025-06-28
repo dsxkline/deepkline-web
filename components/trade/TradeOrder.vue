@@ -376,6 +376,7 @@
 </template>
 <style lang="less" scoped>
 	.sell {
+		--el-color-primary: rgb(var(--color-red));
 		.el-slider {
 			--el-slider-main-bg-color: rgb(var(--color-red));
 		}
@@ -393,8 +394,20 @@
 				padding: 6px 10px;
 			}
 		}
+		:deep(.slider-container){
+			.slider-progress{
+				background-color: rgb(var(--color-red));
+			}
+			.slider-progress-stops{
+				background-color: rgb(var(--color-red));
+			}
+			.slider-tooltip{
+				background-color: rgb(var(--color-red));
+			}
+		}
 	}
 	.buy {
+		--el-color-primary: rgb(var(--color-green));
 		.el-radio-button {
 			--el-radio-button-checked-bg-color: var(--el-color-primary);
 			--el-radio-button-checked-text-color: var(--el-color-white);
@@ -403,6 +416,17 @@
 		:deep(.el-radio-button--small) {
 			.el-radio-button__inner {
 				padding: 6px 10px;
+			}
+		}
+		:deep(.slider-container){
+			.slider-progress{
+				background-color: rgb(var(--color-green));
+			}
+			.slider-progress-stops{
+				background-color: rgb(var(--color-green));
+			}
+			.slider-tooltip{
+				background-color: rgb(var(--color-green));
 			}
 		}
 	}
@@ -453,9 +477,9 @@
 				.trade-type {
 					display: none;
 				}
-				// .slider-demo-block {
-				// 	display: none;
-				// }
+				.slider-demo-block {
+					padding-top: 5px;
+				}
 				.trade-bts {
 					button {
 						p {
