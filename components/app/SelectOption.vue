@@ -14,7 +14,7 @@
 	}
 </script>
 <template>
-	<div @click="returnBack" class="py-3 px-4 select-option-item flex items-center cursor-pointer">
+	<div @click="returnBack" class="py-3 px-4 select-option-item flex items-center cursor-pointer text-sm">
 		<slot></slot>
 		<span>{{ label }}</span>
 	</div>

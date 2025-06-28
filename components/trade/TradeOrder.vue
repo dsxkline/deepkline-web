@@ -248,7 +248,7 @@
 										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
 										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
-									<div class="px-4 w-full text-center">杠杆</div>
+									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
 									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
@@ -281,7 +281,7 @@
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
 								<el-input v-click-sound inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" size="large" class="w-full" :clearable="!isH5" />
 								<div class="slider-demo-block">
-									<el-slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
+									<slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
 								</div>
 							</div>
 

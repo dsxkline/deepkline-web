@@ -53,7 +53,7 @@
 		render(vnode, poperContainer)
 		const { width, height } = poperContainer.getBoundingClientRect()
 
-		poperContainer.className = `!fixed z-[999999] w-max h-max bg-base glass-180 overflow-hidden rounded-md mt-1 border border-[--transparent10]`
+		poperContainer.className = `!fixed z-[999999] w-max h-max bg-base overflow-hidden rounded-md mt-1 border border-[--transparent10]`
 		poperContainer.style.left = x + 'px'
 		poperContainer.style.top = y + h + 'px'
 		poperContainer.style.minWidth = w + 'px'
