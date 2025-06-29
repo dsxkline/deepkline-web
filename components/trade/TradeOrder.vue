@@ -413,15 +413,15 @@
 		}
 		:deep(.slider-container){
 			--slider-border-color: rgb(var(--color-red));
-			.slider-progress{
-				background-color: rgb(var(--color-red));
-			}
-			.slider-progress-stops{
-				background-color: rgb(var(--color-red));
-			}
-			.slider-tooltip{
-				background-color: rgb(var(--color-red));
-			}
+			// .slider-progress{
+			// 	background-color: rgb(var(--color-red));
+			// }
+			// .slider-progress-stops{
+			// 	background-color: rgb(var(--color-red));
+			// }
+			// .slider-tooltip{
+			// 	background-color: rgb(var(--color-red));
+			// }
 		}
 	}
 	.buy {
@@ -437,15 +437,15 @@
 			}
 		}
 		:deep(.slider-container){
-			.slider-progress{
-				background-color: rgb(var(--color-green));
-			}
-			.slider-progress-stops{
-				background-color: rgb(var(--color-green));
-			}
-			.slider-tooltip{
-				background-color: rgb(var(--color-green));
-			}
+			// .slider-progress{
+			// 	background-color: rgb(var(--color-green));
+			// }
+			// .slider-progress-stops{
+			// 	background-color: rgb(var(--color-green));
+			// }
+			// .slider-tooltip{
+			// 	background-color: rgb(var(--color-green));
+			// }
 		}
 	}
 

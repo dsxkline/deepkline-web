@@ -6,7 +6,7 @@
 		max?: number
 		min?: number
 		showTooltip?: boolean
-        hideMaskText?: boolean
+		hideMaskText?: boolean
 	}>()
 
 	const emit = defineEmits<{
@@ -18,7 +18,9 @@
 	const maxValue = ref(100)
 	const minValue = ref(0)
 	const progressValue = ref(0) // 用于存储百分比值
-    const sliderProgressStops = ref<HTMLElement | null>(null)
+	const sliderProgressStops = ref<HTMLElement | null>(null)
+	const tooltip = ref<HTMLElement | null>(null)
+	const sliderContainer = ref<HTMLElement | null>(null)
 
 	const mouseDown = (event: MouseEvent) => {
 		event.preventDefault() // 阻止默认事件，避免页面滚动
@@ -89,12 +91,35 @@
 	const percentToValue = (percent: number) => {
 		return minValue.value + (percent / 100) * (maxValue.value - minValue.value)
 	}
+	const tooltipTransform = computed(() => {
+		if (tooltip.value) {
+			const width = sliderContainer.value ? sliderContainer.value.clientWidth : 0
+			const rect = tooltip.value.getBoundingClientRect()
+			const left = (valueToPercent(progressValue.value) * width) / 100
+			console.log('tooltipTransform', left, rect.width / 2, width)
+			if (left - rect.width / 2 <= 0) {
+				return `translateX(calc(-50% + ${rect.width / 2 - left}px)) translateY(-130%)`
+			} else if (left + rect.width / 2 >= width) {
+				return `translateX(calc(-50% + ${width - left - rect.width / 2}px)) translateY(-130%)`
+			}
+			return `translateX(-50%) translateY(-130%)`
+		}
+		return 'translateX(0) translateY(-130%)'
+	})
 
 	watch(
 		() => progressValue.value,
 		val => {
 			console.log('szPercentddddddd', val)
 			emit('update:modelValue', val) // 更新父组件的值
+		}
+	)
+
+	watch(
+		() => props.modelValue,
+		val => {
+			console.log('props.modelValue', val)
+			progressValue.value = val // 更新进度值
 		}
 	)
 
@@ -112,9 +137,9 @@
 		@mousedown.stop="mouseDown"
 		@touchend.stop="touchEnd"
 	>
-		<div class="slider-container w-full h-1 bg-[--transparent10] rounded-full relative">
+		<div class="slider-container w-full h-[2px] bg-[--transparent20] rounded-full relative z-[99999]" ref="sliderContainer">
 			<div
-				class="slider-progress bg-green rounded-full absolute top-0 left-0 h-full"
+				class="slider-progress bg-[--slider-border-color] rounded-full absolute top-0 left-0 h-full"
 				:style="{
 					width: (valueToPercent(progressValue) > valueToPercent(0) ? valueToPercent(progressValue) - valueToPercent(0) : valueToPercent(0) - valueToPercent(progressValue)) + '%',
 					left: Math.min(valueToPercent(0), valueToPercent(progressValue)) + '%'
@@ -122,36 +147,44 @@
 			></div>
 			<div class="slider-stops text-xs text-muted w-full relative rounded-full *:absolute [&_span]:-translate-x-1/2 last:[&_span]:-translate-x-full first:[&_span]:-translate-x-0" v-if="marks">
 				<span
-					:style="{ left: valueToPercent(parseFloat(val)) + '%',borderColor: (progressValue>0 && progressValue > parseFloat(val)) || (progressValue<0 && progressValue < parseFloat(val)) ? 'var(--slider-border-color)' : 'var(--transparent10)' }"
+					:style="{
+						left: valueToPercent(parseFloat(val)) + '%',
+						borderColor: (progressValue > 0 && progressValue > parseFloat(val)) || (progressValue < 0 && progressValue < parseFloat(val)) ? 'var(--slider-border-color)' : 'var(--transparent20)'
+					}"
 					v-for="val in Object.keys(marks).sort((a, b) => parseFloat(a) - parseFloat(b))"
-					class="w-2 h-2 rounded-full bg-base border-2 border-[--transparent10] -translate-y-1/4"
+					class="w-2 h-2 rounded-full bg-base border-2 border-[--transparent20] -translate-y-1/3"
 				></span>
 			</div>
 
 			<div
-                ref="sliderProgressStops"
-				class="slider-progress-stops bg-green rounded-full absolute top-0 w-3 h-3"
+				ref="sliderProgressStops"
+				class="slider-progress-stops bg-base border-[3px] border-[--slider-border-color] rounded-full absolute top-0 w-3 h-3"
 				:style="{
 					left: valueToPercent(progressValue) + '%',
-					transform: (valueToPercent(progressValue) <= valueToPercent(minValue) ? 'translateX(-25%)' : valueToPercent(progressValue) < valueToPercent(maxValue) ? 'translateX(-50%)' : 'translateX(-75%)') + ' translateY(-30%)'
+					transform:
+						(valueToPercent(progressValue) <= valueToPercent(minValue) ? 'translateX(-25%)' : valueToPercent(progressValue) < valueToPercent(maxValue) ? 'translateX(-50%)' : 'translateX(-75%)') +
+						' translateY(-40%)'
 				}"
 			></div>
 			<div
-                
-				:style="{ left: valueToPercent(progressValue) + '%', transform: 'translateX(-50%) translateY(-130%)', opacity: isMouseDown || showTooltip ? '1' : '0' }"
-				class="slider-tooltip absolute bg-green overflow-hidden w-max rounded-full top-0 transition-[opacity] duration-200"
+				ref="tooltip"
+				:style="{ left: valueToPercent(progressValue) + '%', opacity: isMouseDown || showTooltip ? '1' : '0', transform: tooltipTransform }"
+				class="slider-tooltip absolute bg-[--slider-border-color] overflow-hidden w-max rounded-full top-0 transition-[opacity] duration-200 z-[99999]"
 			>
 				<div class="w-full h-full px-2 py-[2px] text-white text-xs">{{ progressValue }}%</div>
 			</div>
 		</div>
 
-		<div class="slider-text text-[10px] text-muted w-full relative h-4 py-1 *:absolute [&_span]:-translate-x-1/2 last:[&_span]:-translate-x-full first:[&_span]:-translate-x-0" v-if="marks && !hideMaskText">
+		<div
+			class="slider-text text-[10px] text-muted w-full relative h-4 py-1 *:absolute [&_span]:-translate-x-1/2 last:[&_span]:-translate-x-full first:[&_span]:-translate-x-0"
+			v-if="marks && !hideMaskText"
+		>
 			<span :style="{ left: valueToPercent(parseFloat(val)) + '%' }" v-for="val in Object.keys(marks).sort((a, b) => parseFloat(a) - parseFloat(b))">{{ marks[val as any] }}</span>
 		</div>
 	</div>
 </template>
 <style scoped lang="less">
-.slider-wrapper {
-    --slider-border-color: rgb(var(--color-green));
-}
+	.slider-wrapper {
+		--slider-border-color: rgb(var(--color-green));
+	}
 </style>

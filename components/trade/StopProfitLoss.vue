@@ -40,15 +40,17 @@ import { useStore } from '~/store';
 		return !props.type
 			? {
 					'0': '0%',
-					'50': '50%',
-					'100': '100%'
+					'25': '25%',
+					'50': '50%'
 			  }
 			: {
 					'0': '0%',
-					'-50': '-50%',
-					'-100': '-100%'
+					'-25': '-25%',
+					'-50': '-50%'
 			  }
 	})
+
+	const openStop = ref(true)
 
 	function priceChange(currentValue: number, oldValue: number) {
 		updateInitPrice()
@@ -96,6 +98,7 @@ import { useStore } from '~/store';
 	}
 
 	const percentChange = (val: number) => {
+		
 		setPriceWithPercent(val)
 	}
 
@@ -106,12 +109,13 @@ import { useStore } from '~/store';
 			val = ((price - initPrice.value) / initPrice.value) * 100
 		} else {
 			// 止损
-			val = ((initPrice.value - price) / initPrice.value) * 100
+			val = ((price - initPrice.value) / initPrice.value) * 100
 		}
-		console.log('setPercent,,,,,,', val, price, initPrice.value)
+		// console.log('setPercent', val, price, initPrice.value)
 		szPercent.value = parseFloat(val.toFixed(2))
 	}
 	const setPriceWithPercent = (percent: number) => {
+		updateInitPrice()
 		if (percent != undefined) {
 			if (!props.type) {
 				// 止盈
@@ -152,9 +156,9 @@ import { useStore } from '~/store';
 		if (price.value) {
 			priceChange(price.value, 0)
 		}
-		setTimeout(() => {
-			priceInput.value.focus()
-		}, 600)
+		// setTimeout(() => {
+		// 	priceInput.value.focus()
+		// }, 600)
 	})
 
 	onBeforeUnmount(() => {
@@ -163,7 +167,10 @@ import { useStore } from '~/store';
 </script>
 <template>
 	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
-		<h3>{{ !type ? '止盈' : '止损' }}价</h3>
+		<h3 class="flex items-center justify-between">
+			<span>{{ !type ? '止盈' : '止损' }}价 </span>
+			<el-switch v-model="openStop" class="ml-2"style="--el-switch-on-color: rgb(var(--color-brand)); --el-switch-off-color: var(--transparent10)" />
+		</h3>
 		<div class="py-2">
 			<el-input-number
 				ref="priceInput"
@@ -178,7 +185,11 @@ import { useStore } from '~/store';
 				v-click-sound
 				autofocus
 				inputmode="decimal"
+				:disabled="!openStop"
 			/>
+			<div class="text-xs text-grey mt-1">
+				<span>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span>，预估收益为 <b class="text-green">+ 0.3444 USDT</b></span>
+			</div>
 		</div>
 		<h3>点数</h3>
 		<div class="py-2">
@@ -194,10 +205,11 @@ import { useStore } from '~/store';
 				class="!w-full"
 				v-click-sound
 				inputmode="decimal"
+				:disabled="!openStop"
 			/>
 		</div>
 		<div class="slider-wrapper py-2">
-			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }}</h3>
+			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }} %</h3>
 			<div class="slider-box flex flex-col items-center justify-between gap-4">
 				<el-input-number
 					@change="percentChange"
@@ -210,6 +222,7 @@ import { useStore } from '~/store';
 					class="!w-[220px] max-w-full"
 					v-click-sound
 					inputmode="decimal"
+					:disabled="!openStop"
 				>
 					<template #suffix>
 						<span>%</span>
@@ -229,15 +242,15 @@ import { useStore } from '~/store';
 		--el-color-primary: rgb(var(--color-red));
 		:deep(.slider-container) {
 			--slider-border-color: rgb(var(--color-red));
-			.slider-progress {
-				background-color: rgb(var(--color-red));
-			}
-			.slider-progress-stops {
-				background-color: rgb(var(--color-red));
-			}
-			.slider-tooltip {
-				background-color: rgb(var(--color-red));
-			}
+			// .slider-progress {
+			// 	background-color: rgb(var(--color-red));
+			// }
+			// .slider-progress-stops {
+			// 	background-color: rgb(var(--color-red));
+			// }
+			// .slider-tooltip {
+			// 	background-color: rgb(var(--color-red));
+			// }
 		}
 		.stop-bt {
 			background-color: rgb(var(--color-red));
@@ -247,15 +260,15 @@ import { useStore } from '~/store';
 	.stopprofit {
 		--el-color-primary: rgb(var(--color-green));
 		:deep(.slider-container) {
-			.slider-progress {
-				background-color: rgb(var(--color-green));
-			}
-			.slider-progress-stops {
-				background-color: rgb(var(--color-green));
-			}
-			.slider-tooltip {
-				background-color: rgb(var(--color-green));
-			}
+			// .slider-progress {
+			// 	background-color: rgb(var(--color-green));
+			// }
+			// .slider-progress-stops {
+			// 	background-color: rgb(var(--color-green));
+			// }
+			// .slider-tooltip {
+			// 	background-color: rgb(var(--color-green));
+			// }
 		}
 		.stop-bt {
 			background-color: rgb(var(--color-green));
