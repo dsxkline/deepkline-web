@@ -389,10 +389,10 @@
 							<span v-else>--</span>
 						</b>
 
-						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change && symbolObj"
+						<!-- <span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change && symbolObj"
 							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
 						>
-						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
+						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span> -->
 					</div>
 					<el-icon><ElIconArrowRight /></el-icon>
 				</div>

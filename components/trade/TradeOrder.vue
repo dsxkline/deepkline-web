@@ -10,6 +10,10 @@
 		symbol: string
 		isH5?: boolean
 		openLarverage?: boolean
+		side?: Sides
+	}>()
+	const emit = defineEmits<{
+		(event: 'update:side', side: Sides): void
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -46,7 +50,7 @@
 			}
 		]
 	})
-	const side = ref<Sides>(Sides.BUY)
+	const side = ref<Sides>(props.side || Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.MARKET)
 	const price = ref(0)
 	const sz = ref()
@@ -139,6 +143,10 @@
 	watch(
 		() => props.symbol,
 		(val, old) => {
+			takeProfit.value = 0
+			stopLoss.value = 0
+			sz.value = undefined
+			money.value = undefined
 			price.value = 0
 			canChangePrice.value = true
 			$ws.removeTickerHandler(old, tickerHandler)
@@ -157,6 +165,14 @@
 				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
+		}
+	)
+
+	watch(
+		() => side.value,
+		(val, old) => {
+			console.log('side changed', val, old)
+			emit('update:side', val)
 		}
 	)
 
@@ -206,7 +222,7 @@
 				price: type == 0 ? takeProfit.value : stopLoss.value,
 				onClose: type == 0 ? confirmProfit : confirmLoss
 			},
-			'80%'
+			'90%'
 		)
 	}
 	// ios 移动端 input需要点击两次，fix
@@ -230,8 +246,8 @@
 					>
 						<div class="pb-[200px] trade-box" v-if="!loading">
 							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
-								<el-radio-button :label="buyText" value="buy" class="*:w-full" />
-								<el-radio-button :label="sellText" value="sell" class="*:w-full" />
+								<el-radio-button :label="buyText" :value="Sides.BUY" class="*:w-full" />
+								<el-radio-button :label="sellText" :value="Sides.SELL" class="*:w-full" />
 							</el-radio-group>
 
 							<div class="flex items-center justify-between">
@@ -248,7 +264,7 @@
 							</div>
 
 							<div class="flex items-center justify-between" v-if="openLarverage">
-								<el-radio-group v-model="marginMode" size="small" class="larverage-type my-3 mb-3 w-full" v-click-sound>
+								<el-radio-group v-model="marginMode" size="small" class="margin-type my-3 mb-3 w-full" v-click-sound>
 									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
 									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
@@ -613,6 +629,12 @@
 					border-radius: 999px;
 					width: max-content;
 					background: var(--transparent05);
+				}
+				.margin-type{
+					margin:2px 0 8px 0;
+					border-radius: 999px;
+					background: var(--transparent05);
+					width: max-content;
 				}
 				.larverage-type{
 					margin:2px 0 8px 0;

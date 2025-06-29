@@ -3,7 +3,7 @@
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	import SymbolSearch from '~/components/symbol/SymbolSearch.vue'
-	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, Sides, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
 	import BooksFull from '~/components/symbol/BooksFull.vue'
 	import CrypeOrder from '~/components/order/CrypeOrder.vue'
 	const symbol = ref('BTC-USDT')
@@ -13,25 +13,26 @@
 	const rate = ref<number>(0)
 	const openLarverage = ref(false)
 	const loading = ref(false)
+	const side = ref(Sides.BUY)
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[symbol.value]
 	})
 	// 订单表的数量
 	const booksAmount = computed(() => {
-		let amount = 10
-		if(openLarverage.value) {
+		let amount = 9
+		if (openLarverage.value) {
 			amount = 10
 		}
-		return amount;
+		return amount
 	})
 
 	watch(
 		() => openLarverage.value,
-		(val) => {
+		val => {
 			loading.value = true
 			setTimeout(() => {
 				loading.value = false
-			}, 300);
+			}, 300)
 		},
 		{ immediate: true }
 	)
@@ -108,6 +109,13 @@
 		}
 	}
 
+	watch(
+		() => side.value,
+		(val, old) => {
+			console.log('trade index side changed', val, old)
+		}
+	)
+
 	onMounted(() => {
 		console.log('trade-index onMounted....')
 		$ws.addTickerHandler(symbol.value, tickerHandler)
@@ -144,6 +152,11 @@
 					<button class="flex items-center pl-2 h-full" @click="pushSearch">
 						<el-icon><CaretBottom /></el-icon>
 					</button>
+
+					<span :class="'pl-2 text-xs ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change && symbolObj"
+							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
+						>
+						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 				</div>
 			</template>
 			<template #right>
@@ -162,14 +175,19 @@
 				</div>
 				<div class="w-full flex">
 					<div class="w-3/5">
-						<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" />
+						<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" :side="side" @update:side="(val: Sides) => side = val" />
 					</div>
 					<div class="w-2/5 pr-4 flex flex-col">
 						<div class="flex items-center justify-end mb-2">
 							<span class="text-xs text-grey">杠杆</span>
-							<el-switch v-model="openLarverage" class="ml-2" size="small" style="--el-switch-on-color: rgb(var(--color-brand)); --el-switch-off-color: var(--transparent10)" />
+							<el-switch
+								v-model="openLarverage"
+								class="ml-2"
+								size="small"
+								:style="`--el-switch-on-color: rgb(var(--color-${side == Sides.BUY ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`"
+							/>
 						</div>
-						<BooksFull :symbol="symbol" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="booksAmount"  v-if="!loading"/>
+						<BooksFull :symbol="symbol" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="booksAmount" v-if="!loading" />
 					</div>
 				</div>
 				<div class="pt-6">

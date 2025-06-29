@@ -50,7 +50,7 @@ import { useStore } from '~/store';
 			  }
 	})
 
-	const openStop = ref(true)
+	const openStop = ref(!(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true'))
 
 	function priceChange(currentValue: number, oldValue: number) {
 		updateInitPrice()
@@ -86,8 +86,8 @@ import { useStore } from '~/store';
 	}
 
 	function confirm() {
-		emit('close', price.value, amount.value)
-		if (props.push) useNuxtApp().$pop({ price: price.value, amount: amount.value })
+		emit('close', openStop.value?price.value:0, openStop.value?amount.value:0)
+		if (props.push) useNuxtApp().$pop({ price: openStop.value?price.value:0, amount: openStop.value?amount.value:0 })
 	}
 	function updateInitPrice() {
 		if (!initPrice.value) {
@@ -149,8 +149,18 @@ import { useStore } from '~/store';
 		}
 	}
 
+	watch(
+		() => openStop.value,
+		val => {
+			localStorage.setItem('stopProfitLossClose_'+props.type, val ? 'false' : 'true')
+		},
+		{ immediate: true }
+	)
+
 	onMounted(() => {
-		console.log('stopLoss', props.price, props.initPrice, props.push)
+		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_'+props.type))
+		
+		// openStop.value = !(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true')
 		price.value = props.price || 0
 		initPrice.value = props.initPrice
 		if (price.value) {
@@ -169,7 +179,7 @@ import { useStore } from '~/store';
 	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
 		<h3 class="flex items-center justify-between">
 			<span>{{ !type ? '止盈' : '止损' }}价 </span>
-			<el-switch v-model="openStop" class="ml-2"style="--el-switch-on-color: rgb(var(--color-brand)); --el-switch-off-color: var(--transparent10)" />
+			<el-switch v-model="openStop" class="ml-2" :style="`--el-switch-on-color: rgb(var(--color-${!type?'green':'red'})); --el-switch-off-color: var(--transparent10)`" />
 		</h3>
 		<div class="py-2">
 			<el-input-number
@@ -188,7 +198,7 @@ import { useStore } from '~/store';
 				:disabled="!openStop"
 			/>
 			<div class="text-xs text-grey mt-1">
-				<span>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span>，预估收益为 <b class="text-green">+ 0.3444 USDT</b></span>
+				<span>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span>，预估{{!type?'收益':'亏损'}}为 <b class="text-[--el-color-primary]">{{!type?'+':'-'}} 0.3444 USDT</b></span>
 			</div>
 		</div>
 		<h3>点数</h3>
