@@ -11,9 +11,30 @@
 	const item = ref<Ticker | null>(null)
 	const change = ref<number>(0)
 	const rate = ref<number>(0)
+	const openLarverage = ref(false)
+	const loading = ref(false)
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[symbol.value]
 	})
+	// 订单表的数量
+	const booksAmount = computed(() => {
+		let amount = 10
+		if(openLarverage.value) {
+			amount = 10
+		}
+		return amount;
+	})
+
+	watch(
+		() => openLarverage.value,
+		(val) => {
+			loading.value = true
+			setTimeout(() => {
+				loading.value = false
+			}, 300);
+		},
+		{ immediate: true }
+	)
 
 	const push = usePushUp()
 	function pushSearch() {
@@ -36,7 +57,7 @@
 		() => symbol.value,
 		(val, old) => {
 			unSubSymbols()
-			
+
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
 			item.value = null
@@ -45,7 +66,7 @@
 			})
 			setTimeout(() => {
 				subSymbols()
-			}, 600);
+			}, 600)
 		}
 	)
 	const { $wsb, $ws } = useNuxtApp()
@@ -141,10 +162,14 @@
 				</div>
 				<div class="w-full flex">
 					<div class="w-3/5">
-						<TradeOrder :symbol="symbol" :isH5="true" />
+						<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" />
 					</div>
-					<div class="w-2/5 pr-4">
-						<BooksFull :symbol="symbol" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="10" />
+					<div class="w-2/5 pr-4 flex flex-col">
+						<div class="flex items-center justify-end mb-2">
+							<span class="text-xs text-grey">杠杆</span>
+							<el-switch v-model="openLarverage" class="ml-2" size="small" style="--el-switch-on-color: rgb(var(--color-brand)); --el-switch-off-color: var(--transparent10)" />
+						</div>
+						<BooksFull :symbol="symbol" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="booksAmount"  v-if="!loading"/>
 					</div>
 				</div>
 				<div class="pt-6">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
 	import { usePushUp } from '~/composable/usePush'
-	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, OrderType,MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const pushUp = usePushUp()
@@ -9,6 +9,7 @@
 		height?: number
 		symbol: string
 		isH5?: boolean
+		openLarverage?: boolean
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -121,6 +122,8 @@
 			value: 100
 		}
 	])
+	const marginMode = ref<MarginMode>(MarginMode.Isolated)
+	
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 		if (canChangePrice.value) {
@@ -241,6 +244,19 @@
 									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
 
+								
+							</div>
+
+							<div class="flex items-center justify-between" v-if="openLarverage">
+								<el-radio-group v-model="marginMode" size="small" class="larverage-type my-3 mb-3 w-full" v-click-sound>
+									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
+									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
+								</el-radio-group>
+
+								<!-- <el-select v-model="lotSize" class="trade-lotsize-select w-full">
+									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
+								</el-select> -->
+
 								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
 									<template #name>
 										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
@@ -281,7 +297,7 @@
 								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
 								<el-input v-click-sound inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" size="large" class="w-full" :clearable="!isH5" />
 								<div class="slider-demo-block">
-									<slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" v-if="!loading" />
+									<slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
 								</div>
 							</div>
 
@@ -376,6 +392,7 @@
 </template>
 <style lang="less" scoped>
 	.sell {
+		
 		--el-color-primary: rgb(var(--color-red));
 		.el-slider {
 			--el-slider-main-bg-color: rgb(var(--color-red));
@@ -395,6 +412,7 @@
 			}
 		}
 		:deep(.slider-container){
+			--slider-border-color: rgb(var(--color-red));
 			.slider-progress{
 				background-color: rgb(var(--color-red));
 			}
@@ -596,11 +614,14 @@
 					width: max-content;
 					background: var(--transparent05);
 				}
+				.larverage-type{
+					margin:2px 0 8px 0;
+				}
 				.price-input {
 					padding-bottom: 5px;
 				}
 				.amount-container {
-					padding: 0 0 5px 0;
+					padding: 0 0 0 0;
 				}
 				.money-container {
 					padding: 0;

@@ -37,8 +37,7 @@ import { useStore } from '~/store';
 	const symbolObj = computed(() => useSymbolStore().getSymbol(props.symbol))
 	const szPercent = ref(0)
 	const marks = computed(() => {
-		if(!useStore().isH5){
-			return !props.type
+		return !props.type
 			? {
 					'0': '0%',
 					'50': '50%',
@@ -47,24 +46,6 @@ import { useStore } from '~/store';
 			: {
 					'0': '0%',
 					'-50': '-50%',
-					'-100': '-100%'
-			  }
-		}
-		return !props.type
-			? {
-					'0': '0%',
-					'20': '20%',
-					'40': '40%',
-					'60': '60%',
-					'80': '80%',
-					'100': '100%'
-			  }
-			: {
-					'0': '0%',
-					'-20': '-20%',
-					'-40': '-40%',
-					'-60': '-60%',
-					'-80': '-80%',
 					'-100': '-100%'
 			  }
 	})
@@ -216,7 +197,7 @@ import { useStore } from '~/store';
 			/>
 		</div>
 		<div class="slider-wrapper py-2">
-			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }}预览</h3>
+			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }}</h3>
 			<div class="slider-box flex flex-col items-center justify-between gap-4">
 				<el-input-number
 					@change="percentChange"
@@ -226,7 +207,7 @@ import { useStore } from '~/store';
 					:precision="2"
 					:controls-position="push == 'btt' ? '' : 'right'"
 					size="large"
-					class="!w-[200px] max-w-full"
+					class="!w-[220px] max-w-full"
 					v-click-sound
 					inputmode="decimal"
 				>
@@ -235,7 +216,7 @@ import { useStore } from '~/store';
 					</template>
 				</el-input-number>
 
-				<slider v-model="szPercent" :step="0.01" :marks="marks" :showTooltip="false" @progress="onProgress" />
+				<slider v-model="szPercent" :step="1" :marks="marks" :showTooltip="false" @progress="onProgress" />
 			</div>
 		</div>
 		<div class="py-3">
@@ -247,6 +228,7 @@ import { useStore } from '~/store';
 	.stoploss {
 		--el-color-primary: rgb(var(--color-red));
 		:deep(.slider-container) {
+			--slider-border-color: rgb(var(--color-red));
 			.slider-progress {
 				background-color: rgb(var(--color-red));
 			}
