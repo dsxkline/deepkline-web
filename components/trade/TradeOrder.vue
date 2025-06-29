@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
 	import { usePushUp } from '~/composable/usePush'
-	import { InstanceType, OrderType,MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, OrderType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const pushUp = usePushUp()
@@ -17,6 +17,7 @@
 	}>()
 	const loading = ref(true)
 	const error = ref('')
+	const container = ref<HTMLElement>()
 	const tradeContainer = ref()
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
@@ -127,7 +128,9 @@
 		}
 	])
 	const marginMode = ref<MarginMode>(MarginMode.Isolated)
-	
+	const openSelfLarverage = ref(props.openLarverage || false)
+	const orderWidth = ref(0)
+
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
 		if (canChangePrice.value) {
@@ -178,6 +181,20 @@
 
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
+
+		// 监听宽度变化
+		if (container.value) {
+			const resizeObserver = new ResizeObserver(() => {
+				orderWidth.value = container.value?.clientWidth || 0
+				console.log('container width changed', orderWidth.value)
+			})
+			resizeObserver.observe(container.value)
+			onBeforeUnmount(() => {
+				if (container.value) {
+					resizeObserver.unobserve(container.value)
+				}
+			})
+		}
 	})
 
 	onUnmounted(() => {
@@ -225,16 +242,9 @@
 			'90%'
 		)
 	}
-	// ios 移动端 input需要点击两次，fix
-	function handleFocusFix(e: Event) {
-		console.log('handleFocusFix', e)
-		nextTick(() => {
-			e.target && (e.target as HTMLInputElement).focus()
-		})
-	}
 </script>
 <template>
-	<div class="h-full w-full">
+	<div class="h-full w-full" ref="container">
 		<div :class="['w-full h-full wrapper trade-order', isH5 ? 'trade-small' : '']">
 			<client-only>
 				<ScrollBar :height="isH5 ? '100%' : contentHeight + 'px'" v-show="!loading && !error">
@@ -259,12 +269,38 @@
 								<!-- <el-select v-model="lotSize" class="trade-lotsize-select w-full">
 									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
-
-								
+								<div class="flex items-center justify-end larver-switch">
+									<span class="text-xs text-grey text-nowrap">杠杆</span>
+									<el-switch
+										v-model="openSelfLarverage"
+										class="ml-2"
+										size="small"
+										:style="`--el-switch-on-color: rgb(var(--color-${side == Sides.BUY ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`"
+									/>
+								</div>
 							</div>
 
-							<div class="flex items-center justify-between" v-if="openLarverage">
-								<el-radio-group v-model="marginMode" size="small" class="margin-type my-3 mb-3 w-full" v-click-sound>
+							<!-- 只有小屏幕显示 -->
+							<div class="flex items-center justify-between margin-type-box-small" v-if="orderWidth <= 200 && !useStore().isH5">
+								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
+									<template #name>
+										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
+										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
+										<span class="flex-auto text-right !text-grey" v-else>无</span>
+									</template>
+									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
+									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
+								</Select>
+
+								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="lotSize">
+									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
+									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
+								</el-radio-group>
+							</div>
+
+							<div class="flex items-center justify-between margin-type-box" v-else-if="openLarverage || (openSelfLarverage && !useStore().isH5)">
+								<el-radio-group v-model="marginMode" size="small" class="margin-type w-full" v-click-sound>
 									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
 									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
@@ -331,7 +367,7 @@
 							</div>
 
 							<div class="pt-2 stop-container" v-if="!useStore().isH5">
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="250">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
@@ -341,7 +377,7 @@
 									</template>
 									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="250">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
@@ -408,7 +444,6 @@
 </template>
 <style lang="less" scoped>
 	.sell {
-		
 		--el-color-primary: rgb(var(--color-red));
 		.el-slider {
 			--el-slider-main-bg-color: rgb(var(--color-red));
@@ -427,7 +462,7 @@
 				padding: 6px 10px;
 			}
 		}
-		:deep(.slider-container){
+		:deep(.slider-container) {
 			--slider-border-color: rgb(var(--color-red));
 			// .slider-progress{
 			// 	background-color: rgb(var(--color-red));
@@ -452,7 +487,7 @@
 				padding: 6px 10px;
 			}
 		}
-		:deep(.slider-container){
+		:deep(.slider-container) {
 			// .slider-progress{
 			// 	background-color: rgb(var(--color-green));
 			// }
@@ -490,6 +525,10 @@
 		display: none;
 	}
 
+	.margin-type-box {
+		margin-bottom: 12px;
+	}
+
 	@container (max-width: 200px) {
 		.trade-order {
 			.lotsize-select {
@@ -504,12 +543,30 @@
 				}
 			}
 			.trade-container {
-				padding: 16px 8px;
+				padding: 10px 8px;
 				.trade-side {
 					display: none;
 				}
 				.trade-type {
 					display: none;
+				}
+				.larver-switch {
+					display: none;
+				}
+				.margin-type-box {
+					display: none;
+				}
+				.margin-type-box-small {
+					display: flex;
+					flex-direction: column;
+					.margin-type {
+						display: flex;
+						justify-content: space-between;
+						.el-radio-button,
+						.el-radio-button__inner {
+							width: 50%;
+						}
+					}
 				}
 				.slider-demo-block {
 					padding-top: 5px;
@@ -630,14 +687,20 @@
 					width: max-content;
 					background: var(--transparent05);
 				}
-				.margin-type{
-					margin:2px 0 8px 0;
+				.margin-type-box {
+					margin-bottom: 8px;
+				}
+				.margin-type {
+					margin: 2px 0 0 0;
 					border-radius: 999px;
 					background: var(--transparent05);
 					width: max-content;
 				}
-				.larverage-type{
-					margin:2px 0 8px 0;
+				.larverage-type {
+					margin: 2px 0 8px 0;
+				}
+				.larver-switch {
+					display: none;
 				}
 				.price-input {
 					padding-bottom: 5px;

@@ -288,7 +288,7 @@ import { useStore } from '~/store';
 	:deep(.el-input-number) {
 		&.price-input {
 			.el-input__wrapper {
-				padding: 0 5px;
+				// padding: 0 5px;
 				// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
 				// box-shadow: none;
 				// border: 1px solid rgb(var(--color-green));
@@ -301,6 +301,7 @@ import { useStore } from '~/store';
 			@apply px-4 pb-5;
 			:deep(.el-input-number) {
 				&.price-input {
+					padding: 0 5px;
 					.el-input__wrapper {
 						// box-shadow: none;
 						// border: none;
