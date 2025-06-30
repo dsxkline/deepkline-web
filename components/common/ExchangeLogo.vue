@@ -8,5 +8,6 @@ const props = defineProps<{
         <BinanceIcon v-if="exchange=='binance'"/>
         <OKXIcon v-if="exchange=='okx'"/>
         <CoinBaseIcon  v-if="exchange=='coinbase'" class="bg-white"/>
+        <Logo v-if="exchange=='deepkline'"/>
     </div>
 </template>
