@@ -74,7 +74,7 @@ import { useAccountStore } from '~/store/account'
 			</div>
 		</ScrollBar>
 
-		<div class="fixed bottom-0 left-0 right-0 p-4">
+		<div class="fixed bottom-[var(--safe-bottom)] left-0 right-0 p-4">
 			<el-button
 					size="large"
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default','!bg-brand !text-white']"
