@@ -184,6 +184,25 @@
 	}
 }
 
+.deepkline-card {
+	position: relative;
+	&::before {
+		// background-image: linear-gradient(90deg, #00dc82, #36e4da, #0047e1);
+		background-image: var(--bg-linear-90);
+		// filter: blur(60px);
+		// border-radius: 999px;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		content: '';
+		z-index: -1;
+		opacity: 0.2;
+		// transition: all 0.3s ease;
+	}
+}
+
 .binance-bt {
 	background-color: #f3ba2f !important;
 	color: white !important;
@@ -194,6 +213,11 @@
 }
 .coinbase-bt {
 	background-color: #0052ff !important;
+	color: white !important;
+}
+
+.deepkline-bt {
+	background-color: rgb(var(--color-brand)) !important;
 	color: white !important;
 }
 
@@ -225,27 +249,33 @@
 }
 
 .tag-real{
-	@apply rounded-sm bg-green/50 flex items-center leading-none; 
+	@apply rounded-full bg-green/20 flex items-center leading-none text-green; 
 	font-size: 10px;
-	padding: 4px 4px;
+	padding: 4px 5px;
+	
+}
+.tag-demo{
+	@apply rounded-full bg-invert flex items-center leading-none text-invert; 
+	font-size: 10px;
+	padding: 4px 5px;
 	
 }
 .tag-default{
-	@apply rounded-sm flex items-center leading-none text-main; 
+	@apply rounded-full flex items-center leading-none text-main; 
 	font-size: 10px;
-	padding: 4px 4px;
+	padding: 4px 5px;
 	background-color: var(--transparent10);
 }
 .tag-red{
-	@apply rounded-sm bg-red/20 flex items-center leading-none text-red; 
+	@apply rounded-full bg-red/20 flex items-center leading-none text-red; 
 	font-size: 10px;
-	padding: 4px 4px;
+	padding: 4px 5px;
 }
 
 .tag-green{
-	@apply rounded-sm bg-green/20 flex items-center leading-none text-green; 
+	@apply rounded-full bg-green/20 flex items-center leading-none text-green; 
 	font-size: 10px;
-	padding: 4px 4px;
+	padding: 4px 5px;
 }
 
 

@@ -18,18 +18,25 @@
 			pushUp(LoginIndex)
 			return
 		}
+		if(exchange.isLocal && exchange.isDemo){
+			pushLeft(CreateDemo, {})
+		}
 		pushLeft(AddAccount, {
 			exchange: exchange
 		})
 	}
 	const pushAddDemoAccount = () => {
+		if (!useUserStore().user) {
+			pushUp(LoginIndex)
+			return
+		}
 		pushLeft(CreateDemo, {})
 	}
 </script>
 <template>
 	<div class="exchange-list-container">
 		<ul class="p-4 flex flex-col *:rounded-2xl *:overflow-hidden *:p-4 *:my-4 *:border *:border-[--transparent05]">
-			<li :class="['deepkline-card glass']" @click="pushAddDemoAccount">
+			<!-- <li :class="['deepkline-card glass']" @click="pushAddDemoAccount">
 				<div class="flex">
 					<ExchangeLogo :exchange="'deepkline'" class="w-12 h-12" />
 					<div class="flex flex-col px-2">
@@ -56,7 +63,7 @@
 				<div>
 					<button :class="['bt-brand w-full h-10 !text-sm !border-0', 'deepkline-bt']" @click="pushAddDemoAccount">开设模拟账户</button>
 				</div>
-			</li>
+			</li> -->
 			<template v-for="item in exchanges">
 				<li :class="[item.slug + '-card']" @click="pushAddAccount(item)">
 					<div class="flex">
@@ -69,21 +76,21 @@
 					<div class="py-4">
 						<dl class="text-sm flex items-center justify-between *:flex *:flex-col [&_span]:text-xs [&_span]:text-grey [&_b]:text-center">
 							<dt>
-								<b>$0</b>
+								<b>${{ item.minDeposit }}</b>
 								<span>最小入金</span>
 							</dt>
 							<dt>
-								<b>125:1</b>
+								<b>{{ item.maxLeverage }}:1</b>
 								<span>最大杠杆</span>
 							</dt>
 							<dt>
-								<b>$0</b>
+								<b>${{ item.takerFee }}</b>
 								<span>费用</span>
 							</dt>
 						</dl>
 					</div>
 					<div>
-						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0', item.slug + '-bt']" @click="pushAddAccount(item)">开设账户</button>
+						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0', item.slug + '-bt']" @click="pushAddAccount(item)">开设{{item.isLocal&&item.isDemo?'模拟':''}}账户</button>
 					</div>
 				</li>
 			</template>

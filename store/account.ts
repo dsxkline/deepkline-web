@@ -1,4 +1,4 @@
-import { AccountBalanceDto, AccountDto } from '~/fetch/dtos/account'
+import { AccountDto, FundDto } from '~/fetch/dtos/account'
 import type { ExchangeDto } from '~/fetch/dtos/exchange'
 
 export const useAccountStore = defineStore({
@@ -6,8 +6,8 @@ export const useAccountStore = defineStore({
 	state: () => ({
 		accounts: [] as AccountDto[],
 		exchanges: [] as ExchangeDto[],
-		currentAccount: null as AccountDto | null,
-		balance: null as AccountBalanceDto | null
+		currentAccount: null as AccountDto | null | undefined,
+		fund: null as FundDto | null
 	}),
 	actions: {
 		setAccounts(payload: AccountDto[]) {
@@ -23,6 +23,11 @@ export const useAccountStore = defineStore({
 				} else {
 					this.currentAccount = account
 				}
+			}else{
+				this.currentAccount = null
+				this.fund = null
+				useCookie('account').value = null
+
 			}
 		},
 		getAccount(accountId: number) {
@@ -31,8 +36,8 @@ export const useAccountStore = defineStore({
 		setExchanges(payload: ExchangeDto[]) {
 			this.exchanges = payload
 		},
-		setBalance(payload: AccountBalanceDto) {
-			this.balance = payload
+		setFund(payload: FundDto) {
+			this.fund = payload
 		}
 	},
 	getters: {

@@ -1,33 +1,41 @@
 <script setup lang="ts">
-	import { useWillAppear } from '~/composable/usePush'
+	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { accountFetch } from '~/fetch/account.fetch'
+	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.d'
 	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import ResetDemo from '~/pages/account/reset-demo.vue'
 	import { useAccountStore } from '~/store/account'
+	import HistoryOrder from '~/pages/order/history.vue'
+
+	const props = defineProps<{
+		account?: AccountDto | null | undefined
+	}>()
 
 	const loading = ref(false)
 	const error = ref('')
+	const usepush = usePush()
 
-	const balance = computed(() => {
-		return useAccountStore().balance
+	const fund = computed(() => {
+		return useAccountStore().fund
 	})
 	const upl = computed(() => {
-		return parseFloat(balance?.value?.upl || '0')
+		return parseFloat(fund?.value?.unrealizedPnl || '0')
 	})
 
 	function getUserAccountBalance() {
 		if (!useAccountStore().accounts?.length) return
 		if (loading.value) return
-		if(!balance.value)loading.value = true
+		if (!fund.value) loading.value = true
 		error.value = ''
 		accountFetch
-			.balance(useAccountStore().currentAccount?.accountId)
+			.fund(useAccountStore().currentAccount?.accountId)
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
 					console.log('获取账户余额', result.data)
-					const balance = result.data
-					if (balance) {
-						useAccountStore().setBalance(balance)
+					const fund = result.data
+					if (fund) {
+						useAccountStore().setFund(fund)
 					}
 				} else {
 					setTimeout(() => {
@@ -44,6 +52,13 @@
 			})
 	}
 
+	function pushReset() {
+		usepush(ResetDemo)
+	}
+	function pushHistoryOrder(){
+		usepush(HistoryOrder)
+	}
+
 	useWillAppear(() => {
 		getUserAccountBalance()
 	})
@@ -58,10 +73,18 @@
 			<div class="flex items-center">
 				<span class="pb-1 text-sm text-grey">总资产(USDT)</span>
 			</div>
-			<b v-autosize="25" :class="'roboto-bold flex items-end '" v-if="balance">
-				<NumberIncrease :value="formatPrice(parseFloat(balance?.totalEq || '0'), 0.01)" unit="" :fontSize="25" />
+			<b v-autosize="25" :class="'roboto-bold flex items-end '" v-if="fund">
+				<NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), 0.01)" unit="" :fontSize="25" />
 			</b>
-			<div class="text-sm pt-0 text-grey"><span>收益</span><span class="px-1 text-red"> -70.67 (-33.28%)</span></div>
+			<div class="text-sm pt-0 text-grey">
+				<span>收益</span>
+				<ProfitRate :profit="fund?.profit" :profitRate="fund?.profitRate" />
+			</div>
+
+			<div class="flex justify-between items-center pt-6 *:w-full gap-3 *:!rounded-full *:!py-2 *:overflow-hidden">
+				<button class="bt-default" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
+				<button class="bt-default" @click="pushHistoryOrder">账单</button>
+			</div>
 		</div>
 		<div v-if="loading && !error">
 			<div class="flex items-center pb-1">
@@ -71,7 +94,7 @@
 					</template>
 				</el-skeleton>
 			</div>
-			<b :class="'roboto-bold flex items-end '" v-if="balance">
+			<b :class="'roboto-bold flex items-end '" v-if="fund">
 				<el-skeleton :rows="0" animated>
 					<template #template>
 						<el-skeleton-item variant="p" style="width: 50%; height: 25px" />

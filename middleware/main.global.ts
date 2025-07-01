@@ -55,15 +55,15 @@ async function getUserAccounts() {
 	}
 }
 
-async function getUserAccountBalance() {
+async function getUserFund() {
 	if (!useUserStore().user) return
 	if (!useAccountStore().accounts?.length) return
-	const result = await accountFetch.balance(useAccountStore().currentAccount?.accountId)
+	const result = await accountFetch.fund(useAccountStore().currentAccount?.accountId)
 	if (result?.code == FetchResultDto.OK) {
 		console.log('获取账户余额', result.data)
-		const balance = result.data
-		if (balance) {
-			useAccountStore().setBalance(balance)
+		const fund = result.data
+		if (fund) {
+			useAccountStore().setFund(fund)
 		}
 	}
 }
@@ -101,7 +101,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		await getUser()
 		await getExchanges()
 		await getUserAccounts()
-		await getUserAccountBalance()
+		await getUserFund()
 	}
 	if (process.client) {
 		const state = useStore()

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 	import { usePush } from '~/composable/usePush'
-	import type { AccountDto } from '~/fetch/dtos/account.d'
+	import  {type AccountDto, AccountEnvType } from '~/fetch/dtos/account.d'
 	import { useStore } from '~/store'
 	import ExchangeIndex from '../exchange/index.vue'
 	import AccountHelp from './account-help.vue'
@@ -51,7 +51,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="账户列表" :hideBack="push!='rtl'">
+		<NavigationBar title="账户列表" :hideBack="push != 'rtl'">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
@@ -90,12 +90,14 @@
 						<img :src="useAccountStore().getExchange(item.exchange)?.logoUrl" v-if="useAccountStore().getExchange(item.exchange)?.logoUrl" class="w-10 h-10 rounded-full" />
 						<ExchangeLogo :exchange="item.exchange" class="w-10 h-10" v-else />
 						<div class="flex flex-col px-2 justify-center">
-							<b class="text-xl flex items-center leading-none mb-1"
-								>{{ useAccountStore().getExchange(item.exchange)?.name || item.exchange }} <span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span></b
-							>
+							<b class="text-xl flex items-center leading-none mb-1">
+								{{ useAccountStore().getExchange(item.exchange)?.name || item.exchange }} 
+								<span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span>
+								<div :class="['tag-'+(item.envType==AccountEnvType.DEMO?'demo':'real')]">{{ (item.envType==AccountEnvType.DEMO?'模拟':'实盘') }}</div>
+							</b>
 							<div class="text-xs">
-								<span>{{ item.accountId }} USDT</span>
-								<span class="text-green"> +265.36 USDT / +12.30%</span>
+								<span>{{ formatPrice(item.total||'0',2) }} USDT</span>
+								<ProfitRate :profit="item?.profit" :profitRate="item?.profitRate"/>
 							</div>
 						</div>
 						<span v-if="item.isCurrent" class="current-item absolute right-0 top-0 text-xs px-3 bg-brand text-white rounded-bl-xl rounded-tr-lg">当前使用中</span>

@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-	import type ExchangeLogo from '~/components/common/ExchangeLogo.vue';
-import { useStore } from '~/store'
+	import type ExchangeLogo from '~/components/common/ExchangeLogo.vue'
+	import type { AccountDto } from '~/fetch/dtos/account'
+	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		push?: boolean
+		account?: AccountDto
 	}>()
 	function goback() {
 		useNuxtApp().$popRoot(null, -2)
@@ -30,15 +32,15 @@ import { useStore } from '~/store'
 						</li>
 						<li>
 							<span>账户ID：</span>
-							<div>12345678</div>
+							<div>{{ account?.accountId }}</div>
 						</li>
 						<li>
 							<span>经纪商：</span>
-							<div class="flex items-center gap-1"><ExchangeLogo :exchange="'deepkline'" class="w-4"/> DeepKline</div>
+							<div class="flex items-center gap-1"><ExchangeLogo :exchange="account?.exchange" class="w-4" />{{ account?.exchange }}</div>
 						</li>
 						<li>
 							<span>初始资金：</span>
-							<div>100,000 USDT</div>
+							<div>{{ formatPrice(account?.initialAmount,2) }} {{ account?.currency }}</div>
 						</li>
 					</ul>
 				</div>
@@ -46,7 +48,7 @@ import { useStore } from '~/store'
 		</ScrollBar>
 
 		<div class="fixed bottom-0 left-0 right-0 p-4">
-			<button class="w-full h-[44px] bt-brand !text-base !rounded-lg" @click="goback">返回</button>
+			<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="goback">返回</el-button>
 		</div>
 	</div>
 </template>

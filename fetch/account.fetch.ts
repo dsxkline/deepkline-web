@@ -1,7 +1,7 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { AccountBalanceDto, AccountDto } from './dtos/account'
+import type { FundDto, AccountDto } from './dtos/account'
 import type { ExchangeDto } from './dtos/exchange'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
@@ -9,7 +9,9 @@ if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const listApi = '/account/list'
 const connectApi = '/account/connect'
-const balanceApi = '/account/balance'
+const fundApi = '/account/fund'
+const openApi = '/account/open'
+const resetApi = '/account/reset'
 export const accountFetch = {
 	/**
 	 * 账户列表
@@ -34,8 +36,24 @@ export const accountFetch = {
 		}),
 
 	/**
-	 * 账户余额
+	 * 账户资产
 	 * @returns
 	 */
-	balance: (accountId?: number, ccy?: string) => usePost<ApiResult<AccountBalanceDto>>(baseUrl, balanceApi, { accountId, ccy })
+	fund: (accountId?: number) => usePost<ApiResult<FundDto>>(baseUrl, fundApi, { accountId }),
+
+	/**
+	 * 开户
+	 * @param exchange 交易所编码
+	 * @returns
+	 */
+	open: (exchange: string) =>
+		usePost<ApiResult<AccountDto>>(baseUrl, openApi, {
+			exchange: exchange
+		}),
+
+	reset: (exchange: string, accountId: number) =>
+		usePost<ApiResult<boolean>>(baseUrl, resetApi, {
+			exchange,
+			accountId
+		})
 }

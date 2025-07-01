@@ -14,4 +14,10 @@ export class ExchangeDto {
 	secretKeyRequired: boolean
 	passphraseRequired: boolean
 	isOauth: boolean
+	isReal: boolean
+	isDemo: boolean
+	isLocal: boolean
+	minDeposit: number
+	maxLeverage: number
+	takerFee: number
 }

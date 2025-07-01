@@ -1,3 +1,7 @@
+export enum AccountEnvType {
+	REAL = 1,
+	DEMO = 0
+}
 export class AccountDto {
 	id: number // 主键
 	accountId: number // 账户ID
@@ -13,71 +17,72 @@ export class AccountDto {
 	lastSyncTime?: string // 最后同步时间
 	createdAt: string // 创建时间
 	updatedAt: string // 更新时间
+	currency: string // 账户货币（如 'USD', 'USDT' 等）
+	initialAmount: string // 初始金额（可选）
+	envType: AccountEnvType
+  total: number
+  profit: number
+	profitRate: number
 }
 
 export class AccountDetailDto {
-  ccy: string;
-  availBal: string;
-  availEq: string;
-  borrowFroz: string;
-  cashBal: string;
-  crossLiab: string;
-  collateralEnabled: boolean;
-  collateralRestrict: boolean;
-  colBorrAutoConversion: string;
-  disEq: string;
-  eq: string;
-  eqUsd: string;
-  smtSyncEq: string;
-  spotCopyTradingEq: string;
-  fixedBal: string;
-  frozenBal: string;
-  imr: string;
-  interest: string;
-  isoEq: string;
-  isoLiab: string;
-  isoUpl: string;
-  liab: string;
-  maxLoan: string;
-  mgnRatio: string;
-  mmr: string;
-  notionalLever: string;
-  ordFrozen: string;
-  rewardBal: string;
-  spotInUseAmt: string;
-  clSpotInUseAmt: string;
-  maxSpotInUse: string;
-  spotIsoBal: string;
-  stgyEq: string;
-  twap: string;
-  uTime: string;
-  upl: string;
-  uplLiab: string;
-  spotBal: string;
-  openAvgPx: string;
-  accAvgPx: string;
-  spotUpl: string;
-  spotUplRatio: string;
-  totalPnl: string;
-  totalPnlRatio: string;
+	ccy: string
+	availBal: string
+	availEq: string
+	borrowFroz: string
+	cashBal: string
+	crossLiab: string
+	collateralEnabled: boolean
+	collateralRestrict: boolean
+	colBorrAutoConversion: string
+	disEq: string
+	eq: string
+	eqUsd: string
+	smtSyncEq: string
+	spotCopyTradingEq: string
+	fixedBal: string
+	frozenBal: string
+	imr: string
+	interest: string
+	isoEq: string
+	isoLiab: string
+	isoUpl: string
+	liab: string
+	maxLoan: string
+	mgnRatio: string
+	mmr: string
+	notionalLever: string
+	ordFrozen: string
+	rewardBal: string
+	spotInUseAmt: string
+	clSpotInUseAmt: string
+	maxSpotInUse: string
+	spotIsoBal: string
+	stgyEq: string
+	twap: string
+	uTime: string
+	upl: string
+	uplLiab: string
+	spotBal: string
+	openAvgPx: string
+	accAvgPx: string
+	spotUpl: string
+	spotUplRatio: string
+	totalPnl: string
+	totalPnlRatio: string
 }
 
-export class AccountBalanceDto {
-  adjEq: string;
-  availEq: string;
-  borrowFroz: string;
-  details: AccountDetail[];
-  imr: string;
-  isoEq: string;
-  mgnRatio: string;
-  mmr: string;
-  notionalUsd: string;
-  notionalUsdForBorrow: string;
-  notionalUsdForFutures: string;
-  notionalUsdForOption: string;
-  notionalUsdForSwap: string;
-  ordFroz: string;
-  totalEq: string;
-  uTime: string;
-  upl: string;
+export class FundDto {
+	currency: string
+	balance: string
+	frozen: string
+	available: string
+	total: string
+	margin: string
+	marginAvailable: string
+	unrealizedPnl: string
+	realizedPnl: string
+	lastSyncTime: Date | null
+	profit: number
+	profitRate: number
 }

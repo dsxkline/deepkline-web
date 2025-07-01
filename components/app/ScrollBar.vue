@@ -42,7 +42,7 @@
 <template>
 	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: props.height || '100%', ...wrapStyle }">
 		<div class="scroll-bar-thumb absolute top-0 right-1 h-3 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="props.always"></div>
-		<div class="scroll-bar-inner" ref="scrollBarRef" :style="{ height: props.height || '100%', ...wrapStyle }" @scroll="scrollHandle">
+		<div class="scroll-bar-inner" ref="scrollBarRef" :style="{ height: props.height || '100%'}" @scroll="scrollHandle">
 			<slot></slot>
 		</div>
 	</div>

@@ -29,13 +29,13 @@
 		() => useStore().bodyHeight,
 		(n, o) => {
 			tabbarHeight.value = n - 40 - 30
-			if (useStore().isH5) tabbarHeight.value = n - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0) - 30
+			if (useStore().isH5) tabbarHeight.value = n - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0)
 		}
 	)
 
 	onMounted(() => {
 		tabbarHeight.value = useStore().bodyHeight - 40 - 30
-		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0) - 30
+		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0)
 		// console.log('tabbarHeight', useStore().bodyHeight)
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
@@ -58,7 +58,7 @@
 </script>
 <template>
 	<div>
-		<div class="search-container flex px-4 w-full">
+		<div class="search-container flex px-4 w-full" ref="search">
 			<SymbolSearchBar/>
 			<button @click="pushMe" class="ml-4"><ExchangeLogo exchange="okx" class="w-7" /></button>
 		</div>

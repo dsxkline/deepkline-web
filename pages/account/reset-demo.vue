@@ -4,23 +4,29 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import CreateSuccess from './open-success.vue'
 	import { accountFetch } from '~/fetch/account.fetch'
-import { FetchResultDto } from '~/fetch/dtos/common.d'
-import { useAccountStore } from '~/store/account'
+	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const usepush = usePush()
 	const loading = ref(false)
-	function submitAddAccount() {
+	function submitResetAccount() {
+		const accountId = useAccountStore().currentAccount?.accountId
+		if (!accountId) return
 		if (loading.value) return
 		loading.value = true
 		accountFetch
-			.open('deepkline')
+			.reset('deepkline', accountId)
 			.then(async result => {
 				if (result?.code == 0) {
 					loading.value = false
 					await getUserAccounts()
-					usepush(CreateSuccess, { account:result.data })
+					ElMessage({
+						message: result?.msg || '重置成功',
+						type: 'success'
+					})
+					useNuxtApp().$pop()
 				} else {
 					setTimeout(() => {
 						loading.value = false
@@ -52,36 +58,26 @@ import { useAccountStore } from '~/store/account'
 			}
 		}
 	}
-	
+
 	onMounted(() => {
 		getUserAccounts()
 	})
 </script>
 <template>
 	<div class="w-full h-full">
-		<NavigationBar title="开通模拟账户" :hideBack="!push"> </NavigationBar>
+		<NavigationBar title="重置账户" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
+			<div class="flex flex-col items-center justify-center">
+				<ResetBannerIcon class="w-1/2 m-0" />
+			</div>
 			<div class="p-4 text-xs text-grey border border-[--transparent05] rounded-lg bg-[--transparent05] m-4">
-				<div class="text-sm font-bold mb-4 text-main">模拟账户开通说明</div>
-				<p class="mb-2">1. 模拟账户是一个用于模拟交易的虚拟账户，您可以在其中进行交易练习。</p>
-				<p class="mb-2">2. 模拟账户不涉及真实资金，所有交易均为虚拟操作。</p>
-				<p class="mb-2">3. 模拟账户的资金和交易记录不会影响您的真实账户。</p>
-				<p class="mb-2">4. 模拟账户的交易数据仅供学习和测试使用。</p>
-				<p class="mb-2">5. 您可以随时创建或删除模拟账户。</p>
-				<p class="mb-2">6. 模拟账户的交易规则和限制可能与真实账户有所不同，请在使用前仔细阅读相关说明。</p>
-				<p class="mb-2">7. 模拟账户的交易结果仅供参考，不代表实际交易结果。</p>
-				<p class="mb-2">8. 模拟账户的使用不需要提供任何个人信息或资金。</p>
+				<div class="text-sm font-bold mb-4 text-main">重置账户说明</div>
+				<p class="mb-2">重置账户将清除所有账户交易信息，请谨慎操作。</p>
 			</div>
 		</ScrollBar>
 
 		<div class="fixed bottom-0 left-0 right-0 p-4">
-			<el-button
-					size="large"
-					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default','!bg-brand !text-white']"
-					@click="submitAddAccount"
-					:loading="loading"
-					>确认开通</el-button
-				>
+			<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="submitResetAccount" :loading="loading">确认重置</el-button>
 		</div>
 	</div>
 </template>
