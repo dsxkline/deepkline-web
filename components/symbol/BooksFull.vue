@@ -249,7 +249,7 @@
 
 		trimMap(orderBook.value.asks, 500)
 		trimMap(orderBook.value.bids, 500)
-	}, 300)
+	}, 350)
 
 	// 每个订单的占比动画
 	function bookAnimation() {

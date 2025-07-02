@@ -110,10 +110,10 @@
 		animation.start({
 			from: 0,
 			to: 1,
-			duration: 250,
+			duration: 300,
 			onUpdate: value => {
 				props.datas.forEach((data, i) => {
-					const ratio = (data.sz / maxSize) * 2 - (lastRatio[i] || 0)
+					const ratio = (data.sz / maxSize) - (lastRatio[i] || 0)
 					const lRatio = (lastRatio[i] || 0) + ratio * value
 					lastRatio[i] = lRatio
 				})
