@@ -13,7 +13,11 @@
 			contentComp: markRaw(OrderList)
 		},
 		{
-			name: '持仓(0)',
+			name: '仓位(0)',
+			contentComp: markRaw(OrderList)
+		},
+		{
+			name: '资产(0)',
 			contentComp: markRaw(OrderList)
 		}
 	])

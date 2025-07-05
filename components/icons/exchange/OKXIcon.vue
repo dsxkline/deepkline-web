@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-invert">
+    <div class="bg-invert w-full h-full">
 	<svg viewBox="0 0 2500 2500" xml:space="preserve">
 		<g>
 			<g>

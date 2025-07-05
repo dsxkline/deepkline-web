@@ -171,7 +171,7 @@
 .okx-card {
 	position: relative;
 	&::before {
-		background-image: linear-gradient(130deg, rgb(0, 0, 0), #150946, #a692f0);
+		background-image: linear-gradient(130deg, rgb(0, 0, 0), #150946, #6049b5);
 		// filter: blur(60px);
 		position: absolute;
 		top: 0;
@@ -208,7 +208,7 @@
 	color: white !important;
 }
 .okx-bt {
-	background-image: linear-gradient(130deg, #000000, #0c081c, #150946);
+	background-image: linear-gradient(130deg, #000000, #06021a, #090228);
 	color: white !important;
 }
 .coinbase-bt {
@@ -276,6 +276,18 @@
 	@apply rounded-full bg-green/20 flex items-center leading-none text-green; 
 	font-size: 10px;
 	padding: 4px 5px;
+}
+
+.tag-red-large{
+	@apply rounded-full bg-red/50 flex items-center leading-none text-white; 
+	font-size: 12px;
+	padding: 5px 7px;
+}
+
+.tag-green-large{
+	@apply rounded-full bg-green/50 flex items-center leading-none text-white; 
+	font-size: 12px;
+	padding: 5px 7px;
 }
 
 

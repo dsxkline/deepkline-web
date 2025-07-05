@@ -68,9 +68,9 @@
 				<li :class="[item.slug + '-card']" @click="pushAddAccount(item)">
 					<div class="flex">
 						<ExchangeLogo :exchange="item.slug" class="w-12 h-12" />
-						<div class="flex flex-col px-2">
+						<div class="flex flex-col px-2 flex-1">
 							<b class="text-xl">{{ item.name }}</b>
-							<span class="text-sm text-grey">okx是简单易用经纪商</span>
+							<span class="text-sm text-grey">{{ item.description }}</span>
 						</div>
 					</div>
 					<div class="py-4">
