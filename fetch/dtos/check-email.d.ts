@@ -6,4 +6,5 @@ export class CheckEmailRespDto {
 	email: string
 	isRegister: boolean
 	isValid: boolean
+	openCaptcha: boolean
 }

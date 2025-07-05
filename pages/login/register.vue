@@ -9,7 +9,7 @@
 	import ResetPassword from './reset-password.vue'
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
-import { useAccountStore } from '~/store/account'
+	import { useAccountStore } from '~/store/account'
 
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
@@ -18,7 +18,7 @@ import { useAccountStore } from '~/store/account'
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
 				if (isRegister) {
-					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr })
+					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr,isRegister })
 				} else {
 					// 验证成功进入发送验证码流程
 					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
@@ -47,7 +47,7 @@ import { useAccountStore } from '~/store/account'
 		})
 	}
 
-	const email = ref('')
+	const email = ref(localStorage.getItem('email') || '')
 	const usepush = usePush()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
@@ -74,14 +74,15 @@ import { useAccountStore } from '~/store/account'
 					loading.value = false
 					const isRegister = result.data?.isRegister // 是否已注册
 					const isValid = result.data?.isValid // 是否触发验证码
+					const openCaptcha = result.data?.openCaptcha // 是否开启行为验证
 					// 已注册，可以直接进入输入密码界面，触发安全风控就提示验证码62
 					// 调用方法，显示验证码
 					try {
 						if (isRegister && !isValid) {
-							usepush(Password, { email: email.value })
+							usepush(Password, { email: email.value, isRegister,openCaptcha })
 							return false
 						}
-						if (isValid) {
+						if (isValid && openCaptcha) {
 							const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset, isRegister))
 							captcha.show()
 							return false
@@ -187,6 +188,7 @@ import { useAccountStore } from '~/store/account'
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
+					localStorage.setItem('email', email.value)
 					setTimeout(async () => {
 						await getUserAccounts()
 						ElMessage({

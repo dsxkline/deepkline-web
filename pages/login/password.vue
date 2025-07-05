@@ -10,13 +10,15 @@
 	import ResetPassword from './reset-password.vue'
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
-import { useAccountStore } from '~/store/account'
+	import { useAccountStore } from '~/store/account'
 
 	const props = defineProps<{
 		email: string
+		isRegister?: boolean
 		validId?: string
 		ticket?: string
 		randstr?: string
+		openCaptcha?: boolean
 	}>()
 	const usepush = usePush()
 	const loading = ref(false)
@@ -27,7 +29,8 @@ import { useAccountStore } from '~/store/account'
 	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
 	const next = () => {
-		if (requireCaptcha.value) {
+		if (password.value.length < 8) return
+		if (requireCaptcha.value && props.openCaptcha) {
 			// 如果需要用户行为验证
 			// 需要用户行为认证
 			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(false))
@@ -38,7 +41,7 @@ import { useAccountStore } from '~/store/account'
 	}
 	const nextStep = (ticket?: string, randstr?: string) => {
 		forgetPassword = false
-
+		if (password.value.length < 8) return
 		if (loading.value) return
 		loading.value = true
 		error.value = ''
@@ -55,6 +58,7 @@ import { useAccountStore } from '~/store/account'
 					useUserStore().setUser(result.data)
 					// 保存cookie
 					useCookie('token').value = result.data?.token
+					localStorage.setItem('email', props.email)
 					setTimeout(async () => {
 						await getUserAccounts()
 						// 登录成功
@@ -137,8 +141,19 @@ import { useAccountStore } from '~/store/account'
 		forgetPassword = true
 		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
 		try {
-			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
-			captcha.show()
+			if (props.openCaptcha) {
+				const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
+				captcha.show()
+			} else {
+				// 没有开启行为验证就直接进入发送验证码流程
+				if (forgetPassword) {
+					// 验证成功进入发送验证码流程
+					nextSendEmailValidCode(isreset)
+				} else {
+					// 直接进入登录
+					nextStep()
+				}
+			}
 		} catch (err) {
 			console.log(err)
 			loadErrorCallback(isreset)
@@ -222,7 +237,8 @@ import { useAccountStore } from '~/store/account'
 		<NavigationBar ref="navbar" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
 			密码登录
-			<p class="text-sm font-normal text-grey py-1">未注册邮箱将自动注册</p>
+			<p class="text-sm font-normal text-grey py-1" v-if="!isRegister">未注册邮箱将自动注册</p>
+			<p class="text-sm font-normal text-grey py-1" v-else></p>
 		</h1>
 		<div class="global-form p-6">
 			<div class="form-item my-4">
