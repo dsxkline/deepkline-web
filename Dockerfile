@@ -2,10 +2,11 @@
 FROM node:20-alpine
 
 # 设置工作目录
-WORKDIR /app
+WORKDIR /deepkline-web
 
 # 复制 package.json 和 package-lock.json (如果有的话) 到容器中
 COPY package*.json ./
+COPY .env* ./
 
 # 安装依赖
 RUN npm install

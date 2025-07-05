@@ -35,7 +35,7 @@ async function getUser() {
 	if (!useCookie('token').value) return
 	const result = await userFetch.getUser()
 	if (result?.code == FetchResultDto.OK) {
-		console.log('获取用户信息', result.data)
+		//console.log('获取用户信息', result.data)
 		const user = result.data
 		if (user) {
 			useUserStore().setUser(user)
@@ -47,7 +47,7 @@ async function getUserAccounts() {
 	if (!useUserStore().user) return
 	const result = await accountFetch.list()
 	if (result?.code == FetchResultDto.OK) {
-		console.log('获取账户信息', result.data)
+		//console.log('获取账户信息', result.data)
 		const accounts = result.data
 		if (accounts) {
 			useAccountStore().setAccounts(accounts)
@@ -60,7 +60,7 @@ async function getUserFund() {
 	if (!useAccountStore().accounts?.length) return
 	const result = await accountFetch.fund(useAccountStore().currentAccount?.accountId)
 	if (result?.code == FetchResultDto.OK) {
-		console.log('获取账户余额', result.data)
+		//console.log('获取账户余额', result.data)
 		const fund = result.data
 		if (fund) {
 			useAccountStore().setFund(fund)
@@ -71,7 +71,7 @@ async function getUserFund() {
 async function getExchanges() {
 	const result = await exchangeFetch.list()
 	if (result?.code == FetchResultDto.OK) {
-		console.log('获取交易所信息', result.data)
+		//console.log('获取交易所信息', result.data)
 		const exchanges = result.data
 		if (exchanges) {
 			useAccountStore().setExchanges(exchanges)
