@@ -91,7 +91,16 @@
 		active.value = index
 	}
 
+	const orderHandle = (data:any)=>{
+		console.log('收到订单推送信息',data)
+	}
+
+	onMounted(()=>{
+		useNuxtApp().$dkws.onOrder(orderHandle)
+	})
+
 	onBeforeUnmount(() => {
+		useNuxtApp().$dkws.removeOnOrder(orderHandle)
 		menus.value = null
 		menus5.value = null
 		console.log('onBeforeUnmount.............................')

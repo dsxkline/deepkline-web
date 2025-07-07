@@ -4,7 +4,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useUserStore } from '~/store/user'
 	import Notification from './me/notification.vue'
-import { useAccountStore } from '~/store/account'
+	import { useAccountStore } from '~/store/account'
 	const subSymbolCodes = ref(['BTC-USDT', 'ETH-USDT', 'OKB-USDT'])
 	let push = usePush()
 	function pushMe() {
@@ -47,13 +47,11 @@ import { useAccountStore } from '~/store/account'
 		subSymbols()
 	})
 
-	
-
 	onBeforeUnmount(() => {
 		unSubSymbols()
 	})
 
-    defineExpose({
+	defineExpose({
 		...useRefreshChildEvent()
 	})
 </script>
@@ -80,8 +78,8 @@ import { useAccountStore } from '~/store/account'
 				<LoginCard v-if="!useAccountStore().accounts?.length" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'" />
 				<SymbolCards />
 				<MarketSentiment />
-                <MarketCategories/>
-                <MarketVolatility/>
+				<MarketCategories />
+				<MarketVolatility />
 			</div>
 		</ScrollBar>
 	</div>

@@ -1,5 +1,6 @@
 import type OKXWebSocket from '~/fetch/okx/okx.websocket'
 import 'vue'
+import type DKWebSocket from '~/fetch/dk/dk.websocket'
 export enum ApiSource {
 	OKX,
 	BINANCE,
@@ -16,6 +17,7 @@ declare module '#app' {
 	interface NuxtApp {
 		$ws: OKXWebSocket
 		$wsb: OKXWebSocket
+		$dkws: DKWebSocket
 		$push: (comp: any, params: {}, size?: string) => ComponentInternalInstance
 		$pushLeft: (comp: any, params: {}, size?: string) => ComponentInternalInstance
 		$pushUp: (comp: any, params: {}, size?: string) => ComponentInternalInstance

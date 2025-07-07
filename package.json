@@ -29,6 +29,7 @@
     "pinia": "^2.1.7",
     "single-spa": "^6.0.1",
     "single-spa-vue": "^3.0.0",
+    "socket.io-client": "^4.8.1",
     "split.js": "^1.6.5",
     "systemjs": "^6.15.1",
     "vconsole": "^3.15.1",

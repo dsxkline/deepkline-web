@@ -59,6 +59,7 @@
 					// 保存cookie
 					useCookie('token').value = result.data?.token
 					localStorage.setItem('email', props.email)
+					useNuxtApp().$dkws.reconnect()
 					setTimeout(async () => {
 						await getUserAccounts()
 						// 登录成功

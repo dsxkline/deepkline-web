@@ -189,6 +189,7 @@
 					// 保存cookie
 					useCookie('token').value = result.data?.token
 					localStorage.setItem('email', email.value)
+					useNuxtApp().$dkws.reconnect()
 					setTimeout(async () => {
 						await getUserAccounts()
 						ElMessage({
