@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
-	import HalfCircleRainbow from './charts/HalfCircleRainbow.vue'
-	import CryptoChangeChart from './charts/CryptoChangeChart.vue'
+	import HalfCircleRainbow from './chart/HalfCircleRainbow.vue'
+	import CryptoChangeChart from './chart/CryptoChangeChart.vue'
 
 	const color = ref('')
 	const value = ref(0)

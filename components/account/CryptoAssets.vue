@@ -12,7 +12,7 @@
 				<div class="text-xs text-right text-grey">数量</div>
 				<div class="text-xs text-right text-grey">收益</div>
 			</li>
-			<template v-for="item in useAccountStore().fund?.details">
+			<!-- <template v-for="item in useAccountStore().fund?.details">
 				<li>
 					<b class="col-span-1 text-base">{{ item.ccy }}</b>
 					<div class="flex flex-col col-span-1 text-xs items-end">
@@ -28,7 +28,7 @@
 						<span>--</span>
 					</div>
 				</li>
-			</template>
+			</template> -->
 		</ul>
 	</div>
 </template>
