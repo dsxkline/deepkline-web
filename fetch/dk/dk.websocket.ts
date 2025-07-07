@@ -1,9 +1,8 @@
-import config from '~/config/config'
 import { BaseSocketIo } from '~/utils/base.socketio'
 export default class DKWebSocket extends BaseSocketIo {
 	private orderCallbacks: any[] = []
-	constructor(channel: string = 'public') {
-		super(config.BASE_WS_URL, '/master', '/v1/' + channel)
+	constructor(url:string, channel: string = 'public') {
+		super(url, '/master', '/v1/' + channel)
 	}
 
 	onAll() {

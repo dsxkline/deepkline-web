@@ -7,7 +7,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 	ws.connect();
 	const wsb = OKXWebSocket.createBusiness()
 	wsb.connect();
-    const dkws = new DKWebSocket()
+    const dkws = new DKWebSocket(nuxtApp.$config.public.BASE_WS_URL)
 	dkws.connect();
     // console.log('ws连接',wsb.isConnected);
 	nuxtApp.provide('ws',ws)
