@@ -1,5 +1,7 @@
 <script setup lang="ts">
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import HalfCircleRainbow from './charts/HalfCircleRainbow.vue'
+	import CryptoChangeChart from './charts/CryptoChangeChart.vue'
 
 	const color = ref('')
 	const value = ref(0)
@@ -35,7 +37,7 @@
 					<span class="text-xs" v-if="value">贪婪</span>
 					<span class="text-xs" v-else> - </span>
 				</div>
-				<ChartsHalfCircleRainbow :value="value" v-model:color="color" class="w-full" />
+				<HalfCircleRainbow :value="value" v-model:color="color" class="w-full" />
 			</div>
 			<div class="flex items-center justify-center pt-2">
 				<span class="text-xs px-3 leading-5">过渡贪婪表明投资者过于乐观，行情丞待修正。</span>
@@ -43,8 +45,8 @@
 		</div>
 		<div class="rounded-md bg-[--transparent03] flex justify-center items-center px-4 min-h-[90px]" v-else>
 			<el-skeleton animated class="flex items-center">
-				<template #template style="--el-skeleton-circle-size: 100px" >
-					<el-skeleton-item variant="circle" style="width: 60px; height: 60px"/>
+				<template #template style="--el-skeleton-circle-size: 100px">
+					<el-skeleton-item variant="circle" style="width: 60px; height: 60px" />
 				</template>
 			</el-skeleton>
 			<el-skeleton :rows="0" animated class="flex flex-col justify-center">
@@ -55,7 +57,7 @@
 			</el-skeleton>
 		</div>
 
-        <!-- 涨跌分布 -->
-         <ChartsCryptoChangeChart/>
+		<!-- 涨跌分布 -->
+		<CryptoChangeChart />
 	</div>
 </template>
