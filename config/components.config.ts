@@ -14,4 +14,6 @@ export default [
     "~/components/icons/exchange",
     "~/components/user",
     "~/components/datas",
+    "~/components/datas/charts",
+    "~/components/datas/tables",
 ];
