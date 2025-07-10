@@ -35,9 +35,9 @@
 	}
 	const onCycleChange = async (value: string) => {
 		popHide()
-		if (useKlineStore().loading[symbolObj.value.instId]) return
+		if (useKlineStore().loading[symbolObj.value.symbol]) return
 		cycle.value = value
-		useKlineStore().setCycle(symbolObj.value.instId, value)
+		useKlineStore().setCycle(symbolObj.value.symbol, value)
 	}
 	const showHideMenu = computed(() => {
 		// 是否存在

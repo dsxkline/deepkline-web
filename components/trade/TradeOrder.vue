@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
 	import { usePushUp } from '~/composable/usePush'
+import { MarketType } from '~/fetch/dtos/symbol.dto'
 	import { InstanceType, OrderType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
@@ -69,10 +70,10 @@
 	const canChangePrice = ref(true)
 	const money = ref()
 	const buyText = computed(() => {
-		return symbolObj.value?.instType == InstanceType.SPOT ? '买入' : '开仓'
+		return symbolObj.value?.marketType == MarketType.SPOT ? '买入' : '开仓'
 	})
 	const sellText = computed(() => {
-		return symbolObj.value?.instType == InstanceType.SPOT ? '卖出' : '平仓'
+		return symbolObj.value?.marketType == MarketType.SPOT ? '卖出' : '平仓'
 	})
 	const openStopProfitLoss = ref(false)
 	const priceInput = ref()
@@ -322,7 +323,7 @@
 							</div>
 
 							<div class="pb-3 relative price-input">
-								<h5 class="pb-2">价格({{ symbolObj?.quoteCcy }})</h5>
+								<h5 class="pb-2">价格({{ symbolObj?.quoteCoin }})</h5>
 								<el-input-number
 									@change="priceChange"
 									@focus="priceFocus"
@@ -346,8 +347,8 @@
 								</div>
 							</div>
 							<div class="py-3 amount-container">
-								<h5 class="py-2">数量({{ symbolObj?.baseCcy }})</h5>
-								<el-input v-click-sound inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCcy" size="large" class="w-full" :clearable="!isH5" />
+								<h5 class="py-2">数量({{ symbolObj?.baseCoin }})</h5>
+								<el-input v-click-sound inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCoin" size="large" class="w-full" :clearable="!isH5" />
 								<div class="slider-demo-block">
 									<slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
 								</div>

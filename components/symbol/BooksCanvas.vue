@@ -14,7 +14,7 @@
 	const canvasRef = ref<HTMLCanvasElement | null>(null)
 	const containerRef = ref<HTMLDivElement | null>(null)
 
-	const rowHeight = 12 + 8
+	let rowHeight = 12 + 8
 	const titleHeight = 0
 	const dpr = window.devicePixelRatio || 1
 
@@ -39,6 +39,7 @@
 		canvas.height = height * dpr
 		canvas.style.width = width + 'px'
 		canvas.style.height = height + 'px'
+		rowHeight = height / props.datas.length
 
 		const ctx = canvas.getContext('2d')
 		if (!ctx) return
@@ -113,7 +114,7 @@
 			duration: 300,
 			onUpdate: value => {
 				props.datas.forEach((data, i) => {
-					const ratio = (data.sz / maxSize) - (lastRatio[i] || 0)
+					const ratio = (data.sz / maxSize) * 2 - (lastRatio[i] || 0)
 					const lRatio = (lastRatio[i] || 0) + ratio * value
 					lastRatio[i] = lRatio
 				})

@@ -208,7 +208,7 @@
 		})
 		// point.value = 1 / 10 ** point.value
 
-		console.log('pricePoint', pricePoint.value, pointLevel.value, point.value)
+		// console.log('pricePoint', pricePoint.value, pointLevel.value, point.value)
 		throttleAskBid()
 		// console.log('Array.from(orderBook.value.bids.values())',Array.from(orderBook.value.bids.values()).length)
 	}
@@ -380,10 +380,10 @@
 			</div>
 			<div class="flex-auto flex gap-3 book-container">
 				<BooksCanvas type="ask" :datas="asks" :point="point" :pricePoint="pricePoint" v-if="asks" :isH5="isH5" />
-				<div class="books-realtime justify-between items-center">
-					<div class="flex flex-col items-start justify-center">
+				<div class="books-realtime justify-between items-center w-full">
+					<div class="flex flex-col items-start justify-center w-full">
 						<!-- <b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b> -->
-						<b v-autosize="20" :class="['text-base font-extrabold roboto-bold', change > 0 ? 'text-green' : 'text-red']">
+						<b v-autosize="20" :class="['text-base w-full font-extrabold roboto-bold', change > 0 ? 'text-green' : 'text-red']">
 							<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 							<NumberIncrease :value="formatPrice(ticker?.last, symbolObj.tickSz)" :fontSize="20" v-if="ticker?.last && symbolObj" />
 							<span v-else>--</span>
