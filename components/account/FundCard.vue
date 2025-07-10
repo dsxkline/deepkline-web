@@ -9,6 +9,7 @@
 
 	const props = defineProps<{
 		account?: AccountDto | null | undefined
+		size?: 'small' | 'large'
 	}>()
 
 	const loading = ref(false)
@@ -40,14 +41,14 @@
 				} else {
 					setTimeout(() => {
 						loading.value = false
-						error.value = result?.msg
+						if (!fund.value?.total) error.value = result?.msg
 					}, 500)
 				}
 			})
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					if (!fund.value?.total) error.value = '网络异常，请稍后再试'
 				}, 500)
 			})
 	}
@@ -55,7 +56,7 @@
 	function pushReset() {
 		usepush(ResetDemo)
 	}
-	function pushHistoryOrder(){
+	function pushHistoryOrder() {
 		usepush(HistoryOrder)
 	}
 
@@ -69,7 +70,7 @@
 </script>
 <template>
 	<div class="p-3 glass mx-4 rounded-md overflow-hidden relative mt-2">
-		<div v-if="!loading && !error">
+		<div v-if="!loading && !error" class="relative">
 			<div class="flex items-center">
 				<span class="pb-1 text-sm text-grey">总资产(USDT)</span>
 			</div>
@@ -81,10 +82,28 @@
 				<ProfitRate :profit="fund?.profit" :profitRate="fund?.profitRate" />
 			</div>
 
-			<div class="flex justify-between items-center pt-6 *:w-full gap-3 *:!rounded-full *:!py-2 *:overflow-hidden">
+			<div class="flex justify-between items-center pt-6" v-if="size != 'small'">
+				<ul class="w-full grid grid-cols-3 *:flex *:flex-col text-grey text-sm [&_b]:text-main [&_b]:pt-1">
+					<li>
+						<span>可用</span>
+						<b>{{ formatPrice(parseFloat(fund?.available || '0'), 0.01, '$') }}</b>
+					</li>
+					<li class="items-center">
+						<span>保证金</span>
+						<b>{{ formatPrice(parseFloat(fund?.margin || '0'), 0.01, '$') }}</b>
+					</li>
+					<li class="items-end">
+						<span>冻结</span>
+						<b>{{ formatPrice(parseFloat(fund?.frozen || '0'), 0.01, '$') }}</b>
+					</li>
+				</ul>
+			</div>
+
+			<div class="flex justify-between items-center pt-6 *:w-full gap-3 *:!rounded-full *:!py-2 *:overflow-hidden" v-if="size != 'small'">
 				<button class="bt-default" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
 				<button class="bt-default" @click="pushHistoryOrder">账单</button>
 			</div>
+			<div v-else class="w-1/3 absolute right-0 top-0 h-full"><LineChart symbol="BTC-USDT" class="w-full h-full" /></div>
 		</div>
 		<div v-if="loading && !error">
 			<div class="flex items-center pb-1">

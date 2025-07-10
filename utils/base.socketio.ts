@@ -18,6 +18,7 @@ export class BaseSocketIo {
 
 	connect(): Socket {
 		const fullUrl = `${this.url}${this.namespace}`
+        console.log('connect url',fullUrl)
 		const socket = io(fullUrl, {
 			path: this.path,
 			reconnectionAttempts: 5,

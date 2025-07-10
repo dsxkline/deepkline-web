@@ -5,6 +5,7 @@
 	import { useUserStore } from '~/store/user'
 	import Notification from './me/notification.vue'
 	import { useAccountStore } from '~/store/account'
+	import FundCard from '~/components/account/FundCard.vue'
 	const subSymbolCodes = ref(['BTC-USDT', 'ETH-USDT', 'OKB-USDT'])
 	let push = usePush()
 	function pushMe() {
@@ -76,6 +77,7 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
 			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
 				<LoginCard v-if="!useAccountStore().accounts?.length" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'" />
+				<FundCard :account="useAccountStore().currentAccount" size="small" v-else class="mb-2" />
 				<SymbolCards />
 				<MarketSentiment />
 				<MarketCategories />

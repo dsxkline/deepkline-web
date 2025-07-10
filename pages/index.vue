@@ -10,6 +10,7 @@
 	import AssetsIcon from '~/components/icons/AssetsIcon.vue'
 	import TradeIcon from '~/components/icons/TradeIcon.vue'
 	import Home from './home.vue'
+	import { useAccountStore } from '~/store/account'
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
@@ -17,7 +18,7 @@
 	definePageMeta({
 		layout: 'main'
 	})
-	
+
 	const active = ref(0)
 	const activeMenu = computed(() => menus.value && menus.value[active.value])
 	const activeMenuH5 = computed(() => menus5.value && menus5.value[active.value])
@@ -91,16 +92,22 @@
 		active.value = index
 	}
 
-	const orderHandle = (data:any)=>{
-		console.log('收到订单推送信息',data)
+	const orderHandle = (data: any) => {
+		console.log('收到订单推送信息', data)
+	}
+	const fundHandle = (data: any) => {
+		console.log('收到资产推送信息', data)
+		data?.payload && useAccountStore().setFund(data.payload)
 	}
 
-	onMounted(()=>{
+	onMounted(() => {
 		useNuxtApp().$dkws.onOrder(orderHandle)
+		useNuxtApp().$dkws.onFund(fundHandle)
 	})
 
 	onBeforeUnmount(() => {
-		useNuxtApp().$dkws.removeOnOrder(orderHandle)
+		useNuxtApp().$dkws.removeOnEvent(orderHandle)
+		useNuxtApp().$dkws.removeOnEvent(fundHandle)
 		menus.value = null
 		menus5.value = null
 		console.log('onBeforeUnmount.............................')
@@ -118,16 +125,16 @@
 	</div>
 
 	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5">
-		
-			<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
-			<!-- 使用缓存 -->
-			<div class="right-container">
-				<KeepAlive>
-					<component :is="activeMenuH5.contentComp" v-if="activeMenuH5" :key="activeMenuH5.name" />
-				</KeepAlive>
-			</div>
-		
+		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
+		<!-- 使用缓存 -->
+		<div class="right-container">
+			<KeepAlive>
+				<component :is="activeMenuH5.contentComp" v-if="activeMenuH5" :key="activeMenuH5.name" />
+			</KeepAlive>
+		</div>
 	</div>
+
+	<Warning/>
 </template>
 
 <style scoped lang="less">

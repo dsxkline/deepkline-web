@@ -23,11 +23,10 @@ export const useAccountStore = defineStore({
 				} else {
 					this.currentAccount = account
 				}
-			}else{
+			} else {
 				this.currentAccount = null
 				this.fund = null
 				useCookie('account').value = null
-
 			}
 		},
 		getAccount(accountId: number) {
