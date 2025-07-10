@@ -1,5 +1,4 @@
 <script setup lang="ts">
-	import type { Instruments } from '~/fetch/okx/okx.type.d'
 	import { useKlineStore } from '~/store/kline'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
@@ -11,20 +10,20 @@
 	const mainIndicatorList = ref(['MA', 'EMA', 'BOLL', 'SAR', 'ZIG'])
 	const sideIndicatorList = ref(['VOL', 'MACD', 'KDJ', 'RSI', 'BIAS', 'WR', 'DMA', 'MTM', 'CCI', 'PSY'])
 	function onMainIndicatorChange(value: string) {
-		useKlineStore().setMain(symbolObj.value?.instId,value)
+		useKlineStore().setMain(symbolObj.value?.symbol,value)
 	}
 	function onSidesIndicatorChange(value: string) {
-		useKlineStore().setSides(symbolObj.value?.instId,value)
+		useKlineStore().setSides(symbolObj.value?.symbol,value)
 	}
 </script>
 <template>
 	<div class="indicator w-max flex gap-1 *:pr-2 *:rounded *:text-xs *:cursor-pointer">
 		<!-- <div class="indicator-item">指标</div> -->
-		<div class="indicator-item" v-click-sound v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main[symbolObj?.instId]?.includes(item) }" @click="onMainIndicatorChange(item)">
+		<div class="indicator-item" v-click-sound v-for="(item, index) in mainIndicatorList" :key="index" :class="{ active: useKlineStore().main[symbolObj?.symbol]?.includes(item) }" @click="onMainIndicatorChange(item)">
 			{{ item }}
 		</div>
 		<div class="indicator-item">|</div>
-		<div class="indicator-item" v-click-sound v-for="(item, index) in sideIndicatorList" :key="index" :class="{ active: useKlineStore().sides[symbolObj?.instId]?.includes(item) }" @click="onSidesIndicatorChange(item)">
+		<div class="indicator-item" v-click-sound v-for="(item, index) in sideIndicatorList" :key="index" :class="{ active: useKlineStore().sides[symbolObj?.symbol]?.includes(item) }" @click="onSidesIndicatorChange(item)">
 			{{ item }}
 		</div>
 	</div>

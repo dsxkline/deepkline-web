@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { userFetch } from '~/fetch/user.fetch'
 
 	const props = defineProps<{

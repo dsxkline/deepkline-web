@@ -2,11 +2,12 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import moment from 'moment'
 	import { _borderWidth } from '#tailwind-config/theme'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -15,7 +16,7 @@ import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts | null
 	let xAxisData: string[] | null = []
 	let seriesData: number[] | null = []
@@ -111,8 +112,8 @@ import { useStore } from '~/store'
 				showSymbol: false,
 				sampling: 'lttb',
 				// symbol:"none",
-				itemStyle:{
-					color:'rgba(33, 150, 243, 1)'
+				itemStyle: {
+					color: 'rgba(33, 150, 243, 1)'
 				},
 				areaStyle: {
 					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [

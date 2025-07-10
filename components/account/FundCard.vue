@@ -1,8 +1,8 @@
 <script setup lang="ts">
 	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { accountFetch } from '~/fetch/account.fetch'
-	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.d'
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.dto'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import ResetDemo from '~/pages/account/reset-demo.vue'
 	import { useAccountStore } from '~/store/account'
 	import HistoryOrder from '~/pages/order/history.vue'

@@ -1,5 +1,5 @@
-import { AccountDto, FundDto } from '~/fetch/dtos/account'
-import type { ExchangeDto } from '~/fetch/dtos/exchange'
+import { AccountDto, FundDto } from '~/fetch/dtos/account.dto'
+import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 
 export const useAccountStore = defineStore({
 	id: 'account',

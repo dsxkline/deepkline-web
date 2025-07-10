@@ -1,9 +1,10 @@
 <script setup lang="ts">
 	import { useSymbolStore } from '~/store/symbol'
-	import { type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store/index'
 	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import SymbolDetail from './SymbolDetail.vue'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -67,11 +68,11 @@
 	}
 
 	const push = usePush()
-	function clickSymbol(item?: Instruments) {
+	function clickSymbol(item?: SymbolDto) {
 		// 是否选中返回
 		if (useStore().isH5) {
 			const params = {
-				symbol: item?.instId
+				symbol: item?.symbol
 			}
 			push(SymbolDetail, params)
 			return
@@ -98,13 +99,15 @@
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		item.value = null
 		containerRef.value = null
-
 	})
 </script>
 <template>
-	<div :class="['symbol-card flex flex-col justify-between p-2 py-3 rounded-md overflow-hidden', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']" @click="clickSymbol(symbolObj)">
+	<div
+		:class="['symbol-card flex flex-col justify-between p-2 py-3 rounded-md overflow-hidden', rate > 0 ? 'green-linear' : rate < 0 ? 'red-linear' : 'default-linear']"
+		@click="clickSymbol(symbolObj)"
+	>
 		<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
-			<SymbolName :symbol="symbolObj" v-if="item?.last  && symbolObj?.instId" />
+			<SymbolName :symbol="symbolObj" v-if="item?.last && symbolObj?.symbol" />
 			<span v-else>--</span>
 			<b v-autosize="20" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
@@ -112,7 +115,7 @@
 			</b>
 			<span v-else>-</span>
 			<div v-if="item?.last && symbolObj && change" :class="'text-[10px] ' + (rate >= 0 ? 'text-green' : 'text-red')">
-				<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz||0.01, '') }}</span
+				<span class="pr-1">{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz || '0.01', '') }}</span
 				><span>{{ formatChangeRate(rate, 2) }}%</span>
 			</div>
 			<div class="text-[10px]" v-else>--</div>

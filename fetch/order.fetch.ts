@@ -1,9 +1,9 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { FundDto, AccountDto } from './dtos/account'
-import type { ExchangeDto } from './dtos/exchange'
-import type { AddOrderDto, AddOrderRespDto } from './dtos/order'
+import type { FundDto, AccountDto } from './dtos/account.dto'
+import type { ExchangeDto } from './dtos/exchange.dto'
+import type { AddOrderDto, AddOrderRespDto } from './dtos/order.dto'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)

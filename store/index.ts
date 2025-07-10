@@ -14,7 +14,8 @@ export const useStore = defineStore({
 		splitScreen: 3, // 1=单屏 2=分屏 3=三屏
 		bodyHeight: 0,
 		bodyWidth: typeof window == 'undefined' ? 0 : window.innerWidth,
-		theme: 'dark' // 主题，默认dark
+		theme: 'dark', // 主题，默认dark
+		exchange: 'deepkline' // 默认交易所
 	}),
 	actions: {
 		setBodyHeight(height: number) {
@@ -86,6 +87,9 @@ export const useStore = defineStore({
         // 清除PWA缓存
 				clearPWACaches()
 			}
+		},
+		setExchange(exchange:string){
+			this.exchange = exchange
 		}
 	},
 	getters: {

@@ -2,7 +2,7 @@
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import { useUserStore } from '~/store/user'
 	import AddAccount from '../account/open-account.vue'
-	import type { ExchangeDto } from '~/fetch/dtos/exchange'
+	import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 	import LoginIndex from '../login/index.vue'
 	import { useAccountStore } from '~/store/account'
 	import CreateDemo from '../account/open-demo.vue'

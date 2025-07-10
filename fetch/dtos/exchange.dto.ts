@@ -1,4 +1,4 @@
-export class ExchangeDto {
+export interface ExchangeDto {
 	id: number
 	name: string
 	slug: string

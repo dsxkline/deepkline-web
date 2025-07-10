@@ -6,10 +6,10 @@
 	import SymbolInfo from './SymbolInfo.vue'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
-	import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 	import { getSymbolName } from '../../utils/filters'
 	import { usePop, usePushUp } from '~/composable/usePush'
 	import SymbolSearch from './SymbolSearch.vue'
+	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -54,7 +54,7 @@
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[currentSymbol.value]
 	})
-	function favorite(item: Instruments) {
+	function favorite(item: SymbolDto) {
 		useSymbolStore().favoriteSymbol(item)
 	}
 	function returnBack() {
@@ -63,7 +63,7 @@
 	watch(
 		() => props.symbol,
 		val => {
-			currentSymbol.value = val;
+			currentSymbol.value = val
 		}
 	)
 	watch(
@@ -86,15 +86,19 @@
 	const push = usePushUp()
 	function pushSearch() {
 		// console.log('usePushUp')
-		push(SymbolSearch, {
-			selectHandle: (item: Instruments) => {
-				if (item?.instId) {
-					// 切换当前symbol
-					currentSymbol.value = item.instId
-					useNuxtApp().$pop()
+		push(
+			SymbolSearch,
+			{
+				selectHandle: (item: SymbolDto) => {
+					if (item?.symbol) {
+						// 切换当前symbol
+						currentSymbol.value = item.symbol
+						useNuxtApp().$pop()
+					}
 				}
-			}
-		},'80%')
+			},
+			'80%'
+		)
 	}
 
 	onMounted(() => {
@@ -105,8 +109,6 @@
 		menus.value = []
 		navbar.value = null
 		console.log('SymbolDetail unmounted')
-
-		
 	})
 </script>
 <template>
@@ -117,14 +119,14 @@
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
 				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
-					>{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType == InstanceType.SWAP ? '永续' : '' }}</b
+					>{{ getSymbolName(symbolObj) }} {{ symbolObj?.marketType == MarketType.SWAP ? '永续' : '' }}</b
 				>
 				<button class="flex items-center pl-2 h-full" @click="pushSearch">
 					<el-icon><CaretBottom /></el-icon>
 				</button>
 			</template>
 			<template #right>
-				<SymbolFavoriteButton :symbol="currentSymbol" class="mx-4"/>
+				<SymbolFavoriteButton :symbol="currentSymbol" class="mx-4" />
 			</template>
 		</NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight" />

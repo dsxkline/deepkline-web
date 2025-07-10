@@ -4,7 +4,7 @@
 	import SymbolPrice from '~/components/symbol/SymbolPrice.vue'
 	import SymbolChangeButton from '~/components/symbol/SymbolChangeButton.vue'
 	import { ref } from 'vue'
-	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	import { publicFetch } from '~/fetch/public.fetch'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
@@ -12,19 +12,22 @@
 	import SymbolDetail from '../SymbolDetail.vue'
 	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { useWillDisappear } from '~/composable/usePush'
+	import type { MarketType, SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import { symbolsFetch } from '~/fetch/symbols.fetch'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 
 	const props = defineProps<{
-		symbolCategory: InstanceType
+		symbolCategory: MarketType
 		height: number
 		favorite?: boolean
 		start?: boolean
 		keyword?: string
 		isSearchList?: boolean
-		clickHandle?: (item?: Instruments) => void
-		selectHandle?: (item: Instruments) => void
+		clickHandle?: (item?: SymbolDto) => void
+		selectHandle?: (item: SymbolDto) => void
 	}>()
 	const emit = defineEmits<{
-		(event: 'clickHandle', symbol?: Instruments): void
+		(event: 'clickHandle', symbol?: SymbolDto): void
 	}>()
 	const loading = ref(true)
 	const error = ref('')
@@ -32,7 +35,7 @@
 	const addouPrice = ref()
 	const addouChange = ref()
 	const lheader = ref()
-	const symbols = ref<Instruments[]>([])
+	const symbols = ref<SymbolDto[]>([])
 	const symbolDom = ref()
 	const isLeave = ref(false)
 	const contentHeight = computed(() => {
@@ -55,7 +58,7 @@
 	// 虚拟列表的结束索引
 	const end = ref(visibleCount.value)
 	// 虚拟列表
-	const virtualList = computed<Instruments[]>(() => {
+	const virtualList = computed<SymbolDto[]>(() => {
 		// console.log('virtualList', symbols.value?.slice(start.value, end.value))
 		return symbols.value?.slice(start.value, end.value)
 	})
@@ -65,7 +68,7 @@
 	const subSymbolCodes = computed(() => {
 		const start = Math.max(0, offset.value)
 		const end = start + visibleCount.value
-		return virtualList.value.map(item => item.instId)
+		return virtualList.value.map(item => item.symbol)
 	})
 	// 订阅句柄
 	let subHandle = ''
@@ -78,7 +81,7 @@
 	// 背景动画防抖
 	let flickerTimers: Record<string, any> = {}
 	// 选中的品种左边的颜色线
-	const activeBorderColors = ref<Record<string, string> | null>({})
+	const activeBorderColors = ref<Record<string, string>>({})
 	let scrolling = false
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
@@ -116,9 +119,9 @@
 		// 如果是自选，从自选中获取
 		if (props.favorite) {
 			symbols.value = useSymbolStore().favoriteSymbols || []
-			symbols.value = symbols.value.filter(item => item.instType === props.symbolCategory) || []
+			symbols.value = symbols.value.filter(item => item.marketType === props.symbolCategory) || []
 			if (props.keyword) {
-				symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+				symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 			}
 			if (symbols.value?.length) {
 				nextTick(() => {
@@ -131,7 +134,7 @@
 		// 从store中获取
 		symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
 		if (props.keyword) {
-			symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+			symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 		}
 		if (symbols.value?.length) {
 			loading.value = false
@@ -142,15 +145,15 @@
 		}
 		loading.value = true
 		// 从接口获取
-		publicFetch
-			.getInstruments(props.symbolCategory)
+		symbolsFetch
+			.list(props.symbolCategory)
 			.then(res => {
 				loading.value = false
-				if (res?.code === 0) {
-					useSymbolStore().setSymbols(res.data)
+				if (res?.code === FetchResultDto.OK) {
+					useSymbolStore().setSymbols(res.data || [])
 					symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
 					if (props.keyword) {
-						symbols.value = symbols.value.filter(item => item.instId.toLowerCase().includes((props.keyword + '').toLowerCase()))
+						symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 					}
 					nextTick(() => {
 						scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
@@ -162,7 +165,6 @@
 			.catch(err => {
 				loading.value = false
 				error.value = '获取失败'
-				// console.error('getInstruments', err)
 			})
 	}
 	function update() {
@@ -214,7 +216,7 @@
 
 	const push = usePush()
 
-	function clickSymbol(item?: Instruments) {
+	function clickSymbol(item?: SymbolDto) {
 		// 是否选中返回
 		if (props.selectHandle && item) {
 			props.selectHandle(item)
@@ -222,19 +224,19 @@
 		}
 		if (useStore().isH5) {
 			const params = {
-				symbol: item?.instId,
+				symbol: item?.symbol
 				// 'onUpdate:symbol': (val:string) => {
 				// 	console.log('onUpdate:symbol', val)
 				// 	params.symbol = val // 或同步更新你的外部状态
 				// }
 			}
-			push(SymbolDetail,params)
+			push(SymbolDetail, params)
 			return
 		}
-		item?.instId && useSymbolStore().setActiveSymbol(item?.instId)
+		item?.symbol && useSymbolStore().setActiveSymbol(item?.symbol)
 		emit('clickHandle', item)
 		props.clickHandle && props.clickHandle(item)
-		activeLeftBorder(item?.instId)
+		activeLeftBorder(item?.symbol)
 	}
 
 	function activeLeftBorder(instId?: string) {
@@ -301,8 +303,8 @@
 		addouChange.value.reset()
 		// 根据名称排序
 		getGroupSymbols()
-		if (val == 1) symbols.value.sort((a, b) => a.instId.localeCompare(b.instId, 'en', { sensitivity: 'base' }))
-		if (val == 2) symbols.value.sort((a, b) => b.instId.localeCompare(a.instId, 'en', { sensitivity: 'base' }))
+		if (val == 1) symbols.value.sort((a, b) => a.symbol.localeCompare(b.symbol, 'en', { sensitivity: 'base' }))
+		if (val == 2) symbols.value.sort((a, b) => b.symbol.localeCompare(a.symbol, 'en', { sensitivity: 'base' }))
 	}
 	const symbolOrderPriceHandle = (val: number) => {
 		addouName.value.reset()
@@ -312,15 +314,15 @@
 		getGroupSymbols()
 		if (val == 1)
 			symbols.value.sort((a, b) => {
-				const ap = parseFloat($ws.getTickers(a.instId)?.last || '0')
-				const bp = parseFloat($ws.getTickers(b.instId)?.last || '0')
+				const ap = parseFloat($ws.getTickers(a.symbol)?.last || '0')
+				const bp = parseFloat($ws.getTickers(b.symbol)?.last || '0')
 				return ap - bp
 			})
 
 		if (val == 2)
 			symbols.value.sort((a, b) => {
-				const ap = parseFloat($ws.getTickers(a.instId)?.last || '0')
-				const bp = parseFloat($ws.getTickers(b.instId)?.last || '0')
+				const ap = parseFloat($ws.getTickers(a.symbol)?.last || '0')
+				const bp = parseFloat($ws.getTickers(b.symbol)?.last || '0')
 				return bp - ap
 			})
 	}
@@ -333,16 +335,16 @@
 		getGroupSymbols()
 		if (val == 1)
 			symbols.value.sort((a, b) => {
-				const aticker = $ws.getTickers(a.instId)
-				const bticker = $ws.getTickers(b.instId)
+				const aticker = $ws.getTickers(a.symbol)
+				const bticker = $ws.getTickers(b.symbol)
 				const ap = aticker?.last && aticker?.sodUtc8 ? ((parseFloat(aticker?.last) - parseFloat(aticker?.sodUtc8)) / parseFloat(aticker?.sodUtc8)) * 100 : 0
 				const bp = bticker?.last && aticker?.sodUtc8 ? ((parseFloat(bticker?.last) - parseFloat(bticker?.sodUtc8)) / parseFloat(bticker?.sodUtc8)) * 100 : 0
 				return ap - bp
 			})
 		if (val == 2)
 			symbols.value.sort((a, b) => {
-				const aticker = $ws.getTickers(a.instId)
-				const bticker = $ws.getTickers(b.instId)
+				const aticker = $ws.getTickers(a.symbol)
+				const bticker = $ws.getTickers(b.symbol)
 				const ap = aticker?.last && aticker?.sodUtc8 ? ((parseFloat(aticker?.last) - parseFloat(aticker?.sodUtc8)) / parseFloat(aticker?.sodUtc8)) * 100 : 0
 				const bp = bticker?.last && aticker?.sodUtc8 ? ((parseFloat(bticker?.last) - parseFloat(bticker?.sodUtc8)) / parseFloat(bticker?.sodUtc8)) * 100 : 0
 				return bp - ap
@@ -361,10 +363,10 @@
 		$windowEvent.removeEvent(whenBrowserActive)
 		scrollbar.value = null
 		priceDoms = null
-		activeBorderColors.value = null
+		activeBorderColors.value = {}
 		lastPrices.value = {}
 		if (scrollTimer) clearTimeout(scrollTimer)
-		symbols.value.forEach(symbol => flickerTimers[symbol.instId] && clearTimeout(flickerTimers[symbol.instId]))
+		symbols.value.forEach(symbol => flickerTimers[symbol.symbol] && clearTimeout(flickerTimers[symbol.symbol]))
 		symbols.value = []
 		lheader.value = null
 		symbolDom.value = null
@@ -433,19 +435,19 @@
 					:style="{ transform: `translateY(${start * itemHeight}px)` }"
 				>
 					<li
-						:id="'symbol-list-id-' + item.instId"
+						:id="'symbol-list-id-' + item.symbol"
 						:class="[
 							'relative w-full h-14 grid grid-cols-4 *:flex *:items-center hover:bg-[--transparent03] px-4 cursor-pointer',
-							useSymbolStore().activeSymbol == item.instId && activeBorderColors[item.instId] && !isSearchList ? 'border-l-2 ' + activeBorderColors[item.instId] : ''
+							useSymbolStore().activeSymbol == item.symbol && activeBorderColors[item.symbol] && !isSearchList ? 'border-l-2 ' + activeBorderColors[item.symbol] : ''
 						]"
 						v-for="item in virtualList"
-						:key="item.instId + '-' + start + '-' + end"
+						:key="item.symbol + '-' + start + '-' + end"
 						@click="clickSymbol(item)"
 						v-click-sound
 					>
-						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.instId" /></div>
+						<div class="justify-start" v-if="isSearchList"><SymbolFavoriteButton :symbol="item.symbol" /></div>
 						<div class="col-span-2 text-grey flex items-center">
-							<SymbolName :symbol="item" :volume="true"/>
+							<SymbolName :symbol="item" :volume="true" />
 						</div>
 						<div class="justify-end pr-2"><SymbolPrice :symbol="item" /></div>
 						<div class="justify-end"><SymbolChangeButton :symbol="item" /></div>

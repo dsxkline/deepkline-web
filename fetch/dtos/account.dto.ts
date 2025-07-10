@@ -2,7 +2,7 @@ export enum AccountEnvType {
 	REAL = 1,
 	DEMO = 0
 }
-export class AccountDto {
+export interface AccountDto {
 	id: number // 主键
 	accountId: number // 账户ID
 	userId: number // 用户 ID
@@ -25,7 +25,7 @@ export class AccountDto {
 	profitRate: number
 }
 
-export class AccountDetailDto {
+export interface AccountDetailDto {
 	ccy: string
 	availBal: string
 	availEq: string
@@ -72,7 +72,7 @@ export class AccountDetailDto {
 	totalPnlRatio: string
 }
 
-export class FundDto {
+export interface FundDto {
 	currency: string
 	balance: string
 	frozen: string

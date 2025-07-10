@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 	import type ExchangeLogo from '~/components/common/ExchangeLogo.vue'
-	import type { AccountDto } from '~/fetch/dtos/account'
+	import type { AccountDto } from '~/fetch/dtos/account.dto'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
@@ -40,7 +40,7 @@
 						</li>
 						<li>
 							<span>初始资金：</span>
-							<div>{{ formatPrice(account?.initialAmount,2) }} {{ account?.currency }}</div>
+							<div>{{ formatPrice(account?.initialAmount, '2') }} {{ account?.currency }}</div>
 						</li>
 					</ul>
 				</div>

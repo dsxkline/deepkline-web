@@ -2,11 +2,12 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import moment from 'moment'
 	import { _borderWidth } from '#tailwind-config/theme'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -15,7 +16,7 @@ import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts | null
 	let xAxisData: string[] | null = []
 	let seriesData: number[] | null = []
@@ -29,13 +30,13 @@ import { useStore } from '~/store'
 			icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 			itemWidth: 6,
 			itemHeight: 6,
-			bottom:0
+			bottom: 0
 		},
 		tooltip: {
 			trigger: 'axis',
 			textStyle: {
 				fontSize: 12
-			},
+			}
 			// formatter: function (params: any[]) {
 			// 	// console.log('params',params);
 			// 	const item = params[0]
@@ -112,8 +113,8 @@ import { useStore } from '~/store'
 				showSymbol: false,
 				sampling: 'lttb',
 				// symbol:"none",
-				itemStyle:{
-					color:'rgb(45 189 133)'
+				itemStyle: {
+					color: 'rgb(45 189 133)'
 				},
 				emphasis: {
 					itemStyle: {
@@ -122,7 +123,7 @@ import { useStore } from '~/store'
 				},
 				tooltip: {
 					valueFormatter: function (value: any) {
-						return value+"%"
+						return value + '%'
 					}
 				},
 				data: seriesData
@@ -134,8 +135,8 @@ import { useStore } from '~/store'
 				showSymbol: false,
 				sampling: 'lttb',
 				// symbol:"none",
-				itemStyle:{
-					color:'rgb(245 70 92)'
+				itemStyle: {
+					color: 'rgb(245 70 92)'
 				},
 				emphasis: {
 					itemStyle: {
@@ -144,7 +145,7 @@ import { useStore } from '~/store'
 				},
 				tooltip: {
 					valueFormatter: function (value: any) {
-						return value+"%"
+						return value + '%'
 					}
 				},
 				data: seriesData2
@@ -170,7 +171,7 @@ import { useStore } from '~/store'
 					xAxisData = []
 					seriesData = []
 					seriesData2 = []
-					res.data.slice(0,20).forEach(([ts, longShortAcctRatio]: any) => {
+					res.data.slice(0, 20).forEach(([ts, longShortAcctRatio]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
 						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))

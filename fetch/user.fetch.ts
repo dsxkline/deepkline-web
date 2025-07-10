@@ -1,8 +1,8 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { LoginReqDto, UserDto } from './dtos/user'
-import type { CheckEmailReqDto, CheckEmailRespDto } from './dtos/check-email'
+import type { LoginReqDto, UserDto } from './dtos/user.dto'
+import type { CheckEmailReqDto, CheckEmailRespDto } from './dtos/check-email.dto'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)

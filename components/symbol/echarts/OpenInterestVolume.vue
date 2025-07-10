@@ -3,10 +3,11 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
 	import { useSymbolStore } from '~/store/symbol'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -14,11 +15,11 @@ import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
-	let echart: echarts.ECharts|null
-	let xAxisData: string[]|null = []
-	let seriesData: number[]|null = []
-	let seriesData2: number[]|null = []
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
+	let echart: echarts.ECharts | null
+	let xAxisData: string[] | null = []
+	let seriesData: number[] | null = []
+	let seriesData2: number[] | null = []
 	// 在组件顶部声明 resizeObserver
 	let resizeObserver: ResizeObserver | null = null
 	const containerRef = ref(null)
@@ -36,17 +37,17 @@ import { useStore } from '~/store'
 				data: [
 					{
 						name: '交易量',
-						icon: 'circle', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
+						icon: 'circle' // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 					},
 					{
 						name: '持仓量',
-						icon: 'rect', // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
+						icon: 'rect' // 可选值：'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'
 					}
 				],
 
 				itemWidth: 6,
 				itemHeight: 6,
-				bottom:0
+				bottom: 0
 			}
 		],
 		grid: {
@@ -70,7 +71,7 @@ import { useStore } from '~/store'
 					show: true,
 					interval: function (index: number, value: string) {
 						// 显示固定三个刻度
-						const total = xAxisData?.length||0 // 总共数据长度
+						const total = xAxisData?.length || 0 // 总共数据长度
 						const showIndex = [0, Math.floor(total / 2), total - 1]
 						return showIndex.includes(index)
 					},
@@ -101,7 +102,7 @@ import { useStore } from '~/store'
 				axisLabel: {
 					show: true,
 					formatter: function (value: string, index: number) {
-						return moneyFormat(value, '', 0)
+						return moneyFormat(value, '', '0')
 					}
 				}
 			},
@@ -111,7 +112,7 @@ import { useStore } from '~/store'
 				axisLabel: {
 					show: true,
 					formatter: function (value: string, index: number) {
-						return moneyFormat(value, '', 0)
+						return moneyFormat(value, '', '0')
 					}
 				}
 			}
@@ -122,8 +123,8 @@ import { useStore } from '~/store'
 				type: 'bar',
 				smooth: true,
 				showSymbol: false,
-				itemStyle:{
-					color:'rgb(245 70 92)'
+				itemStyle: {
+					color: 'rgb(245 70 92)'
 				},
 				tooltip: {
 					valueFormatter: function (value: any) {
@@ -138,8 +139,8 @@ import { useStore } from '~/store'
 				smooth: true,
 				showSymbol: false,
 				yAxisIndex: 1,
-				itemStyle:{
-					color:'rgba(33, 150, 243, 1)'
+				itemStyle: {
+					color: 'rgba(33, 150, 243, 1)'
 				},
 				tooltip: {
 					valueFormatter: function (value: any) {
@@ -165,7 +166,7 @@ import { useStore } from '~/store'
 		period.value = p
 		error.value = ''
 		ComposFetch.tradingDataFetch
-			.openInterestVolume(symbolObj.value.baseCcy||symbolObj.value.ctValCcy, p)
+			.openInterestVolume(symbolObj.value.baseCoin || symbolObj.value.baseCoin, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false
@@ -208,7 +209,7 @@ import { useStore } from '~/store'
 	watch(
 		() => props.symbol,
 		val => {
-			fetchData(period.value as Period,true)
+			fetchData(period.value as Period, true)
 		}
 	)
 
@@ -256,7 +257,7 @@ import { useStore } from '~/store'
 		}
 	})
 
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		chart.value = null
 		echart && echart.dispose()
 		echart = null

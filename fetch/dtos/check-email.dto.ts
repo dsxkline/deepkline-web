@@ -1,8 +1,8 @@
-export class CheckEmailReqDto {
+export interface CheckEmailReqDto {
 	email: string
 }
 
-export class CheckEmailRespDto {
+export interface CheckEmailRespDto {
 	email: string
 	isRegister: boolean
 	isValid: boolean

@@ -2,7 +2,7 @@
 	import { usePush } from '~/composable/usePush'
 	import Captcha from './captcha.vue'
 	import { userFetch } from '~/fetch/user.fetch'
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import type { ComponentInternalInstance } from 'vue'
 	import { useUserStore } from '~/store/user'
 	import Password from './password.vue'

@@ -1,9 +1,9 @@
 import { number } from 'echarts'
 import moment from 'moment'
-import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
 import { isVNode } from 'vue';
+import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto';
 
-export const formatPrice = (value: any, precision: number, prefix: string = '') => {
+export const formatPrice = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
@@ -43,7 +43,7 @@ export const formatChangeRate = (value: any, precision: number = 2) => {
 	return `${prefix}${value.toFixed(point)}`
 }
 
-export const moneyFormat = (value: any, currency: string = '', precision: number = 2, m: string = '亿', k: string = '万') => {
+export const moneyFormat = (value: any, currency: string = '', precision: string = '2', m: string = '亿', k: string = '万') => {
 	let unit = ''
 	value = parseFloat(value.toString())
 	// const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
@@ -96,9 +96,9 @@ export function trimMap(map: Map<any, any>, MAX_ORDER_DEPTH: number) {
 	}
 }
 
-export function getSymbolName(symbol: Instruments) {
+export function getSymbolName(symbol: SymbolDto) {
 	if (!symbol) return
-	return symbol.instType == InstanceType.SPOT ? symbol.baseCcy + '/' + symbol.quoteCcy : symbol.ctValCcy + symbol.settleCcy
+	return symbol.marketType == MarketType.SPOT ? symbol.baseCoin + '/' + symbol.quoteCoin : symbol.baseCoin + symbol.quoteCoin
 }
 
 export function phoneStar(value: string) {

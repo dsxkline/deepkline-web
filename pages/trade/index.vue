@@ -3,9 +3,10 @@
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	import SymbolSearch from '~/components/symbol/SymbolSearch.vue'
-	import { InstanceType, Sides, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import BooksFull from '~/components/symbol/BooksFull.vue'
 	import CrypeOrder from '~/components/order/CrypeOrder.vue'
+import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const symbol = ref('BTC-USDT')
 	const showKline = ref(false)
 	const item = ref<Ticker | null>(null)
@@ -43,10 +44,10 @@
 		push(
 			SymbolSearch,
 			{
-				selectHandle: (item: Instruments) => {
-					if (item?.instId) {
+				selectHandle: (item: SymbolDto) => {
+					if (item?.symbol) {
 						// 切换当前symbol
-						symbol.value = item.instId
+						symbol.value = item.symbol
 						useNuxtApp().$pop()
 					}
 				}
@@ -187,7 +188,7 @@
 								:style="`--el-switch-on-color: rgb(var(--color-${side == Sides.BUY ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`"
 							/>
 						</div>
-						<BooksFull :symbol="symbol" :limitPoint="5" class="text-[10px]" :isH5="true" :limitCount="booksAmount" v-if="!loading" />
+						<BooksFull :symbol="symbol" :limitPoint="'5'" class="text-[10px]" :isH5="true" :limitCount="booksAmount" v-if="!loading" />
 					</div>
 				</div>
 				<div class="pt-6">

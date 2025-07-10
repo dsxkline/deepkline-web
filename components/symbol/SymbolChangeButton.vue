@@ -1,13 +1,14 @@
 <script setup lang="ts">
-	import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import { type Ticker } from '~/fetch/okx/okx.type.d'
 	const props = defineProps<{
-		symbol: Instruments
+		symbol: SymbolDto
 	}>()
 	const { $wsb, $ws } = useNuxtApp()
 	const price = ref<Ticker | null>()
 	const startChangeColor = ref(false)
 	const changeRate = computed(() => {
-		price.value = $ws.getTickers(props.symbol.instId)
+		price.value = $ws.getTickers(props.symbol.symbol)
 		return price.value?.last && price.value?.sodUtc8 ? ((parseFloat(price.value?.last) - parseFloat(price.value?.sodUtc8)) / parseFloat(price.value?.sodUtc8)) * 100 : 0
 	})
 	watch(
@@ -63,11 +64,11 @@
 		price.value = data
 	}
 	onMounted(() => {
-		$ws.addTickerHandler(props.symbol.instId, tickerHandler)
+		$ws.addTickerHandler(props.symbol.symbol, tickerHandler)
 	})
 	onUnmounted(() => {
 		price.value = null
-		$ws.removeTickerHandler(props.symbol.instId, tickerHandler)
+		$ws.removeTickerHandler(props.symbol.symbol, tickerHandler)
 		animationFrameId && cancelAnimationFrame(animationFrameId)
 		animationFrameId = null
 	})

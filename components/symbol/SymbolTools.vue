@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { Instruments } from '~/fetch/okx/okx.type'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto';
 	import { useSymbolStore } from '~/store/symbol'
 
 	const props = defineProps<{
@@ -8,7 +8,7 @@
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[props.symbol]
 	})
-	function favorite(item: Instruments) {
+	function favorite(item: SymbolDto) {
 		useSymbolStore().favoriteSymbol(item)
 	}
 </script>

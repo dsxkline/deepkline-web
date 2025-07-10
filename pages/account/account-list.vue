@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 	import { usePush } from '~/composable/usePush'
-	import  {type AccountDto, AccountEnvType } from '~/fetch/dtos/account.d'
+	import  {type AccountDto, AccountEnvType } from '~/fetch/dtos/account.dto'
 	import { useStore } from '~/store'
 	import ExchangeIndex from '../exchange/index.vue'
 	import AccountHelp from './account-help.vue'
 	import { useUserStore } from '~/store/user'
 	import { accountFetch } from '~/fetch/account.fetch'
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: string

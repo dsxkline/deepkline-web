@@ -3,10 +3,11 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
 	import { useSymbolStore } from '~/store/symbol'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -14,7 +15,7 @@ import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts | null
 	let xAxisData: string[] | null = []
 	let seriesData: number[] | null = []
@@ -78,14 +79,14 @@ import { useStore } from '~/store'
 			axisLabel: {
 				show: true,
 				formatter: function (value: number) {
-					return moneyFormat(value, '', 0)
+					return moneyFormat(value, '', '0')
 				}
 			}
 		},
 		series: [
 			{
 				name: '主动买入量',
-				type: symbolObj.value?.instType == InstanceType.SPOT ? 'bar' : 'line',
+				type: symbolObj.value?.marketType == MarketType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
 				smooth: true,
 				itemStyle: {
@@ -106,7 +107,7 @@ import { useStore } from '~/store'
 			},
 			{
 				name: '主动卖出量',
-				type: symbolObj.value?.instType == InstanceType.SPOT ? 'bar' : 'line',
+				type: symbolObj.value?.marketType == MarketType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
 				smooth: true,
 				itemStyle: {
@@ -142,9 +143,9 @@ import { useStore } from '~/store'
 		error.value = ''
 		if (load) loading.value = true
 		// 现货传币种，合约传id
-		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy : props.symbol
-		const request = symbolObj.value?.instType == InstanceType.SPOT ? ComposFetch.tradingDataFetch.takerVolumne : ComposFetch.tradingDataFetch.takerVolumeContract
-		request(symbol, symbolObj.value?.instType, p)
+		const symbol = symbolObj.value?.marketType == MarketType.SPOT ? symbolObj.value?.baseCoin : props.symbol
+		const request = symbolObj.value?.marketType == MarketType.SPOT ? ComposFetch.tradingDataFetch.takerVolumne : ComposFetch.tradingDataFetch.takerVolumeContract
+		request(symbol, symbolObj.value?.marketType as unknown as InstanceType, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false

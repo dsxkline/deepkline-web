@@ -1,13 +1,13 @@
 <script setup lang="ts">
 	import { Search } from '@element-plus/icons-vue'
-	import { InstanceType, type Instruments } from '~/fetch/okx/okx.type.d'
+	import { InstanceType } from '~/fetch/okx/okx.type.d'
 	import MarketList from './search/MarketList.vue'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
-import { usePop } from '~/composable/usePush'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const props = defineProps<{
-		push?: boolean,
-		selectHandle?: (item: Instruments) => void
+		push?: boolean
+		selectHandle?: (item: SymbolDto) => void
 	}>()
 	const keyword = ref('')
 	const show = ref(false)
@@ -27,8 +27,8 @@ import { usePop } from '~/composable/usePush'
 	}
 
 	const hide = (e: Event) => {
-		// 判断e是否是Instruments类型
-		if ((e as unknown as Instruments)?.instId) {
+		// 判断e是否是SymbolDto类型
+		if ((e as unknown as SymbolDto)?.symbol) {
 			show.value = false
 			return
 		}

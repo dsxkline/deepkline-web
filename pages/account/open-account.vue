@@ -6,8 +6,8 @@
 	import Select from '~/components/app/Select.vue'
 	import { useUserStore } from '~/store/user'
 	import { accountFetch } from '~/fetch/account.fetch'
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
-	import type { ExchangeDto } from '~/fetch/dtos/exchange'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 	import { Link } from '@element-plus/icons-vue'
 	import { useAccountStore } from '~/store/account'
 	const props = defineProps<{

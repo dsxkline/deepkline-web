@@ -1,8 +1,9 @@
 import { accountFetch } from '~/fetch/account.fetch'
-import { FetchResultDto } from '~/fetch/dtos/common.d'
+import { FetchResultDto } from '~/fetch/dtos/common.dto'
+import { MarketType } from '~/fetch/dtos/symbol.dto'
 import { exchangeFetch } from '~/fetch/exchange.fetch'
 import { InstanceType } from '~/fetch/okx/okx.type.d'
-import { publicFetch } from '~/fetch/public.fetch'
+import { symbolsFetch } from '~/fetch/symbols.fetch'
 import { userFetch } from '~/fetch/user.fetch'
 import { useStore } from '~/store'
 import { useAccountStore } from '~/store/account'
@@ -10,23 +11,23 @@ import { useSymbolStore } from '~/store/symbol'
 import { useUserStore } from '~/store/user'
 import { ApiSource } from '~/types/types.d'
 
-function getDefaultInstruments(InstanceType: InstanceType) {
+function getDefaultSymbols(marketType: MarketType) {
 	const symbolStore = useSymbolStore()
-	return publicFetch
-		.getInstruments(InstanceType)
+	return symbolsFetch
+		.list(marketType)
 		.then(res => {
 			if (res?.data) {
 				symbolStore.setSymbols(res.data)
 			} else {
 				setTimeout(() => {
-					getDefaultInstruments(InstanceType)
+					getDefaultSymbols(marketType)
 				}, 5000)
 			}
 		})
 		.catch(err => {
 			console.error(err)
 			setTimeout(() => {
-				getDefaultInstruments(InstanceType)
+				getDefaultSymbols(marketType)
 			}, 5000)
 		})
 }
@@ -106,8 +107,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 	if (process.client) {
 		const state = useStore()
 		if (state.apiSource == ApiSource.OKX) {
-			await getDefaultInstruments(InstanceType.SPOT)
-			await getDefaultInstruments(InstanceType.SWAP)
+			await getDefaultSymbols(MarketType.SPOT)
+			await getDefaultSymbols(MarketType.SWAP)
 		}
 	}
 })

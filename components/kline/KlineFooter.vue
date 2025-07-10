@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-	import { useSymbolStore } from '~/store/symbol'
-	import type { Instruments } from '~/fetch/okx/okx.type.d'
 	const props = defineProps<{
 		symbol: string
 	}>()

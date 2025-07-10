@@ -2,11 +2,12 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { InstanceType, Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { InstanceType, Period } from '@/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import moment from 'moment'
 	import { _borderWidth } from '#tailwind-config/theme'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -15,10 +16,10 @@ import { useStore } from '~/store'
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
-	let echart: echarts.ECharts|null
-	let xAxisData: string[]|null = []
-	let seriesData: number[]|null = []
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
+	let echart: echarts.ECharts | null
+	let xAxisData: string[] | null = []
+	let seriesData: number[] | null = []
 	// 在组件顶部声明 resizeObserver
 	let resizeObserver: ResizeObserver | null = null
 	const containerRef = ref(null)
@@ -68,7 +69,7 @@ import { useStore } from '~/store'
 				show: true,
 				interval: function (index: number, value: string) {
 					// 显示固定三个刻度
-					const total = xAxisData?.length||0 // 总共数据长度
+					const total = xAxisData?.length || 0 // 总共数据长度
 					const showIndex = [0, Math.floor(total / 2), total - 1]
 					return showIndex.includes(index)
 				},
@@ -94,7 +95,7 @@ import { useStore } from '~/store'
 		yAxis: {
 			type: 'value',
 			boundaryGap: ['100%', '100%'],
-			scale:true
+			scale: true
 		},
 		series: [
 			{
@@ -128,8 +129,8 @@ import { useStore } from '~/store'
 		error.value = ''
 		if (load) loading.value = true
 		// 现货传币种，合约传id
-		const symbol = symbolObj.value?.instType == InstanceType.SPOT ? symbolObj.value?.baseCcy : props.symbol
-		const request = symbolObj.value?.instType == InstanceType.SPOT ? ComposFetch.tradingDataFetch.longShortAccountRatio : ComposFetch.tradingDataFetch.longShortAccountRatioContract
+		const symbol = symbolObj.value?.marketType == MarketType.SPOT ? symbolObj.value?.baseCoin : props.symbol
+		const request = symbolObj.value?.marketType == MarketType.SPOT ? ComposFetch.tradingDataFetch.longShortAccountRatio : ComposFetch.tradingDataFetch.longShortAccountRatioContract
 		request(symbol, p)
 			.then(res => {
 				// console.log(res?.data);
@@ -140,11 +141,11 @@ import { useStore } from '~/store'
 					seriesData = []
 					option.xAxis.data = xAxisData
 					option.series[0].data = seriesData
-					res.data.slice(0,50).forEach(([ts, longShortAccountRatio]: any) => {
+					res.data.slice(0, 50).forEach(([ts, longShortAccountRatio]: any) => {
 						if (p == Period.M5) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
-						if (p == Period.H1)  xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
-						if (p == Period.D1)  xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
-						 seriesData && seriesData.push(parseFloat(parseFloat(longShortAccountRatio).toFixed(2)))
+						if (p == Period.H1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('MM/DD HH:mm'))
+						if (p == Period.D1) xAxisData && xAxisData.push(moment(parseFloat(ts)).format('YYYY/MM/DD'))
+						seriesData && seriesData.push(parseFloat(parseFloat(longShortAccountRatio).toFixed(2)))
 					})
 					option.xAxis.data = xAxisData.reverse()
 					option.series[0].data = seriesData.reverse()
@@ -207,7 +208,7 @@ import { useStore } from '~/store'
 		if (containerRef.value) {
 			resizeObserver = new ResizeObserver(entries => {
 				for (let entry of entries) {
-					 resetSize()
+					resetSize()
 				}
 			})
 			// 监听父级元素宽度变化
@@ -226,7 +227,7 @@ import { useStore } from '~/store'
 			resizeObserver.disconnect()
 		}
 	})
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		chart.value = null
 		echart && echart.dispose()
 		echart = null

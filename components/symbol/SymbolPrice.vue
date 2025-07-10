@@ -1,27 +1,27 @@
 <script setup lang="ts">
-import { InstanceType, type Instruments, type Ticker } from '~/fetch/okx/okx.type.d'
-import { useSymbolStore } from '~/store/symbol';
+import type { SymbolDto } from '~/fetch/dtos/symbol.dto';
+import { InstanceType, type Ticker } from '~/fetch/okx/okx.type.d'
 const props = defineProps<{
-    symbol: Instruments,
+    symbol: SymbolDto,
     price?:string
 }>()
 const emit = defineEmits<{
     (event:'update:price',value:string):void
 }>()
 const { $wsb, $ws } = useNuxtApp()
-const ticker = ref($ws.getTickers(props.symbol.instId))
+const ticker = ref($ws.getTickers(props.symbol.symbol))
 const tickerHandler = (data: Ticker) => {
     // console.log('tickerHandler',props.symbol.instId,data)
     ticker.value = data
-    emit('update:price',props.symbol.instId+"@"+data.last)
+    emit('update:price',props.symbol.symbol+"@"+data.last)
 }
 
 onMounted(() => {
-    $ws.addTickerHandler(props.symbol.instId,tickerHandler)
+    $ws.addTickerHandler(props.symbol.symbol,tickerHandler)
 })
 
 onUnmounted(() => {
-    $ws.removeTickerHandler(props.symbol.instId,tickerHandler)
+    $ws.removeTickerHandler(props.symbol.symbol,tickerHandler)
 })
 </script>
 <template>

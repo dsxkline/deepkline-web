@@ -4,7 +4,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import CreateSuccess from './open-success.vue'
 	import { accountFetch } from '~/fetch/account.fetch'
-import { FetchResultDto } from '~/fetch/dtos/common.d'
+import { FetchResultDto } from '~/fetch/dtos/common.dto'
 import { useAccountStore } from '~/store/account'
 	const props = defineProps<{
 		push?: boolean

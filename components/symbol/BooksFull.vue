@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { marketFetch } from '~/fetch/market.fetch'
-	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker } from '~/fetch/okx/okx.type.d'
+	import type { BookEntry, BookMessage, BookResponse, Books, Ticker } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
@@ -9,7 +9,7 @@
 
 	const props = defineProps<{
 		symbol: string
-		limitPoint?: number
+		limitPoint?: string
 		isH5?: boolean
 		limitCount?: number
 	}>()
@@ -23,7 +23,7 @@
 	let totalAsks = 0
 	let totalBids = 0
 	// 小数点
-	const point = ref(0)
+	const point = ref('0')
 	const showNumber = computed(() => props.limitCount || 16)
 
 	const loading = ref(true)
@@ -57,13 +57,13 @@
 		if (tickSz) {
 			const rs: any[] = [tickSz]
 			for (let i = 1; i <= 3; i++) {
-				rs.push(noExponents(tickSz * 10 ** i))
+				rs.push(noExponents(parseFloat(tickSz) * 10 ** i))
 			}
 			return rs
 		}
 		return []
 	})
-	const pricePoint = ref(symbolObj.value?.tickSz || 0)
+	const pricePoint = ref(symbolObj.value?.tickSz || '0')
 	const activeBook = ref(0)
 	const animationAskBidHandler = useRequestAnimation()
 
@@ -113,12 +113,12 @@
 			// bids.value = []
 			totalAsks = 0
 			totalBids = 0
-			point.value = 0
+			point.value = '0'
 		}
 
 		if (subHandle) $ws.unsubscribe(subHandle)
 		$ws.addTickerHandler(props.symbol, tickerHandler)
-		subHandle = $ws.subBooks('books', [symbolObj.value?.instId || props.symbol], (message, err) => {
+		subHandle = $ws.subBooks('books', [symbolObj.value?.symbol || props.symbol], (message, err) => {
 			// console.log('subBooksL2Tbt', message)
 			// if(window.dsxKlineScrolling) return;
 			if (useStore().isLeave) return
@@ -162,7 +162,7 @@
 			totalAsks = 0
 			totalBids = 0
 		}
-		point.value = props.limitPoint || symbolObj.value?.lotSz || 0
+		point.value = props.limitPoint || symbolObj.value?.lotSz || '0'
 
 		updates.asks.forEach(([px, sz]) => {
 			let price = parseFloat(px)
@@ -171,11 +171,11 @@
 				if (pointLevel.value < 1) {
 					// 保留小数位数
 					const p = (pointLevel.value + '').split('.')[1].length
-					pricePoint.value = p
+					pricePoint.value = p.toString()
 					price = parseFloat(price.toFixed(p))
 					//console.log('pointLevel',p,price)
 				} else {
-					pricePoint.value = 0
+					pricePoint.value = '0'
 					// 取整位数
 					price = Math.floor(parseInt(price.toFixed(0)) / pointLevel.value) * pointLevel.value
 				}
@@ -193,10 +193,10 @@
 				if (pointLevel.value < 1) {
 					// 保留小数位数
 					const p = (pointLevel.value + '').split('.')[1].length
-					pricePoint.value = p
+					pricePoint.value = p.toString()
 					price = parseFloat(price.toFixed(p))
 				} else {
-					pricePoint.value = 0
+					pricePoint.value = '0'
 					// 取整位数
 					price = Math.floor(parseInt(price.toFixed(0)) / pointLevel.value) * pointLevel.value
 				}
@@ -208,6 +208,7 @@
 		})
 		// point.value = 1 / 10 ** point.value
 
+		console.log('pricePoint', pricePoint.value, pointLevel.value, point.value)
 		throttleAskBid()
 		// console.log('Array.from(orderBook.value.bids.values())',Array.from(orderBook.value.bids.values()).length)
 	}
@@ -253,7 +254,6 @@
 
 	// 每个订单的占比动画
 	function bookAnimation() {
-
 		animationAskBidHandler.start({
 			from: calculateBuySellRatioValue.value,
 			to: calculateBuySellRatio.value,
@@ -306,7 +306,7 @@
 		// createStartAnimations()
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
-		pointLevel.value = symbolObj.value?.tickSz
+		pointLevel.value = parseFloat(symbolObj.value?.tickSz)
 		getBooksFull()
 	})
 	onBeforeUnmount(() => {
@@ -360,21 +360,21 @@
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
 						<div>价格</div>
-						<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+						<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
 					</li>
 				</ul>
 			</div>
 			<div v-else class="flex gap-3">
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
-						<div>数量({{ symbolObj?.baseCcy }})</div>
+						<div>数量({{ symbolObj?.baseCoin }})</div>
 						<div class="text-right">价格</div>
 					</li>
 				</ul>
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
 						<div>价格</div>
-						<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+						<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
 					</li>
 				</ul>
 			</div>

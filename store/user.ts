@@ -1,4 +1,4 @@
-import { UserDto } from '~/fetch/dtos/user'
+import type { UserDto } from '~/fetch/dtos/user.dto'
 import { useAccountStore } from './account'
 
 export const useUserStore = defineStore({

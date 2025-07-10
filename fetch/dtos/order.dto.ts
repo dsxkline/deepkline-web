@@ -1,4 +1,4 @@
-export class AddOrderDto {
+export interface AddOrderDto {
 	accountId: number
 	symbol: string
 	side: 'buy' | 'sell'
@@ -16,7 +16,7 @@ export class AddOrderDto {
 	stopLossPrice: string | null
 }
 
-export class AddOrderRespDto {
+export interface AddOrderRespDto {
 	orderId: string
 	ts: string
 }

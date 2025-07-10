@@ -5,8 +5,8 @@
 
 	const props = defineProps<{
 		datas: BookEntry[]
-		point: any
-		pricePoint: number
+		point: string
+		pricePoint: string
 		type: 'ask' | 'bid'
 		isH5?: boolean
 	}>()

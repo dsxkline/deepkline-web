@@ -1,4 +1,4 @@
-export class LoginReqDto {
+export interface LoginReqDto {
 	userName: string
 	password?: string
 	validId?: string
@@ -6,7 +6,7 @@ export class LoginReqDto {
 	randstr?: string
 }
 
-export class UserDto {
+export interface UserDto {
 	userName: string
 	nickName: string
 	token: string

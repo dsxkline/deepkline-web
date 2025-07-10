@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { FetchResultDto } from '~/fetch/dtos/common.d'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { userFetch } from '~/fetch/user.fetch'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'

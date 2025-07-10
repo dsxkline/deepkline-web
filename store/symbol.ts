@@ -1,6 +1,7 @@
 import type { Ticket } from '@element-plus/icons-vue'
 import { defineStore } from 'pinia'
-import type { Instruments, Ticker, InstanceType } from '~/fetch/okx/okx.type.d'
+import type { MarketType, SymbolDto } from '~/fetch/dtos/symbol.dto'
+import type {Ticker } from '~/fetch/okx/okx.type.d'
 
 export const useSymbolStore = defineStore({
 	id: 'symbol',
@@ -8,15 +9,15 @@ export const useSymbolStore = defineStore({
 		currency: 'USDT',
 		activeSymbol: 'BTC-USDT',
 		// 保存所有的symbols
-		symbols: {} as Record<string, Instruments>,
+		symbols: {} as Record<string, SymbolDto>,
 		// symbols 分组
-		symbolGroup: {} as Record<InstanceType, Instruments[]>,
+		symbolGroup: {} as Record<MarketType, SymbolDto[]>,
 		// 正在订阅的symbols
 		subSymbols: {} as Record<string, any>,
 		// symbol的tick行情
 		tickets: shallowReactive({} as Record<string, Ticker>),
 		// 收藏的symbols
-		favoriteSymbols: [] as Instruments[]
+		favoriteSymbols: [] as SymbolDto[]
 	}),
 
 	actions: {
@@ -42,37 +43,37 @@ export const useSymbolStore = defineStore({
 			this.tickets[symbol] = ticket
 			// console.log(this.tickets)
 		},
-		setSymbols(symbols: Instruments[]) {
+		setSymbols(symbols: SymbolDto[]) {
 			symbols.forEach(symbol => {
-				this.symbols[symbol.instId] = symbol
-				if (!this.symbolGroup[symbol.instType]) {
-					this.symbolGroup[symbol.instType] = []
+				this.symbols[symbol.symbol] = symbol
+				if (!this.symbolGroup[symbol.marketType]) {
+					this.symbolGroup[symbol.marketType] = []
 				}
-				const index = this.symbolGroup[symbol.instType].findIndex(item => item.instId == symbol.instId)
+				const index = this.symbolGroup[symbol.marketType].findIndex(item => item.symbol == symbol.symbol)
 				if (index > -1) {
-					this.symbolGroup[symbol.instType][index] = symbol
+					this.symbolGroup[symbol.marketType][index] = symbol
 				} else {
-					this.symbolGroup[symbol.instType].push(symbol)
+					this.symbolGroup[symbol.marketType].push(symbol)
 				}
 			})
 		},
-		getSymbolsByCategory(category: InstanceType, currency: string = 'USDT') {
+		getSymbolsByCategory(category: MarketType, currency: string = 'USDT') {
 			const symbols = this.symbolGroup[category]
 			if (!symbols) return
-			return symbols.filter(item => item.quoteCcy == currency || item.settleCcy == currency)
+			return symbols.filter(item => item.quoteCoin == currency)
 		},
-		favoriteSymbol(symbol: Instruments) {
+		favoriteSymbol(symbol: SymbolDto) {
 			if (!symbol) return
-			if (this.favoriteSymbols.find(item => item.instId == symbol.instId)) {
-				this.favoriteSymbols = this.favoriteSymbols.filter(item => item.instId != symbol.instId)
+			if (this.favoriteSymbols.find(item => item.symbol == symbol.symbol)) {
+				this.favoriteSymbols = this.favoriteSymbols.filter(item => item.symbol != symbol.symbol)
 			} else {
 				this.favoriteSymbols.unshift(symbol)
 			}
 			// 保存到localStore
 			localStorage.setItem('favoriteSymbols', JSON.stringify(this.favoriteSymbols))
 		},
-		isFavorite(symbol: Instruments) {
-			return this.favoriteSymbols.find(item => item.instId == symbol?.instId)
+		isFavorite(symbol: SymbolDto) {
+			return this.favoriteSymbols.find(item => item.symbol == symbol?.symbol)
 		},
 		loadFavoriteSymbols() {
 			const favoriteSymbols = localStorage.getItem('favoriteSymbols')

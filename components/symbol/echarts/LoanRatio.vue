@@ -3,10 +3,11 @@
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
 	import { ComposFetch } from '@/fetch'
-	import { Period, type Instruments } from '@/fetch/okx/okx.type.d'
+	import { Period } from '@/fetch/okx/okx.type.d'
 	import moment from 'moment'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -14,7 +15,7 @@
 	const props = defineProps<{
 		symbol: string
 	}>()
-	const symbolObj = computed<Instruments>(() => useSymbolStore().symbols[props.symbol])
+	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts | null
 	let xAxisData: string[] | null = []
 	let seriesData: number[] | null = []
@@ -128,7 +129,7 @@
 		error.value = ''
 		if (load) loading.value = true
 		ComposFetch.tradingDataFetch
-			.loanRatio(symbolObj.value.baseCcy || symbolObj.value.ctValCcy, p)
+			.loanRatio(symbolObj.value.baseCoin || symbolObj.value.marginCoin, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false

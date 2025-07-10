@@ -1,17 +1,17 @@
 <script setup lang="ts">
 	import { marketFetch } from '~/fetch/market.fetch'
-	import type { BookEntry, BookMessage, BookResponse, Books, Instruments, Ticker, TradesMessage, TradesResponse } from '~/fetch/okx/okx.type.d'
+	import type { BookEntry, BookMessage, BookResponse, Books, Ticker, TradesMessage, TradesResponse } from '~/fetch/okx/okx.type.d'
 	import { useSymbolStore } from '~/store/symbol'
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
-import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const props = defineProps<{
 		symbol: string
 	}>()
 
 	const tradesList = ref<TradesResponse[] | null>([])
 	// 小数点
-	const point = ref(0)
+	const point = ref('0')
 	const loading = ref(true)
 	const error = ref('')
 	const symbolObj = computed(() => {
@@ -20,10 +20,10 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	const { $wsb, $ws } = useNuxtApp()
 	// 订阅句柄
 	let subHandle = ''
-	const pointLevel = ref(0)
+	const pointLevel = ref('0')
 	const pointLevelOptions = computed(() => {
 		if (!symbolObj) return []
-		const tickSz = symbolObj.value?.tickSz
+		const tickSz = parseFloat(symbolObj.value?.tickSz)
 		// if (!pointLevel.value) pointLevel.value = tickSz
 		if (tickSz) {
 			const rs: any[] = [tickSz]
@@ -34,7 +34,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 		}
 		return []
 	})
-	const pricePoint = ref(symbolObj.value?.tickSz || 0)
+	const pricePoint = ref(symbolObj.value?.tickSz || '0')
 	// 模拟动画
 	const animation = ref(false)
 	const interVisible = ref(false)
@@ -73,10 +73,10 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 		if (updateTimer) clearTimeout(updateTimer)
 		loading.value = true
 		error.value = ''
-		point.value = 0
+		point.value = '0'
 		tradesList.value = []
 		if (subHandle) $ws.unsubscribe(subHandle)
-		subHandle = $ws.subTrades(symbolObj.value?.instId || props.symbol, (message, err) => {
+		subHandle = $ws.subTrades(symbolObj.value?.symbol || props.symbol, (message, err) => {
 			if (useStore().isLeave) return
 			if (!interVisible.value) return
 			// console.log('subBooksL2Tbt', message)
@@ -113,8 +113,8 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	let updateTimer: NodeJS.Timeout
 	function updateOrderBook(updates: TradesResponse, action?: string) {
 		if (updateTimer) clearTimeout(updateTimer)
-		point.value = symbolObj.value?.lotSz || 0
-		pricePoint.value = symbolObj.value?.tickSz || 0
+		point.value = symbolObj.value?.lotSz || '0'
+		pricePoint.value = symbolObj.value?.tickSz || '0'
 		if (tradesList.value && tradesList.value.length > 30) {
 			// 删除最后的数据
 			tradesList.value.splice(tradesList.value.length - 1, 1)[0]
@@ -175,7 +175,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	})
 	useWillAppear(() => {
 		console.log('trades useWillAppear....')
-		if(!loading.value)getTradeList()
+		if (!loading.value) getTradeList()
 	})
 </script>
 <template>
@@ -198,7 +198,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible">
 				<div class="trade-title w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 z-10">
 					<div>价格(USDT)</div>
-					<div class="text-right">数量({{ symbolObj?.baseCcy }})</div>
+					<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
 					<div class="text-right">时间</div>
 				</div>
 
@@ -207,7 +207,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 					class="overflow-hidden w-full text-main grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-[20px] left-0 z-10"
 					:style="{
 						height: `${animation ? '20px' : '0px'}`,
-						opacity: `${animation ? '1' : '0'}`,
+						opacity: `${animation ? '1' : '0'}`
 					}"
 				>
 					<template v-if="tradesList[0]">
@@ -221,7 +221,7 @@ import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 					class="relative z-20 w-full h-full *:w-full flex flex-col *:grid *:grid-cols-3 *:my-[1px] *:py-[1px] *:items-center *:justify-between *:relative *:h-[18px]"
 					v-if="tradesList"
 					:style="{
-						transform: `translateY(${animation ? '20px' : '0px'})`,
+						transform: `translateY(${animation ? '20px' : '0px'})`
 					}"
 				>
 					<li v-for="(n, index) in tradesList.length" :key="index">

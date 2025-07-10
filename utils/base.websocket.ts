@@ -1,4 +1,4 @@
-import type { Instruments, Ticker } from '~/fetch/okx/okx.type'
+import type { Ticker } from '~/fetch/okx/okx.type'
 
 export default class BaseWebSocket {
 	private ws: WebSocket | null = null
