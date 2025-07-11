@@ -227,7 +227,7 @@ import { useStore } from '~/store'
 	<div class="drawer-container absolute top-0 left-0 w-full h-full" ref="drawerContainer">
 		<div
 			ref="drawerBody"
-			:class="['drawer-body bg-base w-full h-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
+			:class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
 			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
 		>
 			<template v-if="direction == 'btt' && !bttFull">

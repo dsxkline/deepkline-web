@@ -397,10 +397,13 @@
 								<el-input-number v-click-sound inputmode="decimal" :controls="false" v-model="margin" :placeholder="'请输入金额'" size="large" class="!w-full" :clearable="!isH5" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
-										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCoin }}</span>
+										<span class="text-grey">可用({{ symbolObj?.quoteCoin }})</span>
+										<b class="font-normal" v-if="useAccountStore().fund?.available">{{formatPrice(useAccountStore().fund?.available,'2','')}} </b>
+										<b class="font-normal" v-else>--</b>
+						
 									</div>
 									<div class="py-1 av-item">
-										<span class="text-grey">可买</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCoin }}</span>
+										<span class="text-grey">可买({{ symbolObj?.quoteCoin }})</span><b class="font-normal">--</b><span></span>
 									</div>
 								</div>
 							</div>

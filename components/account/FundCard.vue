@@ -78,7 +78,7 @@
 				<NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '0.01')" unit="" :fontSize="25" />
 			</b>
 			<div class="text-xs pt-0 text-main">
-				<span>收益</span>
+				<span class="pr-1">收益</span>
 				<ProfitRate :profit="fund?.profit" :profitRate="fund?.profitRate" />
 			</div>
 
@@ -100,8 +100,8 @@
 			</div>
 
 			<div class="flex justify-between items-center pt-6 *:w-full gap-3 *:!rounded-full *:!py-2 *:overflow-hidden" v-if="size != 'small'">
-				<button class="bt-default" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
-				<button class="bt-default" @click="pushHistoryOrder">账单</button>
+				<button class="bt-default !text-sm" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
+				<button class="bt-default !text-sm" @click="pushHistoryOrder">账单</button>
 			</div>
 			<div v-else class="w-1/3 absolute right-0 top-0 h-full"><LineChart symbol="BTC-USDT" class="w-full h-full" /></div>
 		</div>
