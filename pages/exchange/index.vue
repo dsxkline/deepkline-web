@@ -5,7 +5,8 @@
 	import { usePush } from '~/composable/usePush'
 	import AccountHelp from '../account/account-help.vue'
 	const props = defineProps<{
-		push?: boolean
+		push?: boolean,
+		height?:number
 	}>()
 	const pushLeft = usePush()
 	const tabbarHeight = ref(0)
@@ -29,7 +30,7 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = n - (navbar.value?.clientHeight || 50) + 5
+			tabbarHeight.value = (props.height || n) - (useStore().isH5?(navbar.value?.clientHeight || 55):0)
 			if (!props.push) {
 				tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
 			}
@@ -41,7 +42,7 @@
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55) + 5
+		tabbarHeight.value = (props.height || window?.innerHeight) - (useStore().isH5?(navbar.value?.clientHeight || 55):0)
 		if (!props.push) {
 			tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
 		}
@@ -60,8 +61,8 @@
 				</button>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight+'px' }" :always="false">
-			<LoginCard :hide-buttons="true" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'"/>
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight + 'px' }" :always="false">
+			<LoginCard :hide-buttons="true" :title="'连接全球顶尖经纪商'" :desc="'实战才是检验真理的唯一标准'" />
 			<TabBar :menus="menus" />
 		</ScrollBar>
 	</div>
@@ -79,6 +80,16 @@
 					@apply text-base mx-3;
 				}
 			}
+		}
+	}
+
+	.navbar {
+		display: none;
+	}
+
+	@media (max-width: 999px) {
+		.navbar {
+			display: flex;
 		}
 	}
 </style>

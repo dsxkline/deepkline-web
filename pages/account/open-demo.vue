@@ -4,13 +4,17 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import CreateSuccess from './open-success.vue'
 	import { accountFetch } from '~/fetch/account.fetch'
-import { FetchResultDto } from '~/fetch/dtos/common.dto'
-import { useAccountStore } from '~/store/account'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import { useAccountStore } from '~/store/account'
+import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const usepush = usePush()
 	const loading = ref(false)
+	// 如果是dialog打开
+	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+
 	function submitAddAccount() {
 		if (loading.value) return
 		loading.value = true
@@ -20,7 +24,7 @@ import { useAccountStore } from '~/store/account'
 				if (result?.code == 0) {
 					loading.value = false
 					await getUserAccounts()
-					usepush(CreateSuccess, { account:result.data })
+					usepush(CreateSuccess, { account: result.data },'100%',currentDialog)
 				} else {
 					setTimeout(() => {
 						loading.value = false
@@ -52,7 +56,7 @@ import { useAccountStore } from '~/store/account'
 			}
 		}
 	}
-	
+
 	onMounted(() => {
 		getUserAccounts()
 	})
@@ -60,7 +64,7 @@ import { useAccountStore } from '~/store/account'
 <template>
 	<div class="w-full h-full">
 		<NavigationBar title="开通模拟账户" :hideBack="!push"> </NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc('+(currentDialog?currentDialog.props.height:'var(--body-height)')+' - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
 			<div class="p-4 text-xs text-grey border border-[--transparent05] rounded-lg bg-[--transparent05] m-4">
 				<div class="text-sm font-bold mb-4 text-main">模拟账户开通说明</div>
 				<p class="mb-2">1. 模拟账户是一个用于模拟交易的虚拟账户，您可以在其中进行交易练习。</p>
@@ -75,13 +79,7 @@ import { useAccountStore } from '~/store/account'
 		</ScrollBar>
 
 		<div class="fixed bottom-[var(--safe-bottom)] left-0 right-0 p-4">
-			<el-button
-					size="large"
-					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default','!bg-brand !text-white']"
-					@click="submitAddAccount"
-					:loading="loading"
-					>确认开通</el-button
-				>
+			<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="submitAddAccount" :loading="loading">确认开通</el-button>
 		</div>
 	</div>
 </template>

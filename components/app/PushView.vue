@@ -4,13 +4,14 @@
 	import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 	import { getParentRefreshComponent, useRefreshChildEvent } from '~/composable/usePush'
+import { useStore } from '~/store'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
 		visible?: boolean
 		direction?: DrawerProps['direction']
 		size?: string
-		asyncComponent?: Component
+		dialog?: ComponentInternalInstance | null
 		url?: string
 		to?: any
 		params?: any
@@ -110,7 +111,7 @@
 			while (parent) {
 				// pop的时候返回执行自定义poped方法
 				// console.log("parent///test", parent, this.popData);
-				if (parent?.exposed?.onPop && props.popData!=undefined) {
+				if (parent?.exposed?.onPop && props.popData != undefined) {
 					const result = parent?.exposed.onPop(props.popData)
 					// 默认不拦截
 					if (result) break
@@ -141,6 +142,7 @@
 			// let size = props.size == 'auto' ? h : props.size || '100%'
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
 				drawerBody.value.style.height = 'var(--body-height)'
+				if(!useStore().isH5) drawerBody.value.style.height = '100%'
 			} else {
 				// console.log('props.size', props.size)
 				if (props.size) {
@@ -157,6 +159,10 @@
 				}
 				drawerBody.value.style.height = h + 'px'
 			}
+
+			// if (props.dialog) {
+			// 	drawerBody.value.style.maxHeight = props.dialog.props.height as string
+			// }
 
 			drawerBody.value.style.transform = visible
 				? props.direction == 'btt'
@@ -207,6 +213,10 @@
 		})
 	})
 
+	// 如果是在dialog环境，把dialog实例传下去
+	// 给子组件全局注入当前dialog实例
+	props.dialog && provide('currentDialog', props.dialog)
+	console.log('props.dialog', props.dialog)
 
 	defineExpose({
 		...useRefreshChildEvent()
@@ -214,10 +224,10 @@
 </script>
 
 <template>
-	<div class="drawer-container fixed top-0 left-0 w-full h-full" ref="drawerContainer">
+	<div class="drawer-container absolute top-0 left-0 w-full h-full" ref="drawerContainer">
 		<div
 			ref="drawerBody"
-			:class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
+			:class="['drawer-body bg-base w-full h-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
 			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
 		>
 			<template v-if="direction == 'btt' && !bttFull">

@@ -18,12 +18,13 @@ declare module '#app' {
 		$ws: OKXWebSocket
 		$wsb: OKXWebSocket
 		$dkws: DKWebSocket
-		$push: (comp: any, params: {}, size?: string) => ComponentInternalInstance
-		$pushLeft: (comp: any, params: {}, size?: string) => ComponentInternalInstance
-		$pushUp: (comp: any, params: {}, size?: string) => ComponentInternalInstance
-		$pushDown: (comp: any, params: {}, size?: string) => ComponentInternalInstance
+		$push: (comp: any, params: {}, size?: string, container?: ComponentInternalInstance | null) => ComponentInternalInstance
+		$pushLeft: (comp: any, params: {}, size?: string, container?: ComponentInternalInstance | null) => ComponentInternalInstance
+		$pushUp: (comp: any, params: {}, size?: string, container?: ComponentInternalInstance | null) => ComponentInternalInstance
+		$pushDown: (comp: any, params: {}, size?: string, container?: ComponentInternalInstance | null) => ComponentInternalInstance
 		$pop: (data?: any) => ComponentInternalInstance
 		$popRoot: (data?: any, index?: number) => ComponentInternalInstance
+		$dialog: (comp: any, params: {}, width?: string, height?: string, title?: string, msg?: string, showCancel?: boolean, showComfirm?: boolean) => ComponentInternalInstance
 		$clickSound: () => void
 		$windowEvent: WindowsEvent
 		$isMobile: globalThis.Ref<boolean>

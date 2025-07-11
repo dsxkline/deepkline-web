@@ -1,16 +1,16 @@
 <script setup lang="ts">
 	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
-import { useStore } from '~/store';
+	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	const props = defineProps<{
 		symbol: string
 		type: number
 		price?: number
-		initPrice: number
+		initPrice?: number
 		push?: string
 	}>()
 	const emit = defineEmits<{
-		(event: 'close', price: number, point: number): void
+		(event: 'close', price: number, point: number, open: boolean): void
 	}>()
 	watch(
 		() => props.price,
@@ -50,19 +50,21 @@ import { useStore } from '~/store';
 			  }
 	})
 
-	const openStop = ref(!(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true'))
+	const openStop = ref(!(localStorage.getItem('stopProfitLossClose_' + props.type) == 'true'))
+
+	const tickSz = computed(() => parseFloat(symbolObj.value.tickSz))
 
 	function priceChange(currentValue: number, oldValue: number) {
 		updateInitPrice()
 		if (!amount.value) amount.value = 0
-		if (price.value - symbolObj.value.tickSz <= 0) price.value = initPrice.value
+		if (price.value - tickSz.value <= 0) price.value = initPrice.value
 		console.log('priceChange', price.value, initPrice.value)
 		// 价格变化，点数跟着变化
 		nextTick(() => {
 			if (!props.type) {
-				amount.value = Math.floor((price.value - initPrice.value) / symbolObj.value.tickSz)
+				amount.value = Math.floor((price.value - initPrice.value) / tickSz.value)
 			} else {
-				amount.value = Math.floor((initPrice.value - price.value) / symbolObj.value.tickSz)
+				amount.value = Math.floor((initPrice.value - price.value) / tickSz.value)
 			}
 			setPercent(price.value)
 			// useNuxtApp().$clickSound();
@@ -72,13 +74,13 @@ import { useStore } from '~/store';
 	function amountChange() {
 		updateInitPrice()
 		if (!amount.value) amount.value = 0
-		if (price.value - symbolObj.value.tickSz <= 0) price.value = initPrice.value
+		if (price.value - tickSz.value <= 0) price.value = initPrice.value
 		// 点数变化，价格跟着变化
 		nextTick(() => {
 			if (!props.type) {
-				price.value = initPrice.value + amount.value * symbolObj.value.tickSz
+				price.value = initPrice.value + amount.value * tickSz.value
 			} else {
-				price.value = initPrice.value - amount.value * symbolObj.value.tickSz
+				price.value = initPrice.value - amount.value * tickSz.value
 			}
 			setPercent(price.value)
 			// useNuxtApp().$clickSound();
@@ -86,8 +88,8 @@ import { useStore } from '~/store';
 	}
 
 	function confirm() {
-		emit('close', openStop.value?price.value:0, openStop.value?amount.value:0)
-		if (props.push) useNuxtApp().$pop({ price: openStop.value?price.value:0, amount: openStop.value?amount.value:0 })
+		emit('close', openStop.value ? price.value : 0, openStop.value ? amount.value : 0, openStop.value)
+		if (props.push) useNuxtApp().$pop({ price: openStop.value ? price.value : 0, amount: openStop.value ? amount.value : 0, open: openStop.value })
 	}
 	function updateInitPrice() {
 		if (!initPrice.value) {
@@ -98,7 +100,6 @@ import { useStore } from '~/store';
 	}
 
 	const percentChange = (val: number) => {
-		
 		setPriceWithPercent(val)
 	}
 
@@ -128,9 +129,9 @@ import { useStore } from '~/store';
 			price.value = initPrice.value
 		}
 		if (!props.type) {
-			amount.value = Math.floor((price.value - initPrice.value) / symbolObj.value.tickSz)
+			amount.value = Math.floor((price.value - initPrice.value) / tickSz.value)
 		} else {
-			amount.value = Math.floor((initPrice.value - price.value) / symbolObj.value.tickSz)
+			amount.value = Math.floor((initPrice.value - price.value) / tickSz.value)
 		}
 	}
 	watch(
@@ -152,17 +153,17 @@ import { useStore } from '~/store';
 	watch(
 		() => openStop.value,
 		val => {
-			localStorage.setItem('stopProfitLossClose_'+props.type, val ? 'false' : 'true')
+			localStorage.setItem('stopProfitLossClose_' + props.type, val ? 'false' : 'true')
 		},
 		{ immediate: true }
 	)
 
 	onMounted(() => {
-		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_'+props.type))
-		
+		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_' + props.type))
+
 		// openStop.value = !(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true')
 		price.value = props.price || 0
-		initPrice.value = props.initPrice
+		initPrice.value = props.initPrice || 0
 		if (price.value) {
 			priceChange(price.value, 0)
 		}
@@ -179,7 +180,7 @@ import { useStore } from '~/store';
 	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
 		<h3 class="flex items-center justify-between">
 			<span>{{ !type ? '止盈' : '止损' }}价 </span>
-			<el-switch v-model="openStop" class="ml-2" :style="`--el-switch-on-color: rgb(var(--color-${!type?'green':'red'})); --el-switch-off-color: var(--transparent10)`" />
+			<el-switch v-model="openStop" class="ml-2" :style="`--el-switch-on-color: rgb(var(--color-${!type ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`" />
 		</h3>
 		<div class="py-2">
 			<el-input-number
@@ -198,7 +199,10 @@ import { useStore } from '~/store';
 				:disabled="!openStop"
 			/>
 			<div class="text-xs text-grey mt-1">
-				<span>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span>，预估{{!type?'收益':'亏损'}}为 <b class="text-[--el-color-primary]">{{!type?'+':'-'}} 0.3444 USDT</b></span>
+				<span
+					>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span
+					>，预估{{ !type ? '收益' : '亏损' }}为 <b class="text-[--el-color-primary]">{{ !type ? '+' : '-' }} 0.3444 USDT</b></span
+				>
 			</div>
 		</div>
 		<h3>点数</h3>
@@ -269,30 +273,9 @@ import { useStore } from '~/store';
 	}
 	.stopprofit {
 		--el-color-primary: rgb(var(--color-green));
-		:deep(.slider-container) {
-			// .slider-progress {
-			// 	background-color: rgb(var(--color-green));
-			// }
-			// .slider-progress-stops {
-			// 	background-color: rgb(var(--color-green));
-			// }
-			// .slider-tooltip {
-			// 	background-color: rgb(var(--color-green));
-			// }
-		}
 		.stop-bt {
 			background-color: rgb(var(--color-green));
 			border-color: rgb(var(--color-green));
-		}
-	}
-	:deep(.el-input-number) {
-		&.price-input {
-			.el-input__wrapper {
-				// padding: 0 5px;
-				// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
-				// box-shadow: none;
-				// border: 1px solid rgb(var(--color-green));
-			}
 		}
 	}
 
@@ -302,17 +285,8 @@ import { useStore } from '~/store';
 			:deep(.el-input-number) {
 				&.price-input {
 					padding: 0 5px;
-					.el-input__wrapper {
-						// box-shadow: none;
-						// border: none;
-					}
 				}
 				.el-input__wrapper {
-					// box-shadow: none;
-					// border: none;
-					// &.is-focus {
-					// 	box-shadow: 0 0 0 1px rgb(var(--color-brand)) inset;
-					// }
 					.el-input__inner {
 						text-align: center;
 					}

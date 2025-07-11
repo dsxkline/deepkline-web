@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 <template>
 	<div>
 		<h1 class="px-4 text-2xl font-bold py-5 flex justify-between items-center" ref="exchangeHeader">
-			<div>
+			<div class="text-main">
 				{{ title }}
 				<p class="text-sm font-normal text-grey py-2" v-if="desc">{{ desc }}</p>
 			</div>

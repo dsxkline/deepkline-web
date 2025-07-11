@@ -10,6 +10,7 @@
 	import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 	import { Link } from '@element-plus/icons-vue'
 	import { useAccountStore } from '~/store/account'
+	import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 	const props = defineProps<{
 		push?: boolean
 		exchange: ExchangeDto
@@ -25,6 +26,8 @@
 	const passInput = ref()
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
+	// 如果是dialog打开
+	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
 	const next = () => {
 		error.value = ''
 		if (exchange.value.apiKeyRequired && !apiKey.value) {
@@ -110,8 +113,6 @@
 		}
 	}
 
-	
-
 	onMounted(() => {})
 </script>
 <template>
@@ -123,7 +124,7 @@
 				</button>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(' + (currentDialog ? currentDialog.props.height : 'var(--body-height)') + ' - var(--nav-height))' }" :always="false">
 			<div class="global-form p-4">
 				<!-- <div class="form-item">
 					<label>选择交易所</label>

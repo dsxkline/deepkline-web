@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { _100 } from '#tailwind-config/theme/backdropBrightness';
+
 	const props = defineProps<{
 		height?: string
 		always?: boolean
@@ -20,8 +22,8 @@
 		emit('scroll', { scrollLeft, scrollTop })
 		// 计算滚动条的高度和位置
 
-		if (thumbRef.value) {
-			const thumbHeight = Math.max((containerHeight / scrollHeight) * containerHeight, 20) // 最小高度为20px
+		if (thumbRef.value && scrollHeight>containerHeight) {
+			const thumbHeight = Math.max((containerHeight / scrollHeight) * containerHeight, 0) // 最小高度为20px
 			const thumbTop = (scrollTop / scrollHeight) * containerHeight
 			thumbRef.value.style.height = `${thumbHeight}px`
 			thumbRef.value.style.transform = `translateY(${thumbTop}px)`
@@ -29,7 +31,9 @@
 	}
 	onMounted(() => {
 		if (scrollBarRef.value && thumbRef.value) {
-			scrollHandle() // 初始化滚动条位置
+			nextTick(()=>{
+				scrollHandle() // 初始化滚动条位置
+			})
 		}
 	})
 
@@ -41,7 +45,7 @@
 </script>
 <template>
 	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: props.height || '100%', ...wrapStyle }">
-		<div class="scroll-bar-thumb absolute top-0 right-1 h-3 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="props.always"></div>
+		<div class="scroll-bar-thumb absolute top-0 right-1 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="props.always"></div>
 		<div class="scroll-bar-inner" ref="scrollBarRef" :style="{ height: props.height || '100%'}" @scroll="scrollHandle">
 			<slot></slot>
 		</div>

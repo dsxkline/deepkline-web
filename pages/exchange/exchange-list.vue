@@ -6,6 +6,7 @@
 	import LoginIndex from '../login/index.vue'
 	import { useAccountStore } from '~/store/account'
 	import CreateDemo from '../account/open-demo.vue'
+import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 
 	const props = defineProps<{
 		height: number
@@ -13,24 +14,26 @@
 	const pushLeft = usePush()
 	const pushUp = usePushUp()
 	const exchanges = computed(() => useAccountStore().exchanges)
+	// 如果是dialog打开
+	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
 	const pushAddAccount = (exchange: ExchangeDto) => {
 		if (!useUserStore().user) {
 			pushUp(LoginIndex)
 			return
 		}
-		if(exchange.isLocal && exchange.isDemo){
-			pushLeft(CreateDemo, {})
+		if (exchange.isLocal && exchange.isDemo) {
+			pushLeft(CreateDemo, {},'100%',currentDialog)
 		}
 		pushLeft(AddAccount, {
 			exchange: exchange
-		})
+		},'100%',currentDialog)
 	}
 	const pushAddDemoAccount = () => {
 		if (!useUserStore().user) {
 			pushUp(LoginIndex)
 			return
 		}
-		pushLeft(CreateDemo, {})
+		pushLeft(CreateDemo, {},'100%',currentDialog)
 	}
 </script>
 <template>
@@ -90,7 +93,9 @@
 						</dl>
 					</div>
 					<div>
-						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0', item.slug + '-bt']" @click="pushAddAccount(item)">开设{{item.isLocal&&item.isDemo?'模拟':''}}账户</button>
+						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0', item.slug + '-bt']" @click="pushAddAccount(item)">
+							开设{{ item.isLocal && item.isDemo ? '模拟' : '' }}账户
+						</button>
 					</div>
 				</li>
 			</template>
@@ -102,6 +107,20 @@
 		.exchange-list-container {
 			.exchange-open-bt {
 				background-color: white;
+			}
+		}
+	}
+
+	.exchange-list-container {
+		ul {
+			@apply grid grid-cols-2 gap-3;
+		}
+	}
+
+	@media (max-width: 999px) {
+		.exchange-list-container {
+			ul {
+				@apply flex;
 			}
 		}
 	}

@@ -3,10 +3,16 @@
 	import SymbolCards from './symbol/SymbolCards.vue'
 	import OneScreenIcon from './icons/OneScreenIcon.vue'
 	import Languages from './common/Languages.vue'
+	import LoginIndex from '~/pages/login/index.vue'
+	import { useUserStore } from '~/store/user'
 	// const store = useStore();
 	// store.increment();
 	function clickSplitScreen(num: number) {
 		useStore().setSplitScreen(num)
+	}
+
+	function pushLogin() {
+		useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
 	}
 </script>
 <template>
@@ -17,7 +23,7 @@
 				<img src="~/assets/images/logo.png" alt="logo" class="w-[22px] h-[22px] rounded-full" />
 			</div>
 			<div class="flex items-center justify-center w-[28px] h-[28px] mr-1" v-else>
-				<img src="~/assets/images/logo.png" alt="logo" class="w-[22px] h-[22px]  rounded-full" />
+				<img src="~/assets/images/logo.png" alt="logo" class="w-[22px] h-[22px] rounded-full" />
 			</div>
 			<b class="logo-text mr-2 font-mono text-sm text-main"> DeepKline </b>
 		</div>
@@ -31,31 +37,31 @@
 			<Languages />
 			<el-divider direction="vertical" class="mx-1"></el-divider>
 			<div class="split-screen flex items-center justify-center *:mx-1">
-				
 				<button :class="{ active: useStore().splitScreen == 3 }" @click="clickSplitScreen(3)" v-click-sound><ThreeScreenIcon /></button>
 				<button :class="{ active: useStore().splitScreen == 2 }" @click="clickSplitScreen(2)" v-click-sound><TwoScreenIcon /></button>
 				<button :class="{ active: useStore().splitScreen == 1 }" @click="clickSplitScreen(1)" v-click-sound><OneScreenIcon /></button>
-				
 			</div>
 			<el-divider direction="vertical" class="mx-1"></el-divider>
-			<div class="flex items-center justify-center">
-				<button class="bt-default mx-1">登录</button>
-				<button class="bt-primary mx-1">注册</button>
-				
+			<div class="flex items-center justify-center" v-if="!useUserStore().user">
+				<button class="bt-default mx-1" @click="pushLogin">登录</button>
+				<button class="bt-primary mx-1" @click="pushLogin">注册</button>
+			</div>
+			<div class="flex items-center justify-center" v-else>
+				<UserFund/>
 			</div>
 		</div>
 	</div>
 </template>
 
 <style lang="less" scoped>
-[class=light]{
-	.header{
-		&::before{
-			opacity: 0.2;
-			background-image: none;
+	[class='light'] {
+		.header {
+			&::before {
+				opacity: 0.2;
+				background-image: none;
+			}
 		}
 	}
-}
 	.header {
 		height: var(--header-height);
 		// background-color: var(--transparent05);
@@ -73,10 +79,9 @@
 			content: '';
 			z-index: -1;
 			opacity: 0.2;
-			
+
 			// transition: all 0.3s ease;
 		}
-		
 
 		.split-screen {
 			button {

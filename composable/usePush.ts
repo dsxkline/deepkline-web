@@ -4,7 +4,7 @@ import { getCurrentInstance, type ComponentInternalInstance, defineExpose } from
 export function usePush() {
 	let instance = getCurrentInstance()
 	if (!instance) throw new Error('must be used in setup')
-	return (comp: any, params = {}, size = '100%') => useNuxtApp().$push.call(instance, comp, params, size)
+	return (comp: any, params = {}, size = '100%', container?: ComponentInternalInstance | null) => useNuxtApp().$push.call(instance, comp, params, size, container)
 }
 
 export function usePushUp() {

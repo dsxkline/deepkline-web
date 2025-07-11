@@ -34,12 +34,12 @@
 <template>
 	<div class="navbar flex items-center w-full h-[--nav-height] relative justify-between">
 		<div class="navbar-left flex items-center h-full w-full flex-1">
-			<button v-if="!slots.left && !hideBack && !showClose" class="flex items-center px-4 h-full" @click="returnBack">
+			<button v-if="!slots.left && !hideBack && !showClose" class="flex items-center px-4 h-full text-main" @click="returnBack">
 				<el-icon><ArrowLeftBold /></el-icon>
 			</button>
 			<div class="flex items-center h-full w-full"><slot name="left" /></div>
 		</div>
-		<div class="navbar-title absolute top-0 left-[20%] w-3/5 h-full px-2 flex items-center justify-center" v-if="title || slots.title">
+		<div class="navbar-title absolute top-0 left-[20%] w-3/5 h-full px-2 flex items-center justify-center text-main" v-if="title || slots.title">
 			<b v-if="!slots.title" class="text-lg font-bold">{{ title }}</b>
 			<slot name="title" />
 		</div>

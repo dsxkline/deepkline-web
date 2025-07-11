@@ -5,11 +5,11 @@ export interface AddOrderDto {
 	orderType: 'limit' | 'market' | 'stop_limit' | 'stop_market' | 'trailing_stop'
 	price: string
 	marginMode: 'crossed' | 'isolated'
-	leverage: number
+	leverage: string
 	// 数量
-	lotSize: number
+	lotSize: string
 	// 金额
-	margin: number
+	margin: string
 	openTakeProfit: boolean
 	openStopLoss: boolean
 	takeProfitPrice: string | null

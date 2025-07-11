@@ -100,6 +100,16 @@
 		data?.payload && useAccountStore().setFund(data.payload)
 	}
 
+	watch(
+		() => useStore().isH5,
+		(val, old) => {
+			// 从H5切换到web的时候需要重新加载首页
+			if (old && !val && menus.value) {
+				menuHandler(menus.value[0], 0)
+			}
+		}
+	)
+
 	onMounted(() => {
 		useNuxtApp().$dkws.onOrder(orderHandle)
 		useNuxtApp().$dkws.onFund(fundHandle)
@@ -134,7 +144,7 @@
 		</div>
 	</div>
 
-	<Warning/>
+	<Warning />
 </template>
 
 <style scoped lang="less">

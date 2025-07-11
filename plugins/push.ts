@@ -1,7 +1,7 @@
 import { defineNuxtPlugin } from '#app'
 import { defineComponent, ref, h, render, createVNode, type ComponentInstance, type ComponentInternalInstance } from 'vue'
 import { usePushStore } from '@/store/push'
-import Push from '~/components/app/Push.vue'
+import Dialog from '~/components/app/Dialog.vue'
 import PushView from '~/components/app/PushView.vue'
 import { getParentRefreshComponent } from '~/composable/usePush'
 
@@ -31,7 +31,7 @@ function findRoute(path: string, routes: any) {
 }
 
 let pushing = false
-const pushHandle = function (this: ComponentInternalInstance | null, comp: any, params = {}, direction = 'rtl', size = '100%') {
+const pushHandle = function (this: ComponentInternalInstance | null, comp: any, params = {}, direction = 'rtl', size = '100%', container: ComponentInternalInstance | null = null) {
 	if (pushing) return
 	pushing = true
 	// 执行上一个组件实例的willDisappear方法
@@ -47,16 +47,9 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		url: null,
 		component: comp?.default || comp
 	}
-	// if (typeof comp === "string") {
-	//     // 加载路由对应的组件
-	//     const routes = this.$router.options.routes;
-	//     const { route, params: pas = {} } = findRoute(comp, routes);
-	//     if (!route) return;
-	//     if (route) dynamicComponent.component = route.component;
-	//     params = Object.assign(params, pas);
-	// }
-
-	// const instance = getCurrentInstance(); // 获取当前 Vue 组件实例
+	// 渲染节点
+	const renderDom = (container && container.vnode.el && container.vnode.el.querySelector('.dialog-push-container .scroll-bar-inner')) || document.body
+	console.log('renderDom', renderDom)
 
 	// 加载 push 组件
 	// 创建 push 组件实例
@@ -67,6 +60,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		params: params || [], // 传递额外的参数
 		parent: instance, // 传递父组件或上下文
 		direction: direction, // 传递方向
+		dialog:container, // 是否身处dialog环境
 		size: size, // 传递大小
 		destroy: () => {
 			pushInstance.appContext = null
@@ -79,7 +73,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 	const nuxtApp = useNuxtApp() // 获取 Nuxt 上下文
 	pushInstance.appContext = nuxtApp.vueApp._context
 	const box = document.createElement('div')
-	document.body.appendChild(box)
+	renderDom.appendChild(box)
 	// 在某个目标 DOM 元素中挂载组件
 	render(pushInstance, box)
 	// 查找上一层，实现轻微退出动画
@@ -95,8 +89,13 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 				if (parentDrawer) {
 					if (parentDrawer.classList.contains('rtl')) parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
-					const __nuxt = document.querySelector('#__nuxt') as HTMLElement
-					if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
+					// 针对dialog处理
+					if (renderDom.getAttribute('class').indexOf('scroll-bar-inner')>=0) {
+						console.log('dialog-push-container.....')
+					} else {
+						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
+						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'
+					}
 				}
 			}
 		}
@@ -115,7 +114,7 @@ const pop = function (data: any) {
 	let topPush: any = store.getTopPush()
 	// 需要查找最顶部的push回传数据
 	// 回传数据
-	if (topPush?.props && data!=undefined) topPush.props.popData = data
+	if (topPush?.props && data != undefined) topPush.props.popData = data
 	// topPush.vnode = null
 	// topPush.component = null
 	topPush = null
@@ -127,7 +126,7 @@ const pop = function (data: any) {
 
 	if (topPush) {
 		const parentDrawer = topPush.vnode.el.querySelector('.drawer-body') as HTMLElement
-		if (parentDrawer && parentDrawer instanceof HTMLElement && (parentDrawer.classList.contains('rtl')) ) {
+		if (parentDrawer && parentDrawer instanceof HTMLElement && parentDrawer.classList.contains('rtl')) {
 			parentDrawer.style.transform = 'translateX(0)'
 		}
 	} else {
@@ -140,19 +139,19 @@ const pop = function (data: any) {
 }
 
 // 右侧弹出
-function push(this: any, comp: any, params = {}, size = '100%') {
-	return pushHandle.bind(this)(comp, params, 'rtl', size)
+function push(this: any, comp: any, params = {}, size = '100%', container: ComponentInternalInstance | null = null) {
+	return pushHandle.bind(this)(comp, params, 'rtl', size, container)
 }
-function pushLeft(this: any, comp: any, params = {}, size = '100%') {
-	return pushHandle.bind(this)(comp, params, 'ltr', size)
+function pushLeft(this: any, comp: any, params = {}, size = '100%', container: ComponentInternalInstance | null = null) {
+	return pushHandle.bind(this)(comp, params, 'ltr', size, container)
 }
 
 // 底部弹出
-function pushUp(this: any, comp: any, params = {}, size = '100%') {
-	return pushHandle.bind(this)(comp, params, 'btt', size)
+function pushUp(this: any, comp: any, params = {}, size = '100%', container: ComponentInternalInstance | null = null) {
+	return pushHandle.bind(this)(comp, params, 'btt', size, container)
 }
-function pushDown(this: any, comp: any, params = {}, size = '100%') {
-	return pushHandle.bind(this)(comp, params, 'ttb', size)
+function pushDown(this: any, comp: any, params = {}, size = '100%', container: ComponentInternalInstance | null = null) {
+	return pushHandle.bind(this)(comp, params, 'ttb', size, container)
 }
 
 // 返回根视图
@@ -169,6 +168,39 @@ const popRoot = function (data: any, index = 0) {
 	for (let i = length - 1; i >= index; i--) pop(data)
 }
 
+const dialogHandle = function (comp: any, params = {}, width: string = '500px', height: string = '500px', title?: string, msg?: string, showCancel?: boolean, showComfirm?: boolean) {
+	let dynamicComponent = {
+		url: null,
+		component: comp?.default || comp
+	}
+
+	const props = {
+		to: dynamicComponent.component, // 传递给 Push 组件的动态目标组件
+		url: dynamicComponent.url, // 传递 URL 参数
+		params: params || [], // 传递额外的参数
+		height, // 传递大小
+		width,
+		title: title,
+		msg: msg,
+		showCancel,
+		showComfirm,
+		destroy: () => {
+			pushInstance.appContext = null
+			render(null, box)
+			box.remove()
+		}
+	}
+	const pushInstance = createVNode(Dialog, props)
+	// 手动提供 Nuxt 上下文
+	const nuxtApp = useNuxtApp() // 获取 Nuxt 上下文
+	pushInstance.appContext = nuxtApp.vueApp._context
+	const box = document.createElement('div')
+	document.body.appendChild(box)
+	// 在某个目标 DOM 元素中挂载组件
+	render(pushInstance, box)
+	return pushInstance
+}
+
 export default defineNuxtPlugin(({ vueApp }) => {
 	const nuxtApp = useNuxtApp()
 	nuxtApp.provide('push', push)
@@ -177,5 +209,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
 	nuxtApp.provide('pushDown', pushDown)
 	nuxtApp.provide('popRoot', popRoot)
 	nuxtApp.provide('pop', pop)
+	nuxtApp.provide('dialog', dialogHandle)
 	// console.log('push 注入。。。')
 })

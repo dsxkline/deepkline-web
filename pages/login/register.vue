@@ -18,7 +18,7 @@
 			console.log('captchCallback', res)
 			if (res.ret == 0) {
 				if (isRegister) {
-					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr,isRegister })
+					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr, isRegister }, '100%', currentDialog)
 				} else {
 					// 验证成功进入发送验证码流程
 					nextSendEmailValidCode(isreset, res.ticket, res.randstr)
@@ -53,6 +53,9 @@
 	const error = ref<string | undefined>('')
 	let captchaInstance: ComponentInternalInstance | null = null
 	const forgetPassword = ref(false)
+	// 如果是dialog打开
+	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	console.log('当前dialog', currentDialog)
 	const nextStep = () => {
 		error.value = ''
 		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
@@ -79,7 +82,7 @@
 					// 调用方法，显示验证码
 					try {
 						if (isRegister && !isValid) {
-							usepush(Password, { email: email.value, isRegister,openCaptcha })
+							usepush(Password, { email: email.value, isRegister, openCaptcha }, '100%', currentDialog)
 							return false
 						}
 						if (isValid && openCaptcha) {
@@ -177,7 +180,7 @@
 				console.log('success callback:', validId)
 				// 如果是忘记密码，进入重置密码界面
 				if (forgetPassword.value) {
-					usepush(ResetPassword, { email: email.value, forgetPassword: forgetPassword.value, validId: validId })
+					usepush(ResetPassword, { email: email.value, forgetPassword: forgetPassword.value, validId: validId }, '100%', currentDialog)
 					return true
 				}
 				// 否则就是登录校验验证码后进行登录操作

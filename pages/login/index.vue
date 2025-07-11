@@ -2,9 +2,13 @@
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import Register from './register.vue'
 	import { useStore } from '~/store'
+	import type { ComponentInternalInstance } from 'vue'
+
+	const props = defineProps<{ height?: number }>()
 
 	const tabbarHeight = ref(0)
 	const navbar = ref()
+	const titleBar = ref()
 	const menus = ref<MenuModel[]>([
 		{
 			name: '注册',
@@ -15,14 +19,14 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = n - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55)
+			tabbarHeight.value = (props.height || n) - (titleBar.value.clientHeight || 84)
+			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55) - (titleBar.value.clientHeight || 84)
 		}
 	)
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+		tabbarHeight.value = (props.height || window?.innerHeight) - (titleBar.value.clientHeight || 84)
+		if (useStore().isH5) tabbarHeight.value = (props.height || window?.innerHeight) - (navbar.value?.clientHeight || 55) - (titleBar.value.clientHeight || 84)
 	})
 	onUnmounted(() => {
 		menus.value = []
@@ -32,9 +36,9 @@
 <template>
 	<div class="login-index-container">
 		<NavigationBar ref="navbar" :showClose="true" />
-		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
+		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main" ref="titleBar">
 			登录 DeepKline
-			<p class="text-sm font-normal text-grey py-1">未注册邮箱将自动注册</p>
+			<p class="text-sm font-normal text-grey py-2">未注册邮箱将自动注册</p>
 		</h1>
 		<TabBar :menus="menus" :height="tabbarHeight" />
 
@@ -53,14 +57,6 @@
 	:deep(.tabbar-container) {
 		.tabbar-header {
 			display: none;
-			@apply px-4 flex justify-center items-center border-b-0;
-			overflow-x: unset;
-			height: var(--header-height);
-			ul {
-				li {
-					@apply text-xl mx-3;
-				}
-			}
 		}
 	}
 	:deep(.navbar) {

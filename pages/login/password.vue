@@ -28,6 +28,8 @@
 	let forgetPassword = false
 	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
+	// 如果是dialog打开
+	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
 	const next = () => {
 		if (password.value.length < 8) return
 		if (requireCaptcha.value && props.openCaptcha) {
@@ -67,7 +69,9 @@
 							message: '登录成功',
 							type: 'success'
 						})
-
+						// 如果是dialog打开
+						console.log('password login success',currentDialog)
+						currentDialog?.exposed && currentDialog.exposed.close()
 						clearPWACaches()
 						useNuxtApp().$popRoot(null, -2)
 					}, 100)
@@ -236,10 +240,10 @@
 <template>
 	<div class="password-container">
 		<NavigationBar ref="navbar" />
-		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
+		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main">
 			密码登录
-			<p class="text-sm font-normal text-grey py-1" v-if="!isRegister">未注册邮箱将自动注册</p>
-			<p class="text-sm font-normal text-grey py-1" v-else></p>
+			<p class="text-sm font-normal text-grey py-2" v-if="!isRegister">未注册邮箱将自动注册</p>
+			<p class="text-sm font-normal text-grey py-2" v-else>您的账号已注册,请输入登录密码</p>
 		</h1>
 		<div class="global-form p-6">
 			<div class="form-item my-4">

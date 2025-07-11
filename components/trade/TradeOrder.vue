@@ -1,9 +1,11 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
 	import { usePushUp } from '~/composable/usePush'
-import { MarketType } from '~/fetch/dtos/symbol.dto'
+	import type { AddOrderDto } from '~/fetch/dtos/order.dto'
+	import { MarketType } from '~/fetch/dtos/symbol.dto'
 	import { InstanceType, OrderType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
+	import { useAccountStore } from '~/store/account'
 	import { useSymbolStore } from '~/store/symbol'
 	const pushUp = usePushUp()
 	const props = defineProps<{
@@ -17,6 +19,8 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 		(event: 'update:side', side: Sides): void
 	}>()
 	const loading = ref(true)
+	const submitLoading = ref(false)
+	const submitSide = ref(Sides.BUY)
 	const error = ref('')
 	const container = ref<HTMLElement>()
 	const tradeContainer = ref()
@@ -54,9 +58,9 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 	})
 	const side = ref<Sides>(props.side || Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.MARKET)
-	const price = ref(0)
-	const sz = ref()
-	const szPercent = ref(0)
+	const price = ref()
+	const lotSize = ref(parseFloat(symbolObj.value?.minSz))
+	const lotSizePercent = ref(0)
 	const marks = reactive<Record<number, any>>({
 		0: '0%',
 		// 25: '25%',
@@ -68,64 +72,65 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 		return value + '%'
 	}
 	const canChangePrice = ref(true)
-	const money = ref()
+	const margin = ref()
 	const buyText = computed(() => {
 		return symbolObj.value?.marketType == MarketType.SPOT ? '买入' : '开仓'
 	})
 	const sellText = computed(() => {
 		return symbolObj.value?.marketType == MarketType.SPOT ? '卖出' : '平仓'
 	})
-	const openStopProfitLoss = ref(false)
+	const openStopLoss = ref(false)
+	const openTakeProfit = ref(false)
 	const priceInput = ref()
-	const takeProfit = ref()
-	const stopLoss = ref()
+	const takeProfit = ref(0)
+	const stopLoss = ref(0)
 	const buyDes = ref('MARKET')
 	const sellDes = ref('MARKET')
 	const popProfit = ref()
 	const popLoss = ref()
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
-	const lotSize = ref(0)
-	const lotSizes = ref([
+	const leverage = ref(0)
+	const leverages = ref([
 		{
 			label: '无',
-			value: 0
+			value: '0'
 		},
 		{
 			label: 'x1',
-			value: 1
+			value: '1'
 		},
 		{
 			label: 'x2',
-			value: 2
+			value: '2'
 		},
 		{
 			label: 'x3',
-			value: 3
+			value: '3'
 		},
 		{
 			label: 'x5',
-			value: 5
+			value: '5'
 		},
 		{
 			label: 'x10',
-			value: 10
+			value: '10'
 		},
 		{
 			label: 'x20',
-			value: 20
+			value: '20'
 		},
 		{
 			label: 'x30',
-			value: 30
+			value: '30'
 		},
 		{
 			label: 'x50',
-			value: 50
+			value: '50'
 		},
 		{
 			label: 'x100',
-			value: 100
+			value: '100'
 		}
 	])
 	const marginMode = ref<MarginMode>(MarginMode.Isolated)
@@ -149,8 +154,8 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 		(val, old) => {
 			takeProfit.value = 0
 			stopLoss.value = 0
-			sz.value = undefined
-			money.value = undefined
+			lotSize.value = 0
+			margin.value = 0
 			price.value = 0
 			canChangePrice.value = true
 			$ws.removeTickerHandler(old, tickerHandler)
@@ -220,13 +225,13 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 		canChangePrice.value = false
 	}
 
-	function confirmProfit(price: number, point: number) {
-		if (point > 0) takeProfit.value = price
+	function confirmProfit(price: number, point: number, open: boolean) {
+		if (point && open) takeProfit.value = price
 		else takeProfit.value = 0
 		popProfit.value && popProfit.value.hide()
 	}
-	function confirmLoss(price: number, point: number) {
-		if (point > 0) stopLoss.value = price
+	function confirmLoss(price: number, point: number, open: boolean) {
+		if (point && open) stopLoss.value = price
 		else stopLoss.value = 0
 		popLoss.value && popLoss.value.hide()
 	}
@@ -242,6 +247,30 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 			},
 			'90%'
 		)
+	}
+
+	function addOrder(side: Sides) {
+		if (submitLoading.value) return
+		submitLoading.value = true
+		setTimeout(() => {
+			submitLoading.value = false
+		}, 3000)
+		submitSide.value = side
+		const order = {
+			side,
+			orderType: ordType.value,
+			price: String(price.value),
+			lotSize: String(lotSize.value),
+			marginMode: marginMode.value,
+			margin: String(margin.value),
+			accountId: useAccountStore().currentAccount?.accountId,
+			symbol: props.symbol,
+			leverage: String(leverage.value),
+			takeProfitPrice: String(takeProfit.value),
+			stopLossPrice: String(stopLoss.value),
+			openStopLoss: openStopLoss.value,
+			openTakeProfit: openTakeProfit.value
+		} as AddOrderDto
 	}
 </script>
 <template>
@@ -267,8 +296,8 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 									<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
 								</el-radio-group>
 
-								<!-- <el-select v-model="lotSize" class="trade-lotsize-select w-full">
-									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
+								<!-- <el-select v-model="leverage" class="trade-leverage-select w-full">
+									<el-option v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
 								<div class="flex items-center justify-end larver-switch">
 									<span class="text-xs text-grey text-nowrap">杠杆</span>
@@ -283,18 +312,18 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 
 							<!-- 只有小屏幕显示 -->
 							<div class="flex items-center justify-between margin-type-box-small" v-if="orderWidth <= 200 && !useStore().isH5">
-								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
+								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
-										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
+										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
+										<span class="flex-auto text-right" v-if="leverage">{{ leverage }}x</span>
 										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
 										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
 									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
-									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
+									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 
-								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="lotSize">
+								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="leverage">
 									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
 									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
@@ -306,23 +335,23 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
 
-								<!-- <el-select v-model="lotSize" class="trade-lotsize-select w-full">
-									<el-option v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" />
+								<!-- <el-select v-model="leverage" class="trade-leverage-select w-full">
+									<el-option v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
 
-								<Select v-model="lotSize" class="!min-h-0 !p-1 gap-1 text-nowrap lotsize-select">
+								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey lotsize-title" v-if="!isH5">杠杆</span>
-										<span class="flex-auto text-right" v-if="lotSize">{{ lotSize }}x</span>
+										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
+										<span class="flex-auto text-right" v-if="leverage">{{ leverage }}x</span>
 										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
 										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
 									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
-									<SelectOption v-for="item in lotSizes" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
+									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
 
-							<div class="pb-3 relative price-input">
+							<div class="relative price-input">
 								<h5 class="pb-2">价格({{ symbolObj?.quoteCoin }})</h5>
 								<el-input-number
 									@change="priceChange"
@@ -346,23 +375,32 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 									</button>
 								</div>
 							</div>
-							<div class="py-3 amount-container">
+							<div class="amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCoin }})</h5>
-								<el-input v-click-sound inputmode="decimal" v-model="sz" :placeholder="'最小数量 ' + symbolObj?.lotSz + symbolObj?.baseCoin" size="large" class="w-full" :clearable="!isH5" />
+								<el-input-number
+									:controls="false"
+									v-click-sound
+									inputmode="decimal"
+									v-model="lotSize"
+									:placeholder="'最小数量 ' + symbolObj?.minSz + symbolObj?.baseCoin"
+									size="large"
+									class="!w-full"
+									:clearable="!isH5"
+								/>
 								<div class="slider-demo-block">
-									<slider v-model="szPercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
+									<slider v-model="lotSizePercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
 								</div>
 							</div>
 
-							<div class="py-3 money-container">
-								<h5 class="py-2">金额({{ symbolObj?.quoteCcy }})</h5>
-								<el-input v-click-sound inputmode="decimal" :controls="false" v-model="money" :placeholder="'请输入金额'" size="large" class="w-full" :clearable="!isH5" />
+							<div class="money-container">
+								<h5 class="py-2">金额({{ symbolObj?.quoteCoin }})</h5>
+								<el-input-number v-click-sound inputmode="decimal" :controls="false" v-model="margin" :placeholder="'请输入金额'" size="large" class="!w-full" :clearable="!isH5" />
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
-										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
+										<span class="text-grey">可用</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCoin }}</span>
 									</div>
 									<div class="py-1 av-item">
-										<span class="text-grey">可买</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCcy }}</span>
+										<span class="text-grey">可买</span><b class="px-1">--</b><span>{{ symbolObj?.quoteCoin }}</span>
 									</div>
 								</div>
 							</div>
@@ -376,7 +414,7 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
+									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last||'0')" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
 								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="250">
 									<template #reference>
@@ -386,7 +424,7 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
+									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last||'0')" @close="confirmLoss" v-if="!loading" />
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>
@@ -411,22 +449,24 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 							</div>
 						</div>
 
-						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 bg-base z-10" v-if="!loading">
-							<button size="large" :class="['w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound>
+						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 z-10" v-if="!loading">
+							<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(Sides.BUY)">
 								<div class="flex flex-col items-center">
-									<b class="text-base"
-										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
-									>
+									<b class="text-base flex items-center"
+										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+									/></b>
 									<p class="pt-2">{{ buyDes }}</p>
 								</div>
+								<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.BUY" />
 							</button>
-							<button size="large" class="w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" v-click-sound>
+							<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" v-click-sound @click="addOrder(Sides.SELL)">
 								<div class="flex flex-col items-center">
-									<b class="text-base"
-										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span></b
-									>
+									<b class="text-base flex items-center"
+										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+									/></b>
 									<p class="pt-2">{{ sellDes }}</p>
 								</div>
+								<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.SELL" />
 							</button>
 						</div>
 					</div>
@@ -522,7 +562,7 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 		display: none;
 	}
 
-	.lotsize-title {
+	.leverage-title {
 		display: none;
 	}
 
@@ -532,14 +572,14 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 
 	@container (max-width: 200px) {
 		.trade-order {
-			.lotsize-select {
+			.leverage-select {
 				width: 100%;
 				padding: 8px !important;
 				margin-bottom: 8px;
 				span {
 					color: rgb(var(--color-text-main));
 				}
-				.lotsize-title {
+				.leverage-title {
 					display: unset;
 				}
 			}
@@ -590,7 +630,6 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 					display: flex;
 				}
 				.trade-av {
-					display: none;
 					padding-top: 5px;
 					.av-item {
 						display: flex;
@@ -624,14 +663,13 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 				:deep(.el-input-number) {
 					.el-input__inner {
 						font-size: 12px;
-						margin-right: 18px;
+						margin-right: 0;
 					}
 
 					.el-input__wrapper {
 						padding: 0 5px;
-						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
-						box-shadow: none;
-						border: 1px solid rgb(var(--color-green));
+						box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
+						// border: 1px solid rgb(var(--color-green));
 					}
 
 					.el-input-number__increase {
@@ -648,15 +686,21 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 					}
 
 					.el-input__wrapper {
-						padding: 0 5px;
+						padding: 0 8px;
 					}
 				}
 
 				.price-input {
-					:deep(.el-input__wrapper) {
-						// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
-						box-shadow: none;
-						border: 1px solid rgb(var(--color-green));
+					:deep(.el-input-number) {
+						.el-input__inner {
+							font-size: 12px;
+							margin-right: 18px;
+						}
+						.el-input__wrapper {
+							// box-shadow: 0 0 0 1px rgb(var(--color-green)) inset;
+							box-shadow: none;
+							border: 1px solid rgb(var(--color-green));
+						}
 					}
 				}
 
@@ -705,6 +749,12 @@ import { MarketType } from '~/fetch/dtos/symbol.dto'
 				}
 				.price-input {
 					padding-bottom: 5px;
+					:deep(.el-input-number) {
+						.el-input__wrapper {
+							padding-left: 40px;
+							padding-right: 40px;
+						}
+					}
 				}
 				.amount-container {
 					padding: 0 0 0 0;

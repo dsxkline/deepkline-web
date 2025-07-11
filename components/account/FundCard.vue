@@ -75,9 +75,9 @@
 				<span class="pb-1 text-sm text-grey">总资产(USDT)</span>
 			</div>
 			<b v-autosize="25" :class="'roboto-bold flex items-end '" v-if="fund">
-				<NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), 0.01)" unit="" :fontSize="25" />
+				<NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '0.01')" unit="" :fontSize="25" />
 			</b>
-			<div class="text-sm pt-0 text-grey">
+			<div class="text-xs pt-0 text-main">
 				<span>收益</span>
 				<ProfitRate :profit="fund?.profit" :profitRate="fund?.profitRate" />
 			</div>
@@ -86,15 +86,15 @@
 				<ul class="w-full grid grid-cols-3 *:flex *:flex-col text-grey text-sm [&_b]:text-main [&_b]:pt-1">
 					<li>
 						<span>可用</span>
-						<b>{{ formatPrice(parseFloat(fund?.available || '0'), 0.01, '$') }}</b>
+						<b>{{ formatPrice(parseFloat(fund?.available || '0'), '0.01', '$') }}</b>
 					</li>
 					<li class="items-center">
 						<span>保证金</span>
-						<b>{{ formatPrice(parseFloat(fund?.margin || '0'), 0.01, '$') }}</b>
+						<b>{{ formatPrice(parseFloat(fund?.margin || '0'), '0.01', '$') }}</b>
 					</li>
 					<li class="items-end">
 						<span>冻结</span>
-						<b>{{ formatPrice(parseFloat(fund?.frozen || '0'), 0.01, '$') }}</b>
+						<b>{{ formatPrice(parseFloat(fund?.frozen || '0'), '0.01', '$') }}</b>
 					</li>
 				</ul>
 			</div>
