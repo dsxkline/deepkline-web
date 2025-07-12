@@ -24,26 +24,33 @@
 						<button class="tag-default">逐仓</button>
 						<span class="text-xs text-grey">03/11 08:48:21</span>
 					</div>
-					<div class="flex justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey">
+					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey">
 						<div class="flex flex-col">
-							<span>委托/已成(USDT)</span>
+							<span>委托</span>
 							<b>196</b>
 						</div>
-						<div class="flex flex-col">
-							<span>已成数量(USDT)</span>
+						<div class="flex flex-col items-center">
+							<span>已成数量</span>
 							<b>196</b>
 						</div>
 						<div class="flex flex-col justify-center items-end">
 							<span>委托价格</span>
 							<b>196</b>
 						</div>
-					</div>
-					<div class="flex items-center gap-2 justify-between">
-						<div class="flex items-center gap-2 justify-between">
-							<button class="bt-default">止盈 12455.9</button>
-							<button class="bt-default">止损 12000.3</button>
-                            <button class="bt-default">市价全平</button>
+
+						<div class="flex flex-col">
+							<span>止盈</span>
+							<b>196</b>
 						</div>
+						<div class="flex flex-col items-center">
+							<span>止损</span>
+							<b>196</b>
+						</div>
+					</div>
+					<div class="flex items-center gap-2 justify-between *:flex-1">
+						<button class="bt-default">止盈</button>
+						<button class="bt-default">止损</button>
+						<button class="bt-default">市价全平</button>
 						<button class="bt-default">撤单</button>
 					</div>
 				</li>
