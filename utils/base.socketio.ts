@@ -20,6 +20,7 @@ export class BaseSocketIo {
 		const fullUrl = `${this.url}${this.namespace}`
         console.log('connect url',fullUrl)
 		const socket = io(fullUrl, {
+			transports: ['websocket'],
 			path: this.path,
 			reconnectionAttempts: 5,
 			timeout: 5000,
