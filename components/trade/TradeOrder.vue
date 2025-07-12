@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
-	import { usePushUp } from '~/composable/usePush'
+	import { usePush, usePushUp } from '~/composable/usePush'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import type { AddOrderDto, AddOrderRespDto, OrderDto } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
@@ -9,8 +9,12 @@
 	import { useStore } from '~/store'
 	import { useAccountStore } from '~/store/account'
 	import { useSymbolStore } from '~/store/symbol'
+	import { useUserStore } from '~/store/user'
 	import type { WsResult } from '~/types/types'
+	import LoginIndex from '~/pages/login/index.vue'
+	import ExchangeIndex from '~/pages/exchange/index.vue'
 	const pushUp = usePushUp()
+	const pushLeft = usePush()
 	const props = defineProps<{
 		height?: number
 		symbol: string
@@ -250,7 +254,6 @@
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
 			lotSize.value = noExponents(toNumberFixed(losz, symbolObj.value?.lotSz))
 		}
-		
 	}
 
 	// 自动滑动滑块
@@ -388,6 +391,27 @@
 	}
 
 	function addOrder(side: Sides) {
+		if (!useUserStore().user) {
+			if (useStore().isH5) {
+				pushUp(LoginIndex)
+				return
+			}else{
+				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
+				return;
+			}
+		}
+
+		if(!useAccountStore().accounts?.length){
+			if (useStore().isH5) {
+				pushLeft(ExchangeIndex)
+				return
+			}else{
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				return;
+			}
+			
+		}
+
 		if (submitLoading.value) return
 		submitLoading.value = true
 		submitSide.value = side
@@ -452,7 +476,7 @@
 		const order = data.payload
 		if (order.state == 'live') {
 			// 挂单成功通知
-			if(submitLoading.value) ElMessage.success('挂单成功')
+			if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
 		}
 		if (order.state == 'rejected' || order.state == 'failed') {
