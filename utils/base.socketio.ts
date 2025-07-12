@@ -22,7 +22,6 @@ export class BaseSocketIo {
 		const socket = io(fullUrl, {
 			transports: ['websocket'],
 			path: this.path,
-			reconnectionAttempts: 5,
 			timeout: 5000,
 			auth: {
 				token: useCookie('token').value
