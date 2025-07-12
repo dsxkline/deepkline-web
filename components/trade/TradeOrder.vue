@@ -66,7 +66,7 @@
 	const side = ref<Sides>(props.side || Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.MARKET)
 	const price = ref()
-	const lotSize = ref(symbolObj.value?.minSz)
+	const lotSize = ref(symbolObj.value?.minSz||'')
 	const canTradeLotSize = ref(0)
 	const lotSizePercent = ref(0)
 	const marks = reactive<Record<number, any>>({
@@ -320,10 +320,10 @@
 	}
 	const lotSizeThreshold = () => {
 		if (parseFloat(lotSize.value) > canTradeLotSize.value) {
-			lotSize.value = noExponents(canTradeLotSize.value)
+			lotSize.value = canTradeLotSize.value?noExponents(canTradeLotSize.value):''
 			const inputNumber = marginInput.value?.querySelector('input')
 			if (inputNumber) {
-				margin.value = available.value.toFixed(2)
+				margin.value = available.value?available.value.toFixed(2):''
 				inputNumber.value = margin.value // 强制覆盖正在输入的值
 			}
 		}
@@ -395,21 +395,20 @@
 			if (useStore().isH5) {
 				pushUp(LoginIndex)
 				return
-			}else{
+			} else {
 				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
-				return;
+				return
 			}
 		}
 
-		if(!useAccountStore().accounts?.length){
+		if (!useAccountStore().accounts?.length) {
 			if (useStore().isH5) {
 				pushLeft(ExchangeIndex)
 				return
-			}else{
+			} else {
 				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
-				return;
+				return
 			}
-			
 		}
 
 		if (submitLoading.value) return
