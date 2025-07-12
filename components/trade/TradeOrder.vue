@@ -149,10 +149,10 @@
 	// 手续费
 	const fee = computed(() => {
 		if (symbolObj.value.marketType == MarketType.SPOT) {
-			return useAccountStore().currentAccount?.config.spotMakerFee || 0
+			return useAccountStore().currentAccount?.config?.spotMakerFee || 0
 		}
 		if (symbolObj.value.marketType == MarketType.SWAP) {
-			return useAccountStore().currentAccount?.config.swapMakerFee || 0
+			return useAccountStore().currentAccount?.config?.swapMakerFee || 0
 		}
 		return 0
 	})
