@@ -1,4 +1,4 @@
-import { AccountDto, FundDto } from '~/fetch/dtos/account.dto'
+import type { AccountDto, FundDto } from '~/fetch/dtos/account.dto'
 import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 
 export const useAccountStore = defineStore({

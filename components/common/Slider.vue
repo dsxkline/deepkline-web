@@ -21,6 +21,7 @@
 	const sliderProgressStops = ref<HTMLElement | null>(null)
 	const tooltip = ref<HTMLElement | null>(null)
 	const sliderContainer = ref<HTMLElement | null>(null)
+	const container = ref()
 
 	const mouseDown = (event: MouseEvent) => {
 		event.preventDefault() // 阻止默认事件，避免页面滚动
@@ -34,7 +35,7 @@
 
 	const mouseMove = (event: MouseEvent) => {
 		if (!isMouseDown.value) return // 如果鼠标没有按下，则不处理移动事件
-		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+		const rect = container.value.getBoundingClientRect()
 		let newValue = ((event.clientX - rect.left) / rect.width) * 100
 		console.log('mouseMove', newValue)
 		// newValue = Math.max(0, Math.min(100, newValue)) // 限制在0-100之间
@@ -51,7 +52,6 @@
 		const touch = event.touches[0]
 		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
 		let newValue = ((touch.clientX - rect.left) / rect.width) * 100
-		console.log('touchMove', newValue)
 		// newValue = Math.max(0, Math.min(100, newValue)) // 限制在0-100之间
 		updateValue(newValue)
 	}
@@ -71,9 +71,9 @@
 
 		newValue = Math.min(newValue, maxValue.value) // 限制最大值
 		newValue = Math.max(newValue, minValue.value) // 限制最小值
-		console.log('updateValue', newValue, maxValue.value, minValue.value)
 		progressValue.value = newValue // 更新百分比值
 		emit('progress', newValue) // 触发进度更新事件
+		emit('update:modelValue', newValue) // 更新父组件的值
 	}
 
 	const setMaxMinValue = () => {
@@ -96,7 +96,6 @@
 			const width = sliderContainer.value ? sliderContainer.value.clientWidth : 0
 			const rect = tooltip.value.getBoundingClientRect()
 			const left = (valueToPercent(progressValue.value) * width) / 100
-			console.log('tooltipTransform', left, rect.width / 2, width)
 			if (left - rect.width / 2 <= 0) {
 				return `translateX(calc(-50% + ${rect.width / 2 - left}px)) translateY(-130%)`
 			} else if (left + rect.width / 2 >= width) {
@@ -107,35 +106,40 @@
 		return 'translateX(0) translateY(-130%)'
 	})
 
-	watch(
-		() => progressValue.value,
-		val => {
-			console.log('szPercentddddddd', val)
-			emit('update:modelValue', val) // 更新父组件的值
-		}
-	)
+	// watch(
+	// 	() => progressValue.value,
+	// 	val => {
+	// 		emit('update:modelValue', val) // 更新父组件的值
+	// 	}
+	// )
 
 	watch(
 		() => props.modelValue,
 		val => {
-			console.log('props.modelValue', val)
-			progressValue.value = val // 更新进度值
+			progressValue.value = val?val:0 // 更新进度值
 		}
 	)
 
 	onMounted(() => {
 		setMaxMinValue()
+		document.addEventListener('mousemove', mouseMove)
+		document.addEventListener('mouseup', mouseUp)
+	})
+
+	onBeforeUnmount(()=>{
+		document.removeEventListener('mousemove', mouseMove)
+		document.removeEventListener('mouseup', mouseUp)
 	})
 </script>
 <template>
 	<div
 		class="slider-wrapper flex flex-col items-center justify-center w-full h-full py-3 px-0 cursor-pointer"
 		@mouseup.stop="mouseUp"
-		@mousemove.stop="mouseMove"
 		@touchstart.stop="touchMove"
 		@touchmove.stop="touchMove"
 		@mousedown.stop="mouseDown"
 		@touchend.stop="touchEnd"
+		ref="container"
 	>
 		<div class="slider-container w-full h-[2px] bg-[--transparent20] rounded-full relative z-[99999]" ref="sliderContainer">
 			<div
@@ -162,7 +166,7 @@
 				:style="{
 					left: valueToPercent(progressValue) + '%',
 					transform:
-						(valueToPercent(progressValue) <= valueToPercent(minValue) ? 'translateX(-25%)' : valueToPercent(progressValue) < valueToPercent(maxValue) ? 'translateX(-50%)' : 'translateX(-75%)') +
+						(valueToPercent(progressValue) <= valueToPercent(0.5) ? 'translateX(-25%)' : valueToPercent(progressValue) < valueToPercent(maxValue) ? 'translateX(-50%)' : 'translateX(-75%)') +
 						' translateY(-40%)'
 				}"
 			></div>

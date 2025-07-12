@@ -1,12 +1,15 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
 	import { usePushUp } from '~/composable/usePush'
-	import type { AddOrderDto } from '~/fetch/dtos/order.dto'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import type { AddOrderDto, AddOrderRespDto, OrderDto } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
 	import { InstanceType, OrderType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { orderFetch } from '~/fetch/order.fetch'
 	import { useStore } from '~/store'
 	import { useAccountStore } from '~/store/account'
 	import { useSymbolStore } from '~/store/symbol'
+	import type { WsResult } from '~/types/types'
 	const pushUp = usePushUp()
 	const props = defineProps<{
 		height?: number
@@ -59,7 +62,8 @@
 	const side = ref<Sides>(props.side || Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.MARKET)
 	const price = ref()
-	const lotSize = ref(parseFloat(symbolObj.value?.minSz))
+	const lotSize = ref(symbolObj.value?.minSz)
+	const canTradeLotSize = ref(0)
 	const lotSizePercent = ref(0)
 	const marks = reactive<Record<number, any>>({
 		0: '0%',
@@ -72,7 +76,8 @@
 		return value + '%'
 	}
 	const canChangePrice = ref(true)
-	const margin = ref()
+	const margin = ref('')
+	const marginInput = ref<HTMLElement>()
 	const buyText = computed(() => {
 		return symbolObj.value?.marketType == MarketType.SPOT ? '买入' : '开仓'
 	})
@@ -136,6 +141,21 @@
 	const marginMode = ref<MarginMode>(MarginMode.Isolated)
 	const openSelfLarverage = ref(props.openLarverage || false)
 	const orderWidth = ref(0)
+	const timer = ref<NodeJS.Timeout>()
+	let inputing = false
+
+	// 可用金额
+	const available = computed(() => parseFloat(useAccountStore().fund?.available || '0'))
+	// 手续费
+	const fee = computed(() => {
+		if (symbolObj.value.marketType == MarketType.SPOT) {
+			return useAccountStore().currentAccount?.config.spotMakerFee || 0
+		}
+		if (symbolObj.value.marketType == MarketType.SWAP) {
+			return useAccountStore().currentAccount?.config.swapMakerFee || 0
+		}
+		return 0
+	})
 
 	const tickerHandler = (data: Ticker) => {
 		ticker.value = data
@@ -154,9 +174,11 @@
 		(val, old) => {
 			takeProfit.value = 0
 			stopLoss.value = 0
-			lotSize.value = 0
-			margin.value = 0
+			lotSize.value = symbolObj.value.minSz
+			margin.value = ''
+			autoSetMargin()
 			price.value = 0
+			lotSizePercent.value = 0
 			canChangePrice.value = true
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
@@ -180,35 +202,150 @@
 	watch(
 		() => side.value,
 		(val, old) => {
-			console.log('side changed', val, old)
+			// console.log('side changed', val, old)
 			emit('update:side', val)
 		}
 	)
 
-	onMounted(() => {
-		$ws.addTickerHandler(props.symbol, tickerHandler)
+	const sliderHandle = (val: number) => {
+		// 滑块滑动
+		// console.log('lotSizePercent', lotSizePercent)
+		autoSetLotSize()
+		autoSetMargin()
+	}
 
-		// 监听宽度变化
-		if (container.value) {
-			const resizeObserver = new ResizeObserver(() => {
-				orderWidth.value = container.value?.clientWidth || 0
-				console.log('container width changed', orderWidth.value)
-			})
-			resizeObserver.observe(container.value)
-			onBeforeUnmount(() => {
-				if (container.value) {
-					resizeObserver.unobserve(container.value)
-				}
-			})
+	watch(
+		() => available.value,
+		() => {
+			setCanTradeLotSize()
+			autoSetLotSize()
+			autoSetMargin()
 		}
+	)
+
+	const minMargin = computed(() => {
+		const last = parseFloat(ticker.value?.last || '0')
+		if (!last) return 0
+		const result = (parseFloat(symbolObj.value.minSz) * (price.value || last) * (100 + fee.value)) / 100
+		return parseFloat(result.toFixed(2))
 	})
 
-	onUnmounted(() => {
-		popLoss.value = null
-		popProfit.value = null
-		ticker.value = null
-		$ws.removeTickerHandler(props.symbol, tickerHandler)
-	})
+	const setCanTradeLotSize = () => {
+		// 根据手续费以及可用金额计算可买标的数量
+		const last = parseFloat(ticker.value?.last || '0')
+		if (!last) return
+		canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
+		if (canTradeLotSize.value < parseFloat(symbolObj.value.minSz)) {
+			canTradeLotSize.value = 0
+		}
+		canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value.lotSz)
+	}
+
+	// 自动设置数量
+	const autoSetLotSize = () => {
+		let losz = (canTradeLotSize.value * lotSizePercent.value) / 100
+		if (available.value < minMargin.value) {
+			losz = 0
+		} else {
+			losz = Math.max(losz, parseFloat(symbolObj.value.minSz))
+		}
+		lotSize.value = noExponents(toNumberFixed(losz, symbolObj.value.lotSz))
+	}
+
+	// 自动滑动滑块
+	const autoScrollSlider = () => {
+		// 计算百分比
+		const percent = Math.min((parseFloat(margin.value) / available.value) * 100, 100)
+		lotSizePercent.value = percent ? percent : 0
+		// console.log('autoScrollSlider', margin.value, percent)
+	}
+
+	// 自动设置保证金金额
+	const autoSetMargin = () => {
+		const last = parseFloat(ticker.value?.last || '0')
+		if (!last) return
+		let mvalue = (parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value)) / 100
+		if (mvalue > available.value) {
+			mvalue = available.value
+		}
+		margin.value = mvalue ? parseFloat(mvalue.toFixed(2)).toString() : ''
+	}
+
+	const marginChange = (val: string) => {
+		// 只允许数字和小数点
+		let clean = String(val).replace(/[^\d.]/g, '')
+		// 转成 float 判断最大值
+		const num = parseFloat(clean)
+		if (!clean) {
+			margin.value = ''
+			return
+		}
+		margin.value = clean
+		// console.log('marginChange', num, clean, val)
+		nextTick(() => {
+			autoScrollSlider()
+			autoSetLotSize()
+		})
+	}
+
+	const lotSizeChange = (val: string) => {
+		// 只允许数字和小数点
+		let clean = String(val).replace(/[^\d.]/g, '')
+		// 转成 float 判断最大值
+		const num = parseFloat(clean)
+		if (!clean) {
+			lotSize.value = ''
+			return
+		}
+		lotSize.value = clean
+		// console.log('lotSizeChange', num, clean, val)
+		nextTick(() => {
+			autoScrollSlider()
+			autoSetMargin()
+		})
+	}
+
+	const marginThreshold = () => {
+		if (parseFloat(margin.value) > available.value) {
+			margin.value = available.value.toFixed(2)
+			const inputNumber = marginInput.value?.querySelector('input')
+			if (inputNumber) {
+				inputNumber.value = margin.value // 强制覆盖正在输入的值
+			}
+		}
+	}
+	const lotSizeThreshold = () => {
+		if (parseFloat(lotSize.value) > canTradeLotSize.value) {
+			lotSize.value = noExponents(canTradeLotSize.value)
+			const inputNumber = marginInput.value?.querySelector('input')
+			if (inputNumber) {
+				margin.value = available.value.toFixed(2)
+				inputNumber.value = margin.value // 强制覆盖正在输入的值
+			}
+		}
+	}
+
+	const startTimer = () => {
+		clearTimer()
+		timer.value = setInterval(() => {
+			setCanTradeLotSize()
+			// 限制阈值
+			marginThreshold()
+			lotSizeThreshold()
+		}, 30)
+	}
+	const clearTimer = () => {
+		if (timer.value) clearInterval(timer.value)
+	}
+	const handleKeydown = (event: KeyboardEvent) => {
+		console.log('全局按键：', event.key)
+		inputing = true
+	}
+	function handleClickOrTouch(e: Event) {
+		autoSetLotSize()
+		autoSetMargin()
+		inputing = false
+	}
 
 	function getTradeorders() {}
 
@@ -252,10 +389,18 @@
 	function addOrder(side: Sides) {
 		if (submitLoading.value) return
 		submitLoading.value = true
-		setTimeout(() => {
-			submitLoading.value = false
-		}, 3000)
 		submitSide.value = side
+		if (!parseFloat(lotSize.value)) {
+			ElMessage.error({ message: '请输入交易数量' })
+			submitLoading.value = false
+			return
+		}
+		if (!parseFloat(margin.value)) {
+			ElMessage.error('请输入交易金额')
+			submitLoading.value = false
+			return
+		}
+
 		const order = {
 			side,
 			orderType: ordType.value,
@@ -264,6 +409,7 @@
 			marginMode: marginMode.value,
 			margin: String(margin.value),
 			accountId: useAccountStore().currentAccount?.accountId,
+			exchange: useAccountStore().currentAccount?.exchange,
 			symbol: props.symbol,
 			leverage: String(leverage.value),
 			takeProfitPrice: String(takeProfit.value),
@@ -271,7 +417,84 @@
 			openStopLoss: openStopLoss.value,
 			openTakeProfit: openTakeProfit.value
 		} as AddOrderDto
+
+		console.log('order', order)
+
+		orderFetch
+			.add(order)
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					// 下单成功,如果ws五秒内还不来就先给出提示
+					setTimeout(() => {
+						if (submitLoading.value) {
+							ElMessage.success('订单已提交')
+							submitLoading.value = false
+						}
+					}, 5000)
+				} else {
+					setTimeout(() => {
+						ElMessage.error(result?.msg)
+						submitLoading.value = false
+					}, 500)
+				}
+			})
+			.catch(err => {
+				setTimeout(() => {
+					ElMessage.error('网络异常，请稍后再试')
+					submitLoading.value = false
+				}, 500)
+			})
 	}
+
+	const wsOrderHandle = (data: WsResult<OrderDto>) => {
+		console.log('收到订单推送信息', data.payload)
+		const order = data.payload
+		if (order.state == 'live') {
+			// 挂单成功通知
+			if(submitLoading.value) ElMessage.success('挂单成功')
+			submitLoading.value = false
+		}
+		if (order.state == 'rejected' || order.state == 'failed') {
+			// 挂单失败
+			const msg = order.msg || '挂单失败'
+			ElMessage.error(msg)
+			submitLoading.value = false
+		}
+	}
+
+	onMounted(() => {
+		startTimer()
+		$ws.addTickerHandler(props.symbol, tickerHandler)
+		window.addEventListener('keydown', handleKeydown)
+		document.addEventListener('click', handleClickOrTouch, true)
+		document.addEventListener('touchstart', handleClickOrTouch, true)
+		useNuxtApp().$dkws.onOrder(wsOrderHandle)
+		// 监听宽度变化
+		if (container.value) {
+			const resizeObserver = new ResizeObserver(() => {
+				orderWidth.value = container.value?.clientWidth || 0
+				console.log('container width changed', orderWidth.value)
+			})
+			resizeObserver.observe(container.value)
+			onBeforeUnmount(() => {
+				if (container.value) {
+					resizeObserver.unobserve(container.value)
+				}
+			})
+		}
+	})
+
+	onUnmounted(() => {
+		popLoss.value = null
+		popProfit.value = null
+		ticker.value = null
+		$ws.removeTickerHandler(props.symbol, tickerHandler)
+		window.removeEventListener('keydown', handleKeydown)
+		document.removeEventListener('click', handleClickOrTouch, true)
+		document.removeEventListener('touchstart', handleClickOrTouch, true)
+		useNuxtApp().$dkws.removeOnEvent(wsOrderHandle)
+		clearTimer()
+	})
 </script>
 <template>
 	<div class="h-full w-full" ref="container">
@@ -377,33 +600,46 @@
 							</div>
 							<div class="amount-container">
 								<h5 class="py-2">数量({{ symbolObj?.baseCoin }})</h5>
-								<el-input-number
-									:controls="false"
+								<el-input
 									v-click-sound
 									inputmode="decimal"
 									v-model="lotSize"
+									@input="lotSizeChange"
 									:placeholder="'最小数量 ' + symbolObj?.minSz + symbolObj?.baseCoin"
 									size="large"
 									class="!w-full"
 									:clearable="!isH5"
 								/>
 								<div class="slider-demo-block">
-									<slider v-model="lotSizePercent" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
+									<slider v-model="lotSizePercent" @progress="sliderHandle" :step="1" :marks="marks" :formatTooltip="formatTooltip" :hideMaskText="true" v-if="!loading" />
 								</div>
 							</div>
 
-							<div class="money-container">
+							<div class="money-container" ref="marginInput">
 								<h5 class="py-2">金额({{ symbolObj?.quoteCoin }})</h5>
-								<el-input-number v-click-sound inputmode="decimal" :controls="false" v-model="margin" :placeholder="'请输入金额'" size="large" class="!w-full" :clearable="!isH5" />
+								<el-input
+									v-click-sound
+									inputmode="decimal"
+									:controls="false"
+									v-model="margin"
+									:max="available"
+									:min="minMargin"
+									:placeholder="'请输入金额'"
+									size="large"
+									class="!w-full"
+									:clearable="!isH5"
+									@input="marginChange"
+								/>
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
 										<span class="text-grey">可用({{ symbolObj?.quoteCoin }})</span>
-										<b class="font-normal" v-if="useAccountStore().fund?.available">{{formatPrice(useAccountStore().fund?.available,'2','')}} </b>
+										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
-						
 									</div>
 									<div class="py-1 av-item">
-										<span class="text-grey">可买({{ symbolObj?.quoteCoin }})</span><b class="font-normal">--</b><span></span>
+										<span class="text-grey">可买({{ symbolObj?.baseCoin }})</span>
+										<b class="font-normal" v-if="canTradeLotSize">{{ formatPrice(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
+										<b class="font-normal" v-else>--</b>
 									</div>
 								</div>
 							</div>
@@ -417,7 +653,7 @@
 											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last||'0')" @close="confirmProfit" v-if="!loading" />
+									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
 								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="250">
 									<template #reference>
@@ -427,7 +663,7 @@
 											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last||'0')" @close="confirmLoss" v-if="!loading" />
+									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>
@@ -475,12 +711,7 @@
 					</div>
 				</ScrollBar>
 			</client-only>
-			<div v-show="loading || error" class="p-4">
-				<Error :content="error" v-if="!loading && error">
-					<template #default>
-						<el-button @click.stop="getSymbolInfo()">点击刷新</el-button>
-					</template>
-				</Error>
+			<div v-show="loading" class="p-4">
 				<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 			</div>
 		</div>
@@ -508,15 +739,6 @@
 		}
 		:deep(.slider-container) {
 			--slider-border-color: rgb(var(--color-red));
-			// .slider-progress{
-			// 	background-color: rgb(var(--color-red));
-			// }
-			// .slider-progress-stops{
-			// 	background-color: rgb(var(--color-red));
-			// }
-			// .slider-tooltip{
-			// 	background-color: rgb(var(--color-red));
-			// }
 		}
 	}
 	.buy {
@@ -530,17 +752,6 @@
 			.el-radio-button__inner {
 				padding: 6px 10px;
 			}
-		}
-		:deep(.slider-container) {
-			// .slider-progress{
-			// 	background-color: rgb(var(--color-green));
-			// }
-			// .slider-progress-stops{
-			// 	background-color: rgb(var(--color-green));
-			// }
-			// .slider-tooltip{
-			// 	background-color: rgb(var(--color-green));
-			// }
 		}
 	}
 
@@ -641,9 +852,6 @@
 							padding-bottom: 5px;
 						}
 						span:last-child {
-							display: none;
-						}
-						&:last-child {
 							display: none;
 						}
 					}

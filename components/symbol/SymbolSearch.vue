@@ -72,7 +72,7 @@
 			@click="search"
 		>
 			<el-icon><Search /></el-icon>
-			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.instId }}</span>
+			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.symbol }}</span>
 		</div>
 		<div v-if="show || push" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
 			<div class="search-list-box bg-[--transparent05]">

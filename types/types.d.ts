@@ -13,6 +13,12 @@ interface ApiResult<T = any> {
 	msg: string
 }
 
+
+interface WsResult<T = any> {
+	payload: T
+	event: string
+}
+
 declare module '#app' {
 	interface NuxtApp {
 		$ws: OKXWebSocket

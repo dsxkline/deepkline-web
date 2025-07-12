@@ -450,8 +450,10 @@ body {
 	.el-message {
 		max-width: calc(var(--body-width) - 32px);
 		width: max-content;
+		min-width: 250px;
+		min-height: 40px;
 		overflow: hidden;
-		border-radius: 8px;
+		border-radius: 8888px;
 		&::before {
 			background-image: var(--bg-linear-90);
 			// filter: blur(60px);
@@ -464,21 +466,22 @@ body {
 			z-index: 0;
 			opacity: 0.15;
 		}
+		background: linear-gradient(to left, rgba(0,0,0,0.00), rgba(0,0,0,0.00)), linear-gradient(to left, rgb(var(--color-bg-invert)), rgb(var(--color-bg-invert)));
 		&.el-message--info {
 			--el-message-border-color: var(--transparent00);
 			--el-message-text-color: rgb(var(--color-text-grey));
-			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
+			// background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 		}
 		&.el-message--success {
-			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
+			// background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 			--el-message-border-color: var(--transparent00);
 		}
 		&.el-message--warning {
-			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
+			// background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
 			--el-message-border-color: var(--transparent00);
 		}
 		&.el-message--error {
-			background: linear-gradient(to left, var(--transparent05), var(--transparent05)), linear-gradient(to left, rgb(var(--color-bg-base)), rgb(var(--color-bg-base)));
+			
 			--el-message-border-color: var(--transparent00);
 		}
 	}

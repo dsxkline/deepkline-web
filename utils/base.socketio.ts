@@ -34,8 +34,10 @@ export class BaseSocketIo {
 		})
 
 		socket.on('connect_error', err => {
+			console.error(err)
 			console.error(`[WS-CLIENT] Connection error: ${err.message}`)
             // this.reconnectOnError()
+	
 		})
 
 		socket.on('disconnect', reason => {

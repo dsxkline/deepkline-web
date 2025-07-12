@@ -23,7 +23,7 @@
 					loading.value = false
 					await getUserAccounts()
 					ElMessage({
-						message: result?.msg || '重置成功',
+						message: '重置成功',
 						type: 'success'
 					})
 					useNuxtApp().$pop()

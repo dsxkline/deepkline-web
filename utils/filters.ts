@@ -1,13 +1,26 @@
 import { number } from 'echarts'
 import moment from 'moment'
-import { isVNode } from 'vue';
-import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto';
+import { isVNode } from 'vue'
+import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 
 export const formatPrice = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
+}
+
+// 正数向下取，负数向上取
+export const toNumberFixed = (value: any, precision: string) : number => {
+	if (!precision) return value
+	value = parseFloat(value.toString())
+	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
+	const factor = Math.pow(10, point)
+	if (value >= 0) {
+		return Math.floor(value * factor) / factor
+	} else {
+		return Math.ceil(value * factor) / factor
+	}
 }
 
 export const thousandUnit = (num: any) => {
@@ -117,17 +130,15 @@ export function emailStar(value: string) {
 	return phoneStar(preStr) + '@' + domainStr
 }
 
-
-
 /**
  * 判断是否是 VNode 或 VNode 数组
  * @param value 任意值
  * @returns boolean
  */
 export function isVNodeLike(value: unknown): value is VNode | VNode[] {
-  if (isVNode(value)) return true;
-  if (Array.isArray(value)) {
-    return value.every(item => isVNode(item));
-  }
-  return false;
+	if (isVNode(value)) return true
+	if (Array.isArray(value)) {
+		return value.every(item => isVNode(item))
+	}
+	return false
 }
