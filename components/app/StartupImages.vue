@@ -24,6 +24,7 @@
 	function hide() {
 		opacity.value = 0
 		emit('update:modelValue', true)
+		console.log('startup',props.modelValue)
 		setTimeout(() => {
 			closed.value = true
 		}, 200)

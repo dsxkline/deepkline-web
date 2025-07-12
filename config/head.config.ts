@@ -26,7 +26,7 @@ export default {
 		// iphone safari 添加到主屏幕的引导图标
 		{
 			rel: 'icon',
-			href: '/images/pwa/icon.png'
+			href: '/images/pwa/apple-touch-icon.png'
 		},
 		// Android 启动图标
 		{

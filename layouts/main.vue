@@ -1,8 +1,10 @@
 <script setup lang="ts">
 	import { useStore } from '~/store'
+	const isStartup = ref(false)
 </script>
 <template>
-	<div class="app-container flex flex-col justify-between w-full h-full">
+	<StartupImages v-model="isStartup" />
+	<div class="app-container flex flex-col justify-between w-full h-full" v-show="isStartup">
 		<Header />
 		<slot v-if="!useStore().unload" />
 		<StatusBar v-if="!useStore().unload" />
