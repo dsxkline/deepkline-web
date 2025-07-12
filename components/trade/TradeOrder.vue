@@ -174,7 +174,7 @@
 		(val, old) => {
 			takeProfit.value = 0
 			stopLoss.value = 0
-			lotSize.value = symbolObj.value.minSz
+			lotSize.value = symbolObj.value?.minSz
 			margin.value = ''
 			autoSetMargin()
 			price.value = 0
@@ -226,7 +226,7 @@
 	const minMargin = computed(() => {
 		const last = parseFloat(ticker.value?.last || '0')
 		if (!last) return 0
-		const result = (parseFloat(symbolObj.value.minSz) * (price.value || last) * (100 + fee.value)) / 100
+		const result = (parseFloat(symbolObj.value?.minSz) * (price.value || last) * (100 + fee.value)) / 100
 		return parseFloat(result.toFixed(2))
 	})
 
@@ -235,21 +235,22 @@
 		const last = parseFloat(ticker.value?.last || '0')
 		if (!last) return
 		canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
-		if (canTradeLotSize.value < parseFloat(symbolObj.value.minSz)) {
+		if (canTradeLotSize.value < parseFloat(symbolObj.value?.minSz)) {
 			canTradeLotSize.value = 0
 		}
-		canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value.lotSz)
+		canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value?.lotSz)
 	}
 
 	// 自动设置数量
 	const autoSetLotSize = () => {
 		let losz = (canTradeLotSize.value * lotSizePercent.value) / 100
 		if (available.value < minMargin.value) {
-			losz = 0
+			lotSize.value = ''
 		} else {
-			losz = Math.max(losz, parseFloat(symbolObj.value.minSz))
+			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
+			lotSize.value = noExponents(toNumberFixed(losz, symbolObj.value?.lotSz))
 		}
-		lotSize.value = noExponents(toNumberFixed(losz, symbolObj.value.lotSz))
+		
 	}
 
 	// 自动滑动滑块

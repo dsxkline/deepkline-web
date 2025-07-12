@@ -7,16 +7,16 @@
 		volume?: boolean
 	}>()
 	const { $wsb, $ws } = useNuxtApp()
-	const ticker = $ws?.getTickers(props.symbol.symbol)
+	const ticker = $ws?.getTickers(props.symbol?.symbol)
 	const price = ref(parseFloat(ticker?.last || '0') * parseFloat(ticker?.vol24h || '0'))
 	const tickerHandler = (data: Ticker) => {
 		price.value = parseFloat(data?.last || '0') * parseFloat(data?.vol24h || '0')
 	}
 	onMounted(() => {
-		$ws.addTickerHandler(props.symbol.symbol, tickerHandler)
+		$ws.addTickerHandler(props.symbol?.symbol, tickerHandler)
 	})
 	onUnmounted(() => {
-		$ws.removeTickerHandler(props.symbol.symbol, tickerHandler)
+		$ws.removeTickerHandler(props.symbol?.symbol, tickerHandler)
 	})
 </script>
 <template>

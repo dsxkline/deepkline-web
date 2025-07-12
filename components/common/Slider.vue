@@ -37,7 +37,7 @@
 		if (!isMouseDown.value) return // 如果鼠标没有按下，则不处理移动事件
 		const rect = container.value.getBoundingClientRect()
 		let newValue = ((event.clientX - rect.left) / rect.width) * 100
-		console.log('mouseMove', newValue)
+		// console.log('mouseMove', newValue)
 		// newValue = Math.max(0, Math.min(100, newValue)) // 限制在0-100之间
 		updateValue(newValue)
 	}

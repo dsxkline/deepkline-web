@@ -96,7 +96,7 @@
 		error.value = ''
 		if (load) loading.value = true
 		ComposFetch.tradingDataFetch
-			.loanRatio(symbolObj.value.baseCoin || symbolObj.value.marginCoin, p)
+			.loanRatio(symbolObj.value?.baseCoin || symbolObj.value?.marginCoin, p)
 			.then(res => {
 				// console.log(res?.data);
 				loading.value = false
