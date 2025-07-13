@@ -31,6 +31,9 @@
 	}
 	onMounted(() => {
 		createTimer()
+		setTimeout(() => {
+			emit('update:modelValue', true)
+		}, 1000);
 	})
 	onBeforeUnmount(() => {
 		clearTimer()
