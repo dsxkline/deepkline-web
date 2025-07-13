@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { useRefreshChildEvent } from './composable/usePush';
-const isStartup = ref(false)
+	import { useRefreshChildEvent } from './composable/usePush'
+	const isStartup = ref(false)
 	defineExpose({
 		...useRefreshChildEvent()
 	})
 </script>
 <template>
+	<StartupImages v-model="isStartup" />
 	<template v-if="isStartup">
-	<NuxtLayout>
-		<NuxtPage />
-	</NuxtLayout>
+		<NuxtLayout>
+			<NuxtPage />
+		</NuxtLayout>
 	</template>
-
-		<StartupImages v-else v-model="isStartup" />
 </template>
