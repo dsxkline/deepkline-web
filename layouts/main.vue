@@ -3,7 +3,7 @@
 	const isStartup = ref(false)
 </script>
 <template>
-	<StartupImages v-model="isStartup" />
+	<!-- <StartupImages v-model="isStartup" /> -->
 	<div class="app-container flex flex-col justify-between w-full h-full">
 		<Header />
 		<slot v-if="!useStore().unload" />
