@@ -10,6 +10,7 @@
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
+import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
 
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
@@ -31,7 +32,7 @@
 
 	// 定义验证码js加载错误处理函数
 	function loadErrorCallback(isreset: boolean, isRegister?: boolean) {
-		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID
+		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID as string
 		// 生成容灾票据或自行做其它处理
 		var ticket = createTicket(appid)
 		captchCallback(
@@ -86,7 +87,7 @@
 							return false
 						}
 						if (isValid && openCaptcha) {
-							const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset, isRegister))
+							const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID as string, captchCallback(isreset, isRegister))
 							captcha.show()
 							return false
 						} else {

@@ -11,6 +11,7 @@
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
+import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
 
 	const props = defineProps<{
 		email: string
@@ -35,7 +36,7 @@
 		if (requireCaptcha.value && props.openCaptcha) {
 			// 如果需要用户行为验证
 			// 需要用户行为认证
-			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(false))
+			const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID as string, captchCallback(false))
 			captcha.show()
 			return
 		}
@@ -128,7 +129,7 @@
 
 	// 定义验证码js加载错误处理函数
 	function loadErrorCallback(isreset: boolean) {
-		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID
+		var appid = useNuxtApp().$config.public.CAPTCHA_APP_ID as string
 		// 生成容灾票据或自行做其它处理
 		var ticket = createTicket(appid)
 		captchCallback(isreset)({
@@ -147,7 +148,7 @@
 		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
 		try {
 			if (props.openCaptcha) {
-				const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID, captchCallback(isreset))
+				const captcha = createCaptcha(useNuxtApp().$config.public.CAPTCHA_APP_ID as string, captchCallback(isreset))
 				captcha.show()
 			} else {
 				// 没有开启行为验证就直接进入发送验证码流程

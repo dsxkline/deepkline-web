@@ -79,16 +79,16 @@ export const useStore = defineStore({
 		setTheme(theme: string) {
 			this.theme = theme
 			let colorCookie = useCookie('nuxt-color-mode', { default: () => 'dark' })
-			colorCookie.value = theme
 			if (process.client) {
 				document.documentElement.setAttribute('class', theme)
-        // 修改meta标签的主题颜色
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme == 'dark' ? '#1e0b2c' : '#ffffff')
-        // 清除PWA缓存
-				clearPWACaches()
+				// 修改meta标签的主题颜色
+				document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme == 'dark' ? '#1e0b2c' : '#ffffff')
+				// 清除PWA缓存
+				if (colorCookie.value != theme) clearPWACaches()
 			}
+			colorCookie.value = theme
 		},
-		setExchange(exchange:string){
+		setExchange(exchange: string) {
 			this.exchange = exchange
 		}
 	},
