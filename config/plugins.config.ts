@@ -9,4 +9,5 @@ export default [
     {src: '~/plugins/vconsole.ts', mode: 'client'},
     '~/plugins/device.ts',
     '~/plugins/directives.ts',
+    {src: '~/plugins/order.ts', mode: 'client'},
 ] as (NuxtPlugin | string)[]

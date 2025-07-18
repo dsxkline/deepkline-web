@@ -92,13 +92,7 @@
 		active.value = index
 	}
 
-	const orderHandle = (data: any) => {
-		console.log('收到订单推送信息', data)
-	}
-	const fundHandle = (data: any) => {
-		console.log('收到资产推送信息', data)
-		data?.payload && useAccountStore().setFund(data.payload)
-	}
+	
 
 	watch(
 		() => useStore().isH5,
@@ -118,13 +112,11 @@
 	)
 
 	onMounted(() => {
-		useNuxtApp().$dkws.onOrder(orderHandle)
-		useNuxtApp().$dkws.onFund(fundHandle)
+		
 	})
 
 	onBeforeUnmount(() => {
-		useNuxtApp().$dkws.removeOnEvent(orderHandle)
-		useNuxtApp().$dkws.removeOnEvent(fundHandle)
+		
 		menus.value = null
 		menus5.value = null
 		console.log('onBeforeUnmount.............................')
