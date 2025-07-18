@@ -110,6 +110,13 @@
 		}
 	)
 
+	watch(
+		() => useAccountStore().currentAccount?.accountId,
+		val => {
+			useNuxtApp().$dkws.reconnect()
+		}
+	)
+
 	onMounted(() => {
 		useNuxtApp().$dkws.onOrder(orderHandle)
 		useNuxtApp().$dkws.onFund(fundHandle)

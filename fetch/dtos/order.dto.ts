@@ -43,4 +43,6 @@ export interface OrderDto {
 	updatedAt: string
 	userId: number,
 	msg:string
+	matchPrice:string
+	matchSize:string
 }

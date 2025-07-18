@@ -238,6 +238,7 @@ function beforeunload() {
 	useStore().unload = true
 	useNuxtApp().$ws.destroy()
 	useNuxtApp().$wsb.destroy()
+	useNuxtApp().$dkws.destroy()
 	window.removeEventListener('beforeunload', beforeunload)
 	console.log('beforeunload success')
 }

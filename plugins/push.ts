@@ -90,7 +90,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 					if (parentDrawer.classList.contains('rtl')) parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
 					// 针对dialog处理
-					if (renderDom.getAttribute('class').indexOf('scroll-bar-inner')>=0) {
+					if (renderDom.getAttribute('class')?.indexOf('scroll-bar-inner')>=0) {
 						console.log('dialog-push-container.....')
 					} else {
 						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
