@@ -484,11 +484,7 @@
 			if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
 		}
-		if (order.state == 'filled') {
-			// 成交通知
-			ElMessage.success('挂单已成交，成交价为: ' + formatPrice(order.matchPrice, symbolObj.value.tickSz))
-			submitLoading.value = false
-		}
+		
 		if (order.state == 'rejected' || order.state == 'failed') {
 			// 挂单失败
 			const msg = order.msg || '挂单失败'

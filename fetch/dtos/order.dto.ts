@@ -1,3 +1,5 @@
+import type { MarketType } from './symbol.dto'
+
 export interface AddOrderDto {
 	accountId: number
 	symbol: string
@@ -29,20 +31,37 @@ export interface OrderDto {
 	leverage: string
 	lotSize: string
 	margin: string
-	marginMode: 'crossed' | 'isolated'
+	marginMode: 'cross' | 'isolated'
 	openStopLoss: boolean
 	openTakeProfit: boolean
 	orderId: string
 	orderType: 'limit' | 'market' | 'stop_limit' | 'stop_market' | 'trailing_stop'
 	price: string
 	side: 'buy' | 'sell'
-	state: 'new' | 'filled' | 'canceled' | 'partially_filled' | 'expired' | 'live' | 'mmp_canceled' | 'pending_cancel' | 'rejected' | 'triggered' | 'stopped' | 'failed'
+	state: OrderState
 	stopLossPrice: string
 	symbol: string
 	takeProfitPrice: string
 	updatedAt: string
-	userId: number,
-	msg:string
-	matchPrice:string
-	matchSize:string
+	userId: number
+	msg: string
+	matchPrice: string
+	matchSize: string
+	marketType: MarketType
+}
+
+export enum OrderState {
+	NEW = 'new',
+	FILLED = 'filled',
+	CANCEL = 'cancel',
+	CANCELED = 'canceled',
+	PARTIALLY_FILLED = 'partially_filled',
+	EXPIRED = 'expired',
+	LIVE = 'live',
+	MMP_CANCELED = 'mmp_canceled',
+	PENDING_CANCEL = 'pending_cancel',
+	REJECTED = 'rejected',
+	TRIGGERED = 'triggered',
+	STOPPED = 'stopped',
+	FAILED = 'failed'
 }

@@ -10,6 +10,13 @@ export const formatPrice = (value: any, precision: string, prefix: string = '') 
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
 }
 
+export const formatNumber = (value: any, precision: string, prefix: string = '') => {
+	if (!precision) return value + ''
+	value = parseFloat(value.toString())
+	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
+	return thousandUnit(`${prefix}${noExponents(parseFloat(value.toFixed(point)))}`)
+}
+
 // 正数向下取，负数向上取
 export const toNumberFixed = (value: any, precision: string) : number => {
 	if (!precision) return value

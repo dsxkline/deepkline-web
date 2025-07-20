@@ -1,7 +1,9 @@
+import type { MarketType } from './symbol.dto'
+
 export interface PositionDto {
 	id: number
 
-    positionId: number
+	positionId: number
 
 	userId: number // 用户ID，关联用户表
 
@@ -46,4 +48,6 @@ export interface PositionDto {
 	createdAt: Date // 创建时间
 
 	updatedAt: Date | null // 更新时间
+
+	marketType: MarketType
 }
