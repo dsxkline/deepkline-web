@@ -19,21 +19,15 @@ export interface PositionDto {
 
 	leverage: string // 杠杆倍数（数据库 decimal 类型，转为 string）
 
-	available: string // 可用资产/持仓量
-
-	frozen: string // 冻结资产/持仓量（委托未成交时冻结）
-
 	margin: string // 占用保证金
-
-	balance: string // 余额（含浮动）
 
 	profit: string // 浮动收益（如有保证金）
 
 	costPrice: string // 成本价
 
-	openPrice: string // 开仓均价
-
 	lotSize: string // 仓位数量/持仓量
+
+    lotBalance: string
 
 	openTakeProfit: boolean // 是否开启止盈
 

@@ -176,14 +176,7 @@
 	watch(
 		() => props.symbol,
 		(val, old) => {
-			takeProfit.value = 0
-			stopLoss.value = 0
-			lotSize.value = symbolObj.value?.minSz
-			margin.value = ''
-			autoSetMargin()
-			price.value = 0
-			lotSizePercent.value = 0
-			canChangePrice.value = true
+			resetForm()
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
 		}
@@ -351,7 +344,16 @@
 		inputing = false
 	}
 
-	function getTradeorders() {}
+	function resetForm() {
+		takeProfit.value = 0
+		stopLoss.value = 0
+		lotSize.value = symbolObj.value?.minSz
+		margin.value = ''
+		autoSetMargin()
+		price.value = 0
+		lotSizePercent.value = 0
+		canChangePrice.value = true
+	}
 
 	function priceChange() {
 		canChangePrice.value = false
@@ -459,6 +461,7 @@
 						if (submitLoading.value) {
 							ElMessage.success('订单已提交')
 							submitLoading.value = false
+							resetForm()
 						}
 					}, 5000)
 				} else {
@@ -484,7 +487,7 @@
 			if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
 		}
-		
+
 		if (order.state == 'rejected' || order.state == 'failed') {
 			// 挂单失败
 			const msg = order.msg || '挂单失败'

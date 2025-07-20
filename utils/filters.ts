@@ -5,6 +5,7 @@ import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 
 export const formatPrice = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
+	if (!value) return value
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
@@ -12,6 +13,7 @@ export const formatPrice = (value: any, precision: string, prefix: string = '') 
 
 export const formatNumber = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
+	if (!value) return value
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
 	return thousandUnit(`${prefix}${noExponents(parseFloat(value.toFixed(point)))}`)
@@ -20,6 +22,7 @@ export const formatNumber = (value: any, precision: string, prefix: string = '')
 // 正数向下取，负数向上取
 export const toNumberFixed = (value: any, precision: string) : number => {
 	if (!precision) return value
+	if (!value) return value
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
 	const factor = Math.pow(10, point)

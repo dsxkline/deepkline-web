@@ -13,6 +13,7 @@ const listApi = '/order/list'
 const positionsApi = '/order/positions'
 const assetsApi = '/order/assets'
 const addApi = '/order/add'
+const cancelApi = '/order/cancel'
 
 export const orderFetch = {
 	/**
@@ -38,5 +39,12 @@ export const orderFetch = {
 	 * @param payload
 	 * @returns
 	 */
-	add: (payload: AddOrderDto) => usePost<ApiResult<AddOrderRespDto>>(baseUrl, addApi, payload)
+	add: (payload: AddOrderDto) => usePost<ApiResult<AddOrderRespDto>>(baseUrl, addApi, payload),
+
+	/**
+	 * 撤单
+	 * @param orderId 订单ID
+	 * @returns
+	 */
+	cancel: (orderId: string, accountId?: number) => usePost<ApiResult<boolean>>(baseUrl, cancelApi, {accountId,orderId})
 }

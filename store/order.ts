@@ -12,18 +12,22 @@ export const useOrderStore = defineStore({
 		addOrder(payload: OrderDto) {
 			const exit = this.orders.findIndex(item => item.orderId == payload.orderId)
 			// 挂单
-			if (payload.state == OrderState.NEW || payload.state == OrderState.LIVE) {
+			if (payload.state == OrderState.NEW || payload.state == OrderState.LIVE || payload.state == OrderState.PENDING_CANCEL) {
 				if (exit < 0) {
 					this.orders.push(payload)
 					this.orders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 				} else {
 					this.orders[exit] = payload
 				}
-			}
-			// 成交 撤单 委托单清除
-			if (payload.state == 'filled' || payload.state == 'canceled') {
+			} else {
 				if (exit >= 0) this.orders = this.orders.filter(item => item.orderId != payload.orderId)
 			}
+		},
+		updateOrder(payload: OrderDto) {
+			const orderIndex = this.orders.findIndex(item => item.orderId == payload.orderId)
+            if(orderIndex>=0){
+                this.orders[orderIndex] = payload
+            }
 		},
 		addPosition(payload: PositionDto) {
 			// 合约杠杆

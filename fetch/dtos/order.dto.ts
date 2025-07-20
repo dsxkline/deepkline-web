@@ -51,17 +51,14 @@ export interface OrderDto {
 }
 
 export enum OrderState {
-	NEW = 'new',
-	FILLED = 'filled',
-	CANCEL = 'cancel',
-	CANCELED = 'canceled',
-	PARTIALLY_FILLED = 'partially_filled',
-	EXPIRED = 'expired',
-	LIVE = 'live',
-	MMP_CANCELED = 'mmp_canceled',
-	PENDING_CANCEL = 'pending_cancel',
-	REJECTED = 'rejected',
-	TRIGGERED = 'triggered',
-	STOPPED = 'stopped',
-	FAILED = 'failed'
+	NEW = 'new', // 新订单挂单
+	FILLED = 'filled', // 全部成交
+	CANCELED = 'canceled', // 已撤销
+	PARTIALLY_FILLED = 'partially_filled', // 部分成交
+	EXPIRED = 'expired', // 过期
+	LIVE = 'live', // 等待成交
+	PENDING_CANCEL = 'pending_cancel', // 撤销中
+	REJECTED = 'rejected', // 拒绝(下单失败)
+	STOPPED = 'stopped', // 已停止
+	FAILED = 'failed' // 下单失败
 }
