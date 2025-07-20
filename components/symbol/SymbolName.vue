@@ -5,6 +5,7 @@
 	const props = defineProps<{
 		symbol: SymbolDto
 		volume?: boolean
+		size?: string
 	}>()
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = $ws?.getTickers(props.symbol?.symbol)
@@ -21,7 +22,7 @@
 </script>
 <template>
 	<div class="flex items-center">
-		<img :src="symbol?.icon" class="w-[20px] px-2" v-if="symbol?.icon" />
+		<img :src="symbol?.icon" class="mr-1" :style="{width:size,height:size}" v-if="symbol?.icon && size" />
 		<!-- 现货 -->
 		<div class="flex flex-col items-start" v-if="symbol?.marketType === MarketType.SPOT">
 			<div class="flex items-center">

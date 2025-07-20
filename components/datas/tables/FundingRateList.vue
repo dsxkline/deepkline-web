@@ -79,7 +79,7 @@
 			<template v-for="item in datas">
 				<li>
 					<div class="col-span-2 flex items-center" v-autosize="16">
-						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" v-if="useSymbolStore().getSymbol(item.instId)" />
+						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" v-if="useSymbolStore().getSymbol(item.instId)" size="20px" />
 						<span v-else> -- </span>
 					</div>
 					<div class="h-full col-span-3 w-full text-[10px] leading-normal *:rounded-sm items-center flex relative">

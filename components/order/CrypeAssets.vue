@@ -107,7 +107,7 @@
 				<li class="border-b border-[--transparent05] py-3">
 					<div class="flex justify-between">
 						<div class="flex items-center">
-							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
+							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" size="25px" />
 						</div>
 						<div class="flex justify-between items-center gap-4">
 							<button class="flex items-center">
