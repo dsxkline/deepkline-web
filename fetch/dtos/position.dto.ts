@@ -22,8 +22,10 @@ export interface PositionDto {
 	margin: string // 占用保证金
 
 	profit: string // 浮动收益（如有保证金）
+    profitRate: string
 
 	costPrice: string // 成本价
+    lastPrice: string // 最新价
 
 	lotSize: string // 仓位数量/持仓量
 

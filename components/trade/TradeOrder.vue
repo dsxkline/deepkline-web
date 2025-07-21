@@ -572,7 +572,7 @@
 								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
 									<template #name>
 										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
-										<span class="flex-auto text-right" v-if="leverage">{{ leverage }}x</span>
+										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
 										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
 										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
@@ -580,7 +580,7 @@
 									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 
-								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="leverage">
+								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="parseFloat(leverage)">
 									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
 									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
@@ -596,15 +596,15 @@
 									<el-option v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
 
-								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
+								<Select v-model="leverage" class="!min-h-0 !p-1 !px-2 gap-1 text-nowrap leverage-select">
 									<template #name>
 										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
-										<span class="flex-auto text-right" v-if="leverage">{{ leverage }}x</span>
+										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
 										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
 										<span class="flex-auto text-right !text-grey" v-else>无</span>
 									</template>
 									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
-									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
+									<SelectOption v-for="item in leverages.filter((it:any) => it.value != '0')" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
 
@@ -723,7 +723,7 @@
 						</div>
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 z-10" v-if="!loading">
-							<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(Sides.BUY)">
+							<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(side)">
 								<div class="flex flex-col items-center">
 									<b class="text-base flex items-center"
 										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"

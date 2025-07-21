@@ -16,15 +16,16 @@ export class BaseSocketIo {
 		this.socket = null
 	}
 
-	connect(): Socket {
+	connect(accountId?:number): Socket {
 		const fullUrl = `${this.url}${this.namespace}`
-        console.log('connect url',fullUrl)
+        console.log('connect url',fullUrl,accountId)
 		const socket = io(fullUrl, {
 			transports: ['websocket'],
 			path: this.path,
 			timeout: 5000,
 			auth: {
-				token: useCookie('token').value
+				token: useCookie('token').value,
+				accountId
 			}
 		})
 
@@ -63,10 +64,10 @@ export class BaseSocketIo {
 		}, this.reconnectInterval)
 	}
 
-	reconnect() {
+	reconnect(accountId?:number) {
 		this.disconnect()
 		setTimeout(() => {
-			this.connect()
+			this.connect(accountId)
 		}, 300)
 	}
 

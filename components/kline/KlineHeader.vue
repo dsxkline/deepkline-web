@@ -6,7 +6,7 @@
 <template>
 	<div class="kline-header px-1 pl-6 h-[var(--footer-height)] border-[var(--transparent05)] border-b w-full flex items-center">
 		<SymbolTitle :symbol="symbol" />
-		<SymbolTools :symbol="symbol" />
+		<SymbolTools :symbol="symbol" class="ml-3"/>
 		<el-divider direction="vertical"></el-divider>
 		<CycleBar :symbol="symbol" />
 	</div>

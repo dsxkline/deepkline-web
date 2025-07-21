@@ -1,5 +1,6 @@
 import type { UserDto } from '~/fetch/dtos/user.dto'
 import { useAccountStore } from './account'
+import { useOrderStore } from './order'
 
 export const useUserStore = defineStore({
 	id: 'user',
@@ -13,6 +14,9 @@ export const useUserStore = defineStore({
 		logout() {
 			this.user = null
 			useAccountStore().accounts = []
+			useOrderStore().orders = []
+			useOrderStore().positions = []
+			useOrderStore().assets = []
 			useCookie('token').value = null
 		},
 	},

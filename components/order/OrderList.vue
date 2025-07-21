@@ -27,7 +27,10 @@
 			loading.value = false
 			return
 		}
-		if (orders.value?.length) return
+		if (orders.value?.length) {
+			loading.value = false
+			return
+		}
 		loading.value = true
 		error.value = ''
 		orderFetch

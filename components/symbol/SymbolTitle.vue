@@ -15,9 +15,8 @@ import { usePush } from '~/composable/usePush';
 	}
 </script>
 <template>
-	<div class="symbol-title grid place-items-center text-ms px-2 cursor-pointer h-auto" @click="pushSearch">
-		<!-- <img src="https://www.okx.com/cdn/oksupport/asset/currency/icon/eth.png" width="20px" class="mr-1"/> -->
-		<b class="grid place-items-center text-nowrap leading-none">{{ symbolObj?.instId }}</b>
+	<div class="symbol-title grid place-items-center text-ms px-2 cursor-pointer h-auto">
+		<SymbolName :symbol="symbolObj" size="20px"/>
 		<!-- <el-icon class="ml-1"><ArrowDown /></el-icon> -->
 	</div>
 </template>

@@ -4,6 +4,7 @@
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
 	const props = defineProps<{
 		symbol: SymbolDto
+		onlyCoin?: boolean
 		volume?: boolean
 		size?: string
 	}>()
@@ -22,12 +23,14 @@
 </script>
 <template>
 	<div class="flex items-center">
-		<img :src="symbol?.icon" class="mr-1" :style="{width:size,height:size}" v-if="symbol?.icon && size" />
+		<img :src="symbol?.icon" class="mr-1" :style="{ width: size, height: size }" v-if="symbol?.icon && size" />
 		<!-- 现货 -->
 		<div class="flex flex-col items-start" v-if="symbol?.marketType === MarketType.SPOT">
 			<div class="flex items-center">
-				<b class="text-main">{{ symbol?.baseCoin }}</b
-				><span class="text-grey px-[2px] scale-90"> / </span><span class="text-grey scale-90">{{ props.symbol?.quoteCoin }}</span>
+				<b class="text-main">{{ symbol?.baseCoin }}</b>
+				<template v-if="!onlyCoin">
+					<span class="text-grey px-[2px] scale-90"> / </span><span class="text-grey scale-90">{{ props.symbol?.quoteCoin }}</span>
+				</template>
 				<!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
 			</div>
 			<span class="text-xs text-grey font-light" v-if="volume">{{ moneyFormat(price, '$') || '-' }}</span>
@@ -35,7 +38,9 @@
 		<!-- 合约 -->
 		<div class="flex flex-col items-start" v-else-if="symbol?.marketType === MarketType.SWAP">
 			<div class="flex items-center">
-				<b class="text-main">{{ symbol?.baseCoin }}{{ symbol.quoteCoin }}</b>
+				<b class="text-main"
+					>{{ symbol?.baseCoin }}<template v-if="!onlyCoin">{{ symbol.quoteCoin }}</template></b
+				>
 				<!-- <button class="text-[10px] ml-1 bg-[--transparent10] px-1 rounded text-muted">10x</button> -->
 			</div>
 			<span class="text-xs text-grey font-light" v-if="volume">{{ moneyFormat(price, '$') || '-' }}</span>

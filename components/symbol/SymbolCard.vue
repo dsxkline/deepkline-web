@@ -107,7 +107,7 @@
 		@click="clickSymbol(symbolObj)"
 	>
 		<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
-			<SymbolName :symbol="symbolObj" v-if="item?.last && symbolObj?.symbol" size="25px" />
+			<SymbolName :symbol="symbolObj" v-if="item?.last && symbolObj?.symbol" size="20px" />
 			<span v-else>--</span>
 			<b v-autosize="20" :class="'text-base roboto-bold leading-none ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->

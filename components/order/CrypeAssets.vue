@@ -25,7 +25,10 @@
 			loading.value = false
 			return
 		}
-		if (assets.value?.length) return
+		if (assets.value?.length) {
+			loading.value = false
+			return
+		}
 		loading.value = true
 		error.value = ''
 		orderFetch
@@ -82,6 +85,19 @@
 						</template>
 					</el-skeleton>
 				</div>
+				<div class="grid grid-cols-2 justify-between items-center text-xs py-0 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1">
+					<el-skeleton :rows="0" animated>
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 40%; height: 10px" />
+						</template>
+					</el-skeleton>
+
+					<el-skeleton :rows="0" animated class="text-right">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 40%; height: 10px" />
+						</template>
+					</el-skeleton>
+				</div>
 				<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1">
 					<el-skeleton :rows="0" animated>
 						<template #template>
@@ -107,7 +123,7 @@
 				<li class="border-b border-[--transparent05] py-3">
 					<div class="flex justify-between">
 						<div class="flex items-center">
-							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" size="25px" />
+							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" onlyCoin class="text-base roboto-bold leading-[0]" size="25px" />
 						</div>
 						<div class="flex justify-between items-center gap-4">
 							<button class="flex items-center">
@@ -115,20 +131,24 @@
 							</button>
 						</div>
 					</div>
-					<div class="grid grid-cols-2 justify-between items-center text-xs pt-1 [&_b]:text-sm [&_span]:text-grey  [&_span]:pt-2 [&_span]:pb-1">
+					<div class="grid grid-cols-2 justify-between items-center text-xs pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 						<div class="flex flex-col">
 							<span>收益额</span>
-							<b v-if="item.profit" :class="[parseFloat(item.profit)>0?'text-green':'text-red']">{{ formatNumber(parseFloat(item.profit), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
-							<b>0.00</b>
-						</div>
-			
-						<div class="flex flex-col justify-center items-end">
-							<span>收益率</span>
-							<b>0.00%</b>
+							<b v-if="item.profit && parseFloat(item.profit)" :class="[parseFloat(item.profit) > 0 ? 'text-green' : 'text-red']"
+								>{{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), String(Math.min(5, String(parseFloat(item.profit)).split('.')[1].length))) }}</b
+							>
+							<b v-else>0.00</b>
 						</div>
 
+						<div class="flex flex-col justify-center items-end">
+							<span>收益率</span>
+							<b v-if="item.profitRate && parseFloat(item.profitRate)" :class="[parseFloat(item.profitRate) > 0 ? 'text-green' : 'text-red']"
+								>{{ formatNumber(parseFloat(item.profitRate) * 100, '2') }}%</b
+							>
+							<b v-else>0.00%</b>
+						</div>
 					</div>
-					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 pt-1 [&_b]:text-sm [&_span]:text-grey  [&_span]:pt-2 [&_span]:pb-1">
+					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 						<div class="flex flex-col">
 							<span>币种权益</span>
 							<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
@@ -137,11 +157,11 @@
 							<span>成本价</span>
 							<b v-if="item.costPrice">{{ formatPrice(item.costPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 							<b v-else>-</b>
-							
 						</div>
 						<div class="flex flex-col justify-center items-end">
 							<span>最新价</span>
-							<b>-</b>
+							<b v-if="item.lastPrice">{{ formatPrice(item.lastPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+							<b v-else>-</b>
 						</div>
 
 						<div class="flex flex-col">
@@ -149,14 +169,13 @@
 							<b v-if="item.lotBalance">{{ formatNumber(parseFloat(item.lotBalance), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							<b v-else>-</b>
 						</div>
-						
 					</div>
 					<div class="flex items-center gap-2 justify-between *:flex-1">
 						<button class="bt-default">止盈</button>
 						<button class="bt-default">止损</button>
-						<button class="bt-default" v-if="item.marketType==MarketType.SWAP">市价全平</button>
-						<button class="bt-default" v-if="item.marketType==MarketType.SWAP">平仓</button>
-						<button class="bt-default" v-if="item.marketType==MarketType.SPOT">买卖</button>
+						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
+						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
+						<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
 					</div>
 				</li>
 			</template>

@@ -147,6 +147,7 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 		<NavigationBar title="" :hideBack="true">
 			<template #left>
 				<div class="px-4 flex items-center">
+					<img :src="symbolObj?.icon" class="mr-1 w-7 h-7" v-if="symbolObj?.icon" />
 					<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
 						>{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType == InstanceType.SWAP ? '永续' : '' }}</b
 					>

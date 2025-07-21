@@ -92,8 +92,6 @@
 		active.value = index
 	}
 
-	
-
 	watch(
 		() => useStore().isH5,
 		(val, old) => {
@@ -107,16 +105,13 @@
 	watch(
 		() => useAccountStore().currentAccount?.accountId,
 		val => {
-			useNuxtApp().$dkws.reconnect()
+			useNuxtApp().$dkws.reconnect(useAccountStore().currentAccount?.accountId)
 		}
 	)
 
-	onMounted(() => {
-		
-	})
+	onMounted(() => {})
 
 	onBeforeUnmount(() => {
-		
 		menus.value = null
 		menus5.value = null
 		console.log('onBeforeUnmount.............................')

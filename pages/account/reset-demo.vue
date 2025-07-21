@@ -6,6 +6,7 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { useAccountStore } from '~/store/account'
+	import { use } from 'echarts'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -26,6 +27,7 @@
 						message: '重置成功',
 						type: 'success'
 					})
+					useAccountStore().reset(accountId)
 					useNuxtApp().$pop()
 				} else {
 					setTimeout(() => {

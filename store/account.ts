@@ -1,5 +1,6 @@
 import type { AccountDto, FundDto } from '~/fetch/dtos/account.dto'
 import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
+import { useOrderStore } from './order'
 
 export const useAccountStore = defineStore({
 	id: 'account',
@@ -37,7 +38,13 @@ export const useAccountStore = defineStore({
 		},
 		setFund(payload: FundDto) {
 			this.fund = payload
+		},
+		reset(accountId:number){
+			useOrderStore().orders = []
+			useOrderStore().positions = []
+			useOrderStore().assets = []
 		}
+
 	},
 	getters: {
 		getExchange(state) {
