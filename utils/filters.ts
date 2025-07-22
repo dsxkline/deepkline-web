@@ -15,12 +15,17 @@ export const formatNumber = (value: any, precision: string, prefix: string = '')
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
-	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
-	return thousandUnit(`${prefix}${noExponents(parseFloat(value.toFixed(point)))}`)
+	let point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
+	if (String(value).indexOf('.') > 0) {
+		const px = String(value).split('.')[1]
+		point = Math.max(parseInt(String(point)), px.length - String(parseInt(px)).length + 1)
+		// console.log('value', value, point)
+	}
+	return thousandUnit(`${prefix}${noExponents(toNumberFixed(value, String(point)).toFixed(point))}`)
 }
 
 // 正数向下取，负数向上取
-export const toNumberFixed = (value: any, precision: string) : number => {
+export const toNumberFixed = (value: any, precision: string): number => {
 	if (!precision) return value
 	if (!value) return value
 	value = parseFloat(value.toString())
@@ -81,12 +86,13 @@ export const moneyFormat = (value: any, currency: string = '', precision: string
 	return currency + parseFloat(value.toFixed(point)) + unit
 }
 
-export function noExponents(num: number) {
+export function noExponents(num: any) {
+	const nb = parseFloat(String(num))
 	const data = String(num).split(/[eE]/)
 	if (data.length === 1) return data[0]
 
 	let z = '',
-		sign = num < 0 ? '-' : '',
+		sign = nb < 0 ? '-' : '',
 		str = data[0].replace('.', ''),
 		mag = Number(data[1]) + 1
 

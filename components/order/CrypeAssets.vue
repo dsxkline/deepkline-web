@@ -1,5 +1,6 @@
 <script setup lang="ts">
-	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import { useWillAppear } from '~/composable/usePush'
+import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { OrderState, type OrderDto } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
 	import { MarginMode, OrderType, Sides } from '~/fetch/okx/okx.type.d'
@@ -51,6 +52,10 @@
 		getAssets()
 	}
 	function leave() {}
+
+	useWillAppear(()=>{
+		getAssets()
+	})
 
 	onMounted(() => {})
 
@@ -135,7 +140,7 @@
 						<div class="flex flex-col">
 							<span>收益额</span>
 							<b v-if="item.profit && parseFloat(item.profit)" :class="[parseFloat(item.profit) > 0 ? 'text-green' : 'text-red']"
-								>{{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), String(Math.min(5, String(parseFloat(item.profit)).split('.')[1].length))) }}</b
+								>{{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), '2') }}</b
 							>
 							<b v-else>0.00</b>
 						</div>
@@ -143,7 +148,8 @@
 						<div class="flex flex-col justify-center items-end">
 							<span>收益率</span>
 							<b v-if="item.profitRate && parseFloat(item.profitRate)" :class="[parseFloat(item.profitRate) > 0 ? 'text-green' : 'text-red']"
-								>{{ formatNumber(parseFloat(item.profitRate) * 100, '2') }}%</b
+								>{{ parseFloat(item.profitRate) > 0 ? '+' : ''
+								}}{{ formatNumber(parseFloat(item.profitRate) * 100,  '2') }}%</b
 							>
 							<b v-else>0.00%</b>
 						</div>

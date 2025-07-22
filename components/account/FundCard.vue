@@ -16,9 +16,7 @@
 	const error = ref('')
 	const usepush = usePush()
 
-	const fund = computed(() => {
-		return useAccountStore().fund
-	})
+	const fund = computed(() => useAccountStore().fund)
 	const upl = computed(() => {
 		return parseFloat(fund?.value?.unrealizedPnl || '0')
 	})
@@ -34,9 +32,8 @@
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
 					console.log('获取账户余额', result.data)
-					const fund = result.data
-					if (fund) {
-						useAccountStore().setFund(fund)
+					if (result.data) {
+						useAccountStore().setFund(result.data)
 					}
 				} else {
 					setTimeout(() => {
@@ -75,7 +72,7 @@
 				<span class="pb-1 text-sm text-grey">总资产(USDT)</span>
 			</div>
 			<b v-autosize="25" :class="'roboto-bold flex items-end '" v-if="fund">
-				<NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '0.01')" unit="" :fontSize="25" />
+				<NumberIncrease :value="formatNumber(parseFloat(fund?.total || '0'), '2')" unit="" :fontSize="25" />
 			</b>
 			<div class="text-xs pt-0 text-main">
 				<span class="pr-1">收益</span>
