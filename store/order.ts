@@ -6,7 +6,8 @@ export const useOrderStore = defineStore({
 	state: () => ({
 		orders: [] as OrderDto[],
 		positions: [] as PositionDto[],
-		assets: [] as PositionDto[]
+		assets: [] as PositionDto[],
+		symbolPositions: {} as Record<string, PositionDto>
 	}),
 	actions: {
 		addOrder(payload: OrderDto) {
@@ -25,11 +26,12 @@ export const useOrderStore = defineStore({
 		},
 		updateOrder(payload: OrderDto) {
 			const orderIndex = this.orders.findIndex(item => item.orderId == payload.orderId)
-            if(orderIndex>=0){
-                this.orders[orderIndex] = payload
-            }
+			if (orderIndex >= 0) {
+				this.orders[orderIndex] = payload
+			}
 		},
 		addPosition(payload: PositionDto) {
+			this.symbolPositions[payload.symbol] = payload
 			// 合约杠杆
 			if (parseFloat(payload.leverage)) {
 				const exit = this.positions.findIndex(item => item.positionId == payload.positionId)
@@ -47,5 +49,9 @@ export const useOrderStore = defineStore({
 			}
 		}
 	},
-	getters: {}
+	getters: {
+		getSymbolPosition: state => (symbol: string) => {
+			return state.symbolPositions[symbol]
+		}
+	}
 })

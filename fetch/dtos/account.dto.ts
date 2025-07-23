@@ -51,6 +51,6 @@ export interface FundDto {
 	unrealizedPnl: string
 	realizedPnl: string
 	lastSyncTime: Date | null
-	profit: number
-	profitRate: number
+	profit: string
+	profitRate: string
 }

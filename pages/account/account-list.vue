@@ -96,7 +96,7 @@
 								<div :class="['tag-'+(item.envType==AccountEnvType.DEMO?'demo':'real')]">{{ (item.envType==AccountEnvType.DEMO?'模拟':'实盘') }}</div>
 							</b>
 							<div class="text-xs">
-								<span>{{ formatPrice(item.total||'0',2) }} USDT</span>
+								<span>{{ formatPrice(item.total||'0','2') }} USDT</span>
 								<ProfitRate :profit="item?.profit" :profitRate="item?.profitRate"/>
 							</div>
 						</div>

@@ -108,8 +108,8 @@
 						>
 					</div>
 					<div class="flex flex-col col-span-1 text-xs items-end" v-else>
-						<span :class="['text-sm']">--</span>
-						<span>--</span>
+						<span :class="['text-sm']">0.00</span>
+						<span>0.00%</span>
 					</div>
 				</li>
 			</template>

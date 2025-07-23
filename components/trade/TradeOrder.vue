@@ -13,6 +13,7 @@
 	import type { WsResult } from '~/types/types'
 	import LoginIndex from '~/pages/login/index.vue'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
+	import { useOrderStore } from '~/store/order'
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const props = defineProps<{
@@ -149,7 +150,15 @@
 	let inputing = false
 
 	// 可用金额
-	const available = computed(() => parseFloat(useAccountStore().fund?.available || '0'))
+	const available = computed(() => {
+		if (side.value == Sides.BUY) {
+			return parseFloat(useAccountStore().fund?.available || '0')
+		} else {
+			// 根据可卖的数量计算
+			const av = canTradeLotSize.value * parseFloat(price.value || '0') * (1 - fee.value)
+			return toNumberFixed(av, '2')
+		}
+	})
 	// 手续费
 	const fee = computed(() => {
 		if (symbolObj.value.marketType == MarketType.SPOT) {
@@ -229,13 +238,22 @@
 
 	const setCanTradeLotSize = () => {
 		// 根据手续费以及可用金额计算可买标的数量
-		const last = parseFloat(ticker.value?.last || '0')
-		if (!last) return
-		canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
-		if (canTradeLotSize.value < parseFloat(symbolObj.value?.minSz)) {
+		if (side.value == Sides.BUY) {
+			const last = parseFloat(ticker.value?.last || '0')
+			if (!last) return
+			canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
+			if (canTradeLotSize.value < parseFloat(symbolObj.value?.minSz)) {
+				canTradeLotSize.value = 0
+			}
+			canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value?.lotSz)
+		} else {
 			canTradeLotSize.value = 0
+			// 查询持仓可卖数量
+			const position = useOrderStore().getSymbolPosition(props.symbol)
+			if (position) {
+				canTradeLotSize.value = toNumberFixed(position.lotBalance, symbolObj.value?.lotSz)
+			}
 		}
-		canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value?.lotSz)
 	}
 
 	// 自动设置数量
@@ -245,7 +263,7 @@
 			lotSize.value = ''
 		} else {
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
-			lotSize.value = noExponents(toNumberFixed(losz, symbolObj.value?.lotSz))
+			lotSize.value = noExponents(parseFloat(formatPrice(losz, symbolObj.value?.lotSz)))
 		}
 	}
 
@@ -457,11 +475,12 @@
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					// 下单成功,如果ws五秒内还不来就先给出提示
+					resetForm()
 					setTimeout(() => {
 						if (submitLoading.value) {
 							ElMessage.success('订单已提交')
 							submitLoading.value = false
-							resetForm()
+							
 						}
 					}, 5000)
 				} else {
@@ -666,12 +685,12 @@
 								/>
 								<div class="trade-av">
 									<div class="py-1 pt-2 av-item">
-										<span class="text-grey">可用({{ symbolObj?.quoteCoin }})</span>
+										<span class="text-grey">{{ side == Sides.BUY ? '可用' : '可卖' }}({{ symbolObj?.quoteCoin }})</span>
 										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
 									<div class="py-1 av-item">
-										<span class="text-grey">可买({{ symbolObj?.baseCoin }})</span>
+										<span class="text-grey">{{ side == Sides.BUY ? '可买' : '可用' }}({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatPrice(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>

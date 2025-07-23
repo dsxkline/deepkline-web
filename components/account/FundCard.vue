@@ -17,21 +17,18 @@
 	const usepush = usePush()
 
 	const fund = computed(() => useAccountStore().fund)
-	const upl = computed(() => {
-		return parseFloat(fund?.value?.unrealizedPnl || '0')
-	})
 
 	function getUserAccountBalance() {
 		if (!useAccountStore().accounts?.length) return
 		if (loading.value) return
-		if (!fund.value) loading.value = true
+		if (fund.value) return
 		error.value = ''
 		accountFetch
 			.fund(useAccountStore().currentAccount?.accountId)
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
-					console.log('获取账户余额', result.data)
+					console.log('FundCard获取账户余额', result.data)
 					if (result.data) {
 						useAccountStore().setFund(result.data)
 					}
@@ -76,22 +73,22 @@
 			</b>
 			<div class="text-xs pt-0 text-main">
 				<span class="pr-1">收益</span>
-				<ProfitRate :profit="fund?.profit" :profitRate="fund?.profitRate" />
+				<ProfitRate :profit="parseFloat(String(fund?.profit || '0'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
 			</div>
 
 			<div class="flex justify-between items-center pt-6" v-if="size != 'small'">
 				<ul class="w-full grid grid-cols-3 *:flex *:flex-col text-grey text-sm [&_b]:text-main [&_b]:pt-1">
 					<li>
 						<span>可用</span>
-						<b>{{ formatPrice(parseFloat(fund?.available || '0'), '0.01', '$') }}</b>
+						<b>{{ formatNumber(parseFloat(fund?.available || '0'), '2', '$') }}</b>
 					</li>
 					<li class="items-center">
 						<span>保证金</span>
-						<b>{{ formatPrice(parseFloat(fund?.margin || '0'), '0.01', '$') }}</b>
+						<b>{{ formatNumber(parseFloat(fund?.margin || '0'), '2', '$') }}</b>
 					</li>
 					<li class="items-end">
 						<span>冻结</span>
-						<b>{{ formatPrice(parseFloat(fund?.frozen || '0'), '0.01', '$') }}</b>
+						<b>{{ formatNumber(parseFloat(fund?.frozen || '0'), '2', '$') }}</b>
 					</li>
 				</ul>
 			</div>

@@ -1,4 +1,5 @@
 import { useStore } from '~/store'
+import { useUserStore } from '~/store/user'
 
 interface WindowsEvent {
 	quiescentTimeout: number
@@ -60,10 +61,10 @@ class WindowsEvent {
 
 	clearWindowEvent() {
 		// 禁用双指放大
-		document.addEventListener('dblclick', this.dblclickHandle,{ passive: false })
+		document.addEventListener('dblclick', this.dblclickHandle, { passive: false })
 		document.addEventListener('touchstart', this.touchstartHandle, { passive: false })
 		document.addEventListener('touchmove', this.touchMoveHandle, { passive: false })
-		document.addEventListener('gesturestart', this.dblclickHandle,{ passive: false })
+		document.addEventListener('gesturestart', this.dblclickHandle, { passive: false })
 
 		// 禁止右键点击
 		// document.addEventListener('contextmenu', function (event) {
@@ -78,7 +79,7 @@ class WindowsEvent {
 		// console.log('touchstart',event.target)
 		// 取消拦截
 		const cancelStop = (event.target as HTMLElement).closest('.cancel-stop-touch')
-		if(cancelStop) return;
+		if (cancelStop) return
 		if (event.touches.length > 1) {
 			event.preventDefault()
 		}
@@ -87,7 +88,7 @@ class WindowsEvent {
 	touchMoveHandle(event: TouchEvent) {
 		// 取消拦截
 		const cancelStop = (event.target as HTMLElement).closest('.cancel-stop-touch')
-		if(cancelStop) return;
+		if (cancelStop) return
 		event.stopPropagation()
 	}
 
@@ -230,6 +231,12 @@ const soundHandle = (audio: HTMLAudioElement) => () => {
 // 	}
 // }
 
+function storageHandle(event:StorageEvent) {
+	console.log(event.key, event.newValue)
+	if (event.key == 'logout') {
+		useUserStore().logout()
+	}
+}
 
 function beforeunload() {
 	// 页面离开或者刷新的时候注销组件释放内存等
@@ -240,6 +247,7 @@ function beforeunload() {
 	useNuxtApp().$wsb.destroy()
 	useNuxtApp().$dkws.destroy()
 	window.removeEventListener('beforeunload', beforeunload)
+	window.removeEventListener('storage', storageHandle)
 	console.log('beforeunload success')
 }
 
@@ -252,5 +260,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		nuxtApp.provide('clickSound', soundHandle(audio))
 
 		window.addEventListener('beforeunload', beforeunload)
+
+		window.addEventListener('storage', storageHandle)
 	}
 })

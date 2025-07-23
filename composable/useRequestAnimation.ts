@@ -79,8 +79,8 @@ export function useRequestAnimation(): requestAnimationType {
 		if (animationFrameId !== null) {
 			cancelAnimationFrame(animationFrameId)
 			animationFrameId = null
-			_onUpdate && _onUpdate(_to)
-			_onUpdate = null
+			// _onUpdate && _onUpdate(_to)
+			// _onUpdate = null
 			_onFinish = null
 		}
 		startTimestamp = null
