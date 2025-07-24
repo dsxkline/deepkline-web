@@ -11,7 +11,7 @@ export const formatPrice = (value: any, precision: string, prefix: string = '') 
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
 }
 
-export const formatNumber = (value: any, precision: string, prefix: string = '') => {
+export const formatNumber = (value: any, precision: string = '2', prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
@@ -22,6 +22,15 @@ export const formatNumber = (value: any, precision: string, prefix: string = '')
 		// console.log('value', value, point)
 	}
 	return thousandUnit(`${prefix}${noExponents(toNumberFixed(value, String(point)).toFixed(point))}`)
+}
+
+export const numberToFixed = (value: any, precision: string = '2', prefix: string = '') => {
+	if (!precision) return value + ''
+	if (!value) return value
+	value = parseFloat(value.toString())
+	let point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
+	// console.log('value',value,value.toFixed(point))
+	return thousandUnit(`${prefix}${noExponents(value.toFixed(point))}`)
 }
 
 // 正数向下取，负数向上取

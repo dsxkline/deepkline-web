@@ -63,7 +63,20 @@
 			@apply border-b pb-2;
 			border-color: var(--transparent10);
 			ul {
-				@apply text-sm;
+				li {
+					@apply !text-xs;
+				}
+			}
+		}
+	}
+	@media (max-width: 999px) {
+		:deep(.tabbar-container) {
+			.tabbar-header {
+				ul {
+					li {
+						@apply !text-sm;
+					}
+				}
 			}
 		}
 	}

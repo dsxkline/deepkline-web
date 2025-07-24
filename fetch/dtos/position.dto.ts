@@ -3,7 +3,7 @@ import type { MarketType } from './symbol.dto'
 export interface PositionDto {
 	id: number
 
-	positionId: number
+	positionId: string
 
 	userId: number // 用户ID，关联用户表
 

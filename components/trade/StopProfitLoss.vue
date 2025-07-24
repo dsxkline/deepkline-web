@@ -8,9 +8,11 @@
 		price?: number
 		initPrice?: number
 		push?: string
+		lotSize?: string
+		positionId?: string
 	}>()
 	const emit = defineEmits<{
-		(event: 'close', price: number, point: number, open: boolean): void
+		(event: 'close', price: number, point: number, open: boolean, changeRate: number): void
 	}>()
 	watch(
 		() => props.price,
@@ -48,6 +50,18 @@
 					'-25': '-25%',
 					'-50': '-50%'
 			  }
+	})
+
+	const lotBalance = ref(formatNumber(props.lotSize || '0', '2'))
+	const lotBalancePercent = ref(0)
+	const lotSizeMarks = computed(() => {
+		return {
+			'0': '0%',
+			'25': '25%',
+			'50': '50%',
+			'75': '75%',
+			'100': '100%'
+		}
 	})
 
 	const openStop = ref(!(localStorage.getItem('stopProfitLossClose_' + props.type) == 'true'))
@@ -88,8 +102,8 @@
 	}
 
 	function confirm() {
-		emit('close', openStop.value ? price.value : 0, openStop.value ? amount.value : 0, openStop.value)
-		if (props.push) useNuxtApp().$pop({ price: openStop.value ? price.value : 0, amount: openStop.value ? amount.value : 0, open: openStop.value })
+		emit('close', openStop.value ? price.value : 0, openStop.value ? amount.value : 0, openStop.value, szPercent.value)
+		if (props.push) useNuxtApp().$pop({ price: openStop.value ? price.value : 0, amount: openStop.value ? amount.value : 0, open: openStop.value, changeRate: szPercent.value })
 	}
 	function updateInitPrice() {
 		if (!initPrice.value) {
@@ -113,7 +127,7 @@
 			val = ((price - initPrice.value) / initPrice.value) * 100
 		}
 		// console.log('setPercent', val, price, initPrice.value)
-		szPercent.value = parseFloat(val.toFixed(2))
+		szPercent.value = val
 	}
 	const setPriceWithPercent = (percent: number) => {
 		updateInitPrice()
@@ -158,9 +172,30 @@
 		{ immediate: true }
 	)
 
+	const profit = computed(() => {
+		if (props.lotSize && price.value > 0) {
+			const p = (price.value - initPrice.value) * parseFloat(props.lotSize)
+			return formatNumber(p, '2')
+		} else {
+			return '0'
+		}
+	})
+
+	watch(
+		() => lotBalancePercent.value,
+		val => {
+			console.log('lotBalancePercent', val)
+			lotBalance.value = formatNumber((parseFloat(props.lotSize || '0') * val) / 100)
+			lotBalance.value = Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0'))
+			console.log('onProgressLotBalance', val)
+		}
+	)
+
+	const onProgressLotBalance = (val: number) => {}
+
 	onMounted(() => {
 		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_' + props.type))
-
+		lotBalancePercent.value = 100
 		// openStop.value = !(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true')
 		price.value = props.price || 0
 		initPrice.value = props.initPrice || 0
@@ -179,8 +214,23 @@
 <template>
 	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
 		<h3 class="flex items-center justify-between">
-			<span>{{ !type ? '止盈' : '止损' }}价 </span>
+			<span class="text-main">{{ !type ? '设置止盈' : '设置止损' }} </span>
 			<el-switch v-model="openStop" class="ml-2" :style="`--el-switch-on-color: rgb(var(--color-${!type ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`" />
+		</h3>
+		<div class="py-1 pb-3">
+			<ul>
+				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main">
+					<span>最新价格</span>
+					<b>{{ formatPrice(initPrice, symbolObj.tickSz) }}</b>
+					<template v-if="lotSize">
+						<span class="pl-2">委托数量</span>
+						<b>{{ formatNumber(parseFloat(lotSize), '2') }}</b>
+					</template>
+				</li>
+			</ul>
+		</div>
+		<h3 class="flex items-center justify-between">
+			<span>{{ !type ? '止盈' : '止损' }} </span>
 		</h3>
 		<div class="py-2">
 			<el-input-number
@@ -189,6 +239,8 @@
 				@input="priceChange"
 				v-model="price"
 				:step="parseFloat(symbolObj?.tickSz.toString() || '1')"
+				:min="!type ? initPrice : 0"
+				:max="!type ? initPrice * 1000 : initPrice"
 				:precision="point"
 				:controls-position="push == 'btt' ? '' : 'right'"
 				size="large"
@@ -199,53 +251,69 @@
 				:disabled="!openStop"
 			/>
 			<div class="text-xs text-grey mt-1">
-				<span
-					>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ szPercent }} %)</span> 时触发 <span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span
-					>，预估{{ !type ? '收益' : '亏损' }}为 <b class="text-[--el-color-primary]">{{ !type ? '+' : '-' }} 0.3444 USDT</b></span
+				<span v-if="price"
+					>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ formatNumber(szPercent, '2') }} %)</span> 时触发
+					<span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span></span
 				>
+				<template v-if="parseFloat(profit)">
+					<span
+						>，预估{{ !type ? '收益' : '亏损' }}为 <b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b></span
+					>
+				</template>
 			</div>
 		</div>
-		<h3>点数</h3>
-		<div class="py-2">
-			<el-input-number
-				@change="amountChange"
-				@input="amountChange"
-				v-model="amount"
-				:min="0"
-				:step="1"
-				:precision="0"
-				:controls-position="push == 'btt' ? '' : 'right'"
-				size="large"
-				class="!w-full"
-				v-click-sound
-				inputmode="decimal"
-				:disabled="!openStop"
-			/>
-		</div>
-		<div class="slider-wrapper py-2">
-			<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }} %</h3>
-			<div class="slider-box flex flex-col items-center justify-between gap-4">
+		<div class="flex items-center py-2 gap-3">
+			<div class="w-1/2">
+				<h3 class="mb-3">点数</h3>
 				<el-input-number
-					@change="percentChange"
-					@input="percentChange"
-					v-model="szPercent"
-					:step="0.01"
-					:precision="2"
+					@change="amountChange"
+					@input="amountChange"
+					v-model="amount"
+					:min="0"
+					:step="1"
+					:precision="0"
 					:controls-position="push == 'btt' ? '' : 'right'"
 					size="large"
-					class="!w-[220px] max-w-full"
+					class="!w-full"
 					v-click-sound
 					inputmode="decimal"
 					:disabled="!openStop"
-				>
-					<template #suffix>
-						<span>%</span>
-					</template>
-				</el-input-number>
-
-				<slider v-model="szPercent" :step="1" :marks="marks" :showTooltip="false" @progress="onProgress" />
+				/>
+			</div>
+			<div class="w-1/2">
+				<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }} %</h3>
+				<div class="slider-box">
+					<el-input-number
+						@change="percentChange"
+						@input="percentChange"
+						v-model="szPercent"
+						:min="!type ? 0 : -1000"
+						:max="!type ? 1000 : 0"
+						:step="0.01"
+						:precision="2"
+						:controls-position="push == 'btt' ? '' : 'right'"
+						size="large"
+						class="max-w-full"
+						v-click-sound
+						inputmode="decimal"
+						:disabled="!openStop"
+					>
+						<template #suffix>
+							<span>%</span>
+						</template>
+					</el-input-number>
+				</div>
 			</div>
 		</div>
+		<div class="slider-wrapper"><slider v-model="szPercent" :step="1" :marks="marks" :showTooltip="false" @progress="onProgress" /></div>
+		<template v-if="positionId">
+			<div class="py-2">
+				<h3 class="mb-3">数量</h3>
+				<el-input @change="amountChange" @input="amountChange" v-model="lotBalance" size="large" class="!w-full" v-click-sound inputmode="decimal" :disabled="!openStop" />
+			</div>
+			<div class="slider-wrapper"><slider v-model="lotBalancePercent" :step="1" :marks="lotSizeMarks" :showTooltip="false" @progress="onProgressLotBalance" /></div>
+		</template>
+
 		<div class="py-3">
 			<button class="stop-bt bt-green w-full !py-2" v-click-sound @click="confirm">确定</button>
 		</div>
@@ -284,7 +352,11 @@
 			@apply px-4 pb-5;
 			:deep(.el-input-number) {
 				&.price-input {
-					padding: 0 5px;
+					padding: 0;
+				}
+				.el-input-number__decrease,
+				.el-input-number__increase {
+					width: 35px !important;
 				}
 				.el-input__wrapper {
 					.el-input__inner {

@@ -176,11 +176,11 @@
 					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1">
 						<div class="flex flex-col">
 							<span>委托数量</span>
-							<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
+							<b>{{ formatNumber(parseFloat(item.lotSize)) }}</b>
 						</div>
 						<div class="flex flex-col items-center">
 							<span>已成数量</span>
-							<b>{{ formatNumber(item.matchSize, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
+							<b>{{ formatNumber(item.matchSize) }}</b>
 						</div>
 						<div class="flex flex-col justify-center items-end">
 							<span>委托价格</span>

@@ -94,6 +94,8 @@
 	const priceInput = ref()
 	const takeProfit = ref(0)
 	const stopLoss = ref(0)
+	const takeChangeRate = ref(0)
+	const stopChangeRate = ref(0)
 	const buyDes = ref('MARKET')
 	const sellDes = ref('MARKET')
 	const popProfit = ref()
@@ -386,12 +388,14 @@
 		canChangePrice.value = false
 	}
 
-	function confirmProfit(price: number, point: number, open: boolean) {
+	function confirmProfit(price: number, point: number, open: boolean, changeRate: number) {
+		takeChangeRate.value = changeRate
 		if (point && open) takeProfit.value = price
 		else takeProfit.value = 0
 		popProfit.value && popProfit.value.hide()
 	}
-	function confirmLoss(price: number, point: number, open: boolean) {
+	function confirmLoss(price: number, point: number, open: boolean, changeRate: number) {
+		stopChangeRate.value = changeRate
 		if (point && open) stopLoss.value = price
 		else stopLoss.value = 0
 		popLoss.value && popLoss.value.hide()
@@ -404,6 +408,7 @@
 				symbol: props.symbol,
 				initPrice: parseFloat(ticker.value?.last || '0'),
 				price: type == 0 ? takeProfit.value : stopLoss.value,
+				lotSize: lotSize.value,
 				onClose: type == 0 ? confirmProfit : confirmLoss
 			},
 			'90%'
@@ -480,7 +485,6 @@
 						if (submitLoading.value) {
 							ElMessage.success('订单已提交')
 							submitLoading.value = false
-							
 						}
 					}, 5000)
 				} else {
@@ -698,25 +702,31 @@
 							</div>
 
 							<div class="pt-2 stop-container" v-if="!useStore().isH5">
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="250">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="300">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
 											<div v-if="!takeProfit">-</div>
-											<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
+											<div v-else class="flex flex-col">
+												<span>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }}</span>
+												<span> ≈ {{ formatNumber(takeChangeRate, '2') }}%</span>
+											</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
+									<StopProfitLoss :type="0" :symbol="symbol" :lotSize="lotSize" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
 								</el-popover>
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="250">
+								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="300">
 									<template #reference>
 										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
 											<div v-if="!stopLoss">-</div>
-											<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
+											<div v-else class="flex flex-col">
+												<span>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }}</span
+												><span> ≈ {{ formatNumber(stopChangeRate, '2') }}%</span>
+											</div>
 										</div>
 									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
+									<StopProfitLoss :type="1" :symbol="symbol" :lotSize="lotSize" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
 								</el-popover>
 							</div>
 							<div class="pt-2 stop-container" v-else>
@@ -727,7 +737,7 @@
 								>
 									<h6 class="pb-0 text-grey">止盈</h6>
 									<div v-if="!takeProfit">-</div>
-									<div v-else>{{ formatPrice(takeProfit, symbolObj?.tickSz) }}</div>
+									<div v-else>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
 								</div>
 								<div
 									v-click-sound
@@ -736,7 +746,7 @@
 								>
 									<h6 class="pb-0 text-grey">止损</h6>
 									<div v-if="!stopLoss">-</div>
-									<div v-else>{{ formatPrice(stopLoss, symbolObj?.tickSz) }}</div>
+									<div v-else>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
 								</div>
 							</div>
 						</div>
@@ -1004,6 +1014,9 @@
 					border-radius: 999px;
 					background: var(--transparent05);
 					width: max-content;
+				}
+				.leverage-select {
+					border-radius: 999px;
 				}
 				.larverage-type {
 					margin: 2px 0 8px 0;

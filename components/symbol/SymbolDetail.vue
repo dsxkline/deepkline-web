@@ -10,6 +10,7 @@
 	import { usePop, usePushUp } from '~/composable/usePush'
 	import SymbolSearch from './SymbolSearch.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
+import CrypeOrder from '../order/CrypeOrder.vue'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -41,14 +42,14 @@
 			contentParams: {
 				symbol: props.symbol
 			}
+		},
+		{
+			name: '订单',
+			contentComp: markRaw(CrypeOrder),
+			contentParams: {
+				symbol: currentSymbol.value
+			}
 		}
-		// {
-		// 	name: '交易',
-		// 	contentComp: markRaw(TradeOrder),
-		// 	contentParams: {
-		// 		symbol: currentSymbol.value
-		// 	}
-		// }
 	])
 
 	const symbolObj = computed(() => {

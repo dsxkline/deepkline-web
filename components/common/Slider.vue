@@ -116,7 +116,7 @@
 	watch(
 		() => props.modelValue,
 		val => {
-			progressValue.value = val?val:0 // 更新进度值
+			progressValue.value = Math.max(minValue.value, Math.min(maxValue.value, val ? val : 0)) // 更新进度值
 		}
 	)
 
@@ -126,7 +126,7 @@
 		document.addEventListener('mouseup', mouseUp)
 	})
 
-	onBeforeUnmount(()=>{
+	onBeforeUnmount(() => {
 		document.removeEventListener('mousemove', mouseMove)
 		document.removeEventListener('mouseup', mouseUp)
 	})
@@ -163,10 +163,11 @@
 			<div
 				ref="sliderProgressStops"
 				class="slider-progress-stops bg-base border-[3px] border-[--slider-border-color] rounded-full absolute top-0 w-3 h-3"
+				:title="valueToPercent(minValue)+''"
 				:style="{
 					left: valueToPercent(progressValue) + '%',
 					transform:
-						(valueToPercent(progressValue) <= valueToPercent(0.5) ? 'translateX(-25%)' : valueToPercent(progressValue) < valueToPercent(maxValue) ? 'translateX(-50%)' : 'translateX(-75%)') +
+						(progressValue <= percentToValue(0.5) ? 'translateX(-25%)' : progressValue < percentToValue(0.95) ? 'translateX(-50%)' : 'translateX(-75%)') +
 						' translateY(-40%)'
 				}"
 			></div>
