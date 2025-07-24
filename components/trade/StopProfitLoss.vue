@@ -184,10 +184,10 @@
 	watch(
 		() => lotBalancePercent.value,
 		val => {
-			console.log('lotBalancePercent', val)
-			lotBalance.value = formatNumber((parseFloat(props.lotSize || '0') * val) / 100)
-			lotBalance.value = Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0'))
-			console.log('onProgressLotBalance', val)
+			lotBalance.value = (parseFloat(props.lotSize || '0') * val) / 100
+			console.log('lotBalancePercent', val,props.lotSize, lotBalance.value)
+			lotBalance.value = numberToFixed(Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0')))
+			// console.log('onProgressLotBalance', val, symbolObj.value.minSz, symbolObj.value.lotSz, lotBalance.value.toFixed(parseFloat(symbolObj.value.lotSz)))
 		}
 	)
 

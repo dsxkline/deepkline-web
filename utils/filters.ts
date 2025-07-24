@@ -3,14 +3,17 @@ import moment from 'moment'
 import { isVNode } from 'vue'
 import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 
+// 价格常规四舍五入
 export const formatPrice = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
+	// console.log('formatPrice',value,point)
 	return thousandUnit(`${prefix}${value.toFixed(point)}`)
 }
 
+// 资产金额正负上下取整
 export const formatNumber = (value: any, precision: string = '2', prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
@@ -24,13 +27,14 @@ export const formatNumber = (value: any, precision: string = '2', prefix: string
 	return thousandUnit(`${prefix}${noExponents(toNumberFixed(value, String(point)).toFixed(point))}`)
 }
 
+// 去掉后面的0，返回纯数字
 export const numberToFixed = (value: any, precision: string = '2', prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
 	let point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
 	// console.log('value',value,value.toFixed(point))
-	return thousandUnit(`${prefix}${noExponents(value.toFixed(point))}`)
+	return `${prefix}${noExponents(String(parseFloat(value.toFixed(point))))}`
 }
 
 // 正数向下取，负数向上取

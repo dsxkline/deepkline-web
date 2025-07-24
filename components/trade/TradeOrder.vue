@@ -265,7 +265,7 @@
 			lotSize.value = ''
 		} else {
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
-			lotSize.value = noExponents(parseFloat(formatPrice(losz, symbolObj.value?.lotSz)))
+			lotSize.value = numberToFixed(losz, symbolObj.value?.lotSz)
 		}
 	}
 
@@ -707,7 +707,7 @@
 										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止盈</h6>
 											<div v-if="!takeProfit">-</div>
-											<div v-else class="flex flex-col">
+											<div v-else class="flex flex-col text-green">
 												<span>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }}</span>
 												<span> ≈ {{ formatNumber(takeChangeRate, '2') }}%</span>
 											</div>
@@ -720,7 +720,7 @@
 										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
 											<h6 class="pb-2 text-grey">止损</h6>
 											<div v-if="!stopLoss">-</div>
-											<div v-else class="flex flex-col">
+											<div v-else class="flex flex-col text-red">
 												<span>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }}</span
 												><span> ≈ {{ formatNumber(stopChangeRate, '2') }}%</span>
 											</div>
@@ -737,7 +737,7 @@
 								>
 									<h6 class="pb-0 text-grey">止盈</h6>
 									<div v-if="!takeProfit">-</div>
-									<div v-else>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
+									<div v-else class="text-green">{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
 								</div>
 								<div
 									v-click-sound
@@ -746,7 +746,7 @@
 								>
 									<h6 class="pb-0 text-grey">止损</h6>
 									<div v-if="!stopLoss">-</div>
-									<div v-else>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
+									<div v-else class="text-red">{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
 								</div>
 							</div>
 						</div>
