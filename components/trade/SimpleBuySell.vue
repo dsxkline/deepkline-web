@@ -1,6 +1,6 @@
 <script setup lang="ts">
 	import { Sides } from '~/fetch/okx/okx.type.d'
-
+    import { useSymbolStore } from '~/store/symbol';
 	const props = defineProps<{
 		height?: number
 		symbol: string
@@ -12,27 +12,37 @@
 </script>
 <template>
 	<div class="simple-buysell">
+		<h3 class="flex items-center justify-between pb-4 simple-title">
+			<SymbolName :symbol="useSymbolStore().getSymbol(symbol)" class="text-base roboto-bold leading-[0] mr-2" size="20px" />
+		</h3>
+		
 		<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" :side="side" @update:side="(val: Sides) => side = val" :hideProfitLoss="true" />
 	</div>
 </template>
 
 <style lang="less" scoped>
 	:deep(.trade-container) {
-        padding: 0;
+		padding: 0;
 		.trade-box {
 			padding-bottom: 70px;
 		}
-        .trade-bts{
-            padding: 0;
-        }
-        .slider-wrapper{
-            padding-left:3px;
-            padding-right: 3px;
-        }
+		.trade-bts {
+			padding: 0;
+		}
+		.slider-wrapper {
+			padding-left: 3px;
+			padding-right: 3px;
+		}
 	}
-    @media (max-width:999px) {
-        .simple-buysell{
-            @apply p-4;
+    .simple-title{
+            display: none;
         }
-    }
+	@media (max-width: 999px) {
+        .simple-title{
+            display: flex;
+        }
+		.simple-buysell {
+			@apply px-4;
+		}
+	}
 </style>

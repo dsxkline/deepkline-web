@@ -248,13 +248,13 @@
 			if (canTradeLotSize.value < parseFloat(symbolObj.value?.minSz)) {
 				canTradeLotSize.value = 0
 			}
-			canTradeLotSize.value = toNumberFixed(canTradeLotSize.value, symbolObj.value?.lotSz)
+			canTradeLotSize.value = parseFloat(numberToFixed(canTradeLotSize.value, symbolObj.value?.lotSz))
 		} else {
 			canTradeLotSize.value = 0
 			// 查询持仓可卖数量
 			const position = useOrderStore().getSymbolPosition(props.symbol)
 			if (position) {
-				canTradeLotSize.value = toNumberFixed(position.lotAvailable, symbolObj.value?.lotSz)
+				canTradeLotSize.value = parseFloat(numberToFixed(position.lotAvailable, symbolObj.value?.lotSz))
 			}
 		}
 	}
@@ -262,7 +262,7 @@
 	// 自动设置数量
 	const autoSetLotSize = () => {
 		let losz = DecimalHelper.div(DecimalHelper.mul(canTradeLotSize.value, lotSizePercent.value).toNumber(), 100).toNumber()
-		if (available.value < minMargin.value) {
+		if (available.value < minMargin.value && side.value==Sides.BUY) {
 			lotSize.value = ''
 		} else {
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
@@ -719,7 +719,7 @@
 									</div>
 									<div class="py-1 av-item">
 										<span class="text-grey">{{ side == Sides.BUY ? '可买' : '可用' }}({{ symbolObj?.baseCoin }})</span>
-										<b class="font-normal" v-if="canTradeLotSize">{{ formatPrice(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
+										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
 								</div>

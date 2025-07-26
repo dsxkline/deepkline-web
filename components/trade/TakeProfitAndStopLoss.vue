@@ -319,7 +319,8 @@
 <template>
 	<div :class="['pt-1', 'stopprofit-h5']">
 		<h3 class="flex items-center justify-between">
-			<span class="text-main">设置止盈止损</span>
+			<span class="text-main flex items-center"> 设置止盈止损 </span>
+			<SymbolName :symbol="useSymbolStore().getSymbol(symbol)" class="text-base roboto-bold leading-[0] mr-2" size="20px" />
 		</h3>
 		<div class="py-1 pb-1">
 			<ul>
