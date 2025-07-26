@@ -1,10 +1,10 @@
 <script setup lang="ts">
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
-	import { usePush, usePushUp } from '~/composable/usePush'
+	import { usePush, usePushUp, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-	import type { AddOrderDto, AddOrderRespDto, OrderDto } from '~/fetch/dtos/order.dto'
+	import { OrderType, type AddOrderDto, type AddOrderRespDto, type OrderDto } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
-	import { InstanceType, OrderType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { InstanceType, MarginMode, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { orderFetch } from '~/fetch/order.fetch'
 	import { useStore } from '~/store'
 	import { useAccountStore } from '~/store/account'
@@ -22,6 +22,7 @@
 		isH5?: boolean
 		openLarverage?: boolean
 		side?: Sides
+		hideProfitLoss?: boolean
 	}>()
 	const emit = defineEmits<{
 		(event: 'update:side', side: Sides): void
@@ -253,14 +254,14 @@
 			// 查询持仓可卖数量
 			const position = useOrderStore().getSymbolPosition(props.symbol)
 			if (position) {
-				canTradeLotSize.value = toNumberFixed(position.lotBalance, symbolObj.value?.lotSz)
+				canTradeLotSize.value = toNumberFixed(position.lotAvailable, symbolObj.value?.lotSz)
 			}
 		}
 	}
 
 	// 自动设置数量
 	const autoSetLotSize = () => {
-		let losz = (canTradeLotSize.value * lotSizePercent.value) / 100
+		let losz = DecimalHelper.div(DecimalHelper.mul(canTradeLotSize.value, lotSizePercent.value).toNumber(), 100).toNumber()
 		if (available.value < minMargin.value) {
 			lotSize.value = ''
 		} else {
@@ -272,7 +273,8 @@
 	// 自动滑动滑块
 	const autoScrollSlider = () => {
 		// 计算百分比
-		const percent = Math.min((parseFloat(margin.value) / available.value) * 100, 100)
+		let p = DecimalHelper.div(DecimalHelper.mul(margin.value, 100).toNumber(), available.value).toNumber()
+		const percent = Math.min(p, 100)
 		lotSizePercent.value = percent ? percent : 0
 		// console.log('autoScrollSlider', margin.value, percent)
 	}
@@ -281,7 +283,8 @@
 	const autoSetMargin = () => {
 		const last = parseFloat(ticker.value?.last || '0')
 		if (!last) return
-		let mvalue = (parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value)) / 100
+		// let mvalue = (parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value)) / 100
+		let mvalue = DecimalHelper.div(parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value), 100).toNumber()
 		if (mvalue > available.value) {
 			mvalue = available.value
 		}
@@ -359,8 +362,11 @@
 		inputing = true
 	}
 	function handleClickOrTouch(e: Event) {
-		autoSetLotSize()
-		autoSetMargin()
+		if (lotSize.value && symbolObj.value?.minSz && DecimalHelper.compare(lotSize.value, '<=', symbolObj.value.minSz)) {
+			autoSetLotSize()
+			autoSetMargin()
+		}
+
 		inputing = false
 	}
 
@@ -390,14 +396,24 @@
 
 	function confirmProfit(price: number, point: number, open: boolean, changeRate: number) {
 		takeChangeRate.value = changeRate
-		if (point && open) takeProfit.value = price
-		else takeProfit.value = 0
+		if (point && open) {
+			takeProfit.value = price
+			openTakeProfit.value = true
+		} else {
+			takeProfit.value = 0
+			openTakeProfit.value = false
+		}
 		popProfit.value && popProfit.value.hide()
 	}
 	function confirmLoss(price: number, point: number, open: boolean, changeRate: number) {
 		stopChangeRate.value = changeRate
-		if (point && open) stopLoss.value = price
-		else stopLoss.value = 0
+		if (point && open) {
+			stopLoss.value = price
+			openStopLoss.value = true
+		} else {
+			stopLoss.value = 0
+			openStopLoss.value = false
+		}
 		popLoss.value && popLoss.value.hide()
 	}
 	function pushStopProfitLoss(type: number) {
@@ -539,6 +555,14 @@
 				}
 			})
 		}
+	})
+
+	useWillAppear(() => {
+		startTimer()
+	})
+
+	useWillDisappear(() => {
+		clearTimer()
 	})
 
 	onUnmounted(() => {
@@ -701,54 +725,56 @@
 								</div>
 							</div>
 
-							<div class="pt-2 stop-container" v-if="!useStore().isH5">
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="300">
-									<template #reference>
-										<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
-											<h6 class="pb-2 text-grey">止盈</h6>
-											<div v-if="!takeProfit">-</div>
-											<div v-else class="flex flex-col text-green">
-												<span>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }}</span>
-												<span> ≈ {{ formatNumber(takeChangeRate, '2') }}%</span>
+							<template v-if="!hideProfitLoss">
+								<div class="pt-2 stop-container" v-if="!useStore().isH5">
+									<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="300">
+										<template #reference>
+											<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
+												<h6 class="pb-2 text-grey">止盈</h6>
+												<div v-if="!takeProfit">-</div>
+												<div v-else class="flex flex-col text-green">
+													<span>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }}</span>
+													<span> ≈ {{ formatNumber(takeChangeRate, '2') }}%</span>
+												</div>
 											</div>
-										</div>
-									</template>
-									<StopProfitLoss :type="0" :symbol="symbol" :lotSize="lotSize" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
-								</el-popover>
-								<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="300">
-									<template #reference>
-										<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
-											<h6 class="pb-2 text-grey">止损</h6>
-											<div v-if="!stopLoss">-</div>
-											<div v-else class="flex flex-col text-red">
-												<span>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }}</span
-												><span> ≈ {{ formatNumber(stopChangeRate, '2') }}%</span>
+										</template>
+										<StopProfitLoss :type="0" :symbol="symbol" :lotSize="lotSize" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
+									</el-popover>
+									<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="300">
+										<template #reference>
+											<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
+												<h6 class="pb-2 text-grey">止损</h6>
+												<div v-if="!stopLoss">-</div>
+												<div v-else class="flex flex-col text-red">
+													<span>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }}</span
+													><span> ≈ {{ formatNumber(stopChangeRate, '2') }}%</span>
+												</div>
 											</div>
-										</div>
-									</template>
-									<StopProfitLoss :type="1" :symbol="symbol" :lotSize="lotSize" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
-								</el-popover>
-							</div>
-							<div class="pt-2 stop-container" v-else>
-								<div
-									v-click-sound
-									@click="pushStopProfitLoss(0)"
-									class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
-								>
-									<h6 class="pb-0 text-grey">止盈</h6>
-									<div v-if="!takeProfit">-</div>
-									<div v-else class="text-green">{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
+										</template>
+										<StopProfitLoss :type="1" :symbol="symbol" :lotSize="lotSize" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
+									</el-popover>
 								</div>
-								<div
-									v-click-sound
-									@click="pushStopProfitLoss(1)"
-									class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
-								>
-									<h6 class="pb-0 text-grey">止损</h6>
-									<div v-if="!stopLoss">-</div>
-									<div v-else class="text-red">{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
+								<div class="pt-2 stop-container" v-else>
+									<div
+										v-click-sound
+										@click="pushStopProfitLoss(0)"
+										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
+									>
+										<h6 class="pb-0 text-grey">止盈</h6>
+										<div v-if="!takeProfit">-</div>
+										<div v-else class="text-green">{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
+									</div>
+									<div
+										v-click-sound
+										@click="pushStopProfitLoss(1)"
+										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
+									>
+										<h6 class="pb-0 text-grey">止损</h6>
+										<div v-if="!stopLoss">-</div>
+										<div v-else class="text-red">{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
+									</div>
 								</div>
-							</div>
+							</template>
 						</div>
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 z-10" v-if="!loading">
@@ -847,6 +873,20 @@
 		margin-bottom: 12px;
 	}
 
+	.trade-av {
+		display: flex;
+		flex-direction: column;
+		font-size: 10px;
+		.av-item {
+			display: flex;
+			justify-content: space-between;
+			b {
+				text-align: right;
+				flex: auto;
+			}
+		}
+	}
+
 	@container (max-width: 200px) {
 		.trade-order {
 			.leverage-select {
@@ -911,6 +951,7 @@
 					.av-item {
 						display: flex;
 						flex-direction: column;
+						align-items: flex-start;
 						span {
 							padding-bottom: 5px;
 						}

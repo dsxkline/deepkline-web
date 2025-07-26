@@ -8,7 +8,7 @@
 	import { useAccountStore } from '~/store/account'
 import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 	const props = defineProps<{
-		push?: boolean
+		push?: string
 	}>()
 	const usepush = usePush()
 	const loading = ref(false)

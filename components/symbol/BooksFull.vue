@@ -86,6 +86,8 @@
 	watch(
 		() => props.symbol,
 		(val, old) => {
+			asks.value = []
+			bids.value = []
 			ticker.value = $ws?.getTickers(props.symbol) || {}
 			if (pointLevelOptions.value?.length > 0) pointLevel.value = pointLevelOptions.value[0]
 			$ws.removeTickerHandler(old, tickerHandler)
@@ -354,8 +356,8 @@
 				<el-button @click.stop="getBooksFull()">点击刷新</el-button>
 			</template> -->
 		</Error>
-		<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
-		<template v-else-if="!error">
+		<!-- <el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" /> -->
+		<template v-if="!error">
 			<div v-if="isH5">
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
@@ -379,7 +381,7 @@
 				</ul>
 			</div>
 			<div class="flex-auto flex gap-3 book-container">
-				<BooksCanvas type="ask" :datas="asks" :point="point" :pricePoint="pricePoint" v-if="asks" :isH5="isH5" />
+				<BooksCanvas type="ask" :datas="asks || []" :point="point" :pricePoint="pricePoint" :isH5="isH5" :showNumber="showNumber" />
 				<div class="books-realtime justify-between items-center w-full">
 					<div class="flex flex-col items-start justify-center w-full">
 						<!-- <b :class="['text-base font-extrabold', change > 0 ? 'text-green' : 'text-red']">{{ formatPrice(ticker?.last, symbolObj.tickSz) }}</b> -->
@@ -397,7 +399,7 @@
 					<el-icon><ElIconArrowRight /></el-icon>
 				</div>
 
-				<BooksCanvas type="bid" :datas="bids" v-if="bids" :point="point" :pricePoint="pricePoint" :isH5="isH5" />
+				<BooksCanvas type="bid" :datas="bids || []" :point="point" :pricePoint="pricePoint" :isH5="isH5" :showNumber="showNumber" />
 			</div>
 			<div v-observe-visible.multi="onObserveVisibleBottom" class="!flex pt-2" v-if="bids && asks && !Number.isNaN(calculateBuySellRatioValue) && activeBook == 0">
 				<div class="w-full h-5 text-white rounded-sm relative overflow-hidden books-process">

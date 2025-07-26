@@ -47,7 +47,6 @@
 			})
 	}
 
-
 	onMounted(() => {
 		getAssets()
 	})
@@ -64,24 +63,30 @@
 		</Error>
 		<ul v-if="loading && !error">
 			<li class="border-b border-[--transparent05] py-3" v-for="item in 5">
-				<div class="flex justify-between">
-					<div class="flex items-center w-full">
-						<el-skeleton :rows="0" animated>
-							<template #template>
-								<el-skeleton-item variant="p" style="width: 50%; height: 18px" />
-							</template>
-						</el-skeleton>
-					</div>
-					<div class="flex justify-between items-center gap-4"></div>
-				</div>
-				<div class="py-0 flex items-center">
+				<div class="grid grid-cols-3">
 					<el-skeleton :rows="0" animated class="flex items-center">
 						<template #template>
-							<el-skeleton-item variant="p" style="width: 30%; height: 10px" />
+							<el-skeleton style="--el-skeleton-circle-size: 35px;width: 40px;"  class="flex items-center">
+								<template #template>
+									<el-skeleton-item variant="circle" />
+								</template>
+							</el-skeleton>
+							<el-skeleton-item variant="p" style="width: 60%; height: 18px" />
+						</template>
+					</el-skeleton>
+					<el-skeleton :rows="0" animated class="flex flex-col justify-end items-end gap-2">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 50%; height: 12px" />
+							<el-skeleton-item variant="p" style="width: 30%; height: 12px" />
+						</template>
+					</el-skeleton>
+					<el-skeleton :rows="0" animated class="flex flex-col justify-end items-end gap-2">
+						<template #template>
+							<el-skeleton-item variant="p" style="width: 50%; height: 12px" />
+							<el-skeleton-item variant="p" style="width: 30%; height: 12px" />
 						</template>
 					</el-skeleton>
 				</div>
-				
 			</li>
 		</ul>
 		<ul class="*:grid *:grid-cols-3 *:w-full *:py-2 *:items-center *:my-1 *:border-b *:border-[--transparent05]" v-if="!loading && !error && assets?.length">
@@ -100,9 +105,7 @@
 						<span class="text-grey">{{ formatNumber(parseFloat(item.lotBalance || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</span>
 					</div>
 					<div class="flex flex-col col-span-1 text-xs items-end" v-if="parseFloat(item.profit)">
-						<span :class="['text-sm', parseFloat(item.profit) > 0 ? 'text-green' : 'text-red']">
-							{{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), '2') }}
-						</span>
+						<span :class="['text-sm', parseFloat(item.profit) > 0 ? 'text-green' : 'text-red']"> {{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), '2') }} </span>
 						<span :class="parseFloat(item.profitRate) > 0 ? 'text-green' : 'text-red'">
 							{{ parseFloat(item.profitRate) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profitRate || '0') * 100, '2') }}%</span
 						>

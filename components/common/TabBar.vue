@@ -46,6 +46,7 @@
 		leave?: () => void
 	}
 	const componentRefs = ref<ComponentWithUpdate[]|null>([]) // 存储组件实例
+	const tabbarContents = ref<HTMLElement[]>([])
 	const emit = defineEmits<{
 		(event: 'update:active', value: number): void
 	}>()
@@ -73,12 +74,23 @@
 		if (content && content.update) {
 			content.update()
 		}
+		
 		// 其他组件执行离开方法
 		componentRefs.value.forEach((item, i) => {
 			if (i !== index && item.leave) {
 				item.leave()
 			}
 		})
+
+		tabbarContents.value.forEach((item, i)=>{
+			if(i==index){
+				item.style.visibility = "visible"
+			}else{
+				item.style.visibility = "hidden"
+			}
+			
+		})
+
 		// 执行点击事件
 		if (item.onClick) {
 			item.onClick()
@@ -168,7 +180,7 @@
 			</div>
 		</div>
 		<div class="tabbar-content" ref="tabbarContent" :style="{ height: contentHeight ? `${contentHeight}px` : 'auto' }">
-			<div class="tabbar-content-item" v-for="(item, index) in menus">
+			<div class="tabbar-content-item" v-for="(item, index) in menus" ref="tabbarContents">
 				<component :is="item.contentComp" v-bind="item.contentParams" ref="componentRefs" :height="contentHeight" v-if="!isDestroyed" />
 			</div>
 		</div>

@@ -1,14 +1,19 @@
 <script setup lang="ts">
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-	import { OrderState, type OrderDto } from '~/fetch/dtos/order.dto'
+	import { OrderState, type OrderDto, OrderType } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
-	import { MarginMode, OrderType, Sides } from '~/fetch/okx/okx.type.d'
+	import { MarginMode, Sides } from '~/fetch/okx/okx.type.d'
 	import { orderFetch } from '~/fetch/order.fetch'
 	import { useAccountStore } from '~/store/account'
 	import { useOrderStore } from '~/store/order'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useUserStore } from '~/store/user'
-
+	import LoginIndex from '~/pages/login/index.vue'
+	import ExchangeIndex from '~/pages/exchange/index.vue'
+	import { usePush, usePushUp } from '~/composable/usePush'
+	import { useStore } from '~/store'
+	const pushUp = usePushUp()
+	const pushLeft = usePush()
 	const loading = ref(true)
 	const error = ref('')
 	const loadingCancel = ref<Record<string, boolean>>({})
@@ -28,6 +33,7 @@
 			return
 		}
 		if (orders.value?.length) {
+			error.value = ''
 			loading.value = false
 			return
 		}
@@ -90,6 +96,30 @@
 			})
 	}
 
+	function pushLogin() {
+		if (!useUserStore().user) {
+			if (useStore().isH5) {
+				pushUp(LoginIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
+				return
+			}
+		}
+	}
+
+	function pushOpenAccount() {
+		if (!useAccountStore().accounts?.length) {
+			if (useStore().isH5) {
+				pushLeft(ExchangeIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				return
+			}
+		}
+	}
+
 	function update() {
 		getOrders()
 	}
@@ -103,7 +133,10 @@
 
 <template>
 	<div class="px-4 min-h-[500px]">
-		<Empty :content="'暂无委托'" v-if="!loading && !error && !orders?.length" class="pt-20"> </Empty>
+		<Empty :content="'暂无委托'" v-if="!loading && !error && !orders?.length" class="pt-20">
+			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
+		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
 				<el-button @click.stop="getOrders">点击刷新</el-button>
@@ -168,36 +201,51 @@
 					<div class="py-1 flex items-center *:mr-1">
 						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.LIMIT">限价</button>
 						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.MARKET">市价</button>
-
+						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-green']" v-if="parseFloat(item.takeProfitPrice)">止盈</button>
+						<button :class="[item.side == Sides.BUY ? 'tag-red' : 'tag-red']" v-if="parseFloat(item.stopLossPrice)">止损</button>
 						<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated && item.marketType == MarketType.SWAP">逐仓</button>
 						<button class="tag-default" v-if="item.marginMode == MarginMode.Cross && item.marketType == MarketType.SWAP">全仓</button>
 						<span class="text-xs text-grey leading-normal">{{ formatDate(new Date(item.createdAt).getTime(), 'MM/DD HH:mm:ss') }}</span>
 					</div>
-					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1">
+					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1 [&_b]:pb-2">
 						<div class="flex flex-col">
 							<span>委托数量</span>
-							<b>{{ formatNumber(parseFloat(item.lotSize)) }}</b>
+							<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 						</div>
 						<div class="flex flex-col items-center">
 							<span>已成数量</span>
-							<b>{{ formatNumber(item.matchSize) }}</b>
+							<b>{{ formatNumber(item.matchSize, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 						</div>
 						<div class="flex flex-col justify-center items-end">
 							<span>委托价格</span>
-							<b v-if="item.orderType==OrderType.LIMIT">{{ formatPrice(item.price, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+							<b v-if="item.orderType == OrderType.LIMIT">{{ formatPrice(item.price, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 							<b v-else>MARKET</b>
 						</div>
 
-						<div class="flex flex-col">
-							<span>止盈</span>
-							<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-							<b v-else> - </b>
-						</div>
-						<div class="flex flex-col items-center">
-							<span>止损</span>
-							<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-							<b v-else> - </b>
-						</div>
+						<template v-if="parseFloat(item.takeProfitPrice) && parseFloat(item.stopLossPrice)">
+							<div class="flex flex-col">
+								<span>止盈</span>
+								<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+								<b v-else> - </b>
+							</div>
+							<div class="flex flex-col items-center">
+								<span>止损</span>
+								<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+								<b v-else> - </b>
+							</div>
+						</template>
+						<template v-else>
+							<div class="flex flex-col" v-if="parseFloat(item.takeProfitPrice)">
+								<span>止盈</span>
+								<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+								<b v-else> - </b>
+							</div>
+							<div class="flex flex-col" v-if="parseFloat(item.stopLossPrice)">
+								<span>止损</span>
+								<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+								<b v-else> - </b>
+							</div>
+						</template>
 					</div>
 					<div class="flex items-center gap-2 justify-between *:flex-1">
 						<button class="bt-default" @click="cancelStart(item)" v-if="item.state != OrderState.PENDING_CANCEL">

@@ -6,7 +6,7 @@
 	import { InstanceType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import BooksFull from '~/components/symbol/BooksFull.vue'
 	import CrypeOrder from '~/components/order/CrypeOrder.vue'
-import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const symbol = ref('BTC-USDT')
 	const showKline = ref(false)
 	const item = ref<Ticker | null>(null)
@@ -31,9 +31,6 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 		() => openLarverage.value,
 		val => {
 			loading.value = true
-			setTimeout(() => {
-				loading.value = false
-			}, 300)
 		},
 		{ immediate: true }
 	)
@@ -89,6 +86,7 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 		const { $wsb, $ws } = useNuxtApp()
 
 		subHandle = $ws.subTickers([symbol.value], (message, error) => {
+			loading.value = false
 			if (useStore().isLeave) return
 			// console.log("subTickers", message.data, error);
 			if (message.data)
@@ -148,7 +146,7 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 			<template #left>
 				<div class="px-4 flex items-center">
 					<img :src="symbolObj?.icon" class="mr-1 w-6 h-6" v-if="symbolObj?.icon" />
-					<b class=" text-lg flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
+					<b class="text-lg flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
 						>{{ getSymbolName(symbolObj) }} {{ symbolObj?.instType == InstanceType.SWAP ? '永续' : '' }}</b
 					>
 					<button class="flex items-center pl-2 h-full" @click="pushSearch">
@@ -156,9 +154,9 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 					</button>
 
 					<span :class="'pl-2 text-xs ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="change && symbolObj"
-							>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
-						>
-						<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
+						>{{ rate > 0 ? '+' : '' }}{{ formatPrice(change, symbolObj.tickSz, '') }} ({{ rate > 0 ? '+' : '' }}{{ rate.toFixed(2) }}%)</span
+					>
+					<span :class="'' + (rate >= 0 ? 'text-green' : 'text-red')" v-else>- (-%)</span>
 				</div>
 			</template>
 			<template #right>
@@ -175,7 +173,7 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 				<div class="h-[250px] mb-4" v-if="showKline">
 					<KlineChart :symbol="symbol" :sides="['MACD']" />
 				</div>
-				<div class="w-full flex">
+				<div class="w-full flex" v-if="!loading">
 					<div class="w-3/5">
 						<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" :side="side" @update:side="(val: Sides) => side = val" />
 					</div>
@@ -191,6 +189,49 @@ import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 						</div>
 						<BooksFull :symbol="symbol" :limitPoint="'5'" class="text-[10px]" :isH5="true" :limitCount="booksAmount" v-if="!loading" />
 					</div>
+				</div>
+				<div class="w-full flex min-h-[500px]" v-else>
+					<div class="w-3/5 px-4 flex flex-col justify-between">
+						<el-skeleton :rows="0" animated class="flex items-center justify-between gap-4">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 50%; height: 30px" />
+								<el-skeleton-item variant="p" style="width: 50%; height: 30px" />
+							</template>
+						</el-skeleton>
+						<el-skeleton :rows="0" animated class="flex items-center justify-between mt-2">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 30%; height: 20px" />
+							</template>
+						</el-skeleton>
+						<el-skeleton :rows="0" animated class="flex flex-col mt-3" v-for="item of 5">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 30%; height: 10px" />
+								<el-skeleton-item variant="p" style="width: 100%; height: 30px;margin-top: 10px;" />
+							</template>
+						</el-skeleton>
+
+						<el-skeleton :rows="0" animated class="flex items-center justify-between mt-2">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 100%; height: 40px" />
+							</template>
+						</el-skeleton>
+					</div>
+					<div class="w-2/5 pr-4 flex flex-col justify-between">
+						<el-skeleton :rows="0" animated class="flex items-center justify-between mt-1" v-for="item of 9">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 50%; height: 12px" />
+								<el-skeleton-item variant="p" style="width: 30%; height: 12px" />
+							</template>
+						</el-skeleton>
+						<div class="h-[30px]"></div>
+						<el-skeleton :rows="0" animated class="flex items-center justify-between mt-1" v-for="item of 9">
+							<template #template>
+								<el-skeleton-item variant="p" style="width: 50%; height: 12px" />
+								<el-skeleton-item variant="p" style="width: 30%; height: 12px" />
+							</template>
+						</el-skeleton>
+					</div>
+					
 				</div>
 				<div class="pt-6">
 					<CrypeOrder />

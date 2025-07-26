@@ -1,7 +1,18 @@
 <script setup lang="ts">
-	import { InstanceType, OrderType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
+	import { usePush, usePushUp } from '~/composable/usePush'
+	import type { PositionDto } from '~/fetch/dtos/position.dto'
+	import { InstanceType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
+	import { useUserStore } from '~/store/user'
+	import LoginIndex from '~/pages/login/index.vue'
+	import ExchangeIndex from '~/pages/exchange/index.vue'
+	import { useAccountStore } from '~/store/account'
+	import { OrderType, type AddOrderDto } from '~/fetch/dtos/order.dto'
+	import { orderFetch } from '~/fetch/order.fetch'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	const pushUp = usePushUp()
+	const pushLeft = usePush()
 	const props = defineProps<{
 		symbol: string
 		type: number
@@ -9,7 +20,7 @@
 		initPrice?: number
 		push?: string
 		lotSize?: string
-		positionId?: string
+		position?: PositionDto
 	}>()
 	const emit = defineEmits<{
 		(event: 'close', price: number, point: number, open: boolean, changeRate: number): void
@@ -52,7 +63,7 @@
 			  }
 	})
 
-	const lotBalance = ref(formatNumber(props.lotSize || '0', '2'))
+	const lotBalance = ref(numberToFixed(props.lotSize || '0', symbolObj.value.lotSz))
 	const lotBalancePercent = ref(0)
 	const lotSizeMarks = computed(() => {
 		return {
@@ -63,27 +74,32 @@
 			'100': '100%'
 		}
 	})
-
 	const openStop = ref(!(localStorage.getItem('stopProfitLossClose_' + props.type) == 'true'))
-
 	const tickSz = computed(() => parseFloat(symbolObj.value.tickSz))
+	const submitLoading = ref(false)
 
 	function priceChange(currentValue: number, oldValue: number) {
 		updateInitPrice()
 		if (!amount.value) amount.value = 0
 		if (price.value - tickSz.value <= 0) price.value = initPrice.value
-		console.log('priceChange', price.value, initPrice.value)
+
 		// 价格变化，点数跟着变化
 		nextTick(() => {
-			if (!props.type) {
-				amount.value = Math.floor((price.value - initPrice.value) / tickSz.value)
-			} else {
-				amount.value = Math.floor((initPrice.value - price.value) / tickSz.value)
-			}
+			setAmountWithPrice(price.value)
 			setPercent(price.value)
 			// useNuxtApp().$clickSound();
 		})
 	}
+
+	function setAmountWithPrice(price: number) {
+		if (!props.type) {
+			amount.value = DecimalHelper.div(DecimalHelper.sub(price, initPrice.value).toString(), tickSz.value).toNumber()
+		} else {
+			amount.value = DecimalHelper.div(DecimalHelper.sub(initPrice.value, price).toString(), tickSz.value).toNumber()
+		}
+		console.log('priceChange', price, initPrice.value, amount.value, tickSz.value)
+	}
+
 	function priceFocus() {}
 	function amountChange() {
 		updateInitPrice()
@@ -92,9 +108,9 @@
 		// 点数变化，价格跟着变化
 		nextTick(() => {
 			if (!props.type) {
-				price.value = initPrice.value + amount.value * tickSz.value
+				price.value = DecimalHelper.add(initPrice.value, DecimalHelper.mul(amount.value, tickSz.value).toString()).toNumber()
 			} else {
-				price.value = initPrice.value - amount.value * tickSz.value
+				price.value = DecimalHelper.sub(initPrice.value, DecimalHelper.mul(amount.value, tickSz.value).toString()).toNumber()
 			}
 			setPercent(price.value)
 			// useNuxtApp().$clickSound();
@@ -142,11 +158,7 @@
 		} else {
 			price.value = initPrice.value
 		}
-		if (!props.type) {
-			amount.value = Math.floor((price.value - initPrice.value) / tickSz.value)
-		} else {
-			amount.value = Math.floor((initPrice.value - price.value) / tickSz.value)
-		}
+		setAmountWithPrice(price.value)
 	}
 	watch(
 		() => szPercent.value,
@@ -185,20 +197,98 @@
 		() => lotBalancePercent.value,
 		val => {
 			lotBalance.value = (parseFloat(props.lotSize || '0') * val) / 100
-			console.log('lotBalancePercent', val,props.lotSize, lotBalance.value)
-			lotBalance.value = numberToFixed(Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0')))
-			// console.log('onProgressLotBalance', val, symbolObj.value.minSz, symbolObj.value.lotSz, lotBalance.value.toFixed(parseFloat(symbolObj.value.lotSz)))
+			console.log('lotBalancePercent', val, props.lotSize, lotBalance.value)
+			lotBalance.value = numberToFixed(Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0')), symbolObj.value.lotSz)
+			console.log('onProgressLotBalance', val, symbolObj.value.minSz, symbolObj.value.lotSz, lotBalance.value)
 		}
 	)
 
 	const onProgressLotBalance = (val: number) => {}
 
+	function addOrder() {
+		if (submitLoading.value) return
+		if (!props.position) return
+		if (!useUserStore().user) {
+			if (useStore().isH5) {
+				pushUp(LoginIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
+				return
+			}
+		}
+
+		if (!useAccountStore().accounts?.length) {
+			if (useStore().isH5) {
+				pushLeft(ExchangeIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				return
+			}
+		}
+
+		submitLoading.value = true
+
+		if (!price.value) {
+			ElMessage.error({ message: '请输入' + (props.type == 0 ? '止盈' : '止损') + '价格' })
+			submitLoading.value = false
+			return
+		}
+
+		if (!parseFloat(lotBalance.value)) {
+			ElMessage.error({ message: '请输入交易数量' })
+			submitLoading.value = false
+			return
+		}
+
+		const order = {
+			side: Sides.SELL,
+			orderType: OrderType.STOP,
+			price: String(price.value),
+			lotSize: String(lotBalance.value),
+			marginMode: props.position.marginMode,
+			margin: String('0'),
+			accountId: props.position.accountId,
+			exchange: props.position.exchange,
+			symbol: props.symbol,
+			leverage: String('0'),
+			takeProfitPrice: props.type == 0 ? String(price.value) : '0',
+			stopLossPrice: props.type == 1 ? String(price.value) : '0',
+			openStopLoss: props.type == 1 ? openStop.value : false,
+			openTakeProfit: props.type == 0 ? openStop.value : false
+		} as AddOrderDto
+
+		console.log('order', order)
+
+		orderFetch
+			.add(order)
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					// 下单成功,如果ws五秒内还不来就先给出提示
+					submitLoading.value = false
+					confirm()
+				} else {
+					setTimeout(() => {
+						ElMessage.error(result?.msg)
+						submitLoading.value = false
+					}, 500)
+				}
+			})
+			.catch(err => {
+				setTimeout(() => {
+					ElMessage.error('网络异常，请稍后再试')
+					submitLoading.value = false
+				}, 500)
+			})
+	}
+
 	onMounted(() => {
 		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_' + props.type))
 		lotBalancePercent.value = 100
 		// openStop.value = !(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true')
-		price.value = props.price || 0
-		initPrice.value = props.initPrice || 0
+		initPrice.value = parseFloat(numberToFixed(props.initPrice || 0, symbolObj.value.tickSz))
+		price.value = props.price || props.initPrice || 0
 		if (price.value) {
 			priceChange(price.value, 0)
 		}
@@ -219,13 +309,26 @@
 		</h3>
 		<div class="py-1 pb-3">
 			<ul>
-				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main">
+				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main" v-if="!position">
 					<span>最新价格</span>
 					<b>{{ formatPrice(initPrice, symbolObj.tickSz) }}</b>
 					<template v-if="lotSize">
 						<span class="pl-2">委托数量</span>
-						<b>{{ formatNumber(parseFloat(lotSize), '2') }}</b>
+						<b>{{ formatNumber(parseFloat(lotSize), symbolObj.lotSz) }}</b>
 					</template>
+				</li>
+
+				<li v-else class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main">
+					<span>成本价</span>
+					<b>{{ formatPrice(initPrice, symbolObj.tickSz) }}</b>
+					<template v-if="lotSize">
+						<span class="pl-2">可用数量</span>
+						<b>{{ formatNumber(parseFloat(lotSize), symbolObj.lotSz) }}</b>
+					</template>
+				</li>
+				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main" v-if="position">
+					<span>最新价</span>
+					<b>{{ formatPrice(position.lastPrice, symbolObj.tickSz) }}</b>
 				</li>
 			</ul>
 		</div>
@@ -306,7 +409,7 @@
 			</div>
 		</div>
 		<div class="slider-wrapper"><slider v-model="szPercent" :step="1" :marks="marks" :showTooltip="false" @progress="onProgress" /></div>
-		<template v-if="positionId">
+		<template v-if="position">
 			<div class="py-2">
 				<h3 class="mb-3">数量</h3>
 				<el-input @change="amountChange" @input="amountChange" v-model="lotBalance" size="large" class="!w-full" v-click-sound inputmode="decimal" :disabled="!openStop" />
@@ -315,7 +418,10 @@
 		</template>
 
 		<div class="py-3">
-			<button class="stop-bt bt-green w-full !py-2" v-click-sound @click="confirm">确定</button>
+			<button class="stop-bt bt-green w-full !py-2 flex items-center leading-normal" v-click-sound @click="position ? addOrder() : confirm()">
+				<span :class="submitLoading ? 'text-white/50' : 'text-white'">确定</span>
+				<Loading v-if="submitLoading" size="14px" class="mx-2" />
+			</button>
 		</div>
 	</div>
 </template>

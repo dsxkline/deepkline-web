@@ -14,7 +14,7 @@ export const formatPrice = (value: any, precision: string, prefix: string = '') 
 }
 
 // 资产金额正负上下取整
-export const formatNumber = (value: any, precision: string = '2', prefix: string = '') => {
+export const formatNumber = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
@@ -22,18 +22,22 @@ export const formatNumber = (value: any, precision: string = '2', prefix: string
 	if (String(value).indexOf('.') > 0) {
 		const px = String(value).split('.')[1]
 		point = Math.max(parseInt(String(point)), px.length - String(parseInt(px)).length + 1)
-		// console.log('value', value, point)
 	}
-	return thousandUnit(`${prefix}${noExponents(toNumberFixed(value, String(point)).toFixed(point))}`)
+	return thousandUnit(`${prefix}${noExponents(String(toNumberFixed(value, String(point))))}`)
 }
 
 // 去掉后面的0，返回纯数字
-export const numberToFixed = (value: any, precision: string = '2', prefix: string = '') => {
+export const numberToFixed = (value: any, precision: string, prefix: string = '') => {
 	if (!precision) return value + ''
 	if (!value) return value
 	value = parseFloat(value.toString())
 	let point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : parseInt(precision)
-	// console.log('value',value,value.toFixed(point))
+	// console.log('value', value, value.toFixed(point))
+	if (String(value).indexOf('.') > 0) {
+		const px = String(value).split('.')[1]
+		point = Math.max(parseInt(String(point)), px.length - String(parseInt(px)).length + 1)
+		// console.log('value', value, point)
+	}
 	return `${prefix}${noExponents(String(parseFloat(value.toFixed(point))))}`
 }
 

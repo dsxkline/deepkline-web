@@ -4,7 +4,7 @@ export interface AddOrderDto {
 	accountId: number
 	symbol: string
 	side: 'buy' | 'sell'
-	orderType: 'limit' | 'market' | 'stop_limit' | 'stop_market' | 'trailing_stop'
+	orderType: OrderType
 	price: string
 	marginMode: 'crossed' | 'isolated'
 	leverage: string
@@ -35,7 +35,7 @@ export interface OrderDto {
 	openStopLoss: boolean
 	openTakeProfit: boolean
 	orderId: string
-	orderType: 'limit' | 'market' | 'stop_limit' | 'stop_market' | 'trailing_stop'
+	orderType: OrderType
 	price: string
 	side: 'buy' | 'sell'
 	state: OrderState
@@ -61,4 +61,10 @@ export enum OrderState {
 	REJECTED = 'rejected', // 拒绝(下单失败)
 	STOPPED = 'stopped', // 已停止
 	FAILED = 'failed' // 下单失败
+}
+
+export enum OrderType {
+	LIMIT = 'limit', // 限价单
+	MARKET = 'market', // 市价单
+	STOP = "stop",// 止盈止损
 }

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
-	import { MarginMode, OrderType, Sides } from '~/fetch/okx/okx.type.d'
+	import { MarginMode, Sides } from '~/fetch/okx/okx.type.d'
 	import { useOrderStore } from '~/store/order'
 	import { useSymbolStore } from '~/store/symbol'
+	import { OrderType } from '~/fetch/dtos/order.dto'
 </script>
 
 <template>

@@ -75,13 +75,13 @@ export function useRequestAnimation(): requestAnimationType {
 	}
 
 	const stop = () => {
-		_isStop = true
+		//_isStop = true
 		if (animationFrameId !== null) {
 			cancelAnimationFrame(animationFrameId)
 			animationFrameId = null
 			// _onUpdate && _onUpdate(_to)
 			// _onUpdate = null
-			_onFinish = null
+			// _onFinish = null
 		}
 		startTimestamp = null
 	}

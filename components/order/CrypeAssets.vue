@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { usePushUp, useWillAppear } from '~/composable/usePush'
+	import { useWillAppear } from '~/composable/usePush'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { OrderState, type OrderDto } from '~/fetch/dtos/order.dto'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
@@ -11,11 +11,18 @@
 	import { useStore } from '~/store/index'
 	import type { PositionDto } from '~/fetch/dtos/position.dto'
 	import StopProfitLoss from '~/components/trade/StopProfitLoss.vue'
+	import TakeProfitAndStopLoss from '../trade/TakeProfitAndStopLoss.vue'
+	import SimpleBuySell from '../trade/SimpleBuySell.vue'
+	import { useUserStore } from '~/store/user'
+	import LoginIndex from '~/pages/login/index.vue'
+	import ExchangeIndex from '~/pages/exchange/index.vue'
+	import { usePush, usePushUp } from '~/composable/usePush'
 	const pushUp = usePushUp()
+	const pushLeft = usePush()
 	const loading = ref(true)
 	const error = ref('')
 	const assets = computed(() => useOrderStore().assets)
-
+	const popProfitLoss = ref([])
 	watch(
 		() => useAccountStore().currentAccount,
 		() => {
@@ -59,23 +66,60 @@
 		getAssets()
 	})
 
-	const confirmProfit = (position: PositionDto) => (price: number, point: number, open: boolean, changeRate: number) => {}
-	const confirmLoss = (position: PositionDto) => (price: number, point: number, open: boolean, changeRate: number) => {}
-	const pushStopProfitLoss = (position: PositionDto, type: number) => {
+	const configmProfitLoss = (position: PositionDto) => (takeProfitPrice: number, stopLossPrice: number) => {
+		console.log('configmProfitLoss', takeProfitPrice, stopLossPrice)
+		popProfitLoss.value.forEach(item => (item as any).hide())
+	}
+	const pushStopProfitLoss = (position: PositionDto) => {
 		pushUp(
-			StopProfitLoss,
+			TakeProfitAndStopLoss,
 			{
-				type: type,
 				symbol: position.symbol,
 				initPrice: parseFloat(position.costPrice || '0'),
-				price: type == 0 ? parseFloat(position.takeProfitPrice || '0') : parseFloat(position.stopLossPrice || '0'),
-				lotSize: position.lotBalance,
-				positionId: position.positionId,
-				onClose: type == 0 ? confirmProfit(position) : confirmLoss(position)
+				takeProfitPrice: parseFloat(position.takeProfitPrice || '0'),
+				stopLossPrice: parseFloat(position.stopLossPrice || '0'),
+				lotSize: position.lotAvailable,
+				position: position,
+				onClose: configmProfitLoss(position)
 			},
 			'90%'
 		)
 	}
+
+	const pushSimpleBuySell = (position: PositionDto) => {
+		pushUp(
+			SimpleBuySell,
+			{
+				symbol: position.symbol
+			},
+			'90%'
+		)
+	}
+
+	function pushLogin() {
+		if (!useUserStore().user) {
+			if (useStore().isH5) {
+				pushUp(LoginIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
+				return
+			}
+		}
+	}
+
+	function pushOpenAccount() {
+		if (!useAccountStore().accounts?.length) {
+			if (useStore().isH5) {
+				pushLeft(ExchangeIndex)
+				return
+			} else {
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				return
+			}
+		}
+	}
+
 	onMounted(() => {})
 
 	// 暴露给父组件的方法
@@ -84,7 +128,10 @@
 
 <template>
 	<div class="px-4 min-h-80">
-		<Empty :content="'暂无委托'" v-if="!loading && !error && !assets?.length" class="pt-20"> </Empty>
+		<Empty :content="'暂无资产'" v-if="!loading && !error && !assets?.length" class="pt-20">
+			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
+		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
 				<el-button @click.stop="getAssets">点击刷新</el-button>
@@ -175,7 +222,7 @@
 					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 						<div class="flex flex-col">
 							<span>币种权益</span>
-							<b>{{ formatNumber(parseFloat(item.lotSize)) }}</b>
+							<b>{{ formatNumber(parseFloat(item.lotSize || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 						</div>
 						<div class="flex flex-col items-center">
 							<span>成本价</span>
@@ -190,51 +237,48 @@
 
 						<div class="flex flex-col">
 							<span>余额</span>
-							<b v-if="item.lotBalance">{{ formatNumber(parseFloat(item.lotBalance)) }}</b>
+							<b v-if="item.lotBalance">{{ formatNumber(parseFloat(item.lotBalance || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
+							<b v-else>-</b>
+						</div>
+
+						<div class="flex flex-col items-center">
+							<span>可用</span>
+							<b v-if="item.lotBalance">{{ formatNumber(parseFloat(item.lotAvailable || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							<b v-else>-</b>
 						</div>
 					</div>
 					<div class="flex items-center gap-2 justify-between *:flex-1" v-if="!useStore().isH5">
-						<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0" width="300">
+						<el-popover placement="left" trigger="click" ref="popProfitLoss" :hide-after="0" width="300">
 							<template #reference>
-								<button class="bt-default">止盈</button>
+								<button class="bt-default">止盈止盈</button>
 							</template>
-							<StopProfitLoss
-								:type="0"
+							<TakeProfitAndStopLoss
 								:symbol="item.symbol"
-								:lotSize="item.lotBalance"
-								:positionId="item.positionId"
-								:price="parseFloat(item.takeProfitPrice || '0')"
+								:lotSize="item.lotAvailable"
+								:position="item"
+								:takeProfitPrice="parseFloat(item.takeProfitPrice || '0')"
+								:stopLossPrice="parseFloat(item.stopLossPrice || '0')"
 								:initPrice="parseFloat(item.costPrice || '0')"
-								@close="confirmProfit(item)"
+								@close="configmProfitLoss(item)"
 								v-if="!loading"
 							/>
 						</el-popover>
-						<el-popover placement="left" trigger="click" ref="popProfit" :hide-after="0" width="300">
-							<template #reference>
-								<button class="bt-default">止损</button>
-							</template>
-							<StopProfitLoss
-								:type="1"
-								:symbol="item.symbol"
-								:lotSize="item.lotBalance"
-								:positionId="item.positionId"
-								:price="parseFloat(item.stopLossPrice || '0')"
-								:initPrice="parseFloat(item.costPrice || '0')"
-								@close="confirmLoss(item)"
-								v-if="!loading"
-							/>
-						</el-popover>
+
 						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
 						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
-						<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
+
+						<el-popover placement="left" trigger="click" ref="popProfitLoss" :hide-after="0" width="300" v-if="item.marketType == MarketType.SPOT">
+							<template #reference>
+								<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
+							</template>
+							<SimpleBuySell :symbol="item.symbol" v-if="!loading" />
+						</el-popover>
 					</div>
 					<div class="flex items-center gap-2 justify-between *:flex-1" v-else>
-						<button class="bt-default" @click="pushStopProfitLoss(item, 0)">止盈</button>
-						<button class="bt-default" @click="pushStopProfitLoss(item, 1)">止损</button>
+						<button class="bt-default" @click="pushStopProfitLoss(item)">止盈止损</button>
 						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
 						<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
-						<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
+						<button class="bt-default" v-if="item.marketType == MarketType.SPOT" @click="pushSimpleBuySell(item)">买卖</button>
 					</div>
 				</li>
 			</template>

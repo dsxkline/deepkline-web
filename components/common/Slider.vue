@@ -25,12 +25,13 @@
 
 	const mouseDown = (event: MouseEvent) => {
 		event.preventDefault() // 阻止默认事件，避免页面滚动
-		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+		const rect = container.value.getBoundingClientRect()
 		let newValue = ((event.clientX - rect.left) / rect.width) * 100
 		// newValue = Math.max(0, Math.min(100, newValue)) // 限制在0-100之间
 		// console.log('mouseDown', newValue, maxValue.value, minValue.value)
-		updateValue(newValue)
 		isMouseDown.value = true
+		updateValue(newValue)
+		
 	}
 
 	const mouseMove = (event: MouseEvent) => {
@@ -50,7 +51,7 @@
 		event.preventDefault() // 阻止默认事件，避免页面滚动
 		isMouseDown.value = true // 鼠标松开时重置状态
 		const touch = event.touches[0]
-		const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+		const rect = container.value.getBoundingClientRect()
 		let newValue = ((touch.clientX - rect.left) / rect.width) * 100
 		// newValue = Math.max(0, Math.min(100, newValue)) // 限制在0-100之间
 		updateValue(newValue)
@@ -163,11 +164,10 @@
 			<div
 				ref="sliderProgressStops"
 				class="slider-progress-stops bg-base border-[3px] border-[--slider-border-color] rounded-full absolute top-0 w-3 h-3"
-				:title="valueToPercent(minValue)+''"
 				:style="{
 					left: valueToPercent(progressValue) + '%',
 					transform:
-						(progressValue <= percentToValue(0.5) ? 'translateX(-25%)' : progressValue < percentToValue(0.95) ? 'translateX(-50%)' : 'translateX(-75%)') +
+						(progressValue <= percentToValue(1) ? 'translateX(-25%)' : progressValue < percentToValue(0.95) ? 'translateX(-50%)' : 'translateX(-75%)') +
 						' translateY(-40%)'
 				}"
 			></div>

@@ -19,13 +19,14 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 	if (status.value === 'success') {
 		if (data.value && typeof data.value === 'object' && 'code' in data.value) {
 			data.value.code = parseInt((data.value as { code: any }).code) || 0
-            // console.log('ddddd',data.value)
-            if(data.value.code==401){
-                // 注销登录
-                if(process.client) localStorage.setItem('logout', String(new Date().getTime()))
-            }
+			// console.log('ddddd',data.value)
+			if (data.value.code == 401) {
+				// 注销登录
+				if (process.client) localStorage.setItem('logout', String(new Date().getTime()))
+				console.log('ddddd', data.value)
+			}
 		}
-		
+
 		return data.value
 	}
 	return {
@@ -57,11 +58,11 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
 	if (status.value === 'success') {
 		if (data.value && typeof data.value === 'object' && 'code' in data.value) {
 			data.value.code = parseInt((data.value as { code: any }).code) || 0
-            // console.log('ddddd',data.value)
-            if(data.value.code==401){
-                // 注销登录
-                if(process.client) localStorage.setItem('logout', String(new Date().getTime()))
-            }
+			// console.log('ddddd',data.value)
+			if (data.value.code == 401) {
+				// 注销登录
+				if (process.client) localStorage.setItem('logout', String(new Date().getTime()))
+			}
 		}
 		return data.value
 	}
