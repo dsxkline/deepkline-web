@@ -196,6 +196,7 @@
 	watch(
 		() => ordType.value,
 		(val, old) => {
+			
 			if (val == OrderType.MARKET) {
 				price.value = 0
 				buyDes.value = 'MARKET'
@@ -211,7 +212,7 @@
 	watch(
 		() => side.value,
 		(val, old) => {
-			// console.log('side changed', val, old)
+			resetForm()
 			emit('update:side', val)
 		}
 	)
@@ -375,10 +376,12 @@
 		stopLoss.value = 0
 		lotSize.value = symbolObj.value?.minSz
 		margin.value = ''
-		autoSetMargin()
 		price.value = 0
 		lotSizePercent.value = 0
 		canChangePrice.value = true
+		openTakeProfit.value = false
+		openStopLoss.value = false
+		autoSetMargin()
 	}
 
 	function priceChange() {
