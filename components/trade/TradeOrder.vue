@@ -262,7 +262,7 @@
 	// 自动设置数量
 	const autoSetLotSize = () => {
 		let losz = DecimalHelper.div(DecimalHelper.mul(canTradeLotSize.value, lotSizePercent.value).toNumber(), 100).toNumber()
-		if (available.value < minMargin.value && side.value==Sides.BUY) {
+		if (available.value < minMargin.value && side.value == Sides.BUY) {
 			lotSize.value = ''
 		} else {
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
@@ -455,8 +455,8 @@
 		if (submitLoading.value) return
 		submitLoading.value = true
 		submitSide.value = side
-		if (available.value < minMargin.value) {
-			ElMessage.error({ message: '余额不足' })
+		if (side==Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
+			ElMessage.error({ message: '可用余额不足' })
 			submitLoading.value = false
 			return
 		}
