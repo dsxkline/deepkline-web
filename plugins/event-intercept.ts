@@ -231,11 +231,8 @@ const soundHandle = (audio: HTMLAudioElement) => () => {
 // 	}
 // }
 
-function storageHandle(event:StorageEvent) {
-	console.log(event.key, event.newValue)
-	if (event.key == 'logout') {
-		useUserStore().logout()
-	}
+function storageHandle(this: BroadcastChannel, ev: MessageEvent) {
+	useUserStore().logout()
 }
 
 function beforeunload() {
@@ -247,7 +244,6 @@ function beforeunload() {
 	useNuxtApp().$wsb.destroy()
 	useNuxtApp().$dkws.destroy()
 	window.removeEventListener('beforeunload', beforeunload)
-	window.removeEventListener('storage', storageHandle)
 	console.log('beforeunload success')
 }
 
@@ -260,7 +256,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		nuxtApp.provide('clickSound', soundHandle(audio))
 
 		window.addEventListener('beforeunload', beforeunload)
-
-		window.addEventListener('storage', storageHandle)
+		const channel = new BroadcastChannel('logout')
+		channel.onmessage = storageHandle
 	}
 })

@@ -22,8 +22,10 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 			// console.log('ddddd',data.value)
 			if (data.value.code == 401) {
 				// 注销登录
-				if (process.client) localStorage.setItem('logout', String(new Date().getTime()))
-				console.log('ddddd', data.value)
+				if (process.client) {
+					const channel = new BroadcastChannel('logout');
+					channel.postMessage(String(new Date().getTime()))
+				}
 			}
 		}
 
@@ -60,8 +62,10 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
 			data.value.code = parseInt((data.value as { code: any }).code) || 0
 			// console.log('ddddd',data.value)
 			if (data.value.code == 401) {
-				// 注销登录
-				if (process.client) localStorage.setItem('logout', String(new Date().getTime()))
+				if (process.client) {
+					const channel = new BroadcastChannel('logout');
+					channel.postMessage(String(new Date().getTime()))
+				}
 			}
 		}
 		return data.value

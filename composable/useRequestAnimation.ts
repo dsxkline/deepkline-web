@@ -57,7 +57,7 @@ export function useRequestAnimation(): requestAnimationType {
 
 		const currentValue = _from + (_to - _from) * easedProgress
 		_onUpdate && _onUpdate(currentValue)
-		if(_isStop) return
+		// if(_isStop) return
 		if (progress < 1) {
 			animationFrameId = requestAnimationFrame(step)
 		} else {
