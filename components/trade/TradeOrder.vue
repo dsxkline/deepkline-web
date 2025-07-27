@@ -23,9 +23,11 @@
 		openLarverage?: boolean
 		side?: Sides
 		hideProfitLoss?: boolean
+		price?: number
 	}>()
 	const emit = defineEmits<{
-		(event: 'update:side', side: Sides): void
+		(event: 'update:side', side: Sides): void,
+		(event: 'close'): void
 	}>()
 	const loading = ref(true)
 	const submitLoading = ref(false)
@@ -158,7 +160,7 @@
 			return parseFloat(useAccountStore().fund?.available || '0')
 		} else {
 			// 根据可卖的数量计算
-			const av = canTradeLotSize.value * parseFloat(price.value || '0') * (1 - fee.value)
+			const av = canTradeLotSize.value * parseFloat(price.value || props.price || ticker.value?.last || '0') * (1 - fee.value)
 			return toNumberFixed(av, '2')
 		}
 	})
@@ -196,13 +198,12 @@
 	watch(
 		() => ordType.value,
 		(val, old) => {
-			
 			if (val == OrderType.MARKET) {
 				price.value = 0
 				buyDes.value = 'MARKET'
 				sellDes.value = 'MARKET'
 			} else {
-				if (ticker.value) price.value = parseFloat(ticker.value?.last)
+				if (ticker.value?.last) price.value = props.price || parseFloat(ticker.value?.last)
 				buyDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 				sellDes.value = formatPrice(price.value, symbolObj.value?.tickSz)
 			}
@@ -458,7 +459,7 @@
 		if (submitLoading.value) return
 		submitLoading.value = true
 		submitSide.value = side
-		if (side==Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
+		if (side == Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
 			ElMessage.error({ message: '可用余额不足' })
 			submitLoading.value = false
 			return
@@ -501,13 +502,15 @@
 					// 下单成功,如果ws五秒内还不来就先给出提示
 					resetForm()
 					setTimeout(() => {
+						emit('close')
 						if (submitLoading.value) {
-							ElMessage.success('订单已提交')
+							ElMessage.success('委托已提交')
 							submitLoading.value = false
 						}
-					}, 5000)
+					}, 3000)
 				} else {
 					setTimeout(() => {
+						
 						ElMessage.error(result?.msg)
 						submitLoading.value = false
 					}, 500)
@@ -528,6 +531,7 @@
 			// 挂单成功通知
 			if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
+			emit('close')
 		}
 
 		if (order.state == 'rejected' || order.state == 'failed') {
@@ -539,6 +543,8 @@
 	}
 
 	onMounted(() => {
+		console.log('tradeorder mounted',props.price)
+		price.value = props.price
 		startTimer()
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		window.addEventListener('keydown', handleKeydown)

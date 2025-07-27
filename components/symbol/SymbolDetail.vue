@@ -47,7 +47,8 @@ import CrypeOrder from '../order/CrypeOrder.vue'
 			name: '订单',
 			contentComp: markRaw(CrypeOrder),
 			contentParams: {
-				symbol: currentSymbol.value
+				symbol: currentSymbol.value,
+				height:tabbarHeight.value
 			}
 		}
 	])

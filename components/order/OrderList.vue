@@ -12,6 +12,9 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import { useStore } from '~/store'
+	const props = defineProps<{
+		height: number
+	}>()
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const loading = ref(true)
@@ -19,6 +22,11 @@
 	const loadingCancel = ref<Record<string, boolean>>({})
 
 	const orders = computed(() => useOrderStore().orders)
+
+	const contentHeight = computed(() => {
+		// 获取当前组件的高度
+		return props.height
+	})
 
 	watch(
 		() => useAccountStore().currentAccount,
@@ -181,81 +189,83 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ul v-if="!loading && !error && orders?.length">
-			<template v-for="item in orders" :key="item.orderId">
-				<li class="border-b border-[--transparent05] py-3">
-					<div class="flex justify-between">
-						<div class="flex items-center">
-							<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">开多</button>
-							<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">开空</button>
-							<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.BUY">买入</button>
-							<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.SELL">卖出</button>
-							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
-						</div>
-						<!-- <div class="flex justify-between items-center gap-4">
+		<ScrollBar class="w-full" :style="{ height: contentHeight + 'px' }" ref="scrollbar" v-if="!loading && !error">
+			<ul v-if="!loading && !error && orders?.length">
+				<template v-for="item in orders" :key="item.orderId">
+					<li class="border-b border-[--transparent05] py-3">
+						<div class="flex justify-between">
+							<div class="flex items-center">
+								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">开多</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">开空</button>
+								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.BUY">买入</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.SELL">卖出</button>
+								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
+							</div>
+							<!-- <div class="flex justify-between items-center gap-4">
 							<button class="flex items-center">
 								<el-icon><Edit /></el-icon>
 							</button>
 						</div> -->
-					</div>
-					<div class="py-1 flex items-center *:mr-1">
-						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.LIMIT">限价</button>
-						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.MARKET">市价</button>
-						<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-green']" v-if="parseFloat(item.takeProfitPrice)">止盈</button>
-						<button :class="[item.side == Sides.BUY ? 'tag-red' : 'tag-red']" v-if="parseFloat(item.stopLossPrice)">止损</button>
-						<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated && item.marketType == MarketType.SWAP">逐仓</button>
-						<button class="tag-default" v-if="item.marginMode == MarginMode.Cross && item.marketType == MarketType.SWAP">全仓</button>
-						<span class="text-xs text-grey leading-normal">{{ formatDate(new Date(item.createdAt).getTime(), 'MM/DD HH:mm:ss') }}</span>
-					</div>
-					<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1 [&_b]:pb-2">
-						<div class="flex flex-col">
-							<span>委托数量</span>
-							<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 						</div>
-						<div class="flex flex-col items-center">
-							<span>已成数量</span>
-							<b>{{ formatNumber(item.matchSize, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
+						<div class="py-1 flex items-center *:mr-1">
+							<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.LIMIT">限价</button>
+							<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-red']" v-if="item.orderType == OrderType.MARKET">市价</button>
+							<button :class="[item.side == Sides.BUY ? 'tag-green' : 'tag-green']" v-if="parseFloat(item.takeProfitPrice)">止盈</button>
+							<button :class="[item.side == Sides.BUY ? 'tag-red' : 'tag-red']" v-if="parseFloat(item.stopLossPrice)">止损</button>
+							<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated && item.marketType == MarketType.SWAP">逐仓</button>
+							<button class="tag-default" v-if="item.marginMode == MarginMode.Cross && item.marketType == MarketType.SWAP">全仓</button>
+							<span class="text-xs text-grey leading-normal">{{ formatDate(new Date(item.createdAt).getTime(), 'MM/DD HH:mm:ss') }}</span>
 						</div>
-						<div class="flex flex-col justify-center items-end">
-							<span>委托价格</span>
-							<b v-if="item.orderType == OrderType.LIMIT">{{ formatPrice(item.price, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-							<b v-else>MARKET</b>
-						</div>
-
-						<template v-if="parseFloat(item.takeProfitPrice) && parseFloat(item.stopLossPrice)">
+						<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1 [&_b]:pb-2">
 							<div class="flex flex-col">
-								<span>止盈</span>
-								<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-								<b v-else> - </b>
+								<span>委托数量</span>
+								<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
 							<div class="flex flex-col items-center">
-								<span>止损</span>
-								<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-								<b v-else> - </b>
+								<span>已成数量</span>
+								<b>{{ formatNumber(item.matchSize, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
-						</template>
-						<template v-else>
-							<div class="flex flex-col" v-if="parseFloat(item.takeProfitPrice)">
-								<span>止盈</span>
-								<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-								<b v-else> - </b>
+							<div class="flex flex-col justify-center items-end">
+								<span>委托价格</span>
+								<b v-if="item.orderType == OrderType.LIMIT">{{ formatPrice(item.price, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+								<b v-else>MARKET</b>
 							</div>
-							<div class="flex flex-col" v-if="parseFloat(item.stopLossPrice)">
-								<span>止损</span>
-								<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-								<b v-else> - </b>
-							</div>
-						</template>
-					</div>
-					<div class="flex items-center gap-2 justify-between *:flex-1">
-						<button class="bt-default" @click="cancelStart(item)" v-if="item.state != OrderState.PENDING_CANCEL">
-							撤单
-							<Loading class="mx-2" size="14px" v-if="loadingCancel[item.orderId]" />
-						</button>
-						<button class="bt-default !text-grey" v-else>撤单中</button>
-					</div>
-				</li>
-			</template>
-		</ul>
+
+							<template v-if="parseFloat(item.takeProfitPrice) && parseFloat(item.stopLossPrice)">
+								<div class="flex flex-col">
+									<span>止盈</span>
+									<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+									<b v-else> - </b>
+								</div>
+								<div class="flex flex-col items-center">
+									<span>止损</span>
+									<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+									<b v-else> - </b>
+								</div>
+							</template>
+							<template v-else>
+								<div class="flex flex-col" v-if="parseFloat(item.takeProfitPrice)">
+									<span>止盈</span>
+									<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+									<b v-else> - </b>
+								</div>
+								<div class="flex flex-col" v-if="parseFloat(item.stopLossPrice)">
+									<span>止损</span>
+									<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
+									<b v-else> - </b>
+								</div>
+							</template>
+						</div>
+						<div class="flex items-center gap-2 justify-between *:flex-1">
+							<button class="bt-default" @click="cancelStart(item)" v-if="item.state != OrderState.PENDING_CANCEL">
+								撤单
+								<Loading class="mx-2" size="14px" v-if="loadingCancel[item.orderId]" />
+							</button>
+							<button class="bt-default !text-grey" v-else>撤单中</button>
+						</div>
+					</li>
+				</template>
+			</ul>
+		</ScrollBar>
 	</div>
 </template>

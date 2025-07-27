@@ -86,11 +86,17 @@
 		)
 	}
 
+	const closeSimpleBuySell = (position: PositionDto) => () => {
+		console.log('closeSimpleBuySell')
+		popProfitLoss.value.forEach(item => (item as any).hide())
+	}
 	const pushSimpleBuySell = (position: PositionDto) => {
+		console.log('pushSimpleBuySell',position.lastPrice)
 		pushUp(
 			SimpleBuySell,
 			{
-				symbol: position.symbol
+				symbol: position.symbol,
+				price: parseFloat(position.lastPrice)
 			},
 			'90%'
 		)
@@ -271,7 +277,7 @@
 							<template #reference>
 								<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
 							</template>
-							<SimpleBuySell :symbol="item.symbol" v-if="!loading" />
+							<SimpleBuySell :symbol="item.symbol" v-if="!loading" :price="parseFloat(item.lastPrice)" :close="closeSimpleBuySell(item)" />
 						</el-popover>
 					</div>
 					<div class="flex items-center gap-2 justify-between *:flex-1" v-else>

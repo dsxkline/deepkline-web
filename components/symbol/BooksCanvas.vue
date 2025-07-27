@@ -104,7 +104,6 @@
 					}
 				}
 			} else {
-				console.log('dkdkdkdkkdkkdk', width)
 				const leftWidth = 0.6 * width
 				const rightWidth = 0.3 * width
 				const yy = y+6
