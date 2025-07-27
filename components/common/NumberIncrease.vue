@@ -176,7 +176,7 @@
 							translateY = this.getNumberY(n, ndom)
 						}
 
-						if (this.lastNumber[i] == n) return
+						// if (this.lastNumber[i] == n) return
 
 						const startAnimation = this.startAnimations[i]
 						if (startAnimation) {
@@ -184,7 +184,7 @@
 							startAnimation.start({
 								from: startY,
 								to: translateY,
-								duration: 200,
+								duration: 300,
 								onUpdate: value => {
 									ndom.style.transform = `translateY(${value}%)`
 									this.lastTransitionY[i] = value

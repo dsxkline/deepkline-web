@@ -32,7 +32,7 @@ export function useRequestAnimation(): requestAnimationType {
 	let _from: any = null
 	let _to: any = null
 	let _loop: boolean | undefined = false
-	let _isStop :boolean = false
+	let _isStop: boolean = false
 
 	const start = ({ from, to, duration = 300, easing = defaultEasing, onUpdate, onFinish, loop }: AnimationOptions) => {
 		_from = from
@@ -57,7 +57,7 @@ export function useRequestAnimation(): requestAnimationType {
 
 		const currentValue = _from + (_to - _from) * easedProgress
 		_onUpdate && _onUpdate(currentValue)
-		if(_isStop) {
+		if (_isStop) {
 			stop()
 			return
 		}
@@ -86,6 +86,7 @@ export function useRequestAnimation(): requestAnimationType {
 			_onUpdate = null
 			_onFinish = null
 		}
+
 		startTimestamp = null
 	}
 
