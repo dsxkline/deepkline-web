@@ -184,7 +184,7 @@
 							startAnimation.start({
 								from: startY,
 								to: translateY,
-								duration: 400,
+								duration: 200,
 								onUpdate: value => {
 									ndom.style.transform = `translateY(${value}%)`
 									this.lastTransitionY[i] = value

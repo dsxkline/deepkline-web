@@ -43,7 +43,7 @@ export function useRequestAnimation(): requestAnimationType {
 		_onFinish = onFinish
 		_loop = loop
 		// 先取消上一个动画
-		// stop()
+		stop()
 		_isStop = false
 		startTimestamp = null
 		animationFrameId = requestAnimationFrame(step)
@@ -57,7 +57,10 @@ export function useRequestAnimation(): requestAnimationType {
 
 		const currentValue = _from + (_to - _from) * easedProgress
 		_onUpdate && _onUpdate(currentValue)
-		if(_isStop) return
+		if(_isStop) {
+			stop()
+			return
+		}
 		if (progress < 1) {
 			animationFrameId = requestAnimationFrame(step)
 		} else {
@@ -75,13 +78,13 @@ export function useRequestAnimation(): requestAnimationType {
 	}
 
 	const stop = () => {
-		//_isStop = true
+		_isStop = true
 		if (animationFrameId !== null) {
 			cancelAnimationFrame(animationFrameId)
 			animationFrameId = null
-			// _onUpdate && _onUpdate(_to)
-			// _onUpdate = null
-			// _onFinish = null
+			_onUpdate && _onUpdate(_to)
+			_onUpdate = null
+			_onFinish = null
 		}
 		startTimestamp = null
 	}
