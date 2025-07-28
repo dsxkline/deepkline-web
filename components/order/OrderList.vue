@@ -195,7 +195,7 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && orders?.length">
+		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && orders?.length">
 			<ul v-if="!loading && !error && orders?.length">
 				<template v-for="item in orders" :key="item.orderId">
 					<li class="border-b border-[--transparent05] py-3">

@@ -202,7 +202,7 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && assets?.length">
+		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && assets?.length">
 			<ul v-if="!loading && !error && assets?.length">
 				<template v-for="item in assets" :key="item.orderId">
 					<li class="border-b border-[--transparent05] py-3">

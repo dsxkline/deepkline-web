@@ -127,7 +127,6 @@
 				if (activeContent && activeContent.firstElementChild?.clientHeight) {
 					tabbarContent.value.style.height = activeContent.firstElementChild?.clientHeight + 'px'
 					tabbarContainer.value.style.height = Math.max(tabbarHeader.value.clientHeight, getTabbarHeight()) + activeContent.firstElementChild?.clientHeight + 'px'
-					
 				} else {
 					tabbarContent.value.style.height = 'auto'
 					tabbarContainer.value.style.height = 'auto'
@@ -296,6 +295,12 @@
 			transform: translateX(0%);
 			transition: transform 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 			.tabbar-content-item {
+				// 隐藏滚动条
+				scrollbar-width: none; /* Firefox */
+				-ms-overflow-style: none; /* IE and Edge */
+				&::-webkit-scrollbar {
+					display: none; /* Chrome, Safari and Opera */
+				}
 				width: 100%;
 				flex: none;
 			}

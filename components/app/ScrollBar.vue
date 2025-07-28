@@ -1,11 +1,12 @@
 <script setup lang="ts">
 	import { _100 } from '#tailwind-config/theme/backdropBrightness'
-import { useRefreshChildScrollTop } from '~/composable/useScrollBar';
+	import { useRefreshChildScrollTop } from '~/composable/useScrollBar'
 
 	const props = defineProps<{
 		height?: string
 		always?: boolean
 		wrapStyle?: any
+		noScroll?: boolean
 	}>()
 
 	const scrollBarRef = ref<HTMLElement | null>(null)
@@ -50,9 +51,9 @@ import { useRefreshChildScrollTop } from '~/composable/useScrollBar';
 	})
 </script>
 <template>
-	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: props.height || '100%', ...wrapStyle }">
-		<div class="scroll-bar-thumb absolute top-0 right-1 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="props.always"></div>
-		<div class="scroll-bar-inner" ref="scrollBarRef" :style="{ height: props.height || '100%' }" @scroll="scrollHandle">
+	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: height || '100%', ...wrapStyle }">
+		<div class="scroll-bar-thumb absolute top-0 right-1 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="always"></div>
+		<div :class="['scroll-bar-inner overflow-x-hidden', noScroll ? '' : 'overflow-y-auto']" ref="scrollBarRef" :style="{ height: height || '100%' }" @scroll="scrollHandle">
 			<slot></slot>
 		</div>
 	</div>
@@ -60,8 +61,6 @@ import { useRefreshChildScrollTop } from '~/composable/useScrollBar';
 <style lang="less" scoped>
 	.scroll-bar-inner {
 		position: relative;
-		overflow-y: auto;
-		overflow-x: hidden;
 		width: 100%;
 		height: 100%;
 		// 隐藏滚动条
