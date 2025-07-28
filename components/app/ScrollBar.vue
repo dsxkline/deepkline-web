@@ -53,7 +53,7 @@
 <template>
 	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: height || '100%', ...wrapStyle }">
 		<div class="scroll-bar-thumb absolute top-0 right-1 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="always"></div>
-		<div :class="['scroll-bar-inner overflow-x-hidden', noScroll ? '' : 'overflow-y-auto']" ref="scrollBarRef" :style="{ height: height || '100%' }" @scroll="scrollHandle">
+		<div :class="['scroll-bar-inner overflow-x-hidden', noScroll ? 'overflow-y-hidden' : 'overflow-y-auto']" ref="scrollBarRef" :style="{ height: height || '100%' }" @scroll="scrollHandle">
 			<slot></slot>
 		</div>
 	</div>
