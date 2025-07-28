@@ -35,7 +35,8 @@
 	)
 
 	const getOrders = () => {
-		if (!useAccountStore().currentAccount?.accountId) {
+		if (!useUserStore().user || !useAccountStore().currentAccount?.accountId) {
+			error.value = ''
 			loading.value = false
 			return
 		}

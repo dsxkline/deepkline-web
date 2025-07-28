@@ -14,6 +14,8 @@ export const useUserStore = defineStore({
 		logout() {
 			this.user = null
 			useAccountStore().accounts = []
+			useAccountStore().currentAccount = null
+			useAccountStore().fund = null
 			useOrderStore().orders = []
 			useOrderStore().positions = []
 			useOrderStore().assets = []

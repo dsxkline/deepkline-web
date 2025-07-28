@@ -112,7 +112,7 @@
 					item.style.overflow = 'hidden' // 隐藏其他内容
 				} else {
 					item.style.visibility = 'visible' // 显示当前内容
-					item.style.overflow = 'auto' // 显示当前内容
+					item.style.overflow = 'visible' // 显示当前内容
 				}
 			})
 		}, 400)

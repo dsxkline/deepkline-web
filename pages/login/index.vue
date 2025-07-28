@@ -3,6 +3,7 @@
 	import Register from './register.vue'
 	import { useStore } from '~/store'
 	import type { ComponentInternalInstance } from 'vue'
+	import { getNavHeight } from '~/composable/useCommon'
 
 	const props = defineProps<{ height?: number }>()
 
@@ -19,14 +20,17 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = (props.height || n) - (titleBar.value.clientHeight || 84)
-			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55) - (titleBar.value.clientHeight || 84)
+			setTabbarHeight()
 		}
 	)
 
+	function setTabbarHeight() {
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (titleBar.value.clientHeight || 84)
+		if (useStore().isH5) tabbarHeight.value = (props.height || useStore().bodyHeight) - (navbar.value?.clientHeight || getNavHeight()) - (titleBar.value.clientHeight || 84)
+	}
+
 	onMounted(() => {
-		tabbarHeight.value = (props.height || window?.innerHeight) - (titleBar.value.clientHeight || 84)
-		if (useStore().isH5) tabbarHeight.value = (props.height || window?.innerHeight) - (navbar.value?.clientHeight || 55) - (titleBar.value.clientHeight || 84)
+		setTabbarHeight()
 	})
 	onUnmounted(() => {
 		menus.value = []
@@ -64,6 +68,9 @@
 	}
 
 	@media (max-width: 999px) {
+		.login-index-container{
+			height: var(--body-height);
+		}
 		:deep(.navbar) {
 			display: flex;
 		}
