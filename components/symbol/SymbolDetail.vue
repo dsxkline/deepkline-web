@@ -10,7 +10,8 @@
 	import { usePop, usePushUp } from '~/composable/usePush'
 	import SymbolSearch from './SymbolSearch.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
-import CrypeOrder from '../order/CrypeOrder.vue'
+	import CrypeOrder from '../order/CrypeOrder.vue'
+	import { getHeaderHeight, getNavHeight, getStatusBarHeight, getTabbarHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -48,7 +49,7 @@ import CrypeOrder from '../order/CrypeOrder.vue'
 			contentComp: markRaw(CrypeOrder),
 			contentParams: {
 				symbol: currentSymbol.value,
-				height:tabbarHeight.value
+				height: tabbarHeight.value
 			}
 		}
 	])
@@ -80,10 +81,15 @@ import CrypeOrder from '../order/CrypeOrder.vue'
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = n - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = n - (navbar.value?.clientHeight || 55)
+			setTabbarHeight()
 		}
 	)
+
+	function setTabbarHeight() {
+		tabbarHeight.value = useStore().bodyHeight - getHeaderHeight() - getStatusBarHeight()
+		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight())
+		console.log('tabbarHeight', tabbarHeight.value, useStore().bodyHeight, getHeaderHeight(),getStatusBarHeight())
+	}
 
 	const push = usePushUp()
 	function pushSearch() {
@@ -104,8 +110,7 @@ import CrypeOrder from '../order/CrypeOrder.vue'
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = window?.innerHeight - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = window?.innerHeight - (navbar.value?.clientHeight || 55)
+		setTabbarHeight()
 	})
 	onUnmounted(() => {
 		menus.value = []

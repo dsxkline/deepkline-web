@@ -6,7 +6,7 @@
 	import { useStore } from '~/store'
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const props = defineProps<{
-		push?: boolean
+		push?: string
 		selectHandle?: (item: SymbolDto) => void
 	}>()
 	const keyword = ref('')

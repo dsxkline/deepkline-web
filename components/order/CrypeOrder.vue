@@ -7,6 +7,7 @@
 	import { useOrderStore } from '~/store/order'
 	import CrypeAssets from './CrypeAssets.vue'
 	import PositionList from './PositionList.vue'
+	import { getNavHeight, getTabbarHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		height?: number
 	}>()
@@ -34,18 +35,18 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = (props.height || n) - 40 - 40
-			if (useStore().isH5) tabbarHeight.value = (props.height || n) - (navbar.value?.clientHeight || 55)
+			setContentHeight()
 		}
 	)
+
+	function setContentHeight() {}
 
 	function pushHistoryOrder() {
 		usepush(HistoryOrder)
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = (props.height || window?.innerHeight) - 40 - 40
-		if (useStore().isH5) tabbarHeight.value = (props.height || window?.innerHeight) - (navbar.value?.clientHeight || 55)
+		setContentHeight()
 	})
 	onUnmounted(() => {
 		navbar.value = null
@@ -53,7 +54,7 @@
 </script>
 <template>
 	<div class="order-container">
-		<TabBar :menus="menus" :height="props.height?tabbarHeight:0">
+		<TabBar :menus="menus" :height="props.height ? props.height : 0">
 			<template #right>
 				<button class="text-main w-5" @click="pushHistoryOrder"><OrderHistoryOrderIcon /></button>
 			</template>

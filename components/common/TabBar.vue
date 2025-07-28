@@ -1,5 +1,8 @@
 <script setup lang="ts">
 	import type { Component } from 'vue'
+	import { getTabbarHeight } from '~/composable/useCommon'
+	import { useWillAppear } from '~/composable/usePush'
+	import { useScrollTop } from '~/composable/useScrollBar'
 
 	export interface MenuModel {
 		name: string
@@ -37,6 +40,7 @@
 		}
 	})
 	const menuActive = ref(0)
+	const tabbarContainer = ref()
 	const tabbarContent = ref()
 	const bottomLine = ref()
 	const tabbarHeader = ref()
@@ -45,7 +49,7 @@
 		update?: () => void
 		leave?: () => void
 	}
-	const componentRefs = ref<ComponentWithUpdate[]|null>([]) // 存储组件实例
+	const componentRefs = ref<ComponentWithUpdate[] | null>([]) // 存储组件实例
 	const tabbarContents = ref<HTMLElement[]>([])
 	const emit = defineEmits<{
 		(event: 'update:active', value: number): void
@@ -60,21 +64,22 @@
 	)
 
 	const contentHeight = computed(() => {
+		console.log('contentHeight', props.height, tabbarHeader.value?.clientHeight)
 		// 获取当前组件的高度
-		return props.height - tabbarHeader.value?.clientHeight || 0
+		return props.height ? props.height - tabbarHeader.value?.clientHeight || 0 : 0
 	})
 
 	function menuHandler(item: MenuModel, index: number) {
 		menuActive.value = index
 		moveContent(index)
-		if(!componentRefs.value) return;
+		if (!componentRefs.value) return
 		// 执行内容组件的更新方法 , 例如: this.$refs['tabbarContent-'+index].update()
 		const content = componentRefs.value[index]
 		// 判断组件是否暴露update方法
 		if (content && content.update) {
 			content.update()
 		}
-		
+
 		// 其他组件执行离开方法
 		componentRefs.value.forEach((item, i) => {
 			if (i !== index && item.leave) {
@@ -82,14 +87,7 @@
 			}
 		})
 
-		tabbarContents.value.forEach((item, i)=>{
-			if(i==index){
-				item.style.visibility = "visible"
-			}else{
-				item.style.visibility = "hidden"
-			}
-			
-		})
+		setTabbarHeaderScrollBg()
 
 		// 执行点击事件
 		if (item.onClick) {
@@ -99,11 +97,42 @@
 	}
 
 	function moveContent(index: number) {
+		if (!tabbarContent.value) return
 		// 重置所有item的x轴偏移
 		const translateX = -index * 100
 		tabbarContent.value.style.transform = `translateX(${translateX}%)`
+		tabbarContents.value.forEach((item, i) => {
+			item.style.visibility = 'visible' // 显示当前内容
+			item.style.overflow = 'auto' // 显示当前内容
+		})
+		setTimeout(() => {
+			tabbarContents.value.forEach((item, i) => {
+				if (i !== index) {
+					item.style.visibility = 'hidden' // 隐藏其他内容
+					item.style.overflow = 'hidden' // 隐藏其他内容
+				} else {
+					item.style.visibility = 'visible' // 显示当前内容
+					item.style.overflow = 'auto' // 显示当前内容
+				}
+			})
+		}, 400)
 		// 横线移动
 		nextTick(() => {
+			// 当前激活的内容高度
+			if (props.height > 0) {
+				tabbarContent.value.style.height = contentHeight.value + 'px'
+				// console.log('tabbarContent height:', contentHeight.value)
+			} else {
+				const activeContent = tabbarContents.value[index]
+				if (activeContent && activeContent.firstElementChild?.clientHeight) {
+					tabbarContent.value.style.height = activeContent.firstElementChild?.clientHeight + 'px'
+					tabbarContainer.value.style.height = Math.max(tabbarHeader.value.clientHeight, getTabbarHeight()) + activeContent.firstElementChild?.clientHeight + 'px'
+					
+				} else {
+					tabbarContent.value.style.height = 'auto'
+					tabbarContainer.value.style.height = 'auto'
+				}
+			}
 			const line = tabbarHeader.value.querySelector('.line')
 			const li = tabbarHeader.value.querySelector('li.active')
 			if (li && line) {
@@ -124,18 +153,39 @@
 	}
 
 	function updateAll() {
-		componentRefs.value && componentRefs.value.forEach(content => {
-			// 判断组件是否暴露update方法
-			if (content && content.update) {
-				content.update()
-			}
-		})
+		componentRefs.value &&
+			componentRefs.value.forEach(content => {
+				// 判断组件是否暴露update方法
+				if (content && content.update) {
+					content.update()
+				}
+			})
 	}
+
+	useScrollTop(scrollTop => {
+		// 根据滚动的位置设置背景
+		setTabbarHeaderScrollBg()
+	})
+
+	const setTabbarHeaderScrollBg = () => {
+		if (tabbarHeader.value) {
+			const rect = tabbarHeader.value.getBoundingClientRect()
+			document.documentElement.style.setProperty('--tabbar-background-position', '0 calc(' + -rect.top + 'px - var(--nav-height))')
+		}
+	}
+
+	useWillAppear(() => {
+		// 页面将要出现时
+		if (props.autoLoad) {
+			update(menuActive.value)
+		}
+	})
 
 	onMounted(() => {
 		menuActive.value = props.active
 		nextTick(() => {
 			props.autoLoad && update(menuActive.value)
+			setTabbarHeaderScrollBg()
 		})
 	})
 
@@ -151,7 +201,6 @@
 		tabbarContent.value = null
 		bottomLine.value = null
 		tabbarHeader.value = null
-		
 	})
 
 	defineExpose({
@@ -161,8 +210,8 @@
 </script>
 
 <template>
-	<div class="tabbar-container flex overflow-hidden flex-col" :style="[height ? `height:${height}px` : 'auto']">
-		<div class="tabbar-header px-4 w-full relative overflow-x-scroll scrollbar-hide" ref="tabbarHeader">
+	<div ref="tabbarContainer" class="tabbar-container flex flex-col">
+		<div class="tabbar-header px-4 w-full relative overflow-x-scroll scrollbar-hide h-[var(--tabbar-height)]" ref="tabbarHeader">
 			<ul class="flex py-1 w-max h-full text-base *:mx-2">
 				<li v-for="(item, index) in menus" :key="index" v-click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
 					<template v-if="item.titleComp">
@@ -179,7 +228,7 @@
 				<slot name="right"></slot>
 			</div>
 		</div>
-		<div class="tabbar-content" ref="tabbarContent" :style="{ height: contentHeight ? `${contentHeight}px` : 'auto' }">
+		<div class="tabbar-content w-full" ref="tabbarContent">
 			<div class="tabbar-content-item" v-for="(item, index) in menus" ref="tabbarContents">
 				<component :is="item.contentComp" v-bind="item.contentParams" ref="componentRefs" :height="contentHeight" v-if="!isDestroyed" />
 			</div>
@@ -190,6 +239,24 @@
 <style scoped lang="less">
 	.tabbar-container {
 		.tabbar-header {
+			position: sticky;
+			top: 0;
+			z-index: 1000;
+			background: rgb(var(--color-bg-base));
+			&::before {
+				background-image: var(--bg-linear-180);
+				background-position: var(--tabbar-background-position);
+				background-size: 100% var(--body-height);
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				content: '';
+				z-index: -1;
+				opacity: 0.15;
+				// transition: all 0.3s ease;
+			}
 			ul {
 				li {
 					cursor: pointer;
@@ -227,7 +294,7 @@
 			position: relative;
 			display: flex;
 			transform: translateX(0%);
-			transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+			transition: transform 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
 			.tabbar-content-item {
 				width: 100%;
 				flex: none;

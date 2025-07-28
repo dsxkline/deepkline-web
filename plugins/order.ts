@@ -7,7 +7,7 @@ import { useOrderStore } from '~/store/order'
 import { useSymbolStore } from '~/store/symbol'
 import type { WsResult } from '~/types/types'
 const orderHandle = (data: WsResult<OrderDto>) => {
-	console.log('收到订单推送信息', data)
+	//console.log('收到订单推送信息', data)
 	const order = data.payload
 	const symbolObj = useSymbolStore().getSymbol(order?.symbol)
 	if (order.state == 'filled') {
@@ -17,12 +17,12 @@ const orderHandle = (data: WsResult<OrderDto>) => {
     data?.payload && useOrderStore().addOrder(data.payload)
 }
 const fundHandle = (data: WsResult<FundDto>) => {
-	console.log('收到资产推送信息', data)
+	//console.log('收到资产推送信息', data)
 	data?.payload && useAccountStore().setFund(data.payload)
 }
 
 const positionHandle = (data: WsResult<PositionDto>) => {
-	console.log('收到持仓推送信息', data)
+	//console.log('收到持仓推送信息', data)
 	data?.payload && useOrderStore().addPosition(data.payload)
 }
 

@@ -15,6 +15,10 @@
 	const props = defineProps<{
 		height: number
 	}>()
+	const contentHeight = computed(() => {
+		// 获取当前组件的高度
+		return props.height
+	})
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const loading = ref(true)
@@ -22,11 +26,6 @@
 	const loadingCancel = ref<Record<string, boolean>>({})
 
 	const orders = computed(() => useOrderStore().orders)
-
-	const contentHeight = computed(() => {
-		// 获取当前组件的高度
-		return props.height
-	})
 
 	watch(
 		() => useAccountStore().currentAccount,
@@ -140,7 +139,14 @@
 </script>
 
 <template>
-	<div class="px-4 min-h-[500px]">
+	<div
+		class="px-4"
+		:style="{
+			minHeight: useStore().isH5
+				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom))'
+				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height))'
+		}"
+	>
 		<Empty :content="'暂无委托'" v-if="!loading && !error && !orders?.length" class="pt-20">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
 			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
@@ -189,7 +195,7 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :style="{ height: contentHeight + 'px' }" ref="scrollbar" v-if="!loading && !error">
+		<ScrollBar class="w-full" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && orders?.length">
 			<ul v-if="!loading && !error && orders?.length">
 				<template v-for="item in orders" :key="item.orderId">
 					<li class="border-b border-[--transparent05] py-3">
