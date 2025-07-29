@@ -9,7 +9,7 @@
 		account?: AccountDto
 	}>()
 	// 如果是dialog打开
-	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 	function goback() {
 		useNuxtApp().$popRoot(null, -2)
 		// dialog环境打开
@@ -22,7 +22,7 @@
 		<NavigationBar title="开通成功" :hideBack="!push"> </NavigationBar>
 		<ScrollBar
 			class="w-full h-full"
-			:wrap-style="{ height: 'calc(' + (currentDialog ? currentDialog.props.height : 'var(--body-height)') + ' - var(--nav-height) - 78px - var(--safe-bottom))' }"
+			:wrap-style="{ height: 'calc(' + (currentDialog ? currentDialog?.props?.height : 'var(--body-height)') + ' - var(--nav-height) - 78px - var(--safe-bottom))' }"
 			:always="false"
 		>
 			<div class="open-success">

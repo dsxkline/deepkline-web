@@ -55,7 +55,7 @@ import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captch
 	let captchaInstance: ComponentInternalInstance | null = null
 	const forgetPassword = ref(false)
 	// 如果是dialog打开
-	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 	console.log('当前dialog', currentDialog)
 	const nextStep = () => {
 		error.value = ''

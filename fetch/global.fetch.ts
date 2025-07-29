@@ -4,6 +4,7 @@ import { useUserStore } from '~/store/user'
 
 const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, headers: Record<string, any> = {}) => {
 	headers['authorization'] = 'Bearer ' + useCookie('token').value
+	headers['locale'] = useCookie('locale').value
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		body,
@@ -40,6 +41,7 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 
 const useGet = async <T = any>(baseUrl: string, path: string, query: Record<string, any> = {}, headers: any = {}) => {
 	headers['authorization'] = 'Bearer ' + useCookie('token').value
+	headers['locale'] = useCookie('locale').value
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		query,

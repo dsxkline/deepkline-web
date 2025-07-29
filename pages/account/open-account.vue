@@ -27,7 +27,7 @@
 	const loading = ref(false)
 	const error = ref<string | undefined>('')
 	// 如果是dialog打开
-	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 	const next = () => {
 		error.value = ''
 		if (exchange.value.apiKeyRequired && !apiKey.value) {

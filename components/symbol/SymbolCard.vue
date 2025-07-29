@@ -109,7 +109,7 @@
 		<div class="flex flex-col items-center justify-between text-sm" v-if="item?.last && !loading">
 			<SymbolName :symbol="symbolObj" v-if="item?.last && symbolObj?.symbol" size="20px" />
 			<span v-else>--</span>
-			<b v-autosize="20" :class="'text-base roboto-bold leading-none py-1 ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
+			<b v-autosize="20" :class="'text-base roboto-bold leading-none py-0 ' + (rate >= 0 ? 'text-green' : 'text-red')" v-if="item?.last && symbolObj">
 				<!-- ${{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }} -->
 				<NumberIncrease :value="formatPrice(parseFloat(item?.last), symbolObj.tickSz)" :fontSize="20" />
 			</b>

@@ -1,11 +1,15 @@
 <!-- CryptoChangeChart.vue -->
 <script setup lang="ts">
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import type { UpDownsDto } from '~/fetch/dtos/exchange.dto'
+	import { exchangeFetch } from '~/fetch/exchange.fetch'
+	import type { WsResult } from '~/types/types'
 
 	const upValue = ref(0)
 	const downValue = ref(0)
 	const animation = useRequestAnimation()
-	const loading = ref(true)
+	const loading = ref(false)
 	function setValue(up: number, down: number) {
 		animation.start({
 			from: 0,
@@ -13,21 +17,47 @@
 			duration: 600,
 			onUpdate: (val: number) => {
 				upValue.value = val
-        downValue.value = val * down/up
+				downValue.value = (val * down) / up
 			}
 		})
 	}
 
-	
+	function getMarketUpDowns() {
+		if (loading.value) return
+		loading.value = true
+
+		exchangeFetch
+			.updowns()
+			.then(res => {
+				loading.value = false
+				if (res?.code === FetchResultDto.OK) {
+					const data = res.data
+					if (data && data.total) {
+						setValue(data.up, data.down)
+					} else {
+						setValue(50, 50)
+					}
+				}
+			})
+			.catch(err => {
+				loading.value = false
+			})
+	}
+
+	const marketUpDownHandle = (data: WsResult<UpDownsDto>) => {
+		const d = data.payload
+		if (d && d.total) {
+			setValue(d.up, d.down)
+		}
+	}
 
 	onMounted(() => {
-		setTimeout(() => {
-			loading.value = false
-			setValue(54.5, 15.8)
-		}, 0)
+		getMarketUpDowns()
+		useNuxtApp().$dkws.onMarketUpDown(marketUpDownHandle)
 	})
 	onBeforeUnmount(() => {
 		animation.stop()
+		useNuxtApp().$dkws.removeOnEvent(marketUpDownHandle)
 	})
 </script>
 <template>
@@ -47,7 +77,7 @@
 				</div>
 			</div>
 			<div
-				class="bg-[--transparent20] flex  justify-center items-center h-full relative"
+				class="bg-[--transparent20] flex justify-center items-center h-full relative"
 				:style="{
 					width: `${100 - upValue - downValue}%`,
 					'clip-path': 'polygon(5px 0px, 0px 100%, calc(100% - 5px)100%, 100% 0%)'
@@ -73,19 +103,15 @@
 			</div>
 		</div>
 
-    <div class="w-full h-4 text-[10px] text-white rounded-sm overflow-hidden flex justify-between items-center" v-else>
+		<div class="w-full h-4 text-[10px] text-white rounded-sm overflow-hidden flex justify-between items-center" v-else>
 			<el-skeleton :rows="0" animated>
 				<template #template>
 					<el-skeleton-item variant="p" style="width: 100%; height: 16px" />
 				</template>
 			</el-skeleton>
-	
 		</div>
-
 	</div>
 </template>
-
-
 
 <style scoped>
 	/* 保证图表容器有尺寸 */

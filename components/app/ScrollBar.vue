@@ -21,7 +21,7 @@
 
 	function scrollHandle() {
 		scrollTop.value = scrollBarRef.value?.scrollTop || 0
-		console.log('ScrollBar scrollTop:', scrollTop.value)
+		// console.log('ScrollBar scrollTop:', scrollTop.value)
 		refreshChildScrollTop(scrollTop.value)
 		const scrollHeight = scrollBarRef.value?.scrollHeight || 0
 		const scrollLeft = scrollBarRef.value?.scrollLeft || 0

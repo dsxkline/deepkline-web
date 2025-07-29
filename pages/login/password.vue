@@ -30,7 +30,7 @@ import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captch
 	const requireCaptcha = ref(false) // 是否需要用户行为验证
 	let captchaInstance: ComponentInternalInstance | null = null
 	// 如果是dialog打开
-	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 	const next = () => {
 		if (password.value.length < 8) return
 		if (requireCaptcha.value && props.openCaptcha) {

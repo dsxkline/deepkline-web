@@ -790,7 +790,7 @@
 							<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(side)">
 								<div class="flex flex-col items-center">
 									<b class="text-base flex items-center"
-										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
 									/></b>
 									<p class="pt-2">{{ buyDes }}</p>
 								</div>
@@ -799,7 +799,7 @@
 							<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" v-click-sound @click="addOrder(Sides.SELL)">
 								<div class="flex flex-col items-center">
 									<b class="text-base flex items-center"
-										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCcy }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
 									/></b>
 									<p class="pt-2">{{ sellDes }}</p>
 								</div>

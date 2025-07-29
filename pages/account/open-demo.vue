@@ -13,7 +13,7 @@ import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 	const usepush = usePush()
 	const loading = ref(false)
 	// 如果是dialog打开
-	const currentDialog: ComponentInternalInstance | null | undefined = inject('currentDialog') // 也能拿到
+	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 
 	function submitAddAccount() {
 		if (loading.value) return

@@ -15,7 +15,8 @@ export const useStore = defineStore({
 		bodyHeight: 0,
 		bodyWidth: typeof window == 'undefined' ? 0 : window.innerWidth,
 		theme: 'dark', // 主题，默认dark
-		exchange: 'deepkline' // 默认交易所
+		exchange: 'deepkline', // 默认交易所
+		locale: 'zh-CN'
 	}),
 	actions: {
 		setBodyHeight(height: number) {

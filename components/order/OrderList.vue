@@ -48,7 +48,7 @@
 		loading.value = true
 		error.value = ''
 		orderFetch
-			.list(useAccountStore().currentAccount?.accountId, OrderState.NEW)
+			.list(useAccountStore().currentAccount?.accountId, OrderState.LIVE)
 			.then(result => {
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
