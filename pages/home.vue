@@ -6,6 +6,8 @@
 	import Notification from './me/notification.vue'
 	import { useAccountStore } from '~/store/account'
 	import FundCard from '~/components/account/FundCard.vue'
+	import { useCurrentPageSubSymbols } from '~/composable/usePageSubSymbols'
+import HotSector from '~/components/sector/HotSector.vue'
 	const subSymbolCodes = ref(['BTC-USDT', 'ETH-USDT', 'OKB-USDT'])
 	let push = usePush()
 	function pushMe() {
@@ -34,6 +36,18 @@
 			$ws.unsubscribe(subHandle)
 		}
 	}
+
+	const pageSubSymbols = useCurrentPageSubSymbols().subSymbols
+	watch(
+		() => pageSubSymbols.value,
+		val => {
+			console.log('订阅首页的品种变动', val)
+			subSymbolCodes.value = val
+			unSubSymbols()
+			subSymbols()
+		},
+		{ deep: true }
+	)
 
 	onMounted(() => {
 		subSymbols()
@@ -80,7 +94,7 @@
 				<FundCard :account="useAccountStore().currentAccount" size="small" v-else class="mb-2" />
 				<SymbolCards />
 				<MarketSentiment />
-				<MarketCategories />
+				<HotSector />
 				<MarketVolatility />
 			</div>
 		</ScrollBar>

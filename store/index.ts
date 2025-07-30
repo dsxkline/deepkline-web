@@ -16,7 +16,8 @@ export const useStore = defineStore({
 		bodyWidth: typeof window == 'undefined' ? 0 : window.innerWidth,
 		theme: 'dark', // 主题，默认dark
 		exchange: 'deepkline', // 默认交易所
-		locale: 'zh-CN'
+		locale: 'zh-CN',
+		pageSubSymbols: {} as Record<string, string[]> // 页面级别的订阅品种收集器
 	}),
 	actions: {
 		setBodyHeight(height: number) {
@@ -91,6 +92,21 @@ export const useStore = defineStore({
 		},
 		setExchange(exchange: string) {
 			this.exchange = exchange
+		},
+		addPageSubSymbols(page: string, symbols: string[]) {
+			this.pageSubSymbols[page] = this.pageSubSymbols[page] || []
+			symbols.forEach(symbol => {
+				const isexit = this.pageSubSymbols[page].find(item => symbol)
+				if (!isexit) {
+					this.pageSubSymbols[page].push(symbol)
+				}
+			})
+		},
+		removePageSubSymbols(page: string, symbols: string[]) {
+			this.pageSubSymbols[page] = this.pageSubSymbols[page] || []
+			symbols.forEach(symbol => {
+				this.pageSubSymbols[page] = this.pageSubSymbols[page].filter(item => item != symbol)
+			})
 		}
 	},
 	getters: {

@@ -18,11 +18,12 @@
 
 	const props = defineProps<{
 		symbolCategory: MarketType
-		height: number
+		height?: number
 		favorite?: boolean
 		start?: boolean
 		keyword?: string
 		isSearchList?: boolean
+		coins?: string[]
 		clickHandle?: (item?: SymbolDto) => void
 		selectHandle?: (item: SymbolDto) => void
 	}>()
@@ -40,7 +41,7 @@
 	const isLeave = ref(false)
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height - lheader.value?.clientHeight || 0
+		return props.height ? props.height - lheader.value?.clientHeight || 0 : 0
 	})
 	// 虚拟化
 	const scrollbar = ref<HTMLElement | null>()
@@ -122,6 +123,7 @@
 			symbols.value = symbols.value.filter(item => item.marketType === props.symbolCategory) || []
 			if (props.keyword) {
 				symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
+				filterByCoins()
 			}
 			if (symbols.value?.length) {
 				nextTick(() => {
@@ -136,6 +138,7 @@
 		if (props.keyword) {
 			symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 		}
+		filterByCoins()
 		if (symbols.value?.length) {
 			loading.value = false
 			nextTick(() => {
@@ -154,6 +157,7 @@
 					symbols.value = useSymbolStore().getSymbolsByCategory(props.symbolCategory) || []
 					if (props.keyword) {
 						symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
+						filterByCoins()
 					}
 					nextTick(() => {
 						scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
@@ -351,6 +355,20 @@
 			})
 	}
 
+	// 如果传了coins，根据coins过滤
+	function filterByCoins() {
+		if (props.coins) {
+			const newSymbols: SymbolDto[] = []
+			symbols.value.forEach(symbol => {
+				if (props.coins?.includes(symbol.baseCoin)) {
+					newSymbols.push(symbol)
+				}
+			})
+			symbols.value = newSymbols
+			console.log('filterByCoins',props.coins,symbols.value)
+		}
+	}
+
 	const whenBrowserActive = () => {
 		// console.log('浏览器重新激活')
 		unSubSymbols()
@@ -426,8 +444,8 @@
 				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 			</ul>
 		</div>
-		<ScrollBar class="w-full" :style="{ height: contentHeight + 'px' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
-			<Empty v-if="!virtualList?.length" :style="{ height: contentHeight + 'px' }" />
+		<ScrollBar class="w-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">
+			<Empty v-if="!virtualList?.length" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" />
 			<!-- 容器总高度 -->
 			<div :style="{ height: symbols.length * itemHeight + 'px' }" class="relative w-full symbol-list-content" v-else>
 				<ul

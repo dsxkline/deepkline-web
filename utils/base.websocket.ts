@@ -263,7 +263,7 @@ export default class BaseWebSocket {
 
 	setTickers(instId: string, ticker: Ticker) {
 		this.tickers[instId] = ticker
-		this.tickersHandler[instId].forEach(item => {
+		this.tickersHandler[instId]?.forEach(item => {
 			item(ticker, null)
 		})
 	}

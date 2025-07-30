@@ -3,10 +3,25 @@
 	import LineChart from '../common/LineChart.vue'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import { usePush } from '~/composable/usePush'
+	import Sectors from '~/pages/market/sectors.vue'
+	import SectorDetail from '~/pages/market/sector-detail.vue'
+	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
+import type { Ticker } from '~/fetch/okx/okx.type'
 
+	const props = defineProps<{
+		full?: boolean
+		sector?: MarketSectorDto
+	}>()
+
+	const pushLeft = usePush()
 	const loading = ref(false)
 	const error = ref('')
 	const sectors = ref<MarketSectorDto[]>([])
+	const { $wsb, $ws } = useNuxtApp()
+	const tickerHandler = (data: Ticker) => {
+
+	}
 
 	function getMarketSectors() {
 		if (loading.value) return
@@ -18,6 +33,11 @@
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					sectors.value = result.data || []
+					if (props.sector) {
+						sectors.value = sectors.value.filter(item => item.sectorId == props.sector?.sectorId)
+					}
+					sectors.value = sectors.value.slice(0, props.full ? -1 : 6)
+					pageSubSymbols.addSubSymbols(sectors.value.map(item => item.topCoins?.split(',')[0] + '-USDT'))
 				} else {
 					error.value = result?.msg
 				}
@@ -27,40 +47,42 @@
 			})
 	}
 
+	const pushSectors = () => {
+		pushLeft(Sectors)
+	}
+
+	const pushSectorDetail = (sector: MarketSectorDto) => {
+		pushLeft(SectorDetail, {
+			sector
+		})
+	}
+
+	// 使用页面订阅收集器
+	const pageSubSymbols = useAddPageSubSymbols()
+
 	onMounted(() => {
 		getMarketSectors()
 	})
 </script>
 <template>
 	<div class="market-category px-4 py-2">
-		<h3 class="pb-3 flex justify-between items-center font-bold">
+		<h3 class="pb-3 flex justify-between items-center font-bold" @click="pushSectors" v-if="!full && !sector">
 			热门板块 <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
-		<div class="w-full overflow-x-scroll scrollbar-hide">
+		<div :class="['w-full', !full ? 'overflow-x-scroll scrollbar-hide' : '']">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
 					<el-button @click.stop="getMarketSectors">点击刷新</el-button>
 				</template>
 			</Error>
-			<ul class="flex w-max" v-if="!loading && !error">
+			<ul :class="[full && !sector ? 'grid grid-cols-2 gap-4 pb-4' : 'flex w-max', sector ? '!w-full' : '']" v-if="!loading && !error">
 				<template v-for="item in sectors">
-					<li class="p-3 rounded-md overflow-hidden bg-[--transparent02] glass-1 w-[calc(var(--body-width)/2)] mr-2 relative">
-						<h4 class="text-sm font-bold">{{ item.name }}</h4>
-						<div class="text-sm flex flex-col py-3">
-							<b class="text-green text-base font-bold">{{ item.rate > 0 ? '+' : '' }}{{ numberToFixed(item.rate * 100, '2') }}%</b>
-							<span class="text-xs text-grey">24小时涨跌</span>
-						</div>
-						<div class="text-xs flex">
-							<span>{{ item.topCoins?.split(',')[0] }}</span
-							><span class="text-green px-1">+8.68%</span>
-						</div>
-						<LineChart symbol="BTC-USDT" class="absolute right-0 top-0 w-2/5 h-1/2 translate-y-2/3 mx-3" />
-					</li>
+					<SectorItem :full="full" :onlyOne="!!sector" :sector="item"/>
 				</template>
 			</ul>
-			<ul class="flex w-max" v-else-if="!error">
-				<template v-for="item in [{}, {}]">
-					<li class="p-3 rounded-md overflow-hidden bg-[--transparent02] w-[calc(var(--body-width)/2)] mr-2 relative">
+			<ul :class="[full ? 'grid grid-cols-2 gap-4 pb-4' : 'flex w-max']" v-else-if="!error">
+				<template v-for="item in 10">
+					<li :class="['p-3 rounded-md overflow-hidden bg-[--transparent02] glass-1 relative', !full ? 'w-[calc(var(--body-width)/2)] mr-2' : '']">
 						<el-skeleton :rows="0" animated>
 							<template #template>
 								<el-skeleton-item variant="p" style="width: 60%; height: 12px" />

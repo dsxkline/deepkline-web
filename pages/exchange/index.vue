@@ -4,9 +4,10 @@
 	import ExchangeList from './exchange-list.vue'
 	import { usePush } from '~/composable/usePush'
 	import AccountHelp from '../account/account-help.vue'
+	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	const props = defineProps<{
-		push?: boolean,
-		height?:number
+		push?: boolean
+		height?: number
 	}>()
 	const pushLeft = usePush()
 	const tabbarHeight = ref(0)
@@ -30,22 +31,23 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = (props.height || n) - (useStore().isH5?(navbar.value?.clientHeight || 55):0)
-			if (!props.push) {
-				tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
-			}
+			setTabbarHeight()
 		}
 	)
+
+	function setTabbarHeight() {
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		if (!props.push) {
+			tabbarHeight.value -= getMenuHeight() || 55
+		}
+	}
 
 	function pushHelp() {
 		pushLeft(AccountHelp)
 	}
 
 	onMounted(() => {
-		tabbarHeight.value = (props.height || window?.innerHeight) - (useStore().isH5?(navbar.value?.clientHeight || 55):0)
-		if (!props.push) {
-			tabbarHeight.value -= document.querySelector('.left-menu')?.clientHeight || 55
-		}
+		setTabbarHeight()
 	})
 	onUnmounted(() => {
 		menus.value = []

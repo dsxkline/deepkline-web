@@ -5,6 +5,7 @@
 	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import SymbolDetail from './SymbolDetail.vue'
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -38,35 +39,6 @@
 		loading.value = false
 	}
 
-	let subHandle = ''
-
-	function subSymbols() {
-		// h5 spa模式
-		if (!useStore().isH5) return
-		const { $wsb, $ws } = useNuxtApp()
-
-		subHandle = $ws.subTickers([props.symbol], (message, error) => {
-			if (useStore().isLeave) return
-			// console.log("subTickers", message.data, error);
-			if (message.data)
-				message.data.forEach(item => {
-					// console.log('subitem',item.instId,item)
-					// 同步到store
-					// useSymbolStore().setTickets(item.instId, item)
-					$ws.setTickers(item.instId, item)
-
-					// bgFlicker(item)
-				})
-		})
-	}
-
-	function unSubSymbols() {
-		const { $wsb, $ws } = useNuxtApp()
-		if (subHandle) {
-			$ws.unsubscribe(subHandle)
-		}
-	}
-
 	const push = usePush()
 	function clickSymbol(item?: SymbolDto) {
 		// 是否选中返回
@@ -79,23 +51,27 @@
 		}
 	}
 
+	// 使用页面订阅收集器
+	const pageSubSymbols = useAddPageSubSymbols()
+
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		tickerHandler($ws.getTickers(props.symbol))
-		// subSymbols()
+		// 注入页面订阅收集器
+		pageSubSymbols.addSubSymbols([props.symbol])
 	})
 
 	useWillDisappear(() => {
 		console.log('symbol-card useWillDisappear....')
-		unSubSymbols()
+		
 	})
 	useWillAppear(() => {
 		console.log('symbol-card useWillAppear....')
-		subSymbols()
+		
 	})
 
 	onBeforeUnmount(() => {
-		unSubSymbols()
+	
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		item.value = null
 		containerRef.value = null
