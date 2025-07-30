@@ -8,6 +8,7 @@
 	import SectorDetail from '~/pages/market/sector-detail.vue'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import type { Ticker } from '~/fetch/okx/okx.type'
+	import type { WsResult } from '~/types/types'
 
 	const props = defineProps<{
 		full?: boolean
@@ -19,13 +20,17 @@
 	const change = ref<number>(0)
 	const rate = ref<number>(0)
 	const { $wsb, $ws } = useNuxtApp()
-	const symbol = computed(() => props.sector.topCoins?.split(',')[0]+"-USDT")
+	const symbol = computed(() => props.sector.topCoins?.split(',')[0] + '-USDT')
+	const sectorRate = ref(props.sector.rate)
+	const topCoin = ref(props.sector.topCoins?.split(',')[0])
 	const tickerHandler = (data: Ticker) => {
-		// 涨跌额
-		change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8 || '0')
-		// 涨跌幅
-		rate.value = parseFloat(numberToFixed(change.value / parseFloat(data?.sodUtc8 || '0'),'4'))
-		item.value = data
+		if (data?.sodUtc8) {
+			// 涨跌额
+			change.value = parseFloat(data?.last || '0') - parseFloat(data?.sodUtc8)
+			// 涨跌幅
+			rate.value = parseFloat(numberToFixed(change.value / parseFloat(data?.sodUtc8), '4'))
+			item.value = data
+		}
 	}
 
 	const pushSectorDetail = (sector: MarketSectorDto) => {
@@ -34,8 +39,11 @@
 		})
 	}
 
+	
+
 	onMounted(() => {
-        console.log('dddddd symbol.value',symbol.value)
+		
+		// console.log('dddddd symbol.value',symbol.value)
 		symbol.value && $ws.addTickerHandler(symbol.value, tickerHandler)
 		symbol.value && tickerHandler($ws.getTickers(symbol.value))
 	})
@@ -52,14 +60,19 @@
 	>
 		<h4 class="text-sm font-bold pb-1" v-if="!onlyOne">{{ sector.name }}</h4>
 		<div class="text-sm flex flex-col">
-			<b class="text-green text-base font-bold" v-if="!onlyOne">{{ sector.rate > 0 ? '+' : '' }}{{ numberToFixed(sector.rate * 100, '2') }}%</b>
-			<b class="text-green font-bold text-2xl" v-else>{{ sector.rate > 0 ? '+' : '' }}{{ numberToFixed(sector.rate * 100, '2') }}%</b>
+			<b :class="['text-base font-bold', (sectorRate || sector.rate) >= 0 ? 'text-green' : 'text-red']" v-if="!onlyOne"
+				>{{ (sectorRate || sector.rate) > 0 ? '+' : '' }}{{ numberToFixed((sectorRate || sector.rate) * 100, '2') }}%</b
+			>
+			<b :class="['text-base font-bold', (sectorRate || sector.rate) >= 0 ? 'text-green' : 'text-red']" v-else
+				>{{ (sectorRate || sector.rate) > 0 ? '+' : '' }}{{ numberToFixed((sectorRate || sector.rate) * 100, '2') }}%</b
+			>
 			<span class="text-xs text-grey">24小时涨跌</span>
 		</div>
 		<div class="text-xs flex pt-2">
-			<span>{{ sector.topCoins?.split(',')[0] }}</span
-			><span class="text-green px-1">
-				<ProfitRate :profit="change" :profitRate="rate" />
+			<span>{{ topCoin }}</span
+			><span :class="['px-1', rate >= 0 ? 'text-green' : 'text-red']">
+				<template v-if="rate"> {{ rate > 0 ? '+' : '' }}{{ numberToFixed(rate * 100, '2') }}% </template>
+				<template v-else>0.00%</template>
 			</span>
 		</div>
 		<LineChart symbol="BTC-USDT" class="absolute right-0 top-0 w-2/5 h-1/2 translate-y-2/3 mx-3" />

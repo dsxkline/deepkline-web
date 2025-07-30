@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-	import HotSector from '~/components/sector/HotSector.vue';
-import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import HotSector from '~/components/sector/HotSector.vue'
+	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import { useCurrentPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import { usePush, useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
@@ -25,18 +26,53 @@ import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 		}
 	}
 
+	const pageSubSymbols = useCurrentPageSubSymbols().subSymbols
+	watch(
+		() => pageSubSymbols.value,
+		val => {
+			console.log('板块首页的品种变动', val)
+			unSubSymbols()
+			subSymbols()
+		},
+		{ deep: true }
+	)
+
+	let subHandle = ''
+	function subSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (!pageSubSymbols.value?.length) return
+		useSymbolStore().setSubSymbols(pageSubSymbols.value)
+		subHandle = $ws.subTickers(pageSubSymbols.value, (message, error) => {
+			if (message.data)
+				message.data.forEach(item => {
+					$ws.setTickers(item.instId, item)
+				})
+		})
+	}
+
+	function unSubSymbols() {
+		const { $wsb, $ws } = useNuxtApp()
+		if (subHandle) {
+			$ws.unsubscribe(subHandle)
+		}
+	}
+
 	onMounted(() => {
 		setTabbarHeight()
 	})
-	onBeforeUnmount(() => {})
+	onBeforeUnmount(() => {
+        unSubSymbols()
+    })
 
 	useWillDisappear(() => {
 		// 写hook方法
-		console.log('page market willdisappear...')
+		console.log('page market sector willdisappear...')
+        unSubSymbols()
 	})
 
 	useWillAppear(() => {
-		console.log('page market willappear...')
+		console.log('page market sector willappear...')
+        subSymbols()
 	})
 
 	defineExpose({
@@ -47,7 +83,7 @@ import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	<div class="market-sectors w-full h-full">
 		<NavigationBar ref="navbar" title="板块排行" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight + 'px' }" :always="false">
-            <HotSector :full="true"/>
+			<HotSector :full="true" />
 		</ScrollBar>
 	</div>
 </template>

@@ -7,7 +7,8 @@
 	import Sectors from '~/pages/market/sectors.vue'
 	import SectorDetail from '~/pages/market/sector-detail.vue'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
-import type { Ticker } from '~/fetch/okx/okx.type'
+	import type { Ticker } from '~/fetch/okx/okx.type'
+	import type { WsResult } from '~/types/types'
 
 	const props = defineProps<{
 		full?: boolean
@@ -18,11 +19,6 @@ import type { Ticker } from '~/fetch/okx/okx.type'
 	const loading = ref(false)
 	const error = ref('')
 	const sectors = ref<MarketSectorDto[]>([])
-	const { $wsb, $ws } = useNuxtApp()
-	const tickerHandler = (data: Ticker) => {
-
-	}
-
 	function getMarketSectors() {
 		if (loading.value) return
 		loading.value = true
@@ -51,17 +47,28 @@ import type { Ticker } from '~/fetch/okx/okx.type'
 		pushLeft(Sectors)
 	}
 
-	const pushSectorDetail = (sector: MarketSectorDto) => {
-		pushLeft(SectorDetail, {
-			sector
-		})
-	}
-
 	// 使用页面订阅收集器
 	const pageSubSymbols = useAddPageSubSymbols()
 
+	const marketSectorDownHandle = (data: WsResult<MarketSectorDto>) => {
+		const d = data.payload
+		if (d) {
+            const sector = sectors.value.find(item=>item.sectorId==d.sectorId)
+			if(sector){
+                sector.rate = d.rate
+                sector.topCoins = d.topCoins
+                
+            }
+		}
+	}
+
 	onMounted(() => {
+		useNuxtApp().$dkws.onMarketSectorDown(marketSectorDownHandle)
 		getMarketSectors()
+	})
+
+	onBeforeUnmount(() => {
+		useNuxtApp().$dkws.removeOnEvent(marketSectorDownHandle)
 	})
 </script>
 <template>
@@ -77,7 +84,7 @@ import type { Ticker } from '~/fetch/okx/okx.type'
 			</Error>
 			<ul :class="[full && !sector ? 'grid grid-cols-2 gap-4 pb-4' : 'flex w-max', sector ? '!w-full' : '']" v-if="!loading && !error">
 				<template v-for="item in sectors">
-					<SectorItem :full="full" :onlyOne="!!sector" :sector="item"/>
+					<SectorItem :full="full" :onlyOne="!!sector" :sector="item" />
 				</template>
 			</ul>
 			<ul :class="[full ? 'grid grid-cols-2 gap-4 pb-4' : 'flex w-max']" v-else-if="!error">

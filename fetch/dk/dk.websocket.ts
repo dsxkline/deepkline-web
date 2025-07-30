@@ -5,7 +5,8 @@ export enum MessageType {
 	NOTICE = 'notice',
 	FUND = 'fund',
 	POSITION = 'position',
-	MARKET_UP_DOWN = 'market-up-down'
+	MARKET_UP_DOWN = 'market-up-down',
+	MARKET_SECTOR = 'market-sector'
 }
 
 export default class DKWebSocket extends BaseSocketIo {
@@ -15,7 +16,8 @@ export default class DKWebSocket extends BaseSocketIo {
 		[MessageType.NOTICE]: [],
 		[MessageType.FUND]: [],
 		[MessageType.POSITION]: [],
-		[MessageType.MARKET_UP_DOWN]: []
+		[MessageType.MARKET_UP_DOWN]: [],
+		[MessageType.MARKET_SECTOR]: [],
 	}
 	constructor(url: string, channel: string = 'public') {
 		super(url, '/master', '/v1/' + channel)
@@ -26,6 +28,7 @@ export default class DKWebSocket extends BaseSocketIo {
 		this.on(MessageType.FUND, this.onFundMessage)
 		this.on(MessageType.POSITION, this.onPositionMessage)
 		this.on(MessageType.MARKET_UP_DOWN, this.onMarketUpDownMessage)
+		this.on(MessageType.MARKET_SECTOR, this.onMarketSectorMessage)
 		this.on('disconnect', this.removeAll)
 	}
 
@@ -40,6 +43,9 @@ export default class DKWebSocket extends BaseSocketIo {
 	}
 	private onMarketUpDownMessage = (data: any) => {
 		this.callbacks[MessageType.MARKET_UP_DOWN]?.forEach(fn => fn(data))
+	}
+	private onMarketSectorMessage = (data: any) => {
+		this.callbacks[MessageType.MARKET_SECTOR]?.forEach(fn => fn(data))
 	}
 
 	onEvent(event: MessageType, cb: (data: any) => void) {
@@ -60,6 +66,9 @@ export default class DKWebSocket extends BaseSocketIo {
 	}
 	onMarketUpDown(cb: (data: any) => void) {
 		this.onEvent(MessageType.MARKET_UP_DOWN, cb)
+	}
+	onMarketSectorDown(cb: (data: any) => void) {
+		this.onEvent(MessageType.MARKET_SECTOR, cb)
 	}
 	removeOnEvent(cb: (data: any) => void) {
 		Object.keys(this.callbacks).forEach((value: string) => {

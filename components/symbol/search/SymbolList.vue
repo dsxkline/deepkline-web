@@ -358,13 +358,19 @@
 	// 如果传了coins，根据coins过滤
 	function filterByCoins() {
 		if (props.coins) {
-			const newSymbols: SymbolDto[] = []
+			const newSymbols: Record<string,SymbolDto> = {}
 			symbols.value.forEach(symbol => {
 				if (props.coins?.includes(symbol.baseCoin)) {
-					newSymbols.push(symbol)
+					newSymbols[symbol.baseCoin] = symbol
 				}
 			})
-			symbols.value = newSymbols
+			// 按照coins排序
+			const coinSymbols: SymbolDto[] = []
+			props.coins.forEach(coin=>{
+				const symbol = newSymbols[coin]
+				symbol && coinSymbols.push(symbol)
+			})
+			symbols.value = coinSymbols
 			console.log('filterByCoins',props.coins,symbols.value)
 		}
 	}

@@ -115,6 +115,9 @@ const pop = function (data: any) {
 	// 需要查找最顶部的push回传数据
 	// 回传数据
 	if (topPush?.props && data != undefined) topPush.props.popData = data
+	// 栈顶实例将要隐藏事件
+	const app = getParentRefreshComponent(topPush)
+	if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
 	// topPush.vnode = null
 	// topPush.component = null
 	topPush = null

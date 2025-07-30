@@ -12,7 +12,7 @@
 	const loading = ref(false)
 	function setValue(up: number, down: number) {
 		animation.start({
-			from: 0,
+			from: upValue.value,
 			to: up,
 			duration: 600,
 			onUpdate: (val: number) => {
@@ -33,7 +33,7 @@
 				if (res?.code === FetchResultDto.OK) {
 					const data = res.data
 					if (data && data.total) {
-						setValue(data.up, data.down)
+						setValue(data.up/data.total*100, data.down/data.total*100)
 					} else {
 						setValue(50, 50)
 					}
@@ -47,7 +47,7 @@
 	const marketUpDownHandle = (data: WsResult<UpDownsDto>) => {
 		const d = data.payload
 		if (d && d.total) {
-			setValue(d.up, d.down)
+			setValue(d.up/d.total*100, d.down/d.total*100)
 		}
 	}
 

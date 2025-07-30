@@ -64,7 +64,7 @@
 			</template>
 		</Error>
 
-		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading">
+		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading && !error">
 			<div class="sentiment-chart relative w-3/5">
 				<div class="absolute w-full h-full flex flex-col items-center justify-end" :style="'color:' + color">
 					<b class="pt-6 text-xl font-extrabold roboto-bold">{{ value }}</b>
@@ -77,7 +77,7 @@
 				<span class="text-xs px-3 leading-5">{{ desc }}</span>
 			</div>
 		</div>
-		<div class="rounded-md bg-[--transparent03] flex justify-center items-center px-4 min-h-[90px]" v-else>
+		<div class="rounded-md bg-[--transparent03] flex justify-center items-center px-4 min-h-[90px]" v-else-if="!error">
 			<el-skeleton animated class="flex items-center">
 				<template #template style="--el-skeleton-circle-size: 100px">
 					<el-skeleton-item variant="circle" style="width: 60px; height: 60px" />
