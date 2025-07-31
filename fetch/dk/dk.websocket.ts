@@ -77,6 +77,6 @@ export default class DKWebSocket extends BaseSocketIo {
 		})
 	}
 	removeAll() {
-		Object.keys(this.callbacks).forEach(key => (this.callbacks[key as MessageType] = []))
+		this.callbacks && Object.keys(this.callbacks).forEach(key => (this.callbacks[key as MessageType] = []))
 	}
 }

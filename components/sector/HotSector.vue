@@ -3,7 +3,7 @@
 	import LineChart from '../common/LineChart.vue'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-	import { usePush } from '~/composable/usePush'
+	import { usePush, useWillAppear } from '~/composable/usePush'
 	import Sectors from '~/pages/market/sectors.vue'
 	import SectorDetail from '~/pages/market/sector-detail.vue'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
@@ -57,10 +57,14 @@
 			if(sector){
                 sector.rate = d.rate
                 sector.topCoins = d.topCoins
-                
+
             }
 		}
 	}
+
+    useWillAppear(()=>{
+        getMarketSectors()
+    })
 
 	onMounted(() => {
 		useNuxtApp().$dkws.onMarketSectorDown(marketSectorDownHandle)
