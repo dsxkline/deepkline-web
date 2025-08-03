@@ -8,7 +8,7 @@ export class BaseSocketIo {
 	private reconnectTimer: NodeJS.Timeout | null = null
 	private reconnectInterval: number = 10000
 	private onConnectedCallback: (() => void) | null = null
-
+	private subscribeEvents: Record<string, { event: string; symbol?: string }> = {}
 	constructor(url: string, namespace: string = '/', path: string = '') {
 		this.url = url
 		this.namespace = namespace
@@ -16,9 +16,9 @@ export class BaseSocketIo {
 		this.socket = null
 	}
 
-	connect(accountId?:number): Socket {
+	connect(accountId?: number): Socket {
 		const fullUrl = `${this.url}${this.namespace}`
-        console.log('connect url',fullUrl,accountId)
+		console.log('connect url', fullUrl, accountId)
 		const socket = io(fullUrl, {
 			transports: ['websocket'],
 			path: this.path,
@@ -32,13 +32,13 @@ export class BaseSocketIo {
 		socket.on('connect', () => {
 			console.log(`[WS-CLIENT] Connected: ${socket.id}`)
 			if (this.onConnectedCallback) this.onConnectedCallback()
+			this.reSubscribes()
 		})
 
 		socket.on('connect_error', err => {
 			console.error(err)
 			console.error(`[WS-CLIENT] Connection error: ${err.message}`)
-            // this.reconnectOnError()
-	
+			// this.reconnectOnError()
 		})
 
 		socket.on('disconnect', reason => {
@@ -64,7 +64,7 @@ export class BaseSocketIo {
 		}, this.reconnectInterval)
 	}
 
-	reconnect(accountId?:number) {
+	reconnect(accountId?: number) {
 		this.disconnect()
 		setTimeout(() => {
 			this.connect(accountId)
@@ -77,6 +77,35 @@ export class BaseSocketIo {
 
 	on(event: string, callback: (data: any) => void) {
 		this.socket?.on(event, callback)
+	}
+	off(event: string) {
+		this.socket?.off(event)
+	}
+
+	subscribe(event: string, symbol?: string) {
+		this.emit('subscribe', {
+			event,
+			symbol
+		})
+		const room = event + (symbol || '')
+		this.subscribeEvents[room] = {
+			event,
+			symbol
+		}
+	}
+	unSubscribe(event: string, symbol?: string) {
+		this.emit('unsubscribe', {
+			event,
+			symbol
+		})
+		const room = event + (symbol || '')
+		if (this.subscribeEvents[room]) delete this.subscribeEvents[room]
+	}
+
+	reSubscribes() {
+		for (const room of Object.values(this.subscribeEvents)) {
+			this.subscribe(room.event, room.symbol)
+		}
 	}
 
 	disconnect() {

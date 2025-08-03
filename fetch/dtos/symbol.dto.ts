@@ -106,3 +106,20 @@ export interface SymbolDto {
 
 	updatedAt: Date
 }
+
+export interface MoneyFlowItem {
+	buyNum: number
+	sellNum: number
+	buyAmount: number
+	sellAmount: number
+	buyRate: number
+	sellRate: number
+}
+
+export interface MoneyFlowDto {
+	total: MoneyFlowItem
+	small: MoneyFlowItem
+	mid: MoneyFlowItem
+	big: MoneyFlowItem
+	ultra: MoneyFlowItem
+}

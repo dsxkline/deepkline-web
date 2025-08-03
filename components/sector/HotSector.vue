@@ -3,12 +3,13 @@
 	import LineChart from '../common/LineChart.vue'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-	import { usePush, useWillAppear } from '~/composable/usePush'
+	import { usePush, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import Sectors from '~/pages/market/sectors.vue'
 	import SectorDetail from '~/pages/market/sector-detail.vue'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import type { Ticker } from '~/fetch/okx/okx.type'
 	import type { WsResult } from '~/types/types'
+	import { MessageEvents } from '~/fetch/dk/dk.websocket'
 
 	const props = defineProps<{
 		full?: boolean
@@ -53,18 +54,22 @@
 	const marketSectorDownHandle = (data: WsResult<MarketSectorDto>) => {
 		const d = data.payload
 		if (d) {
-            const sector = sectors.value.find(item=>item.sectorId==d.sectorId)
-			if(sector){
-                sector.rate = d.rate
-                sector.topCoins = d.topCoins
-
-            }
+			const sector = sectors.value.find(item => item.sectorId == d.sectorId)
+			if (sector) {
+				sector.rate = d.rate
+				sector.topCoins = d.topCoins
+			}
 		}
 	}
 
-    useWillAppear(()=>{
-        getMarketSectors()
-    })
+	useWillAppear(() => {
+		getMarketSectors()
+		useNuxtApp().$dkws.subscribe(MessageEvents.MARKET_SECTOR)
+	})
+
+	useWillDisappear(()=>{
+		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_SECTOR)
+	})
 
 	onMounted(() => {
 		useNuxtApp().$dkws.onMarketSectorDown(marketSectorDownHandle)
@@ -73,6 +78,7 @@
 
 	onBeforeUnmount(() => {
 		useNuxtApp().$dkws.removeOnEvent(marketSectorDownHandle)
+		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_SECTOR)
 	})
 </script>
 <template>

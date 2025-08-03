@@ -110,5 +110,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 			await getDefaultSymbols(MarketType.SPOT)
 			await getDefaultSymbols(MarketType.SWAP)
 		}
+		if(!useUserStore().user) useUserStore().logout()
 	}
 })

@@ -1,6 +1,8 @@
 <!-- CryptoChangeChart.vue -->
 <script setup lang="ts">
+	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
+	import { MessageEvents } from '~/fetch/dk/dk.websocket'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import type { UpDownsDto } from '~/fetch/dtos/exchange.dto'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
@@ -16,8 +18,8 @@
 			to: up,
 			duration: 600,
 			onUpdate: (val: number) => {
-				upValue.value = val
-				downValue.value = (val * down) / up
+				upValue.value = Math.floor(val)
+				downValue.value = Math.floor((val * down) / up)
 			}
 		})
 	}
@@ -33,7 +35,7 @@
 				if (res?.code === FetchResultDto.OK) {
 					const data = res.data
 					if (data && data.total) {
-						setValue(data.up/data.total*100, data.down/data.total*100)
+						setValue((data.up / data.total) * 100, (data.down / data.total) * 100)
 					} else {
 						setValue(50, 50)
 					}
@@ -47,9 +49,18 @@
 	const marketUpDownHandle = (data: WsResult<UpDownsDto>) => {
 		const d = data.payload
 		if (d && d.total) {
-			setValue(d.up/d.total*100, d.down/d.total*100)
+			setValue((d.up / d.total) * 100, (d.down / d.total) * 100)
 		}
 	}
+
+	useWillAppear(() => {
+		getMarketUpDowns()
+		useNuxtApp().$dkws.subscribe(MessageEvents.MARKET_UP_DOWN)
+	})
+
+	useWillDisappear(() => {
+		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_UP_DOWN)
+	})
 
 	onMounted(() => {
 		getMarketUpDowns()
@@ -58,6 +69,7 @@
 	onBeforeUnmount(() => {
 		animation.stop()
 		useNuxtApp().$dkws.removeOnEvent(marketUpDownHandle)
+		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_UP_DOWN)
 	})
 </script>
 <template>

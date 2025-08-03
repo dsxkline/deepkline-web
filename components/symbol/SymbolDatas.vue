@@ -5,6 +5,7 @@
 	import LongShortPositionRatioTopTrader from './echarts/LongShortPositionRatioTopTrader.vue'
 	const props = defineProps<{
 		height: number
+		symbol: string
 	}>()
 	const item = ref<Ticker | null>(null)
 	const containerRef = ref(null)
@@ -13,8 +14,7 @@
 		// 获取当前组件的高度
 		return props.height || 10000
 	})
-	const symbol = computed(() => useSymbolStore().activeSymbol)
-	const symbolObj = computed(() => useSymbolStore().symbols[symbol.value])
+	const symbolObj = computed(() => useSymbolStore().symbols[props.symbol])
 
 	function update() {
 		mounted.value = true
@@ -32,8 +32,8 @@
 		<ScrollBar :height="contentHeight + 'px'">
 			<div class="px-4" v-if="mounted">
 				<!-- 需要每笔成交数据计算生成 -->
-				<!-- <SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
-				<SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>
+				<SymbolFundFlow :symbol="symbol"></SymbolFundFlow>
+				<!-- <SymbolFiveDayFundNetInFlow :symbol="symbol"></SymbolFiveDayFundNetInFlow>
 				<Symbol24FundNetInFlow :symbol="symbol"></Symbol24FundNetInFlow> -->
 
 				<!-- 获取多空持仓人数比，支持合约和现货 -->

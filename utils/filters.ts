@@ -93,14 +93,14 @@ export const moneyFormat = (value: any, currency: string = '', precision: string
 	value = parseFloat(value.toString())
 	// const precision = value.toString().indexOf('.')>0?value.toString().split(".")[1].length:0 || 2;
 	const point = precision.toString().indexOf('.') > 0 ? precision.toString().split('.')[1].length : precision
-	if (value >= 100000000) {
+	if (Math.abs(value) >= 100000000) {
 		value = value / 100000000
 		unit = m
-	} else if (value >= 10000) {
+	} else if (Math.abs(value) >= 10000) {
 		value = value / 10000
 		unit = k
 	}
-	return currency + parseFloat(value.toFixed(point)) + unit
+	return currency + thousandUnit(parseFloat(value.toFixed(point))) + unit
 }
 
 export function noExponents(num: any) {
@@ -174,4 +174,26 @@ export function isVNodeLike(value: unknown): value is VNode | VNode[] {
 		return value.every(item => isVNode(item))
 	}
 	return false
+}
+
+export function generateSimilarColors(baseColor: string, count: number, variance = 30): string[] {
+	let [r, g, b] = baseColor.split(' ')
+	if (baseColor.indexOf('#')>=0) {
+		const base = baseColor.replace('#', '')
+		r = String(parseInt(base.substring(0, 2), 16))
+		g = String(parseInt(base.substring(2, 4), 16))
+		b = String(parseInt(base.substring(4, 6), 16))
+	}
+
+	const colors: string[] = []
+
+	for (let i = 0; i < count; i++) {
+		const newR = Math.min(255, Math.max(0, parseInt(r) + Math.floor(Math.random() * (2 * variance + 1)) - variance))
+		const newG = Math.min(255, Math.max(0, parseInt(g) + Math.floor(Math.random() * (2 * variance + 1)) - variance))
+		const newB = Math.min(255, Math.max(0, parseInt(b) + Math.floor(Math.random() * (2 * variance + 1)) - variance))
+		const hex = `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`
+		colors.push(hex)
+	}
+
+	return colors
 }
