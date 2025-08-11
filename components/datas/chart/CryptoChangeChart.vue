@@ -85,7 +85,7 @@
 				<div class="absolute left-0 top-0 h-full flex items-center leading-none" v-autosize="10">
 					<b class="px-1 pr-[2px]"
 						><el-icon><SortUp /></el-icon></b
-					><span v-if="upValue > 10">{{ parseFloat(upValue.toFixed(2)) }}%</span>
+					><span v-if="upValue > 5">{{ parseFloat(upValue.toFixed(2)) }}%</span>
 				</div>
 			</div>
 			<div
@@ -96,7 +96,7 @@
 				}"
 			>
 				<div class="absolute left-0 top-0 h-full flex items-center justify-center leading-none w-full" v-autosize="10">
-					<span v-if="100 - upValue - downValue > 10">{{ parseFloat((100 - upValue - downValue).toFixed(2)) }}%</span>
+					<span v-if="100 - upValue - downValue > 5">{{ parseFloat((100 - upValue - downValue).toFixed(2)) }}%</span>
 				</div>
 			</div>
 			<div

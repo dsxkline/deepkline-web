@@ -337,11 +337,11 @@
 			<div class="chart w-full h-full absolute top-0 left-0 overflow-hidden" :style="'height:' + maxY + 'px'" ref="chart"></div>
 			<div :style="'height:' + maxY + 'px'"></div>
 			<ul class="w-full mt-7">
-				<li class="flex items-center justify-between mb-2 text-xs w-full text-grey">
-					<div class="w-[30%]">方向</div>
-					<div class="text-left">成交额</div>
-					<div class="w-[40px]">占比</div>
-					<div class="w-[80px] text-right"></div>
+				<li class="grid grid-cols-5 items-center justify-between mb-2 text-xs w-full text-grey">
+					<div class="flex col-span-2">方向</div>
+					<div class="flex justify-start">成交额</div>
+					<div class="flex justify-start w-[40px]">占比</div>
+					<div class="flex justify-between items-center"></div>
 				</li>
 				<li
 					v-if="flowDatas"
@@ -350,7 +350,7 @@
 					@mouseover="dispatchAction(index, 'highlight')"
 					@mouseleave="dispatchAction(index, 'downplay')"
 				>
-					<div class="flex items-center col-span-2">
+					<div class="flex col-span-2">
 						<i class="w-[10px] h-[10px] rounded-sm flex mr-1" :style="{ background: item.itemStyle?.color }"></i><span class="text-main truncate" :title="item?.name">{{ item.name }}</span>
 					</div>
 					<span class="flex justify-start">{{ moneyFormat(item?.amount || '0', '', '2') }}</span>
