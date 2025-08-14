@@ -4,7 +4,7 @@
 	import { usePush } from '~/composable/usePush'
 	import TabBar, { type MenuModel } from '../common/TabBar.vue'
 	import PriceBreakoutList from './tables/PriceBreakoutList.vue'
-    import FundingRateList from './tables/FundingRateList.vue'
+	import FundingRateList from './tables/FundingRateList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -40,14 +40,16 @@
 	onMounted(() => {})
 </script>
 <template>
-	<div class="w-full h-full px-4 py-4">
-		<h3 class="pb-0 flex justify-between items-center font-bold">
-			异动信号 <el-icon><ElIconArrowRight /></el-icon>
-		</h3>
-		<TabBar :menus="menus" />
-		<button class="w-full !py-2 text-center text-sm bt-default !bg-transparent !border-[--transparent05] !rounded-full overflow-hidden !text-grey">
-			更多<el-icon><ElIconArrowRight /></el-icon>
-		</button>
+	<div class="market-volatility w-full h-full py-4">
+		<div class="market-volatility mx-4 overflow-hidden">
+			<h3 class="pb-0 flex justify-between items-center font-bold">
+				异动信号 <el-icon><ElIconArrowRight /></el-icon>
+			</h3>
+			<TabBar :menus="menus" />
+			<button class="w-full !py-2 text-center text-sm bt-default !bg-transparent !border-[--transparent05] !rounded-full overflow-hidden !text-grey">
+				更多<el-icon><ElIconArrowRight /></el-icon>
+			</button>
+		</div>
 	</div>
 </template>
 <style lang="less" scoped>

@@ -22,7 +22,7 @@
 	const sectors = ref<MarketSectorDto[]>([])
 	function getMarketSectors() {
 		if (loading.value) return
-		loading.value = true
+		if(!sectors.value?.length)loading.value = true
 		error.value = ''
 		exchangeFetch
 			.marketSectors()

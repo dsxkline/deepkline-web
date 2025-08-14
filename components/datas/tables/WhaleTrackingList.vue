@@ -1,85 +1,38 @@
 <script setup lang="ts">
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import type { MainForceDto } from '~/fetch/dtos/symbol.dto'
+	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { useSymbolStore } from '~/store/symbol'
-	const loading = ref(true)
-	const datas = ref([
-		{
-			instId: 'BTC-USDT',
-			accumulating: 20, // 吸筹期
-			markingUp: 0, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'ETH-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 20, // 拉升期
-			distributing: 80, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'SOL-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 20, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 20 // 诱多期
-		},
-		{
-			instId: 'TRUMP-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 0, // 拉升期
-			distributing: 60, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'TIA-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 20, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'MEME-USDT',
-			accumulating: 10, // 吸筹期
-			markingUp: 0, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'BTC-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 20, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'BTC-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 0, // 拉升期
-			distributing: 10, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'BTC-USDT',
-			accumulating: 50, // 吸筹期
-			markingUp: 0, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 0 // 诱多期
-		},
-		{
-			instId: 'BTC-USDT',
-			accumulating: 0, // 吸筹期
-			markingUp: 20, // 拉升期
-			distributing: 0, // 出货期
-			bullTrap: 100 // 诱多期
-		}
-	])
+	const loading = ref(false)
+	const error = ref('')
+	const datas = ref<MainForceDto[]>([])
 
-	function update() {
-		loading.value = false
+	function getMainForceList() {
+		if (loading.value) return
+		if (!datas.value?.length) loading.value = true
+		error.value = ''
+
+		symbolsFetch
+			.mainforce()
+			.then(result => {
+				loading.value = false
+				if (result?.code == FetchResultDto.OK) {
+					datas.value = result.data || []
+				} else {
+					error.value = result?.msg
+				}
+			})
+			.catch(err => {
+				loading.value = false
+				error.value = '网络异常，请稍后再试'
+			})
 	}
 
-	onMounted(() => {
-	})
+	function update() {
+		getMainForceList()
+	}
+
+	onMounted(() => {})
 
 	defineExpose({
 		update
@@ -91,18 +44,42 @@
 			<template v-for="item in datas">
 				<li>
 					<div class="col-span-2" v-autosize="16">
-						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" v-if="useSymbolStore().getSymbol(item.instId)" size="20px" />
+						<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" v-if="useSymbolStore().getSymbol(item.symbol)" size="20px" />
 						<span v-else> -- </span>
 					</div>
 					<div class="col-span-3 flex-auto grid grid-cols-4 w-full text-[10px] *:py-1 *:rounded-sm *:bg-[--transparent02] *:text-[--transparent10] gap-2">
-						<button :style="[item.accumulating ? 'background:rgb(var(--color-brand) / ' + item.accumulating / 100 + ');color:rgb(var(--color-text-main)/' + item.accumulating / 100 + ')' : '']">
+						<button
+							:style="[
+								item.scorer?.absorption && item.scorer?.absorption - 100
+									? 'background:rgb(var(--color-brand) / ' + (item.scorer?.absorption - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.absorption - 100) / 100 + ')'
+									: ''
+							]"
+						>
 							吸筹
 						</button>
-						<button :style="[item.markingUp ? 'background:rgb(var(--color-green) / ' + item.markingUp / 100 + ');color:rgb(var(--color-text-main)/' + item.markingUp / 100 + ')' : '']">拉升中</button>
-						<button :style="[item.distributing ? 'background:rgb(var(--color-red) / ' + item.distributing / 100 + ');color:rgb(var(--color-text-main)/' + item.distributing / 100 + ')' : '']">
+						<button
+							:style="[
+								item.scorer?.rally && item.scorer?.rally - 100 ? 'background:rgb(var(--color-green) / ' + (item.scorer?.rally - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.rally - 100) / 100 + ')' : ''
+							]"
+						>
+							拉升中
+						</button>
+						<button
+							:style="[
+								item.scorer?.distribution && item.scorer?.distribution - 100
+									? 'background:rgb(var(--color-red) / ' + (item.scorer?.distribution - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.distribution - 100) / 100 + ')'
+									: ''
+							]"
+						>
 							出货
 						</button>
-						<button :style="[item.bullTrap ? 'background:rgb(var(--color-brand) / ' + item.bullTrap / 100 + ');color:rgb(var(--color-text-main)/' + item.bullTrap / 100 + ')' : '']">诱多</button>
+						<button
+							:style="[
+								item.scorer?.trap && item.scorer?.trap - 100 ? 'background:rgb(var(--color-brand) / ' + (item.scorer?.trap - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.trap - 100) / 100 + ')' : ''
+							]"
+						>
+							诱多
+						</button>
 					</div>
 				</li>
 			</template>

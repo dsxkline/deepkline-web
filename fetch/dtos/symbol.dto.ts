@@ -123,3 +123,15 @@ export interface MoneyFlowDto {
 	big: MoneyFlowItem
 	ultra: MoneyFlowItem
 }
+
+export interface MainForceItem {
+	absorption: number
+	rally: number
+	distribution: number
+	trap: number
+}
+
+export interface MainForceDto {
+	symbol: string
+	scorer: MainForceItem
+}

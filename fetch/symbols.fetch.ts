@@ -1,7 +1,7 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { MarketType, MoneyFlowDto, SymbolDto } from './dtos/symbol.dto'
+import type { MainForceDto, MarketType, MoneyFlowDto, SymbolDto } from './dtos/symbol.dto'
 import { useStore } from '~/store'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
@@ -9,6 +9,7 @@ if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const listApi = '/symbols/list'
 const moneyFlowApi = '/symbols/moneyflow'
+const mainforceApi = '/symbols/mainforce'
 
 export const symbolsFetch = {
 	/**
@@ -20,9 +21,16 @@ export const symbolsFetch = {
 			exchange,
 			marketType
 		}),
-
+	// 资金流向
 	moneyFlow: (symbol: string) =>
 		usePost<ApiResult<MoneyFlowDto>>(baseUrl, moneyFlowApi, {
+			symbol
+		}),
+	// 主力异动
+	mainforce: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+		usePost<ApiResult<MainForceDto[]>>(baseUrl, mainforceApi, {
+			page,
+			pageSize,
 			symbol
 		})
 }
