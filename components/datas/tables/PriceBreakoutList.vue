@@ -33,7 +33,7 @@
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					datas.value = result.data || []
-
+					setPosition()
 					if (props.source == 'home') {
 						// 收集订阅
 						pageSubSymbols.addSubSymbols(datas.value.map(item => item.symbol))
@@ -49,6 +49,42 @@
 				loading.value = false
 				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
 			})
+	}
+
+	function setPosition() {
+		datas.value.forEach(item => {
+			const ticker = $ws.getTickers(item.symbol)
+			if (!ticker) return
+			// 当前价
+			const price = parseFloat(ticker.last)
+			// 距离
+			// 记录价格突破，分数是越接近越高
+			const distance = distancePercent(price, item.support, item.resistance)
+			// 距离压力位的距离
+			const right = distance.rightPercent
+			// 距离支撑位的距离
+			const left = distance.leftPercent
+			if (right > left && left > 0) {
+				// 左边更近
+				item.left = left + 10
+				item.right = undefined
+			}
+			if (left > right && right > 0) {
+				// 右边更近
+				item.right = right + 10
+				item.left = undefined
+			}
+			if (left < 0 && right > 0) {
+				// 超出左边
+				item.left = left + 10
+				item.right = undefined
+			}
+			if (left > 0 && right < 0) {
+				// 超出右边
+				item.left = undefined
+				item.right = right + 10
+			}
+		})
 	}
 
 	// 使用页面订阅收集器

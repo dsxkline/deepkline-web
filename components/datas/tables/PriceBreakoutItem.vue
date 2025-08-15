@@ -10,8 +10,9 @@
 		item: PriceSupportDto
 	}>()
 
-	const left = ref()
-	const right = ref()
+	watch(()=>props.item.symbol,()=>{
+        setPosition()
+    })
 
 	const push = usePush()
 	function clickSymbol(item?: PriceSupportDto) {
