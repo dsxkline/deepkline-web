@@ -9,7 +9,7 @@ const emit = defineEmits<{
     (event:'update:price',value:string):void
 }>()
 const { $wsb, $ws } = useNuxtApp()
-const ticker = ref($ws.getTickers(props.symbol.symbol))
+const ticker = ref($ws.getTickers(props.symbol?.symbol))
 const tickerHandler = (data: Ticker) => {
     // console.log('tickerHandler',props.symbol.instId,data)
     ticker.value = data

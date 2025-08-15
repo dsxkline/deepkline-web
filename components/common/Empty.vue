@@ -10,7 +10,7 @@ const props = defineProps({
 	<div class="empty-container w-full h-full flex flex-col items-center justify-center">
 		<EmptyIcon class=" w-52" />
 		<p class="text-sm text-grey mt-[-20px]">{{ content}}</p>
-        <div class="pt-3">
+        <div class="py-3 pb-16">
 			<slot />
 		</div>
 	</div>

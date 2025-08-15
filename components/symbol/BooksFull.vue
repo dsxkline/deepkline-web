@@ -172,7 +172,7 @@
 			if (pointLevel.value > 0) {
 				if (pointLevel.value < 1) {
 					// 保留小数位数
-					const p = (pointLevel.value + '').split('.')[1].length
+					const p = noExponents(pointLevel.value).split('.')[1].length
 					pricePoint.value = p.toString()
 					price = parseFloat(price.toFixed(p))
 					//console.log('pointLevel',p,price)
@@ -194,7 +194,7 @@
 			if (pointLevel.value > 0) {
 				if (pointLevel.value < 1) {
 					// 保留小数位数
-					const p = (pointLevel.value + '').split('.')[1].length
+					const p = noExponents(pointLevel.value).split('.')[1].length
 					pricePoint.value = p.toString()
 					price = parseFloat(price.toFixed(p))
 				} else {

@@ -197,3 +197,18 @@ export function generateSimilarColors(baseColor: string, count: number, variance
 
 	return colors
 }
+
+/**
+ * 计算点在区间左右的百分比距离
+ * @param x 当前点
+ * @param L 区间左边界
+ * @param R 区间右边界
+ * @returns { leftPercent: number, rightPercent: number } 左右距离百分比，范围 0~1
+ */
+export function distancePercent(x: number, L: number, R: number) {
+  const total = R - L
+  if (total <= 0) return { leftPercent: 0, rightPercent: 0 } // 防止除零
+  const leftPercent = parseFloat(((x - L) / total * 100).toFixed(2)) // 距离左边占总长度比例
+  const rightPercent = parseFloat(((R - x) / total * 100).toFixed(2)) // 距离右边占总长度比例
+  return { leftPercent, rightPercent }
+}

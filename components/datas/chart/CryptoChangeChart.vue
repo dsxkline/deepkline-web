@@ -49,6 +49,7 @@
 	const marketUpDownHandle = (data: WsResult<UpDownsDto>) => {
 		const d = data.payload
 		if (d && d.total) {
+			loading.value = false
 			setValue((d.up / d.total) * 100, (d.down / d.total) * 100)
 		}
 	}

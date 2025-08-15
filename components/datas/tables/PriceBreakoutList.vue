@@ -1,106 +1,182 @@
 <script setup lang="ts">
+	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
+	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import type { PriceSupportDto } from '~/fetch/dtos/symbol.dto'
+	import { symbolsFetch } from '~/fetch/symbols.fetch'
+	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
-	const loading = ref(true)
-	const datas = ref([
-		{
-			instId: 'BTC-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: -10 // 位置 10%
-		},
-		{
-			instId: 'ETH-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 15 // 位置 10%
-		},
-		{
-			instId: 'SOL-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			right: 10 // 位置 10%
-		},
-		{
-			instId: 'TRUMP-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			right: 20 // 位置 10%
-		},
-		{
-			instId: 'TIA-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			right: -50 // 位置 10%
-		},
-		{
-			instId: 'MEME-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 50
-		},
-		{
-			instId: 'BTC-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 30
-		},
-		{
-			instId: 'BTC-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 30
-		},
-		{
-			instId: 'BTC-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 30
-		},
-		{
-			instId: 'BTC-USDT',
-			up: 11200, // 压力位
-			dowm: 95600, // 支撑位
-			left: 30
-		}
-	])
-	function update() {
-		loading.value = false
+	const props = defineProps<{
+		push?: boolean
+		pageSize?: number
+		height?: number
+		source?: string
+	}>()
+	const loading = ref(false)
+	const error = ref('')
+	const datas = ref<PriceSupportDto[]>([])
+	let page = 1
+	let pageSize = props.pageSize || 10
+
+	const contentHeight = computed(() => {
+		// 获取当前组件的高度
+		return props.height || 0
+	})
+
+	function getDatas() {
+		if (loading.value) return
+		if (!datas.value?.length) loading.value = true
+		error.value = ''
+
+		symbolsFetch
+			.support(page, pageSize)
+			.then(result => {
+				loading.value = false
+				if (result?.code == FetchResultDto.OK) {
+					datas.value = result.data || []
+
+					if (props.source == 'home') {
+						// 收集订阅
+						pageSubSymbols.addSubSymbols(datas.value.map(item => item.symbol))
+					} else {
+						unSubSymbols()
+						subSymbols()
+					}
+				} else {
+					if (!datas.value?.length) error.value = result?.msg
+				}
+			})
+			.catch(err => {
+				loading.value = false
+				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
+			})
 	}
 
-	onMounted(() => {})
+	// 使用页面订阅收集器
+	const pageSubSymbols = useAddPageSubSymbols()
+
+	// 虚拟化
+	const scrollbar = ref<HTMLElement | null>()
+	let itemHeight = 40
+	// 可视区域的数量
+	const visibleCount = computed(() => {
+		// 获取当前组件的高度
+		return Math.ceil(contentHeight.value / itemHeight)
+	})
+	// 上下偏移量
+	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))
+	// 虚拟列表的起始索引
+	const start = ref(0)
+	// 虚拟列表的结束索引
+	const end = ref(visibleCount.value)
+	// 虚拟列表
+	const virtualList = computed<PriceSupportDto[]>(() => {
+		const s = start.value
+		const e = end.value ? end.value : datas.value.length
+		return datas.value?.slice(s, e)
+	})
+	// 记录滚动位置
+	const mainScrollTop = ref(0)
+	// 订阅品种code列表
+	const subSymbolCodes = computed(() => {
+		return virtualList.value.map(item => item.symbol)
+	})
+	const symbolDom = ref()
+	// 订阅句柄
+	let subHandle = ''
+	// 滚动订阅限频
+	let scrollTimer: any = null
+	let scrolling = false
+	// 监听滚动事件
+	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
+		itemHeight = symbolDom.value?.querySelector('li')?.clientHeight || itemHeight
+		// console.log('scrollHandler', symbolDom.value?.querySelector('ul li')?.clientHeight, itemHeight, contentHeight.value)
+		scrolling = true
+		mainScrollTop.value = params.scrollTop
+		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
+		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, datas.value.length)
+		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		if (scrollTimer) clearTimeout(scrollTimer)
+		scrollTimer = setTimeout(() => {
+			unSubSymbols()
+			subSymbols()
+			scrolling = false
+		}, 300)
+	}
+	const { $wsb, $ws } = useNuxtApp()
+	function subSymbols() {
+		if (!subSymbolCodes.value?.length) return
+		useSymbolStore().setSubSymbols(subSymbolCodes.value)
+
+		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
+			if (scrolling) return
+			if (useStore().isLeave) return
+			// console.log("subTickers", message.data, error);
+			if (message.data)
+				message.data.forEach(item => {
+					// console.log('subitem',item.instId,item)
+					// 同步到store
+					// useSymbolStore().setTickets(item.instId, item)
+					$ws.setTickers(item.instId, item)
+					// bgFlicker(item)
+				})
+		})
+	}
+
+	function unSubSymbols() {
+		if (subHandle) {
+			$ws.unsubscribe(subHandle)
+		}
+		if (props.source == 'home') {
+			// 清除收集订阅
+			pageSubSymbols.removeSubSymbols(datas.value.map(item => item.symbol))
+		}
+	}
+
+	function update() {
+		getDatas()
+	}
+	function leave() {
+		unSubSymbols()
+	}
+
+	onBeforeUnmount(() => {
+		unSubSymbols()
+	})
 
 	defineExpose({
-		update
+		update,
+		leave
 	})
 </script>
 <template>
-	<div class="py-2">
-		<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10" v-if="!loading">
-			<template v-for="item in datas">
-				<li>
-					<div class="col-span-2 flex items-center" v-autosize="16">
-						<SymbolName :symbol="useSymbolStore().getSymbol(item.instId)" v-if="useSymbolStore().getSymbol(item.instId)"  size="20px"/>
-						<span v-else> -- </span>
-					</div>
-
-					<div class="col-span-3 w-full text-[10px] *:rounded-sm items-center flex relative">
-						<div class="h-1 w-1 absolute left-5 bg-red" :style="[item.left != undefined ? (item.left < 0 ? 'left:' + Math.abs(item.left / 2) + '%' : '') : '']"></div>
-						<div class="h-1 w-1 absolute right-5 bg-green" :style="[item.right != undefined ? (item.right < 0 ? 'right:' + Math.abs(item.right / 2) + '%' : '') : '']"></div>
-						<div
-							:class="['h-4 w-1/2 absolute flex items-center', item.left != undefined && 'breakout-down', item.right != undefined && 'breakout-up', item.right == 50 || item.left == 50 ? 'breakout-none' : '']"
-							:style="[item.left != undefined ? 'left:' + Math.max(0, item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0, item.right) + '%;justify-content:end;' : '']"
-						>
-							<div class="flex items-center px-1 h-full" v-autosize="10">
-								<SymbolPrice :symbol="useSymbolStore().getSymbol(item.instId)" class="!text-[10px] h-full leading-normal *:!font-normal"/>
-							</div>
-						</div>
-						<div class="h-4 breakout-bg w-full"></div>
-					</div>
-				</li>
+	<div class="py-2 h-full" :style="{ height: height ? +contentHeight + 'px' : '' }">
+		<Error :content="error" v-if="!loading && error">
+			<template #default>
+				<el-button @click.stop="getDatas">点击重新加载</el-button>
 			</template>
-		</ul>
-		<div class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-else>
-			<template v-for="item in 10">
+		</Error>
+		<Empty :msg="error" v-if="!loading && !error && !datas.length">
+			<template #default>
+				<el-button @click.stop="getDatas">点击重新加载</el-button>
+			</template>
+		</Empty>
+		<ScrollBar
+			class="w-full h-full"
+			@scroll="scrollHandler"
+			ref="scrollbar"
+			:noScroll="!height"
+			:style="{ height: height ? +contentHeight + 'px' : 'auto' }"
+			:always="false"
+			v-if="!loading && !error && datas.length"
+		>
+			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom">
+				<template v-for="item in datas">
+					<TablesPriceBreakoutItem :item="item" />
+				</template>
+			</ul>
+		</ScrollBar>
+		<div class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-else-if="loading && !error">
+			<template v-for="item in pageSize">
 				<div class="h-10 flex items-center">
 					<el-skeleton :rows="0" animated class="col-span-2 flex flex-col justify-center">
 						<template #template>
@@ -117,18 +193,3 @@
 		</div>
 	</div>
 </template>
-<style lang="less" scoped>
-	.breakout-down {
-		background: linear-gradient(to right, rgb(var(--color-red) / 0.5), rgb(var(--color-red) / 0));
-	}
-	.breakout-up {
-		background: linear-gradient(to left, rgb(var(--color-green) / 0.5), rgb(var(--color-green) / 0));
-	}
-	.breakout-none {
-		background: transparent;
-		width: 5px;
-	}
-	.breakout-bg{
-		background: linear-gradient(to left, var(--transparent00), var(--transparent10), var(--transparent00));
-	}
-</style>

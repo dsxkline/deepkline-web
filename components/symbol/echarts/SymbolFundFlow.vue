@@ -350,7 +350,7 @@
 					@mouseover="dispatchAction(index, 'highlight')"
 					@mouseleave="dispatchAction(index, 'downplay')"
 				>
-					<div class="flex col-span-2">
+					<div class="flex col-span-2 items-center">
 						<i class="w-[10px] h-[10px] rounded-sm flex mr-1" :style="{ background: item.itemStyle?.color }"></i><span class="text-main truncate" :title="item?.name">{{ item.name }}</span>
 					</div>
 					<span class="flex justify-start">{{ moneyFormat(item?.amount || '0', '', '2') }}</span>

@@ -268,6 +268,7 @@ export default class BaseWebSocket {
 		})
 	}
 	getTickers(instId: string) {
+		if(!instId) return {} as Ticker
 		return this.tickers[instId]
 	}
 	addTickerHandler(instId: string, callback: (message: Ticker, error: Event | null) => void) {

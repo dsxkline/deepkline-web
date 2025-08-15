@@ -135,3 +135,11 @@ export interface MainForceDto {
 	symbol: string
 	scorer: MainForceItem
 }
+
+export interface PriceSupportDto {
+	symbol: string
+	support: number
+	resistance: number
+	left: number | undefined
+	right: number | undefined
+}

@@ -15,7 +15,7 @@
 		<!-- <el-icon class="!text-grey/30 !w-[60px] !h-[40px] *:!w-[40px] *:!h-[40px] my-2"><CoffeeCup /></el-icon> -->
 		<ErrorIcon class="my-2" v-if="!hideIcon"/>
 		<p class="text-sm text-grey" v-if="content">{{ content }}</p>
-		<div class="pt-3">
+		<div class="py-4 pb-8">
 			<slot />
 		</div>
 	</div>
