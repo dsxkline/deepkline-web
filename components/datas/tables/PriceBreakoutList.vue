@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import { getNavHeight, getTabbarHeight } from '~/composable/useCommon'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import type { PriceSupportDto } from '~/fetch/dtos/symbol.dto'
@@ -96,7 +97,7 @@
 	// 可视区域的数量
 	const visibleCount = computed(() => {
 		// 获取当前组件的高度
-		return Math.ceil(contentHeight.value / itemHeight)
+		return Math.ceil((contentHeight.value || useStore().bodyHeight - getNavHeight() - getTabbarHeight()) / itemHeight)
 	})
 	// 上下偏移量
 	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))
@@ -107,7 +108,7 @@
 	// 虚拟列表
 	const virtualList = computed<PriceSupportDto[]>(() => {
 		const s = start.value
-		const e = end.value ? end.value : pageSize
+		const e = end.value
 		return datas.value?.slice(s, e)
 	})
 	// 记录滚动位置
@@ -125,12 +126,12 @@
 	// 监听滚动事件
 	function scrollHandler(params: { scrollLeft: number; scrollTop: number }) {
 		itemHeight = symbolDom.value?.querySelector('li')?.clientHeight || itemHeight
-		// console.log('scrollHandler', symbolDom.value?.querySelector('ul li')?.clientHeight, itemHeight, contentHeight.value)
+		// console.log('scrollHandler', symbolDom.value?.querySelector('li')?.clientHeight, itemHeight, contentHeight.value)
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
-		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, datas.value.length)
-		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		end.value = Math.min(start.value + visibleCount.value + offset.value, datas.value.length)
+		// console.log('scrollHandler', start.value, end.value, datas.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
@@ -205,8 +206,8 @@
 			:always="false"
 			v-if="!loading && !error && datas.length"
 		>
-			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom">
-				<template v-for="item in datas" :key="item.symbol">
+			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+				<template v-for="item in virtualList" :key="item.symbol + '-' + start + '-' + end">
 					<TablesPriceBreakoutItem :item="item" />
 				</template>
 			</ul>
