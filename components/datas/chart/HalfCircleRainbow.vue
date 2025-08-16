@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<svg viewBox="0 0 200 100" class="w-full h-auto">
+		<svg :viewBox="'0 0 160 '+height" class="w-full h-auto">
 			<!-- 定义渐变 -->
 			<defs>
-				<linearGradient id="rainbowGradient" gradientUnits="userSpaceOnUse" x1="40" y1="100" x2="180" y2="100">
+				<linearGradient id="rainbowGradient" gradientUnits="userSpaceOnUse" x1="20" :y1="height" x2="150" :y2="height">
 					<!-- <stop offset="0%" stop-color="red" /> -->
 					<stop offset="0%" :stop-color="red" />
 					<!-- 红 -->
@@ -15,7 +15,7 @@
 					<!-- 绿 -->
 				</linearGradient>
 
-                <linearGradient id="innerLine" gradientUnits="userSpaceOnUse" x1="40" y1="100" x2="180" y2="100">
+                <linearGradient id="innerLine" gradientUnits="userSpaceOnUse" x1="40" :y1="height" x2="180" :y2="height">
 					<stop offset="0%" :stop-color="red" stop-opacity="0.3"/>
 					<stop offset="100%" :stop-color="color" stop-opacity="0.1"/>
 				</linearGradient>
@@ -43,11 +43,11 @@
 			</defs>
 
 			<!-- 半圆渐变弧 -->
-			<path :d="describeArc(100, 100, radius, -90, 90)" fill="none" stroke="url(#rainbowGradient)" stroke-width="10" />
-            <path :d="describeArc(100, 100, radius-10, -90, 90)" fill="none" stroke="url(#innerLine)" stroke-width="1" />
+			<path :d="describeArc(height, height, radius, -90, 90)" fill="none" stroke="url(#rainbowGradient)" stroke-width="10" />
+            <path :d="describeArc(height, height, radius-10, -90, 90)" fill="none" stroke="url(#innerLine)" stroke-width="1" />
 
 			<!-- 扇形区域 -->
-			<path :d="generateSectorPath(100, 100, radius, -90, value - 90)" fill="url(#grad2)" fill-opacity="0.2" />
+			<path :d="generateSectorPath(height, height, radius, -90, value - 90)" fill="url(#grad2)" fill-opacity="0.2" />
 
 			<!-- 背后柔光扩散圈 -->
 			<circle :cx="pointerPos.x" :cy="pointerPos.y" r="30" fill="url(#grad1)" filter="url(#blur)" opacity="1">
@@ -79,15 +79,17 @@
 
 	const emit = defineEmits(['update:color'])
 
+	const height = ref(80)
+
 	// 红
 	const red = ref('#db1b5d')
 	const orange = ref('#db401b')
 	const yellow = ref('#EEB422')
 	const green = ref('#2dbd85')
 
-	const radius = 80
-	const cx = 100
-	const cy = 100
+	const radius = 60
+	const cx = height.value
+	const cy = height.value
 
 	const moveVal = ref(0)
 

@@ -65,7 +65,7 @@
 		</Error>
 
 		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading && !error">
-			<div class="sentiment-chart relative w-3/5">
+			<div class="sentiment-chart relative w-[160px]">
 				<div class="absolute w-full h-full flex flex-col items-center justify-end" :style="'color:' + color">
 					<b class="pt-6 text-xl font-extrabold roboto-bold">{{ value }}</b>
 					<span class="text-xs" v-if="value">{{ slug }}</span>

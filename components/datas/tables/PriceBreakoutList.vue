@@ -107,7 +107,7 @@
 	// 虚拟列表
 	const virtualList = computed<PriceSupportDto[]>(() => {
 		const s = start.value
-		const e = end.value ? end.value : datas.value.length
+		const e = end.value ? end.value : pageSize
 		return datas.value?.slice(s, e)
 	})
 	// 记录滚动位置
