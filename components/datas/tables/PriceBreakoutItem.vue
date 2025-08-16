@@ -11,6 +11,8 @@
 	}>()
 
 	watch(()=>props.item.symbol,()=>{
+        props.item?.symbol && $ws.removeTickerHandler(props.item?.symbol, tickerHandler)
+        props.item?.symbol && $ws.addTickerHandler(props.item?.symbol, tickerHandler)
         setPosition()
     })
 
@@ -86,7 +88,7 @@
 			<div class="h-1 w-1 absolute right-[10%] bg-green"></div>
 			<div
 				:class="[
-					'h-4 w-1/2 absolute flex items-center',
+					'h-4 w-1/2 absolute flex items-center transition-all',
 					item.left != undefined && 'breakout-down',
 					item.right != undefined && 'breakout-up',
 					item.right == 50 || item.left == 50 ? 'breakout-none' : '',

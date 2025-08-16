@@ -206,7 +206,7 @@
 			v-if="!loading && !error && datas.length"
 		>
 			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom">
-				<template v-for="item in datas">
+				<template v-for="item in datas" :key="item.symbol">
 					<TablesPriceBreakoutItem :item="item" />
 				</template>
 			</ul>

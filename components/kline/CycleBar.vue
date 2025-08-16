@@ -22,7 +22,7 @@
 		{ label: '1周', value: '1W', display: useStore().isH5 ? false : true },
 		{ label: '1月', value: '1M', display: useStore().isH5 ? false : true }
 	])
-	const cycle = ref('1m')
+	const cycle = ref(localStorage.getItem('cycle') || '1m')
 	const popHide = (e?: Event) => {
 		if (e) {
 			const target = e.target as HTMLElement
@@ -74,14 +74,14 @@
 							:class="[item.value === cycle ? 'active !text-main bg-[--transparent20]' : '']"
 							v-click-sound
 							@click="onCycleChange(item.value)"
-							 v-if="!isDestroyed"
+							v-if="!isDestroyed"
 						>
 							{{ item.label }}
 						</div>
 					</template>
 				</div>
 				<template #reference>
-					<button :class="['cycle-bar-item flex items-center !pr-0', showHideMenu ? 'active !text-main bg-[--transparent20]' : '']"  v-if="!isDestroyed">
+					<button :class="['cycle-bar-item flex items-center !pr-0', showHideMenu ? 'active !text-main bg-[--transparent20]' : '']" v-if="!isDestroyed">
 						<span>{{ moreText }}</span
 						><el-icon class="mx-1"><CaretBottom /></el-icon>
 					</button>

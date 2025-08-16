@@ -22,6 +22,7 @@
 		() => useKlineStore().cycle[props.symbol],
 		(newVal, oldVal) => {
 			newVal && chart && chart.updateCycle(newVal)
+			localStorage.setItem('cycle', newVal)
 		}
 	)
 	watch(
@@ -76,7 +77,8 @@
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
 		const ticker = useNuxtApp().$ws.getTickers(symbol)
-		chart = new DsxKlineChart(symbol, useKlineStore().cycle[symbol], useStore().theme, {
+		const cycleCache = localStorage.getItem('cycle') || useKlineStore().cycle[symbol]
+		chart = new DsxKlineChart(symbol, cycleCache, useStore().theme, {
 			element: klineDom.value && klineDom.value.querySelector('.kline'),
 			autoSize: true,
 			chartType: ChartType.candle,

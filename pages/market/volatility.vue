@@ -32,14 +32,14 @@ import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 			name: '主力追踪',
 			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {
-				pageSize:30
+				pageSize:500
 			}
 		},
 		{
 			name: '价格突破',
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
-				pageSize:30
+				pageSize:500
 			}
 		},
 		{
