@@ -84,8 +84,10 @@
 		</div>
 
 		<div class="col-span-3 w-full text-[10px] *:rounded-sm items-center flex relative">
-			<div class="h-1 w-1 absolute left-[10%] bg-red"></div>
-			<div class="h-1 w-1 absolute right-[10%] bg-green"></div>
+			<div class="h-1 w-1 absolute left-[10%] bg-red" v-if="item.left!=undefined"></div>
+			<div class="h-1 w-1 absolute right-[10%] bg-green" v-if="item.right!=undefined"></div>
+            <div class="absolute left-[10%] pl-2 text-red" v-if="item.left!=undefined">{{ item.support }}</div>
+            <div class="absolute right-[10%] pr-2 text-green" v-if="item.right!=undefined">{{ item.resistance }}</div>
 			<div
 				:class="[
 					'h-4 w-1/2 absolute flex items-center transition-all',
@@ -96,9 +98,9 @@
 				]"
 				:style="[item.left != undefined ? 'left:' + Math.max(0, item.left) + '%' : '', item.right != undefined ? 'right:' + Math.max(0, item.right) + '%;justify-content:end;' : '']"
 			>
-				<div class="flex items-center px-1 h-full" v-autosize="10">
+				<!-- <div class="flex items-center px-1 h-full" v-autosize="10">
 					<SymbolPrice :symbol="useSymbolStore().getSymbol(item.symbol)" class="!text-[10px] h-full leading-normal *:!font-normal" />
-				</div>
+				</div> -->
 			</div>
 			<div class="h-4 breakout-bg w-full"></div>
 		</div>
@@ -106,10 +108,10 @@
 </template>
 <style lang="less" scoped>
 	.breakout-down {
-		background: linear-gradient(to right, rgb(var(--color-red) / 0.5), rgb(var(--color-red) / 0));
+		background: linear-gradient(to right, rgb(var(--color-red) / 0.3), rgb(var(--color-red) / 0));
 	}
 	.breakout-up {
-		background: linear-gradient(to left, rgb(var(--color-green) / 0.5), rgb(var(--color-green) / 0));
+		background: linear-gradient(to left, rgb(var(--color-green) / 0.3), rgb(var(--color-green) / 0));
 	}
 	.breakout-none {
 		background: transparent;
