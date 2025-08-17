@@ -142,7 +142,7 @@
 	const { $wsb, $ws } = useNuxtApp()
 	function subSymbols() {
 		if (!subSymbolCodes.value?.length) return
-		useSymbolStore().setSubSymbols(subSymbolCodes.value)
+		// useSymbolStore().setSubSymbols(subSymbolCodes.value)
 
 		subHandle = $ws.subTickers(subSymbolCodes.value, (message, error) => {
 			if (scrolling) return
@@ -206,11 +206,11 @@
 			:always="false"
 			v-if="!loading && !error && datas.length"
 		>
-			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
-				<template v-for="item in virtualList" :key="item.symbol + '-' + start + '-' + end">
-					<TablesPriceBreakoutItem :item="item" />
-				</template>
-			</ul>
+			<div :style="{ height: datas.length * itemHeight + 'px' }" class="relative w-full">
+				<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item,index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index"/>
+				</ul>
+			</div>
 		</ScrollBar>
 		<div class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-else-if="loading && !error">
 			<template v-for="item in pageSize">

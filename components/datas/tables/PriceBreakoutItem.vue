@@ -7,14 +7,20 @@
 	import { useSymbolStore } from '~/store/symbol'
 
 	const props = defineProps<{
-		item: PriceSupportDto
+		priceSupport: PriceSupportDto
 	}>()
 
-	watch(()=>props.item.symbol,()=>{
-        props.item?.symbol && $ws.removeTickerHandler(props.item?.symbol, tickerHandler)
-        props.item?.symbol && $ws.addTickerHandler(props.item?.symbol, tickerHandler)
-        setPosition()
-    })
+	const item = ref(props.priceSupport)
+
+	// watch(
+	// 	() => props.priceSupport,
+	// 	(n, o) => {
+	// 		o && $ws.removeTickerHandler(o.symbol, tickerHandler)
+	// 		n && $ws.addTickerHandler(n.symbol, tickerHandler)
+	// 		item.value = n
+	// 	},
+	// 	{ deep: true }
+	// )
 
 	const push = usePush()
 	function clickSymbol(item?: PriceSupportDto) {
@@ -27,53 +33,53 @@
 		}
 	}
 	const { $wsb, $ws } = useNuxtApp()
-	function setPosition() {
-		const item = props.item
-		const ticker = $ws.getTickers(item.symbol)
+	function setPosition(ticker: Ticker) {
+		ticker = ticker || $ws.getTickers(item.value.symbol)
 		if (!ticker) return
 		// 当前价
 		const price = parseFloat(ticker.last)
 		// 距离
 		// 记录价格突破，分数是越接近越高
-		const distance = distancePercent(price, item.support, item.resistance)
+		const distance = distancePercent(price, item.value.support, item.value.resistance)
 		// 距离压力位的距离
 		const right = distance.rightPercent
 		// 距离支撑位的距离
 		const left = distance.leftPercent
 		if (right > left && left > 0) {
 			// 左边更近
-			item.left = left + 10
-			item.right = undefined
+			item.value.left = left + 10
+			item.value.right = undefined
 		}
 		if (left > right && right > 0) {
 			// 右边更近
-			item.right = right + 10
-			item.left = undefined
+			item.value.right = right + 10
+			item.value.left = undefined
 		}
 		if (left < 0 && right > 0) {
 			// 超出左边
-			item.left = left + 10
-			item.right = undefined
+			item.value.left = left + 10
+			item.value.right = undefined
 		}
 		if (left > 0 && right < 0) {
 			// 超出右边
-			item.left = undefined
-			item.right = right + 10
+			item.value.left = undefined
+			item.value.right = right + 10
 		}
 	}
 
 	const tickerHandler = (data: Ticker) => {
-		setPosition()
+		// if (data.instId == 'ZK-USDT') console.log(data)
+		setPosition(data)
 	}
 
 	onMounted(() => {
-		// console.log('dddddd symbol.value',symbol.value)
-		props.item?.symbol && $ws.addTickerHandler(props.item?.symbol, tickerHandler)
-		props.item?.symbol && tickerHandler($ws.getTickers(props.item?.symbol))
+		// console.log('dddddd symbol.value',item.value?.symbol)
+		item.value?.symbol && $ws.addTickerHandler(item.value?.symbol, tickerHandler)
+		item.value?.symbol && tickerHandler($ws.getTickers(item.value?.symbol))
 	})
 
 	onBeforeUnmount(() => {
-		props.item?.symbol && $ws.removeTickerHandler(props.item?.symbol, tickerHandler)
+		item.value?.symbol && $ws.removeTickerHandler(item.value?.symbol, tickerHandler)
 	})
 </script>
 <template>
@@ -84,10 +90,10 @@
 		</div>
 
 		<div class="col-span-3 w-full text-[10px] *:rounded-sm items-center flex relative">
-			<div class="h-1 w-1 absolute left-[10%] bg-red" v-if="item.left!=undefined"></div>
-			<div class="h-1 w-1 absolute right-[10%] bg-green" v-if="item.right!=undefined"></div>
-            <div class="absolute left-[10%] pl-2 text-red" v-if="item.left!=undefined">{{ item.support }}</div>
-            <div class="absolute right-[10%] pr-2 text-green" v-if="item.right!=undefined">{{ item.resistance }}</div>
+			<div class="h-1 w-1 absolute left-[10%] bg-red" v-if="item.left != undefined"></div>
+			<div class="h-1 w-1 absolute right-[10%] bg-green" v-if="item.right != undefined"></div>
+			<div class="absolute left-[10%] pl-2 text-red" v-if="item.left != undefined">{{ item.support }}</div>
+			<div class="absolute right-[10%] pr-2 text-green" v-if="item.right != undefined">{{ item.resistance }}</div>
 			<div
 				:class="[
 					'h-4 w-1/2 absolute flex items-center transition-all',
