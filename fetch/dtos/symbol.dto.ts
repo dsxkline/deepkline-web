@@ -143,3 +143,10 @@ export interface PriceSupportDto {
 	left: number | undefined
 	right: number | undefined
 }
+
+export interface FundingRateDto {
+	symbol: string
+	fundingRate: number
+	minFundingRate: number
+	maxFundingRate: number
+}

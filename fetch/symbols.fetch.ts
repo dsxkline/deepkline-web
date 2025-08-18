@@ -1,8 +1,9 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { MainForceDto, MarketType, MoneyFlowDto, PriceSupportDto, SymbolDto } from './dtos/symbol.dto'
+import type { FundingRateDto, MainForceDto, MarketType, MoneyFlowDto, PriceSupportDto, SymbolDto } from './dtos/symbol.dto'
 import { useStore } from '~/store'
+import type FundingRateList from '~/components/datas/tables/FundingRateList.vue'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)
@@ -11,6 +12,7 @@ const listApi = '/symbols/list'
 const moneyFlowApi = '/symbols/moneyflow'
 const mainforceApi = '/symbols/mainforce'
 const supportApi = '/symbols/support'
+const fundingRateApi = '/symbols/fundingrates'
 
 export const symbolsFetch = {
 	/**
@@ -37,6 +39,13 @@ export const symbolsFetch = {
 	// 价格突破
 	support: (page: number = 1, pageSize: number = 10, symbol?: string) =>
 		usePost<ApiResult<PriceSupportDto[]>>(baseUrl, supportApi, {
+			page,
+			pageSize,
+			symbol
+		}),
+	// 资金费率
+	FundingRateList: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+		usePost<ApiResult<FundingRateDto[]>>(baseUrl, fundingRateApi, {
 			page,
 			pageSize,
 			symbol
