@@ -6,6 +6,8 @@
 	import PriceBreakoutList from './tables/PriceBreakoutList.vue'
 	import FundingRateList from './tables/FundingRateList.vue'
 	import Volatility from '~/pages/market/volatility.vue'
+	import BigOrders from './tables/BigOrders.vue'
+	import ChangeRateList from './tables/ChangeRateList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -21,7 +23,7 @@
 			name: '价格突破',
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
-				source:'home'
+				source: 'home'
 			}
 		},
 		{
@@ -30,13 +32,13 @@
 			contentParams: {}
 		},
 		{
-			name: '清算排行',
-			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {}
+			name: '实时涨幅',
+			contentComp: markRaw(ChangeRateList),
+			contentParams: { pageSize: 7 }
 		},
 		{
-			name: '舆情热度',
-			contentComp: markRaw(WhaleTrackingList),
+			name: '大单监控',
+			contentComp: markRaw(BigOrders),
 			contentParams: {}
 		}
 	])
@@ -51,9 +53,9 @@
 	<div class="market-volatility w-full h-full py-4">
 		<div class="market-volatility mx-4 overflow-hidden">
 			<h3 class="pb-0 flex justify-between items-center font-bold">
-				异动信号 <el-icon  @click="pushVolatility"><ElIconArrowRight /></el-icon>
+				异动信号 <el-icon @click="pushVolatility"><ElIconArrowRight /></el-icon>
 			</h3>
-			<TabBar :menus="menus"  />
+			<TabBar :menus="menus" />
 			<button class="w-full !py-2 text-center text-sm bt-default !bg-transparent !border-[--transparent05] !rounded-full overflow-hidden !text-grey" @click="pushVolatility">
 				更多<el-icon><ElIconArrowRight /></el-icon>
 			</button>

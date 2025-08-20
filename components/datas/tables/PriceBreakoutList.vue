@@ -17,10 +17,11 @@
 	const datas = ref<PriceSupportDto[]>([])
 	let page = 1
 	let pageSize = props.pageSize || 10
+	const lheader = ref()
 
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height || 0
+		return props.height || 0 - (lheader.value?.clientHeight || 0)
 	})
 
 	function getDatas() {
@@ -197,6 +198,13 @@
 				<el-button @click.stop="getDatas">点击重新加载</el-button>
 			</template>
 		</Empty>
+		<div ref="lheader" class="symbol-list-header w-full py-2" v-else-if="!loading && !error">
+			<ul :class="'grid grid-cols-5 *:flex *:items-center text-xs text-grey'">
+				<li class="col-span-2"><span>名称</span></li>
+				<li class="justify-start pl-4"><span>压力</span></li>
+				<li class="justify-end col-span-2 pr-4"><span>支撑</span></li>
+			</ul>
+		</div>
 		<ScrollBar
 			class="w-full h-full"
 			@scroll="scrollHandler"
@@ -208,7 +216,7 @@
 		>
 			<div :style="{ height: datas.length * itemHeight + 'px' }" class="relative w-full">
 				<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
-					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item,index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index"/>
+					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item, index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index" />
 				</ul>
 			</div>
 		</ScrollBar>

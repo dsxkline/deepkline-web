@@ -24,6 +24,7 @@
 		keyword?: string
 		isSearchList?: boolean
 		coins?: string[]
+		putSymbols?: string[]
 		clickHandle?: (item?: SymbolDto) => void
 		selectHandle?: (item: SymbolDto) => void
 	}>()
@@ -60,7 +61,7 @@
 	const end = ref(visibleCount.value)
 	// 虚拟列表
 	const virtualList = computed<SymbolDto[]>(() => {
-		// console.log('virtualList', symbols.value?.slice(start.value, end.value))
+		console.log('virtualList', start.value, end.value)
 		return symbols.value?.slice(start.value, end.value)
 	})
 	// 记录滚动位置
@@ -91,8 +92,8 @@
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
-		end.value = Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length)
-		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		end.value =  visibleCount.value ? Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length) : symbols.value.length
+		console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
@@ -115,6 +116,18 @@
 		}
 	)
 
+	watch(
+		()=>props.coins,()=>{
+			getGroupSymbols()
+		}
+	)
+
+	watch(
+		()=>props.putSymbols,()=>{
+			getGroupSymbols()
+		}
+	)
+
 	function getGroupSymbols() {
 		error.value = ''
 		// 如果是自选，从自选中获取
@@ -131,6 +144,20 @@
 				})
 			}
 			loading.value = false
+			return
+		}
+		if (props.putSymbols) {
+			filterBySymbols()
+			loading.value = false
+			if (props.keyword) {
+				symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
+			}
+			console.log('props.putSymbols',symbols.value)
+			if (symbols.value?.length) {
+				nextTick(() => {
+					scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
+				})
+			}
 			return
 		}
 		// 从store中获取
@@ -173,7 +200,7 @@
 	}
 	function update() {
 		isLeave.value = false
-		// console.log('symbolCategory', props.symbolCategory, props.favorite)
+		// console.log('symbolCategory', props.symbolCategory, props.putSymbols)
 		useSymbolStore().loadFavoriteSymbols()
 		new Promise(resolve => {
 			getGroupSymbols()
@@ -358,7 +385,7 @@
 	// 如果传了coins，根据coins过滤
 	function filterByCoins() {
 		if (props.coins) {
-			const newSymbols: Record<string,SymbolDto> = {}
+			const newSymbols: Record<string, SymbolDto> = {}
 			symbols.value.forEach(symbol => {
 				if (props.coins?.includes(symbol.baseCoin)) {
 					newSymbols[symbol.baseCoin] = symbol
@@ -366,12 +393,25 @@
 			})
 			// 按照coins排序
 			const coinSymbols: SymbolDto[] = []
-			props.coins.forEach(coin=>{
+			props.coins.forEach(coin => {
 				const symbol = newSymbols[coin]
 				symbol && coinSymbols.push(symbol)
 			})
 			symbols.value = coinSymbols
-			console.log('filterByCoins',props.coins,symbols.value)
+			console.log('filterByCoins', props.coins, symbols.value)
+		}
+	}
+	function filterBySymbols() {
+		if (props.putSymbols) {
+			// 直接传symbols进来
+			const newSymbols: SymbolDto[] = []
+			props.putSymbols.forEach(symbol => {
+				const ns = useSymbolStore().getSymbol(symbol)
+				// console.log('ns',ns)
+				if (ns) newSymbols.push(ns)
+			})
+			symbols.value = newSymbols
+			return newSymbols
 		}
 	}
 
@@ -399,6 +439,7 @@
 		addouChange.value = null
 	})
 	onMounted(() => {
+		console.log('symbollist',props.start)
 		if (props.start) update()
 		$windowEvent.addEvent(whenBrowserActive)
 	})

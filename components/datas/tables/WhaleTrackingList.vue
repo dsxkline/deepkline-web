@@ -99,7 +99,7 @@
 							<button
 								:style="[
 									item.scorer?.absorption && item.scorer?.absorption - 100
-										? 'background:rgb(var(--color-brand) / ' + (item.scorer?.absorption - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.absorption - 100) / 100 + ')'
+										? 'background:rgb(var(--color-blue) / ' + (item.scorer?.absorption - 100) / 100 + ');color:rgb(var(--color-text-main)/' + (item.scorer?.absorption - 100) / 100 + ')'
 										: ''
 								]"
 							>

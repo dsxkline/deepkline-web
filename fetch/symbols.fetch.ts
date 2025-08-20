@@ -1,7 +1,7 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { FundingRateDto, MainForceDto, MarketType, MoneyFlowDto, PriceSupportDto, SymbolDto } from './dtos/symbol.dto'
+import type { BigOrderDto, ChangeRateDto, FundingRateDto, MainForceDto, MarketType, MoneyFlowDto, PriceSupportDto, SymbolDto } from './dtos/symbol.dto'
 import { useStore } from '~/store'
 import type FundingRateList from '~/components/datas/tables/FundingRateList.vue'
 let baseApi = config.BASE_API_URL
@@ -13,6 +13,8 @@ const moneyFlowApi = '/symbols/moneyflow'
 const mainforceApi = '/symbols/mainforce'
 const supportApi = '/symbols/support'
 const fundingRateApi = '/symbols/fundingrates'
+const changeRateApi = '/symbols/changerate'
+const bigOrdersApi = '/symbols/bigorders'
 
 export const symbolsFetch = {
 	/**
@@ -44,8 +46,22 @@ export const symbolsFetch = {
 			symbol
 		}),
 	// 资金费率
-	FundingRateList: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+	fundingRateList: (page: number = 1, pageSize: number = 10, symbol?: string) =>
 		usePost<ApiResult<FundingRateDto[]>>(baseUrl, fundingRateApi, {
+			page,
+			pageSize,
+			symbol
+		}),
+	// 涨跌幅列表
+	changeRateList: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+		usePost<ApiResult<ChangeRateDto[]>>(baseUrl, changeRateApi, {
+			page,
+			pageSize,
+			symbol
+		}),
+	// 大单列表
+	bigOrderList: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+		usePost<ApiResult<BigOrderDto[]>>(baseUrl, bigOrdersApi, {
 			page,
 			pageSize,
 			symbol

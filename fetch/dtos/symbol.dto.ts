@@ -149,4 +149,21 @@ export interface FundingRateDto {
 	fundingRate: number
 	minFundingRate: number
 	maxFundingRate: number
+	left: number | undefined
+	right: number | undefined
+}
+
+export interface ChangeRateDto {
+	symbol: string
+	score: number
+}
+
+export interface BigOrderDto {
+	symbol: string
+	instId: string
+	side: 'sell' | 'buy'
+	sz: string
+	px: string
+	tradeId: string
+	ts: string
 }

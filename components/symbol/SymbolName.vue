@@ -12,7 +12,7 @@
 	const ticker = $ws?.getTickers(props.symbol?.symbol)
 	const price = ref(parseFloat(ticker?.last || '0') * parseFloat(ticker?.vol24h || '0'))
 	const tickerHandler = (data: Ticker) => {
-		price.value = parseFloat(data?.last || '0') * parseFloat(data?.vol24h || '0')
+		price.value = parseFloat(data?.last || '0') * parseFloat(data?.vol24h || '0') * (parseFloat(props.symbol?.contractSize)||1)
 	}
 	onMounted(() => {
 		$ws.addTickerHandler(props.symbol?.symbol, tickerHandler)

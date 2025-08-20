@@ -7,6 +7,8 @@
 	import TabBar, { type MenuModel } from '~/components/common/TabBar.vue'
 import { useStore } from '~/store'
 import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+import BigOrders from '~/components/datas/tables/BigOrders.vue'
+import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -46,19 +48,19 @@ import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 			name: '资金费率',
 			contentComp: markRaw(FundingRateList),
 			contentParams: {
-				pageSize:30
+				pageSize:500
 			}
 		},
 		{
-			name: '清算排行',
-			contentComp: markRaw(WhaleTrackingList),
+			name: '实时涨幅',
+			contentComp: markRaw(ChangeRateList),
 			contentParams: {
-				pageSize:30
+				pageSize:500
 			}
 		},
 		{
-			name: '舆情热度',
-			contentComp: markRaw(WhaleTrackingList),
+			name: '大单监控',
+			contentComp: markRaw(BigOrders),
 			contentParams: {
 				pageSize:30
 			}
