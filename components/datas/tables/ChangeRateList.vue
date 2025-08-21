@@ -20,6 +20,7 @@
 	const datas = ref<ChangeRateDto[]>([])
 	let page = 1
 	let pageSize = props.pageSize || 10
+	const symbolList = ref()
 
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
@@ -66,16 +67,20 @@
 	function update() {
 		getDatas()
 	}
+	function leave(){
+		symbolList.value?.leave()
+	}
 
 	onMounted(() => {})
 
 	defineExpose({
-		update
+		update,
+		leave
 	})
 </script>
 <template>
-	<div class="market-sectors w-full h-full">
-		<SymbolList :symbolCategory="MarketType.SPOT" :putSymbols="symbols" :start="true" :height="contentHeight" />
+	<div class="market-sectors w-full" :style="{ height: height ? +contentHeight + 'px' : '100%' }">
+		<SymbolList ref="symbolList" :symbolCategory="MarketType.SPOT" :putSymbols="symbols" :start="true" :height="contentHeight" :source="source"/>
 	</div>
 </template>
 <style lang="less" scoped>

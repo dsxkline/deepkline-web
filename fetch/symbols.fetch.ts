@@ -39,11 +39,12 @@ export const symbolsFetch = {
 			symbol
 		}),
 	// 价格突破
-	support: (page: number = 1, pageSize: number = 10, symbol?: string) =>
+	support: (type?: 'support' | 'resistance', page: number = 1, pageSize: number = 10, symbol?: string) =>
 		usePost<ApiResult<PriceSupportDto[]>>(baseUrl, supportApi, {
 			page,
 			pageSize,
-			symbol
+			symbol,
+			type
 		}),
 	// 资金费率
 	fundingRateList: (page: number = 1, pageSize: number = 10, symbol?: string) =>

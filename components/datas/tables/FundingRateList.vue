@@ -87,7 +87,7 @@
 	})
 </script>
 <template>
-	<div class="py-2">
+	<div :style="{ height: height ? +contentHeight + 'px' : '100%' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
 				<el-button @click.stop="getDatas">点击重新加载</el-button>
@@ -99,7 +99,7 @@
 			</template>
 		</Empty>
 		<ScrollBar class="w-full h-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" :always="false" v-if="!loading && !error && datas.length">
-			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10" v-if="!loading">
+			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 py-2" v-if="!loading">
 				<template v-for="item in datas">
 					<li @click="clickSymbol(item)">
 						<div class="col-span-2 flex items-center" v-autosize="16">

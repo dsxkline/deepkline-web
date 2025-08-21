@@ -76,7 +76,7 @@
 	})
 </script>
 <template>
-	<div class="py-2 h-full" :style="{ height: height ? +contentHeight + 'px' : '' }">
+	<div :style="{ height: height ? +contentHeight + 'px' : '100%' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
 				<el-button @click.stop="getMainForceList">点击重新加载</el-button>
@@ -88,7 +88,7 @@
 			</template>
 		</Empty>
 		<ScrollBar class="w-full h-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" :always="false" v-if="!loading && !error && datas.length">
-			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between pb-6">
+			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between py-2">
 				<template v-for="item in datas">
 					<li @click="clickSymbol(item)">
 						<div class="col-span-2" v-autosize="16">

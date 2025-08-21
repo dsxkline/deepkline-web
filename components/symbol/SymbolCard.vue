@@ -63,15 +63,14 @@
 
 	useWillDisappear(() => {
 		console.log('symbol-card useWillDisappear....')
-		
+		pageSubSymbols.removeSubSymbols([props.symbol])
 	})
 	useWillAppear(() => {
 		console.log('symbol-card useWillAppear....')
-		
+		pageSubSymbols.addSubSymbols([props.symbol])
 	})
 
 	onBeforeUnmount(() => {
-	
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		item.value = null
 		containerRef.value = null

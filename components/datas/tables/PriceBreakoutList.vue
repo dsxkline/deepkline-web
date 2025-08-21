@@ -11,6 +11,7 @@
 		pageSize?: number
 		height?: number
 		source?: string
+		type?: 'support' | 'resistance'
 	}>()
 	const loading = ref(false)
 	const error = ref('')
@@ -21,7 +22,7 @@
 
 	const contentHeight = computed(() => {
 		// 获取当前组件的高度
-		return props.height || 0 - (lheader.value?.clientHeight || 0)
+		return (props.height || 0) - (lheader.value?.clientHeight || 0)
 	})
 
 	function getDatas() {
@@ -30,7 +31,7 @@
 		error.value = ''
 
 		symbolsFetch
-			.support(page, pageSize)
+			.support(props.type, page, pageSize)
 			.then(result => {
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
@@ -187,7 +188,7 @@
 	})
 </script>
 <template>
-	<div class="py-2 h-full" :style="{ height: height ? +contentHeight + 'px' : '' }">
+	<div :style="{ height: height ? +contentHeight + 'px' : '100%' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
 				<el-button @click.stop="getDatas">点击重新加载</el-button>
@@ -201,8 +202,8 @@
 		<div ref="lheader" class="symbol-list-header w-full py-2" v-else-if="!loading && !error">
 			<ul :class="'grid grid-cols-5 *:flex *:items-center text-xs text-grey'">
 				<li class="col-span-2"><span>名称</span></li>
-				<li class="justify-start pl-4"><span>压力</span></li>
-				<li class="justify-end col-span-2 pr-4"><span>支撑</span></li>
+				<li class="justify-start pl-4 col-span-2" v-if="type=='support'"><span>支撑</span></li>
+				<li class="justify-end col-span-3 pr-4" v-if="type=='resistance'"><span>压力</span></li>
 			</ul>
 		</div>
 		<ScrollBar
@@ -214,8 +215,8 @@
 			:always="false"
 			v-if="!loading && !error && datas.length"
 		>
-			<div :style="{ height: datas.length * itemHeight + 'px' }" class="relative w-full">
-				<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 pb-6" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+			<div class="relative w-full py-2">
+				<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
 					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item, index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index" />
 				</ul>
 			</div>

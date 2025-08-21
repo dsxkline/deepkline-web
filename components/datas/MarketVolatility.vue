@@ -17,29 +17,40 @@
 		{
 			name: '主力追踪',
 			contentComp: markRaw(WhaleTrackingList),
-			contentParams: {}
-		},
-		{
-			name: '价格突破',
-			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
-				source: 'home'
+				pageSize: 11
 			}
 		},
 		{
-			name: '资金费率',
-			contentComp: markRaw(FundingRateList),
-			contentParams: {}
+			name: '支撑位',
+			contentComp: markRaw(PriceBreakoutList),
+			contentParams: {
+				source: 'home',
+				type: 'support'
+			}
 		},
+		{
+			name: '压力位',
+			contentComp: markRaw(PriceBreakoutList),
+			contentParams: {
+				source: 'home',
+				type: 'resistance'
+			}
+		},
+		// {
+		// 	name: '资金费率',
+		// 	contentComp: markRaw(FundingRateList),
+		// 	contentParams: {}
+		// },
 		{
 			name: '实时涨幅',
 			contentComp: markRaw(ChangeRateList),
-			contentParams: { pageSize: 7 }
+			contentParams: { source: 'home', pageSize: 7 }
 		},
 		{
 			name: '大单监控',
 			contentComp: markRaw(BigOrders),
-			contentParams: {}
+			contentParams: { pageSize: 7 }
 		}
 	])
 

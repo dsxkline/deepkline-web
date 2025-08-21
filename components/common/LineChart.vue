@@ -9,12 +9,11 @@
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const chart = ref(null)
 	const period = ref('1D')
-	const loading = ref(true)
+	const loading = ref(false)
 	const error = ref('')
 	const props = defineProps<{
-		symbol: string
+		datas: { ts: number; val: number }[]
 	}>()
-	const symbolObj = computed<SymbolDto>(() => useSymbolStore().symbols[props.symbol])
 	let echart: echarts.ECharts | null
 	let seriesData: number[] | null = []
 	// 在组件顶部声明 resizeObserver
@@ -42,7 +41,8 @@
 			boundaryGap: false
 		},
 		yAxis: {
-			type: 'value'
+			type: 'value',
+			min: 'dataMin'
 		},
 		series: [
 			{
@@ -54,6 +54,7 @@
 				itemStyle: {
 					color: 'rgb(255, 70, 131)'
 				},
+				stack: 'Total', // 保证面积在底部
 				areaStyle: {
 					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
 						{
@@ -77,67 +78,52 @@
 		echart.setOption(option)
 	}
 
-	function updateEChart(seriesData: any, animation: boolean = false) {
+	function updateEChart(animation: boolean = true) {
+		seriesData = props.datas.map(item => item.val)
+		console.log('seriesData', props.datas, seriesData)
+		const first = seriesData[0]
+		const end = seriesData[seriesData.length - 1]
+		const minValue = Math.min(...seriesData)
+		const maxValue = Math.max(...seriesData)
 		echart &&
 			echart.setOption({
 				series: [
 					{
-						data: seriesData
+						data: seriesData,
+						itemStyle: {
+							color: end > first ? 'rgb(45,189,133)' : 'rgb(255, 70, 131)'
+						},
+						areaStyle: {
+							origin:'start',
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+								{
+									offset: 0,
+									color: end > first ? 'rgba(45,189,133,0.3)' : 'rgba(255, 70, 131,0.3)'
+								},
+								{
+									offset: 1,
+									color: end > first ? 'rgba(45,189,133,0.0)' : 'rgba(255, 70, 131,0.0)'
+								}
+							])
+						}
 					}
 				]
 			})
 		resetSize(animation)
 	}
 
-	function fetchData(p: Period, load = false) {
-		if (disabled.value) return
-		disabled.value = true
-		period.value = p
-		error.value = ''
-		if (load) loading.value = true
-		ComposFetch.tradingDataFetch
-			.loanRatio(symbolObj.value?.baseCoin || symbolObj.value?.marginCoin, p)
-			.then(res => {
-				// console.log(res?.data);
-				loading.value = false
-				disabled.value = false
-				if (res?.code == 0) {
-					seriesData = []
-					res.data.slice(0, 50).forEach(([ts, longShortAccountRatio]: any) => {
-						seriesData && seriesData.push(longShortAccountRatio)
-					})
-					// option.series[0].data = seriesData.reverse()
-					updateEChart(seriesData.reverse(), true)
-					// console.log(xAxisData,seriesData);
-				} else {
-					error.value = res?.msg || '获取数据失败'
-				}
-			})
-			.catch(() => {
-				loading.value = false
-				disabled.value = false
-				error.value = '网络不给力'
-			})
-	}
-	watch(
-		() => period.value,
-		newVal => {
-			fetchData(newVal as Period)
-		}
-	)
-
-	watch(
-		() => props.symbol,
-		val => {
-			fetchData(period.value as Period, true)
-		}
-	)
-
 	watch(
 		() => useStore().theme,
 		() => {
 			createEchart()
 			// updateEChart(option)
+		}
+	)
+
+	watch(
+		() => props.datas,
+		() => {
+			updateEChart()
 		}
 	)
 
@@ -160,7 +146,7 @@
 	onMounted(() => {
 		createEchart()
 		nextTick(() => {
-			fetchData(period.value as Period)
+			updateEChart()
 		})
 		if (containerRef.value) {
 			resizeObserver = new ResizeObserver(entries => {
@@ -178,7 +164,7 @@
 
 	useWillAppear(() => {
 		// createEchart()
-		updateEChart(seriesData)
+		updateEChart()
 	})
 
 	onBeforeUnmount(() => {

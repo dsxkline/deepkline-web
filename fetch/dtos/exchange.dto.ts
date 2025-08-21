@@ -42,3 +42,8 @@ export interface MarketSectorDto {
 	topCoins: string | null
 	sectorId: number
 }
+
+export interface MarketSectorChartDto {
+	ts: number
+	val: number
+}

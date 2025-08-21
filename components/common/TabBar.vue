@@ -119,14 +119,14 @@
 		// 横线移动
 		nextTick(() => {
 			// 当前激活的内容高度
-			if (props.height > 0) {
+			if (props.height) {
 				tabbarContent.value.style.height = contentHeight.value + 'px'
 				// console.log('tabbarContent height:', contentHeight.value)
 			} else {
 				const activeContent = tabbarContents.value[index]
 				if (activeContent && activeContent.firstElementChild?.clientHeight) {
-					tabbarContent.value.style.height = activeContent.firstElementChild?.clientHeight + 'px'
-					tabbarContainer.value.style.height = Math.max(tabbarHeader.value.clientHeight, getTabbarHeight()) + activeContent.firstElementChild?.clientHeight + 'px'
+					tabbarContent.value.style.height = 'max-content';// activeContent.firstElementChild?.clientHeight + 'px'
+					tabbarContainer.value.style.height = 'max-content' ;// Math.max(tabbarHeader.value.clientHeight, getTabbarHeight()) + activeContent.firstElementChild?.clientHeight + 'px'
 				} else {
 					tabbarContent.value.style.height = 'auto'
 					tabbarContainer.value.style.height = 'auto'

@@ -15,6 +15,7 @@
 	import type { MarketType, SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 
 	const props = defineProps<{
 		symbolCategory: MarketType
@@ -25,6 +26,7 @@
 		isSearchList?: boolean
 		coins?: string[]
 		putSymbols?: string[]
+		source?: string
 		clickHandle?: (item?: SymbolDto) => void
 		selectHandle?: (item: SymbolDto) => void
 	}>()
@@ -92,7 +94,7 @@
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
-		end.value =  visibleCount.value ? Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length) : symbols.value.length
+		end.value = visibleCount.value ? Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length) : symbols.value.length
 		console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
@@ -117,13 +119,15 @@
 	)
 
 	watch(
-		()=>props.coins,()=>{
+		() => props.coins,
+		() => {
 			getGroupSymbols()
 		}
 	)
 
 	watch(
-		()=>props.putSymbols,()=>{
+		() => props.putSymbols,
+		() => {
 			getGroupSymbols()
 		}
 	)
@@ -152,7 +156,7 @@
 			if (props.keyword) {
 				symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 			}
-			console.log('props.putSymbols',symbols.value)
+			console.log('props.putSymbols', symbols.value)
 			if (symbols.value?.length) {
 				nextTick(() => {
 					scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
@@ -214,6 +218,12 @@
 	}
 
 	function subSymbols() {
+		if (props.source == 'home') {
+			// 收集订阅
+			pageSubSymbols.addSubSymbols(symbols.value.map(item => item.symbol))
+			return
+		}
+
 		const { $wsb, $ws } = useNuxtApp()
 		if (!subSymbolCodes.value?.length) return
 		useSymbolStore().setSubSymbols(subSymbolCodes.value)
@@ -235,6 +245,11 @@
 	}
 
 	function unSubSymbols() {
+		if (props.source == 'home') {
+			// 清除收集订阅
+			pageSubSymbols.removeSubSymbols(symbols.value.map(item => item.symbol))
+			return
+		}
 		const { $wsb, $ws } = useNuxtApp()
 		if (subHandle) {
 			$ws.unsubscribe(subHandle)
@@ -439,7 +454,7 @@
 		addouChange.value = null
 	})
 	onMounted(() => {
-		console.log('symbollist',props.start)
+		console.log('symbollist', props.start)
 		if (props.start) update()
 		$windowEvent.addEvent(whenBrowserActive)
 	})
@@ -453,6 +468,10 @@
 		if (isLeave.value) return
 		subSymbols()
 	})
+
+	// 使用页面订阅收集器
+	const pageSubSymbols = useAddPageSubSymbols()
+	
 	// 暴露给父组件的方法
 	defineExpose({ update, leave })
 </script>

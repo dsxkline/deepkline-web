@@ -23,8 +23,9 @@
 	const lheader = ref()
 
 	const contentHeight = computed(() => {
+		console.log('lheader.value?.clientHeight',lheader.value?.clientHeight)
 		// 获取当前组件的高度
-		return props.height || 0 - (lheader.value?.clientHeight || 0)
+		return (props.height || 0) - (lheader.value?.clientHeight || 0)
 	})
 
 	function getDatas() {
@@ -63,14 +64,19 @@
 		getDatas()
 	}
 
+	function leave() {
+		
+	}
+
 	onMounted(() => {})
 
 	defineExpose({
-		update
+		update,
+		leave
 	})
 </script>
 <template>
-	<div class="py-2">
+	<div :style="{ height: height ? +contentHeight + 'px' : '100%' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
 				<el-button @click.stop="getDatas">点击重新加载</el-button>
@@ -90,7 +96,7 @@
 			</ul>
 		</div>
 		<ScrollBar class="w-full h-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" :always="false" v-if="!loading && !error && datas.length">
-			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10" v-if="!loading">
+			<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10 py-2" v-if="!loading">
 				<template v-for="item in datas">
 					<li @click="clickSymbol(item)" class="items-center">
 						<div class="col-span-2 flex flex-col items-start justify-start" v-autosize="16">
@@ -113,7 +119,7 @@
 			</ul>
 		</ScrollBar>
 		<div class="*:py-2 *:grid *:grid-cols-5 *:justify-between" v-else-if="loading && !error">
-			<template v-for="item in 10">
+			<template v-for="item in pageSize">
 				<div class="h-10 flex items-center">
 					<el-skeleton :rows="0" animated class="col-span-2 flex flex-col justify-center">
 						<template #template>

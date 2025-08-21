@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import type { MarketSectorDto } from '~/fetch/dtos/exchange.dto'
+	import type { MarketSectorDto, MarketSectorChartDto } from '~/fetch/dtos/exchange.dto'
 	import LineChart from '../common/LineChart.vue'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
@@ -23,6 +23,7 @@
 	const symbol = computed(() => props.sector.topCoins?.split(',')[0] + '-USDT')
 	const sectorRate = ref(props.sector.rate)
 	const topCoin = ref(props.sector.topCoins?.split(',')[0])
+	const chartDatas = ref<MarketSectorChartDto[]>([])
 	const tickerHandler = (data: Ticker) => {
 		if (data?.sodUtc8) {
 			// 涨跌额
@@ -39,13 +40,20 @@
 		})
 	}
 
-	
+	const getChartDatas = async () => {
+		exchangeFetch.marketSectorChart(props.sector.sectorId).then(result => {
+			if (result?.code == FetchResultDto.OK) {
+				chartDatas.value = result.data || []
+			} else {
+			}
+		})
+	}
 
 	onMounted(() => {
-		
 		// console.log('dddddd symbol.value',symbol.value)
 		symbol.value && $ws.addTickerHandler(symbol.value, tickerHandler)
 		symbol.value && tickerHandler($ws.getTickers(symbol.value))
+		getChartDatas()
 	})
 
 	onBeforeUnmount(() => {
@@ -75,6 +83,6 @@
 				<template v-else>0.00%</template>
 			</span>
 		</div>
-		<LineChart symbol="BTC-USDT" class="absolute right-0 top-0 w-2/5 h-1/2 translate-y-2/3 mx-3" />
+		<LineChart :datas="chartDatas" class="absolute right-0 top-0 w-2/5 h-1/2 translate-y-2/3 mx-3" />
 	</li>
 </template>

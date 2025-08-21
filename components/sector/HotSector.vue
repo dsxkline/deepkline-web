@@ -69,6 +69,7 @@
 
 	useWillDisappear(()=>{
 		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_SECTOR)
+		pageSubSymbols.removeSubSymbols(sectors.value.map(item => item.topCoins?.split(',')[0] + '-USDT'))
 	})
 
 	onMounted(() => {
@@ -79,6 +80,7 @@
 	onBeforeUnmount(() => {
 		useNuxtApp().$dkws.removeOnEvent(marketSectorDownHandle)
 		useNuxtApp().$dkws.unSubscribe(MessageEvents.MARKET_SECTOR)
+		pageSubSymbols.removeSubSymbols(sectors.value.map(item => item.topCoins?.split(',')[0] + '-USDT'))
 	})
 </script>
 <template>

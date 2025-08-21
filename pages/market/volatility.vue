@@ -5,10 +5,10 @@
 	import PriceBreakoutList from '~/components/datas/tables/PriceBreakoutList.vue'
 	import FundingRateList from '~/components/datas/tables/FundingRateList.vue'
 	import TabBar, { type MenuModel } from '~/components/common/TabBar.vue'
-import { useStore } from '~/store'
-import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
-import BigOrders from '~/components/datas/tables/BigOrders.vue'
-import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
+	import { useStore } from '~/store'
+	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import BigOrders from '~/components/datas/tables/BigOrders.vue'
+	import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -24,7 +24,7 @@ import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = (useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		tabbarHeight.value = useStore().bodyHeight - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
 		if (!props.push) {
 			tabbarHeight.value -= getMenuHeight() || 55
 		}
@@ -34,39 +34,48 @@ import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 			name: '主力追踪',
 			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {
-				pageSize:500
+				pageSize: 500
 			}
 		},
 		{
-			name: '价格突破',
+			name: '支撑位',
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
-				pageSize:500
+				pageSize: 500,
+				type: 'support'
 			}
 		},
 		{
-			name: '资金费率',
-			contentComp: markRaw(FundingRateList),
+			name: '压力位',
+			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
-				pageSize:500
+				pageSize: 500,
+				type: 'resistance'
 			}
 		},
+		// {
+		// 	name: '资金费率',
+		// 	contentComp: markRaw(FundingRateList),
+		// 	contentParams: {
+		// 		pageSize: 500
+		// 	}
+		// },
 		{
 			name: '实时涨幅',
 			contentComp: markRaw(ChangeRateList),
 			contentParams: {
-				pageSize:500
+				pageSize: 500
 			}
 		},
 		{
 			name: '大单监控',
 			contentComp: markRaw(BigOrders),
 			contentParams: {
-				pageSize:30
+				pageSize: 30
 			}
 		}
 	])
-	
+
 	onMounted(() => {
 		setTabbarHeight()
 	})
@@ -75,7 +84,7 @@ import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 	<div class="volatility w-full h-full">
 		<NavigationBar ref="navbar" title="市场异动" :hideBack="!push"> </NavigationBar>
 		<div class="mx-4 overflow-hidden">
-			<TabBar :menus="menus" :height="tabbarHeight"/>
+			<TabBar :menus="menus" :height="tabbarHeight" />
 		</div>
 	</div>
 </template>
