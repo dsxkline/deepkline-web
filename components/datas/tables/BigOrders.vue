@@ -76,7 +76,7 @@
 	})
 </script>
 <template>
-	<div :style="{ height: height ? +contentHeight + 'px' : '100%' }">
+	<div :style="{ height: height ? +contentHeight + 'px' : 'max-content' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
 				<el-button @click.stop="getDatas">点击重新加载</el-button>

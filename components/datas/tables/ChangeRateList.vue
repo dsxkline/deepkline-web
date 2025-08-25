@@ -79,7 +79,7 @@
 	})
 </script>
 <template>
-	<div class="market-sectors w-full" :style="{ height: height ? +contentHeight + 'px' : '100%' }">
+	<div class="market-sectors w-full" :style="{ height: height ? +contentHeight + 'px' : 'max-content' }">
 		<SymbolList ref="symbolList" :symbolCategory="MarketType.SPOT" :putSymbols="symbols" :start="true" :height="contentHeight" :source="source"/>
 	</div>
 </template>

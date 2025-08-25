@@ -96,7 +96,7 @@
 			<div class="absolute right-[10%] pr-2 text-green" v-if="item.right != undefined">{{ item.resistance }}</div>
 			<div
 				:class="[
-					'h-4 w-1/2 absolute flex items-center transition-all',
+					'h-4 w-1/2 absolute flex items-center',
 					item.left != undefined && 'breakout-down',
 					item.right != undefined && 'breakout-up',
 					item.right == 50 || item.left == 50 ? 'breakout-none' : '',
