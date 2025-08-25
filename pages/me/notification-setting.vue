@@ -23,25 +23,12 @@
 		},
 		{
 			id: 1,
-			name: '下单通知',
+			name: '订单通知',
 			subName: '',
 			desc: '中国',
 			callback: () => {}
 		},
-		{
-			id: 1,
-			name: '成交通知',
-			subName: '',
-			desc: '已认证',
-			callback: () => {}
-		},
-		{
-			id: 1,
-			name: '强平通知',
-			subName: '',
-			desc: 'Lv1 1 / 0.1%',
-			callback: () => {}
-		}
+		
 	])
 	onMounted(() => {})
 </script>

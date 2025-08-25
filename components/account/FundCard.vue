@@ -2,7 +2,7 @@
 	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.dto'
-	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	import { FetchResultDto, type ChartDto } from '~/fetch/dtos/common.dto'
 	import ResetDemo from '~/pages/account/reset-demo.vue'
 	import { useAccountStore } from '~/store/account'
 	import HistoryOrder from '~/pages/order/history.vue'
@@ -15,7 +15,7 @@
 	const loading = ref(false)
 	const error = ref('')
 	const usepush = usePush()
-
+	const chartDatas = ref<ChartDto[]>([])
 	const fund = computed(() => useAccountStore().fund)
 
 	function getUserAccountBalance() {
@@ -47,6 +47,23 @@
 			})
 	}
 
+		const getChartDatas = async () => {
+		const currentAccount = useAccountStore().currentAccount
+		if (!currentAccount) return
+		accountFetch
+			.chart(currentAccount.exchange, currentAccount.accountId, 'month')
+			.then(result => {
+				if (result?.code == FetchResultDto.OK) {
+					chartDatas.value = result.data || []
+				} else {
+					error.value = result?.msg
+				}
+			})
+			.catch(err => {
+				error.value = '网络异常，请稍后再试'
+			})
+	}
+
 	function pushReset() {
 		usepush(ResetDemo)
 	}
@@ -56,10 +73,12 @@
 
 	useWillAppear(() => {
 		getUserAccountBalance()
+		getChartDatas()
 	})
 
 	onMounted(() => {
 		getUserAccountBalance()
+		getChartDatas()
 	})
 </script>
 <template>
@@ -97,7 +116,7 @@
 				<button class="bt-default !text-sm" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
 				<button class="bt-default !text-sm" @click="pushHistoryOrder">账单</button>
 			</div>
-			<div v-else class="w-1/3 absolute right-0 top-0 h-full"><LineChart symbol="BTC-USDT" class="w-full h-full" /></div>
+			<div v-else class="w-1/3 absolute right-0 top-0 h-full"><LineChart :datas="chartDatas" class="w-full h-full" /></div>
 		</div>
 		<div v-if="loading && !error">
 			<div class="flex items-center pb-1">

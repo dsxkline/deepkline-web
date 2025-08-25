@@ -121,7 +121,7 @@
 							<b class="text-base"><NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '0.01')" unit="$" :fontSize="16" /></b>
 						</div>
 						<div class="text-sm text-main pl-2 flex items-center">
-							 <ProfitRate :profit="parseFloat(String(fund?.profit || '0'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
+							<ProfitRate :profit="parseFloat(String(fund?.profit || '0'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
 						</div>
 					</div>
 					<div class="pl-3 pr-1 flex items-center">

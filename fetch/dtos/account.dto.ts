@@ -54,3 +54,4 @@ export interface FundDto {
 	profit: string
 	profitRate: string
 }
+

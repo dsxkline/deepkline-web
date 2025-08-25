@@ -5,12 +5,13 @@ const props = defineProps({
         default: 'No Data'
     }
 })
+const slots = useSlots()
 </script>
 <template>
 	<div class="empty-container w-full h-full flex flex-col items-center justify-center">
-		<EmptyIcon class=" w-52" />
+		<EmptyIcon class=" w-[150px]" />
 		<p class="text-sm text-grey mt-[-20px]">{{ content}}</p>
-        <div class="py-3 pb-16">
+        <div class="py-3 pb-16" v-if="slots.default">
 			<slot />
 		</div>
 	</div>

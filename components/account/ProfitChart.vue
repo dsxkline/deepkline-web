@@ -1,16 +1,79 @@
+<script lang="ts" setup>
+	import { useWillAppear } from '~/composable/usePush'
+	import { accountFetch } from '~/fetch/account.fetch'
+	import { FetchResultDto, type ChartDto } from '~/fetch/dtos/common.dto'
+	import { useAccountStore } from '~/store/account'
+	const loading = ref(false)
+	const error = ref('')
+	const chartDatas = ref<ChartDto[]>([])
+	const period = ref<'day' | 'week' | 'month' | 'halfYear' | 'year' | 'full'>('month')
+	const currentPeriod = ref('month')
+	const periods = ref([
+		// { name: '1日', period: 'day' },
+		{ name: '1周', period: 'week' },
+		{ name: '1月', period: 'month' },
+		{ name: '半年', period: 'halfYear' },
+		{ name: '1年', period: 'year' },
+		{ name: '全部', period: 'full' }
+	])
+	const clickPeriod = (period: string) => {
+		if (loading.value) return
+		currentPeriod.value = period
+		getChartDatas()
+	}
+	const getChartDatas = async () => {
+		const currentAccount = useAccountStore().currentAccount
+		if (!currentAccount) return
+		if (loading.value) return
+		loading.value = true
+		error.value = ''
+		accountFetch
+			.chart(currentAccount.exchange, currentAccount.accountId, period.value)
+			.then(result => {
+				loading.value = false
+				if (result?.code == FetchResultDto.OK) {
+					chartDatas.value = result.data || []
+				} else {
+					error.value = result?.msg
+				}
+			})
+			.catch(err => {
+				loading.value = false
+				error.value = '网络异常，请稍后再试'
+			})
+	}
+
+	useWillAppear(() => {
+		getChartDatas()
+	})
+
+	onMounted(() => {
+		getChartDatas()
+	})
+
+	onBeforeUnmount(() => {})
+</script>
+
 <template>
-    <div class="px-4 my-4 flex flex-col">
-        <h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
-        <LineChart symbol="BTC-USDT" class="w-full h-full" />
-        <div class="py-3 border-t border-[--transparent05]">
-            <ul class="flex text-sm justify-between items-center *:px-2 *:py-[2px] *:rounded-full *:text-grey">
-                <li>1日</li>
-                <li>1周</li>
-                <li class="bg-[--transparent10] !text-main">1月</li>
-                <li>半年</li>
-                <li>1年</li>
-                <li>全部</li>
-            </ul>
-        </div>
-    </div>
+	<div class="px-4 my-4 flex flex-col justify-between">
+		<h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
+		<div class="">
+			<Error :content="error" v-if="!loading && error">
+				<template #default>
+					<el-button @click.stop="getChartDatas">点击重新加载</el-button>
+				</template>
+			</Error>
+			<Empty :content="error" v-if="!loading && !error && !chartDatas.length">
+				
+			</Empty>
+			<Loading v-if="loading && !error"></Loading>
+			<LineChart :datas="chartDatas" class="w-full h-full" v-if="!loading && !error && chartDatas.length" />
+		</div>
+
+		<div class="py-3 border-t border-[--transparent05]">
+			<ul class="flex text-sm justify-between items-center *:px-2 *:py-[2px] *:rounded-full *:text-grey">
+				<li @click="clickPeriod(item.period)" :class="[item.period == currentPeriod ? 'bg-[--transparent10] !text-main' : '']" v-for="item in periods">{{ item.name }}</li>
+			</ul>
+		</div>
+	</div>
 </template>

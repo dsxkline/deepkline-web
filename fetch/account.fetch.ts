@@ -3,6 +3,7 @@ import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
 import type { FundDto, AccountDto } from './dtos/account.dto'
 import type { ExchangeDto } from './dtos/exchange.dto'
+import type { ChartDto } from './dtos/common.dto'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)
@@ -12,6 +13,7 @@ const connectApi = '/account/connect'
 const fundApi = '/account/fund'
 const openApi = '/account/open'
 const resetApi = '/account/reset'
+const chartApi = '/account/chart'
 export const accountFetch = {
 	/**
 	 * 账户列表
@@ -55,5 +57,11 @@ export const accountFetch = {
 		usePost<ApiResult<boolean>>(baseUrl, resetApi, {
 			exchange,
 			accountId
+		}),
+	chart: (exchange: string, accountId: number, period: 'day' | 'week' | 'month' | 'halfYear' | 'year' | 'full') =>
+		usePost<ApiResult<ChartDto[]>>(baseUrl, chartApi, {
+			exchange,
+			accountId,
+			period
 		})
 }
