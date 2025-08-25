@@ -63,7 +63,6 @@
 						<button class="bt-default">止盈</button>
 						<button class="bt-default">止损</button>
 						<button class="bt-default">市价全平</button>
-						cc
 					</div>
 				</li>
 			</template>

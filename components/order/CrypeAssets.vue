@@ -17,6 +17,7 @@
 	import LoginIndex from '~/pages/login/index.vue'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
+	import SymbolDetail from '../symbol/SymbolDetail.vue'
 	const props = defineProps<{
 		height: number
 	}>()
@@ -122,6 +123,12 @@
 		}
 	}
 
+	function pushKline(position: PositionDto) {
+		pushLeft(SymbolDetail, {
+			symbol: position.symbol
+		})
+	}
+
 	function pushOpenAccount() {
 		if (!useAccountStore().accounts?.length) {
 			if (useStore().isH5) {
@@ -141,7 +148,14 @@
 </script>
 
 <template>
-	<div class="px-4" :style="{ minHeight: useStore().isH5?'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom))':'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height))' }">
+	<div
+		class="px-4"
+		:style="{
+			minHeight: useStore().isH5
+				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom))'
+				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height))'
+		}"
+	>
 		<Empty :content="'暂无资产'" v-if="!loading && !error && !assets?.length" class="pt-20">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
 			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
@@ -212,7 +226,7 @@
 								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" onlyCoin class="text-base roboto-bold leading-[0]" size="25px" />
 							</div>
 							<div class="flex justify-between items-center gap-4">
-								<button class="flex items-center">
+								<button class="flex items-center" @click="pushKline(item)">
 									<el-icon><KlineIcon class="w-5 h-5" /></el-icon>
 								</button>
 							</div>

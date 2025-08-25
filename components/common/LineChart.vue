@@ -80,6 +80,7 @@
 
 	function updateEChart(animation: boolean = true) {
 		if(!props.datas) return
+		if(props.datas.length==1) props.datas.push(props.datas[0])
 		seriesData = props.datas.map(item => item.val)
 		console.log('seriesData', props.datas, seriesData)
 		const first = seriesData[0]

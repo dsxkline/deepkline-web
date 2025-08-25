@@ -38,6 +38,10 @@ export const useOrderStore = defineStore({
 				if (exit < 0) this.positions.unshift(payload)
 				else {
 					this.positions[exit] = payload
+					// 如果交易量为0，已平仓
+					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
+						this.positions.splice(exit, 1)
+					}
 				}
 			} else {
 				// 现货资产
@@ -45,6 +49,10 @@ export const useOrderStore = defineStore({
 				if (exit < 0) this.assets.unshift(payload)
 				else {
 					this.assets[exit] = payload
+					// 如果交易量为0，已平仓
+					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
+						this.positions.splice(exit, 1)
+					}
 				}
 			}
 		}
