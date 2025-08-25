@@ -132,7 +132,7 @@
 		scrolling = true
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
-		end.value = Math.min(start.value + visibleCount.value + offset.value, datas.value.length)
+		end.value = visibleCount.value ? Math.min(start.value + visibleCount.value + 2 * offset.value, datas.value.length) : datas.value.length
 		// console.log('scrollHandler', start.value, end.value, datas.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
@@ -215,8 +215,8 @@
 			:always="false"
 			v-if="!loading && !error && datas.length"
 		>
-			<div class="relative w-full py-2">
-				<ul class="*:py-2 *:grid *:grid-cols-5 *:justify-between *:min-h-10" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
+			<div class="relative w-full py-2" :style="{ height: (datas.length * itemHeight + 60) + 'px' }">
+				<ul class="*:grid *:grid-cols-5 *:justify-between *:h-10" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
 					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item, index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index" />
 				</ul>
 			</div>

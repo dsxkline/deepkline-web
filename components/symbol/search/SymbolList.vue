@@ -95,7 +95,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 		mainScrollTop.value = params.scrollTop
 		start.value = Math.max(0, Math.floor(params.scrollTop / itemHeight - offset.value))
 		end.value = visibleCount.value ? Math.min(start.value + visibleCount.value + 2 * offset.value, symbols.value.length) : symbols.value.length
-		console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
+		// console.log('scrollHandler', start.value, end.value, symbols.value.length, visibleCount.value, contentHeight.value, params.scrollTop, offset.value)
 		if (scrollTimer) clearTimeout(scrollTimer)
 		scrollTimer = setTimeout(() => {
 			unSubSymbols()
