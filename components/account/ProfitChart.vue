@@ -33,6 +33,7 @@
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					chartDatas.value = result.data || []
+                    chartDatas.value.forEach(item=>item.val = parseFloat(item.val.toFixed(2)))
 				} else {
 					error.value = result?.msg
 				}

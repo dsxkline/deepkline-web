@@ -31,7 +31,7 @@ export const useOrderStore = defineStore({
 			}
 		},
 		addPosition(payload: PositionDto) {
-			this.symbolPositions[payload.symbol] = payload
+			if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.symbolPositions[payload.symbol] = payload
 			// 合约杠杆
 			if (parseFloat(payload.leverage)) {
 				const exit = this.positions.findIndex(item => item.positionId == payload.positionId)
@@ -42,7 +42,7 @@ export const useOrderStore = defineStore({
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
 						this.positions.splice(exit, 1)
-						delete this.symbolPositions[payload.symbol]
+						this.symbolPositions[payload.symbol] && delete this.symbolPositions[payload.symbol]
 					}
 				}
 			} else {
@@ -56,7 +56,7 @@ export const useOrderStore = defineStore({
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
 						this.positions.splice(exit, 1)
-						delete this.symbolPositions[payload.symbol]
+						this.symbolPositions[payload.symbol] && delete this.symbolPositions[payload.symbol]
 					}
 				}
 			}

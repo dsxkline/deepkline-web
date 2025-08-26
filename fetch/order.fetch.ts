@@ -41,19 +41,19 @@ export const orderFetch = {
 	 * 历史挂单列表
 	 * @returns
 	 */
-	historyList: (accountId?: number, state?: OrderState, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryOrderListDto>>(baseUrl, listApi, { accountId, state, page, pageSize }),
+	historyList: (accountId?: number, state?: OrderState, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryOrderListDto>>(baseUrl, historyListApi, { accountId, state, page, pageSize }),
 
 	/**
 	 * 历史合约持仓列表
 	 * @returns
 	 */
-	historyPositions: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryPositionDto>>(baseUrl, positionsApi, { accountId, page, pageSize }),
+	historyPositions: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryPositionDto>>(baseUrl, historyPositionsApi, { accountId, page, pageSize }),
 
 	/**
 	 * 历史资产列表
 	 * @returns
 	 */
-	historyCrypeAssets: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryPositionDto>>(baseUrl, assetsApi, { accountId, page, pageSize }),
+	historyCrypeAssets: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryPositionDto>>(baseUrl, historyAssetsApi, { accountId, page, pageSize }),
 
 	/**
 	 * 下单
