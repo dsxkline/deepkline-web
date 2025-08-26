@@ -55,6 +55,8 @@
 		(event: 'update:active', value: number): void
 	}>()
 
+	const slots = useSlots()
+
 	watch(
 		() => menuActive.value,
 		(n, o) => {
@@ -223,9 +225,9 @@
 				</li>
 			</ul>
 			<div class="line" ref="bottomLine" v-show="!hideLine"></div>
-			<!-- <div class="absolute right-0 top-0 h-full flex items-center px-4">
+			<div class="absolute right-0 top-0 h-full flex items-center px-4" v-if="slots.right">
 				<slot name="right"></slot>
-			</div> -->
+			</div>
 		</div>
 		<div class="tabbar-content w-full" ref="tabbarContent">
 			<div class="tabbar-content-item" v-for="(item, index) in menus" ref="tabbarContents">

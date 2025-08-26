@@ -25,7 +25,7 @@
 		const currentAccount = useAccountStore().currentAccount
 		if (!currentAccount) return
 		if (loading.value) return
-		loading.value = true
+		if(!chartDatas.value?.length)loading.value = true
 		error.value = ''
 		accountFetch
 			.chart(currentAccount.exchange, currentAccount.accountId, period.value)
@@ -57,17 +57,15 @@
 <template>
 	<div class="px-4 my-4 flex flex-col justify-between">
 		<h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
-		<div class="">
+		<div class="w-full h-full">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
 					<el-button @click.stop="getChartDatas">点击重新加载</el-button>
 				</template>
 			</Error>
-			<Empty :content="error" v-if="!loading && !error && !chartDatas.length">
-				
-			</Empty>
-			<Loading v-if="loading && !error"></Loading>
-			<LineChart :datas="chartDatas" class="w-full h-full" v-if="!loading && !error && chartDatas.length" />
+			<Empty :content="error" v-if="!loading && !error && !chartDatas.length"> </Empty>
+			<Loading v-if="loading && !error" class="w-full h-full"></Loading>
+			<LineChart :datas="chartDatas" :showTip="true" class="w-full h-full" :style="[!loading && !error && chartDatas.length ? 'visibility:visible' : 'visibility:hidden']" />
 		</div>
 
 		<div class="py-3 border-t border-[--transparent05]">

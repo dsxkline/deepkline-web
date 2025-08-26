@@ -35,23 +35,28 @@ export const useOrderStore = defineStore({
 			// 合约杠杆
 			if (parseFloat(payload.leverage)) {
 				const exit = this.positions.findIndex(item => item.positionId == payload.positionId)
-				if (exit < 0) this.positions.unshift(payload)
-				else {
+				if (exit < 0) {
+					if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.positions.unshift(payload)
+				} else {
 					this.positions[exit] = payload
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
 						this.positions.splice(exit, 1)
+						delete this.symbolPositions[payload.symbol]
 					}
 				}
 			} else {
 				// 现货资产
 				const exit = this.assets.findIndex(item => item.positionId == payload.positionId)
-				if (exit < 0) this.assets.unshift(payload)
+				if (exit < 0) {
+					if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.assets.unshift(payload)
+				}
 				else {
 					this.assets[exit] = payload
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
 						this.positions.splice(exit, 1)
+						delete this.symbolPositions[payload.symbol]
 					}
 				}
 			}

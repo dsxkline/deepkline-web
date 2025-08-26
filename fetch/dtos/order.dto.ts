@@ -50,6 +50,13 @@ export interface OrderDto {
 	marketType: MarketType
 }
 
+export interface HistoryOrderListDto {
+	list: OrderDto[]
+	total: number
+	page: number
+	pageSize: number
+}
+
 export enum OrderState {
 	NEW = 'new', // 新订单挂单
 	FILLED = 'filled', // 全部成交
@@ -66,5 +73,5 @@ export enum OrderState {
 export enum OrderType {
 	LIMIT = 'limit', // 限价单
 	MARKET = 'market', // 市价单
-	STOP = "stop",// 止盈止损
+	STOP = 'stop' // 止盈止损
 }

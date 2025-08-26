@@ -29,7 +29,7 @@ export interface PositionDto {
 
 	lotSize: string // 仓位数量/持仓量
 	lotBalance: string
-    lotAvailable:string // 可用
+	lotAvailable: string // 可用
 	lotTakeSize: string
 	lotLossSize: string
 
@@ -48,4 +48,11 @@ export interface PositionDto {
 	updatedAt: Date | null // 更新时间
 
 	marketType: MarketType
+}
+
+export interface HistoryPositionDto {
+	list: PositionDto[]
+	total: number
+	page: number
+	pageSize: number
 }

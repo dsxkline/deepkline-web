@@ -7,12 +7,14 @@
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import moment from 'moment'
 	const chart = ref(null)
 	const period = ref('1D')
 	const loading = ref(false)
 	const error = ref('')
 	const props = defineProps<{
 		datas: { ts: number; val: number }[]
+		showTip?: boolean
 	}>()
 	let echart: echarts.ECharts | null
 	let seriesData: number[] | null = []
@@ -79,14 +81,24 @@
 	}
 
 	function updateEChart(animation: boolean = true) {
-		if(!props.datas) return
-		if(props.datas.length==1) props.datas.push(props.datas[0])
+		if (!props.datas) return
+		if (props.datas.length == 1) props.datas.push(props.datas[0])
 		seriesData = props.datas.map(item => item.val)
 		console.log('seriesData', props.datas, seriesData)
 		const first = seriesData[0]
 		const end = seriesData[seriesData.length - 1]
 		const minValue = Math.min(...seriesData)
 		const maxValue = Math.max(...seriesData)
+		props.showTip &&
+			echart &&
+			echart.setOption({
+				tooltip: {
+					trigger: 'axis'
+				},
+				xAxis: {
+					data: props.datas.map(item => moment(item.ts).format('YYYY/MM/DD')) // 示例数据
+				}
+			})
 		echart &&
 			echart.setOption({
 				series: [
@@ -96,7 +108,7 @@
 							color: end > first ? 'rgb(45,189,133)' : 'rgb(255, 70, 131)'
 						},
 						areaStyle: {
-							origin:'start',
+							origin: 'start',
 							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
 								{
 									offset: 0,
@@ -111,7 +123,9 @@
 					}
 				]
 			})
-		resetSize(animation)
+		nextTick(() => {
+			resetSize()
+		})
 	}
 
 	watch(
@@ -142,6 +156,7 @@
 				  }
 				: null
 			echart && echart.resize({ width: width.value, height: height.value, animation: animationOption })
+			console.log('line chart', width.value, height.value, parentElement)
 		}
 	}
 
