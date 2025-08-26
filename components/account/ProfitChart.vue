@@ -25,7 +25,7 @@
 		const currentAccount = useAccountStore().currentAccount
 		if (!currentAccount) return
 		if (loading.value) return
-		if(!chartDatas.value?.length)loading.value = true
+		if (!chartDatas.value?.length) loading.value = true
 		error.value = ''
 		accountFetch
 			.chart(currentAccount.exchange, currentAccount.accountId, period.value)
@@ -33,7 +33,7 @@
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					chartDatas.value = result.data || []
-                    chartDatas.value.forEach(item=>item.val = parseFloat(item.val.toFixed(2)))
+					chartDatas.value.forEach(item => (item.val = parseFloat(parseFloat(String(item.val)).toFixed(2))))
 				} else {
 					error.value = result?.msg
 				}
@@ -69,7 +69,7 @@
 			<LineChart :datas="chartDatas" :showTip="true" class="w-full h-full" :style="[!loading && !error && chartDatas.length ? 'visibility:visible' : 'visibility:hidden']" />
 		</div>
 
-		<div class="py-3 border-t border-[--transparent05]">
+		<div class="py-3 border-t border-[--transparent05]" v-if="!loading && !error && chartDatas.length">
 			<ul class="flex text-sm justify-between items-center *:px-2 *:py-[2px] *:rounded-full *:text-grey">
 				<li @click="clickPeriod(item.period)" :class="[item.period == currentPeriod ? 'bg-[--transparent10] !text-main' : '']" v-for="item in periods">{{ item.name }}</li>
 			</ul>
