@@ -89,9 +89,9 @@
 		orderFetch
 			.cancel(order.orderId, useAccountStore().currentAccount?.accountId)
 			.then(result => {
-				loadingCancel.value[order.orderId] = true
+				loadingCancel.value[order.orderId] = false
 				if (result?.code == FetchResultDto.OK) {
-					ElMessage.success('撤单申请提交成功')
+					// ElMessage.success('撤单申请提交成功')
 					order.state = OrderState.PENDING_CANCEL
 					useOrderStore().updateOrder(order)
 				} else {
@@ -99,7 +99,7 @@
 				}
 			})
 			.catch(err => {
-				loadingCancel.value[order.orderId] = true
+				loadingCancel.value[order.orderId] = false
 				ElMessage.error('网络异常，请稍后再试')
 			})
 	}
