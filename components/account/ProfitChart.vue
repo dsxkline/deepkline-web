@@ -58,7 +58,7 @@
 <template>
 	<div class="px-4 my-4 flex flex-col justify-between">
 		<h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
-		<div class="w-full h-full">
+		<div class="w-full h-[250px]">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
 					<el-button @click.stop="getChartDatas">点击重新加载</el-button>

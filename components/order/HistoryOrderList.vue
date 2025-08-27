@@ -43,10 +43,15 @@
 			loading.value = false
 			return
 		}
-		loading.value = true
+		if (orders.value?.length && page.value == 1) {
+			error.value = ''
+			loading.value = false
+			return
+		}
+		if (page.value == 1) loading.value = true
 		error.value = ''
 		orderFetch
-			.historyList(useAccountStore().currentAccount?.accountId, OrderState.LIVE, page.value, pageSize.value)
+			.historyList(useAccountStore().currentAccount?.accountId, OrderState.ALL, page.value, pageSize.value)
 			.then(result => {
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
@@ -228,14 +233,13 @@
 								<span>委托数量</span>
 								<b>{{ formatNumber(parseFloat(item.lotSize), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
-							<div class="flex flex-col items-center">
+							<div class="flex flex-col justify-center items-center">
 								<span>已成数量</span>
 								<b>{{ formatNumber(item.matchSize, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
 							<div class="flex flex-col justify-center items-end">
-								<span>委托价格</span>
-								<b v-if="item.orderType == OrderType.LIMIT">{{ formatPrice(item.price, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
-								<b v-else>MARKET</b>
+								<span>成交均价</span>
+								<b>{{ formatNumber(item.matchPrice, useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
 
 							<template v-if="parseFloat(item.takeProfitPrice) && parseFloat(item.stopLossPrice)">
@@ -263,7 +267,7 @@
 								</div>
 							</template>
 						</div>
-						<div class="flex items-center gap-2 justify-between *:flex-1">
+						<div class="flex items-center gap-2 justify-between *:flex-1" v-if="item.state == OrderState.LIVE || item.state == OrderState.PENDING_CANCEL">
 							<button class="bt-default" @click="cancelStart(item)" v-if="item.state != OrderState.PENDING_CANCEL">
 								撤单
 								<Loading class="mx-2" size="14px" v-if="loadingCancel[item.orderId]" />

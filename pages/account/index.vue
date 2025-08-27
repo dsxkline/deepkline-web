@@ -46,7 +46,7 @@
 			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
 				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
 					<FundCard :account="useAccountStore().currentAccount" />
-					<AccountProfitChart class="h-[250px]" />
+					<AccountProfitChart />
 					<AccountCryptoAssets />
 				</div>
 			</ScrollBar>

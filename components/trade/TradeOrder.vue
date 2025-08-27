@@ -504,7 +504,7 @@
 					setTimeout(() => {
 						emit('close')
 						if (submitLoading.value) {
-							ElMessage.success('委托已提交')
+							// ElMessage.success('委托已提交')
 							submitLoading.value = false
 						}
 					}, 3000)
@@ -529,7 +529,7 @@
 		const order = data.payload
 		if (order.state == 'live') {
 			// 挂单成功通知
-			if (submitLoading.value) ElMessage.success('挂单成功')
+			// if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
 			emit('close')
 		}

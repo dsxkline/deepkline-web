@@ -217,7 +217,7 @@
 		>
 			<div class="relative w-full py-2" :style="{ height: (datas.length * itemHeight + 60) + 'px' }">
 				<ul class="*:grid *:grid-cols-5 *:justify-between *:h-10" ref="symbolDom" :style="{ transform: `translateY(${start * itemHeight}px)` }">
-					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item, index) in virtualList" :key="item.symbol + '-' + start + '-' + end + '-' + index" />
+					<TablesPriceBreakoutItem :priceSupport="item" v-for="(item, index) in virtualList" :key="item.symbol" />
 				</ul>
 			</div>
 		</ScrollBar>

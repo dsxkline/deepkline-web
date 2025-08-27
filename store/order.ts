@@ -55,7 +55,7 @@ export const useOrderStore = defineStore({
 					this.assets[exit] = payload
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {
-						this.positions.splice(exit, 1)
+						this.assets.splice(exit, 1)
 						this.symbolPositions[payload.symbol] && delete this.symbolPositions[payload.symbol]
 					}
 				}

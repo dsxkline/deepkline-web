@@ -58,6 +58,7 @@ export interface HistoryOrderListDto {
 }
 
 export enum OrderState {
+	ALL = 'all',
 	NEW = 'new', // 新订单挂单
 	FILLED = 'filled', // 全部成交
 	CANCELED = 'canceled', // 已撤销
