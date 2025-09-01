@@ -325,14 +325,14 @@
 		ticker.value = null
 	})
 	useWillDisappear(() => {
-		console.log('booksfull useWillDisappear....')
+		// console.log('booksfull useWillDisappear....')
 		updateBookList.cancel()
 		throttleAskBid.cancel()
 		$ws.unsubscribe(subHandle)
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 	})
 	useWillAppear(() => {
-		console.log('booksfull useWillAppear....')
+		// console.log('booksfull useWillAppear....')
 		if (!loading.value) getBooksFull(true)
 	})
 </script>

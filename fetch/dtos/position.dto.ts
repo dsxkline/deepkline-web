@@ -15,7 +15,7 @@ export interface PositionDto {
 
 	side: 'buy' | 'sell' // 交易方向
 
-	marginMode: 'crossed' | 'isolated' // 保证金模式（逐仓/全仓）
+	marginMode: 'cross' | 'isolated' // 保证金模式（逐仓/全仓）
 
 	leverage: string // 杠杆倍数（数据库 decimal 类型，转为 string）
 

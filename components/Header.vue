@@ -49,6 +49,9 @@
 			<div class="flex items-center justify-center" v-else>
 				<UserFund/>
 			</div>
+			<div>
+				<button class="bt-primary mx-1" @click="pushLogin">产品下载</button>
+			</div>
 		</div>
 	</div>
 </template>

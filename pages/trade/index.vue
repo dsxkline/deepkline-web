@@ -6,7 +6,7 @@
 	import { InstanceType, Sides, type Ticker } from '~/fetch/okx/okx.type.d'
 	import BooksFull from '~/components/symbol/BooksFull.vue'
 	import CrypeOrder from '~/components/order/CrypeOrder.vue'
-	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	const symbol = ref('BTC-USDT')
 	const showKline = ref(false)
 	const item = ref<Ticker | null>(null)
@@ -23,6 +23,9 @@
 		let amount = 9
 		if (openLarverage.value) {
 			amount = 10
+		}
+		if(symbolObj.value?.marketType==MarketType.SWAP){
+			amount = 12
 		}
 		return amount
 	})

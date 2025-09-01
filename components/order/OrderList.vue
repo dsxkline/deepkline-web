@@ -41,11 +41,11 @@
 			return
 		}
 		if (orders.value?.length) {
-			error.value = ''
 			loading.value = false
-			return
+		}else{
+			loading.value = true
 		}
-		loading.value = true
+		
 		error.value = ''
 		orderFetch
 			.list(useAccountStore().currentAccount?.accountId, OrderState.LIVE)

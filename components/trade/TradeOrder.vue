@@ -26,7 +26,7 @@
 		price?: number
 	}>()
 	const emit = defineEmits<{
-		(event: 'update:side', side: Sides): void,
+		(event: 'update:side', side: Sides): void
 		(event: 'close'): void
 	}>()
 	const loading = ref(true)
@@ -107,10 +107,6 @@
 	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
 	const leverage = ref(0)
 	const leverages = ref([
-		{
-			label: '无',
-			value: '0'
-		},
 		{
 			label: 'x1',
 			value: '1'
@@ -234,6 +230,15 @@
 		}
 	)
 
+	watch(
+		() => leverage.value,
+		() => {
+			setCanTradeLotSize()
+			autoSetLotSize()
+			autoSetMargin()
+		}
+	)
+
 	const minMargin = computed(() => {
 		const last = parseFloat(ticker.value?.last || '0')
 		if (!last) return 0
@@ -247,6 +252,11 @@
 			const last = parseFloat(ticker.value?.last || '0')
 			if (!last) return
 			canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
+			// 是否有杠杆
+			if (leverage.value) {
+				canTradeLotSize.value *= parseFloat(String(leverage.value))
+			}
+
 			if (canTradeLotSize.value < parseFloat(symbolObj.value?.minSz)) {
 				canTradeLotSize.value = 0
 			}
@@ -287,6 +297,10 @@
 		if (!last) return
 		// let mvalue = (parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value)) / 100
 		let mvalue = DecimalHelper.div(parseFloat(lotSize.value) * (price.value || last) * (100 + fee.value), 100).toNumber()
+		// 有杠杆
+		if (leverage.value) {
+			mvalue = mvalue / parseFloat(String(leverage.value))
+		}
 		if (mvalue > available.value) {
 			mvalue = available.value
 		}
@@ -510,7 +524,6 @@
 					}, 3000)
 				} else {
 					setTimeout(() => {
-						
 						ElMessage.error(result?.msg)
 						submitLoading.value = false
 					}, 500)
@@ -543,8 +556,11 @@
 	}
 
 	onMounted(() => {
-		console.log('tradeorder mounted',props.price)
+		console.log('tradeorder mounted', props.price)
+		leverage.value = props.openLarverage ? 1 : 0
 		price.value = props.price
+		setCanTradeLotSize()
+		autoSetMargin()
 		startTimer()
 		$ws.addTickerHandler(props.symbol, tickerHandler)
 		window.addEventListener('keydown', handleKeydown)
@@ -578,6 +594,7 @@
 		popLoss.value = null
 		popProfit.value = null
 		ticker.value = null
+
 		$ws.removeTickerHandler(props.symbol, tickerHandler)
 		window.removeEventListener('keydown', handleKeydown)
 		document.removeEventListener('click', handleClickOrTouch, true)
@@ -726,7 +743,7 @@
 										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
-									<div class="py-1 av-item">
+									<div class="py-1 av-item" v-if="symbolObj?.marketType == MarketType.SPOT">
 										<span class="text-grey">{{ side == Sides.BUY ? '可买' : '可用' }}({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
@@ -787,24 +804,72 @@
 						</div>
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 z-10" v-if="!loading">
-							<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(side)">
-								<div class="flex flex-col items-center">
-									<b class="text-base flex items-center"
-										>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
-									/></b>
-									<p class="pt-2">{{ buyDes }}</p>
+							<!-- 现货 -->
+							<template v-if="symbolObj?.marketType == MarketType.SPOT">
+								<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(side)">
+									<div class="flex flex-col items-center">
+										<b class="text-base flex items-center"
+											>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										/></b>
+										<p class="pt-2">{{ buyDes }}</p>
+									</div>
+									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.BUY" />
+								</button>
+								<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" v-click-sound @click="addOrder(Sides.SELL)">
+									<div class="flex flex-col items-center">
+										<b class="text-base flex items-center"
+											>{{ sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										/></b>
+										<p class="pt-2">{{ sellDes }}</p>
+									</div>
+									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.SELL" />
+								</button>
+							</template>
+							<!-- 合约 -->
+							<template v-else>
+								<div class="swap-cans pb-2">
+									<div class="py-1 pt-2 flex justify-between items-center">
+										<span class="text-grey">可开多 ({{ symbolObj?.quoteCoin }})</span>
+										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
+										<b class="font-normal" v-else>--</b>
+									</div>
+									<div class="py-1 flex justify-between items-center">
+										<span class="text-grey">数量 ({{ symbolObj?.baseCoin }})</span>
+										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
+										<b class="font-normal" v-else>--</b>
+									</div>
 								</div>
-								<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.BUY" />
-							</button>
-							<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3 sell-bt" v-click-sound @click="addOrder(Sides.SELL)">
-								<div class="flex flex-col items-center">
-									<b class="text-base flex items-center"
-										>{{ sellText }} <span class="ccy">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
-									/></b>
-									<p class="pt-2">{{ sellDes }}</p>
+								<button size="large" :class="['relative w-full !h-auto !py-3 bt-green']" v-click-sound @click="addOrder(side)">
+									<div class="flex flex-col items-center">
+										<b class="text-base flex items-center"
+											>{{ side == Sides.BUY ? '开多' : '平多' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										/></b>
+										<p class="pt-2">{{ buyDes }}</p>
+									</div>
+									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.BUY" />
+								</button>
+								<div class="swap-cans pt-2">
+									<div class="py-1 pt-2 flex justify-between items-center">
+										<span class="text-grey">可开空 ({{ symbolObj?.quoteCoin }})</span>
+										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
+										<b class="font-normal" v-else>--</b>
+									</div>
+									<div class="py-1 flex justify-between items-center">
+										<span class="text-grey">数量 ({{ symbolObj?.baseCoin }})</span>
+										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
+										<b class="font-normal" v-else>--</b>
+									</div>
 								</div>
-								<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.SELL" />
-							</button>
+								<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3" v-click-sound @click="addOrder(Sides.SELL)">
+									<div class="flex flex-col items-center">
+										<b class="text-base flex items-center"
+											>{{ side == Sides.BUY ? '开空' : '平空' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+										/></b>
+										<p class="pt-2">{{ sellDes }}</p>
+									</div>
+									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.SELL" />
+								</button>
+							</template>
 						</div>
 					</div>
 				</ScrollBar>

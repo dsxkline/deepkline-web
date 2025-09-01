@@ -26,7 +26,8 @@
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
 				source: 'home',
-				type: 'support'
+				type: 'support',
+				pageSize: 11
 			}
 		},
 		{
@@ -34,7 +35,9 @@
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
 				source: 'home',
-				type: 'resistance'
+				type: 'resistance',
+				pageSize: 11
+
 			}
 		},
 		// {
@@ -45,12 +48,12 @@
 		{
 			name: '实时涨幅',
 			contentComp: markRaw(ChangeRateList),
-			contentParams: { source: 'home', pageSize: 7 }
+			contentParams: { source: 'home', pageSize: 8 }
 		},
 		{
 			name: '大单监控',
 			contentComp: markRaw(BigOrders),
-			contentParams: { pageSize: 7 }
+			contentParams: { pageSize: 8 }
 		}
 	])
 

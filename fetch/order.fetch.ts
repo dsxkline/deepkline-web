@@ -10,7 +10,7 @@ if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.
 // console.log('__NUXT__', config, process.client, baseApi)
 const baseUrl = baseApi + '/v1' // "/api/okx";
 const listApi = '/order/list'
-const positionsApi = '/order/positions'
+const positionsApi = '/order/position'
 const assetsApi = '/order/assets'
 const historyListApi = '/order/list/history'
 const historyPositionsApi = '/order/positions/history'
