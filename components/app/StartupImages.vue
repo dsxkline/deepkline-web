@@ -1,13 +1,13 @@
 <script setup lang="ts">
 	const props = defineProps<{
-		modelValue: boolean
+		modelValue?: boolean
 	}>()
 	const emit = defineEmits(['update:modelValue'])
 	let timer: NodeJS.Timeout | null = null
 	const timeout = 3
 	const second = ref(timeout)
 	const opacity = ref(1)
-	const closed = ref(false)
+	const closed = ref(true)
 	function createTimer() {
 		clearTimer()
 		timer = setInterval(() => {
@@ -24,16 +24,22 @@
 	function hide() {
 		opacity.value = 0
 		emit('update:modelValue', true)
-		console.log('startup',props.modelValue)
+		console.log('startup', props.modelValue)
 		setTimeout(() => {
 			closed.value = true
 		}, 200)
 	}
 	onMounted(() => {
+		// 隐藏掉服务端渲染的
+		const statups = document.querySelectorAll('.startup-container')
+		statups.forEach(item => {
+			(item as HTMLDivElement).style.display = 'none'
+		})
+		closed.value = false
 		createTimer()
 		setTimeout(() => {
 			emit('update:modelValue', true)
-		}, 1000);
+		}, 1000)
 	})
 	onBeforeUnmount(() => {
 		clearTimer()
@@ -47,7 +53,7 @@
 			opacity: opacity
 		}"
 	>
-		<LogoFace class="mt-[-100px]"/>
+		<LogoFace class="mt-[-100px]" />
 		<!-- <img src="/images/pwa/launch-iphonexsmax-1242x2688.png" class="w-full h-full object-cover" /> -->
 		<ClientOnly>
 			<span class="absolute top-4 right-4 px-4 py-2 bg-[--transparent10] rounded-full text-xs" @click="hide">跳过 {{ second }}s</span>
@@ -74,5 +80,4 @@
 			opacity: 0.15;
 		}
 	}
-
 </style>

@@ -1,4 +1,5 @@
 require('dotenv').config({ path: '.env.' + process.env.NODE_ENV })
+import type { NuxtConfig } from 'nuxt/config'
 import componentsConfig from './config/components.config'
 import cssConfig from './config/css.config'
 import headConfig from './config/head.config'
@@ -9,18 +10,19 @@ import pwaConfig from './config/pwa.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
+const winPack = process.env.MODE == 'win'
+console.log('是否PC打包', winPack)
 const pwa = pwaConfig as any
-pwa.manifest = false;
+pwa.manifest = false
 
 // console.log('pwa',pwa,modulesConfig)
 
-export default defineNuxtConfig({
+const defaultConfig: NuxtConfig = {
 	devServer: {
 		port: 3010,
 		host: '0.0.0.0'
 	},
-	
+
 	typescript: {
 		shim: true
 	},
@@ -47,11 +49,29 @@ export default defineNuxtConfig({
 					: {}
 		}
 	},
-	googleFonts: {
-		families: {
-			'Roboto+Mono': true
-		},
-		display: 'swap'
+	pwa: pwa,
+	experimental:{
+		appManifest:false
+	}
+}
+
+const winPackConfig: NuxtConfig = {
+	ssr: !winPack,
+	nitro: {
+		preset: !winPack ? undefined : 'static',
+		runtimeConfig: {
+			app: {
+				baseURL: !winPack ? '/' : './'
+			}
+		}
 	},
-	pwa:pwa
-})
+	router: {
+		options: {
+			hashMode: winPack
+		}
+	}
+}
+
+Object.assign(defaultConfig, winPack ? winPackConfig : {})
+
+export default defineNuxtConfig(defaultConfig)

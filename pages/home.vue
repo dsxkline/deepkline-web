@@ -7,7 +7,7 @@
 	import { useAccountStore } from '~/store/account'
 	import FundCard from '~/components/account/FundCard.vue'
 	import { useCurrentPageSubSymbols } from '~/composable/usePageSubSymbols'
-import HotSector from '~/components/sector/HotSector.vue'
+	import HotSector from '~/components/sector/HotSector.vue'
 	const subSymbolCodes = ref(['BTC-USDT', 'ETH-USDT', 'OKB-USDT'])
 	let push = usePush()
 	function pushMe() {

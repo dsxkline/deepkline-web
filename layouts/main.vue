@@ -1,10 +1,11 @@
 <script setup lang="ts">
-	import { useStore } from '~/store'
+	import TitleBar from '~/components/win/TitleBar.vue';
+import { useStore } from '~/store'
 	const isStartup = ref(false)
 </script>
 <template>
-	<!-- <StartupImages v-model="isStartup" /> -->
 	<div class="app-container flex flex-col justify-between w-full h-full">
+		<TitleBar v-if="useNuxtApp().$config.public.MODE=='win'"/>
 		<Header />
 		<slot v-if="!useStore().unload" />
 		<StatusBar v-if="!useStore().unload" />

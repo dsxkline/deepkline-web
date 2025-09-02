@@ -3,12 +3,13 @@ export default {
 	strategies: 'injectManifest', // ⬅️ 使用自定义 SW
 	srcDir: 'public',
 	filename: 'sw.js',
-	// injectManifest: {
-	// 	additionalManifestEntries: [
-	// 		{ url: '/', revision: null }, // 显式预缓存首页
-	// 		{ url: '/?display=standalone', revision: null }
-	// 	]
-	// },
+	injectManifest: {
+		maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
+		// additionalManifestEntries: [
+		// 	{ url: '/', revision: null }, // 显式预缓存首页
+		// 	{ url: '/?display=standalone', revision: null }
+		// ]
+	},
 	client: {
 		installPrompt: true,
 		registerSW: true,

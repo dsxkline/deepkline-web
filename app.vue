@@ -6,10 +6,8 @@
 	})
 </script>
 <template>
-	<StartupImages v-model="isStartup" />
-	<template v-if="isStartup">
-		<NuxtLayout>
-			<NuxtPage />
-		</NuxtLayout>
-	</template>
+	<StartupImages />
+	<NuxtLayout>
+		<NuxtPage />
+	</NuxtLayout>
 </template>

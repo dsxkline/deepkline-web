@@ -1,6 +1,9 @@
 export function getCssVariable(variableName: string): string {
-	const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim()
-	return value
+	if (typeof window !== 'undefined' && typeof window.getComputedStyle === 'function') {
+		const value = getComputedStyle(document.documentElement).getPropertyValue(variableName).trim()
+		return value
+	}
+	return ''
 }
 
 export function setCssVariable(variableName: string, value: string): void {
@@ -18,16 +21,16 @@ export const getStatusBarHeight = () => {
 }
 
 export const getNavHeight = () => {
-    const navHeight = getCssVariable('--nav-height')
-    return navHeight ? parseFloat(navHeight) : 0
+	const navHeight = getCssVariable('--nav-height')
+	return navHeight ? parseFloat(navHeight) : 0
 }
 
 export const getTabbarHeight = () => {
-    const tabbarHeight = getCssVariable('--tabbar-height')
-    return tabbarHeight ? parseFloat(tabbarHeight) : 0
+	const tabbarHeight = getCssVariable('--tabbar-height')
+	return tabbarHeight ? parseFloat(tabbarHeight) : 0
 }
 
 export const getMenuHeight = () => {
-    const menuHeight = getCssVariable('--menu-height')
-    return menuHeight ? parseFloat(menuHeight) : 0
+	const menuHeight = getCssVariable('--menu-height')
+	return menuHeight ? parseFloat(menuHeight) : 0
 }

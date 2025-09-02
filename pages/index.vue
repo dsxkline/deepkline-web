@@ -2,9 +2,9 @@
 	import MarketIndex from '@/pages/market/index.vue'
 	import TradeIndex from '@/pages/trade/index.vue'
 	import AccountIndex from '@/pages/account/index.vue'
-	import StrategyIndex from '@/pages/strategy/index.vue'
+	import DownloadIndex from '@/pages/download/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled, HomeFilled } from '@element-plus/icons-vue'
+	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled, HomeFilled, Download } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
 	import AssetsIcon from '~/components/icons/AssetsIcon.vue'
@@ -30,13 +30,13 @@
 			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
-		}
-		// {
-		// 	name: '交易',
-		// 	icon: markRaw(TradeIcon),
-		// 	contentComp: markRaw(TradeIndex),
-		// 	contentParams: {}
-		// },
+		},
+		{
+			name: '下载',
+			icon: markRaw(Download),
+			contentComp: markRaw(DownloadIndex),
+			contentParams: {}
+		},
 		// {
 		// 	name: '策略',
 		// 	icon: markRaw(Opportunity),
@@ -148,7 +148,7 @@
 		}
 	}
 	.main-container {
-		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height));
+		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height) - var(--title-bar-height));
 		width: var(--body-width);
 		&::before {
 			background-image: var(--bg-linear-180);
