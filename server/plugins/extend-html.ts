@@ -14,7 +14,7 @@ export default defineNitroPlugin(nitroApp => {
                     <div class="progress-bar"></div>
                 </div>
                 <div class="face-text mt-4 text-center text-main text-lg font-semibold">DeepKline</div>
-                <div class="face-button mt-1 text-muted text-sm"></div>
+                <div class="face-button mt-1 text-muted text-sm">大佬说:"Keep building"</div>
             </div>
         </div>
 	    </div>

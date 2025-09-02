@@ -89,12 +89,16 @@ export const useStore = defineStore({
 				if (colorCookie.value != theme) clearPWACaches()
 				// android 状态栏背景颜色
 				// 显示状态栏
-				await StatusBar.show();
-				await StatusBar.setOverlaysWebView({ overlay: false }); // 内容不覆盖状态栏
-				// 设置背景色（支持十六进制）
-				await StatusBar.setBackgroundColor({ color: theme == 'dark' ? '#1e0b2c' : '#ffffff' })
-				// 设置亮色 / 暗色模式（字体图标颜色）
-				await StatusBar.setStyle({ style: theme == 'dark'?Style.Dark:Style.Light })  // 白色文字
+				try {
+					if (StatusBar) {
+						await StatusBar.show()
+						await StatusBar.setOverlaysWebView({ overlay: false }) // 内容不覆盖状态栏
+						// 设置背景色（支持十六进制）
+						await StatusBar.setBackgroundColor({ color: theme == 'dark' ? '#1e0b2c' : '#ffffff' })
+						// 设置亮色 / 暗色模式（字体图标颜色）
+						await StatusBar.setStyle({ style: theme == 'dark' ? Style.Dark : Style.Light }) // 白色文字
+					}
+				} catch (err) {}
 			}
 			colorCookie.value = theme
 		},

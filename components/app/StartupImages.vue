@@ -27,20 +27,25 @@
 		console.log('startup', props.modelValue)
 		setTimeout(() => {
 			closed.value = true
+			const statups = document.querySelectorAll('.startup-container')
+			statups.forEach(item => {
+				;(item as HTMLDivElement).style.display="none"
+			})
+
 		}, 200)
 	}
 	onMounted(() => {
-		//closed.value = false
+		// 隐藏掉服务端渲染的
+		const statups = document.querySelectorAll('.startup-container')
+		statups.forEach(item => {
+			;(item as HTMLDivElement).style.opacity = '0'
+		})
+		closed.value = false
 		createTimer()
 		setTimeout(() => {
-			// 隐藏掉服务端渲染的
-			const statups = document.querySelectorAll('.startup-container')
-			statups.forEach(item => {
-				;(item as HTMLDivElement).style.display = 'none'
-			})
 			emit('update:modelValue', true)
 			//closed.value = false
-		}, 500)
+		}, 1000)
 	})
 	onBeforeUnmount(() => {
 		clearTimer()
