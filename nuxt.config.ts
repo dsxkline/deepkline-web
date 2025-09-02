@@ -51,23 +51,23 @@ const defaultConfig: NuxtConfig = {
 	},
 	pwa: pwa,
 	experimental:{
-		appManifest:false
+		appManifest:process.env.NODE_ENV != 'development'
 	}
 }
 
 const winPackConfig: NuxtConfig = {
-	ssr: !winPack,
+	ssr: false,
 	nitro: {
-		preset: !winPack ? undefined : 'static',
+		preset: 'static',
 		runtimeConfig: {
 			app: {
-				baseURL: !winPack ? '/' : './'
+				baseURL: './'
 			}
 		}
 	},
 	router: {
 		options: {
-			hashMode: winPack
+			hashMode: true
 		}
 	}
 }
