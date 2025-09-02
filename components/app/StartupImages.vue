@@ -30,16 +30,17 @@
 		}, 200)
 	}
 	onMounted(() => {
-		// 隐藏掉服务端渲染的
-		const statups = document.querySelectorAll('.startup-container')
-		statups.forEach(item => {
-			(item as HTMLDivElement).style.display = 'none'
-		})
-		closed.value = false
+		//closed.value = false
 		createTimer()
 		setTimeout(() => {
+			// 隐藏掉服务端渲染的
+			const statups = document.querySelectorAll('.startup-container')
+			statups.forEach(item => {
+				;(item as HTMLDivElement).style.display = 'none'
+			})
 			emit('update:modelValue', true)
-		}, 1000)
+			//closed.value = false
+		}, 500)
 	})
 	onBeforeUnmount(() => {
 		clearTimer()
