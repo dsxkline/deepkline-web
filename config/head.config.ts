@@ -1,5 +1,5 @@
 import { version } from '../package.json'
-const winUrlPrefx = process.env.MODE!='win'?'':'.'
+const winUrlPrefx = (process.env.MODE != 'win' && process.env.MODE != 'mac') ? '' : '.'
 export default {
 	title: 'DeepKline is the most silky cryptocurrency trading system.',
 	htmlAttrs: {
@@ -22,28 +22,28 @@ export default {
 	link: [
 		{
 			rel: 'icon',
-			href: winUrlPrefx+'/favicon.ico',
+			href: winUrlPrefx + '/favicon.ico',
 			type: 'image/x-icon'
 		},
 		// iphone safari 添加到主屏幕的引导图标
 		{
 			rel: 'icon',
-			href: winUrlPrefx+'/images/pwa/apple-touch-icon.png'
+			href: winUrlPrefx + '/images/pwa/apple-touch-icon.png'
 		},
 		// Android 启动图标
 		{
 			rel: 'shortcut icon',
-			id: winUrlPrefx+'/images/pwa/logo.png'
+			id: winUrlPrefx + '/images/pwa/logo.png'
 		},
 		// 添加到桌面的应用图标
 		{
 			rel: 'apple-touch-icon',
-			href: winUrlPrefx+'/apple-touch-icon.png',
+			href: winUrlPrefx + '/apple-touch-icon.png',
 			type: 'image/png'
 		},
 		{
 			rel: 'apple-touch-icon-precomposed',
-			href: winUrlPrefx+'/apple-touch-icon-precomposed.png',
+			href: winUrlPrefx + '/apple-touch-icon-precomposed.png',
 			type: 'image/png'
 		},
 
@@ -65,19 +65,19 @@ export default {
 
 		{
 			rel: 'apple-touch-startup-image',
-			href: winUrlPrefx+'/images/pwa/launch-iphonexsmax-1242x2688.png',
+			href: winUrlPrefx + '/images/pwa/launch-iphonexsmax-1242x2688.png',
 			media: '(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)'
 		}
 	],
 	script: [
 		{
-			src: winUrlPrefx+'/js/dsx.kline_v_3_1_0.js?v=' + version
+			src: winUrlPrefx + '/js/dsx.kline_v_3_1_0.js?v=' + version
 		},
 		{
-			src: winUrlPrefx+'/js/qq.hq_v_3_1_0.js?v=' + version
+			src: winUrlPrefx + '/js/qq.hq_v_3_1_0.js?v=' + version
 		},
 		{
-			src: winUrlPrefx+'/kline.js?v=' + version
+			src: winUrlPrefx + '/kline.js?v=' + version
 		}
 	]
 }

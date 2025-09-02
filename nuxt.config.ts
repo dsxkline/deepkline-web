@@ -10,7 +10,7 @@ import pwaConfig from './config/pwa.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const winPack = process.env.MODE == 'win'
+const winPack = process.env.MODE == 'win'||process.env.MODE == 'mac'
 console.log('是否PC打包', winPack)
 const pwa = pwaConfig as any
 pwa.manifest = false

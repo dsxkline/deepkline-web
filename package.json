@@ -8,6 +8,7 @@
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
 		"generate:win": "cross-env MODE=win nuxt generate",
+		"generate:mac": "cross-env MODE=mac nuxt generate",
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
 		"start": "nuxt start",
