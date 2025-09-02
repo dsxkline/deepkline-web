@@ -12,8 +12,8 @@
 		"preview": "nuxt preview",
 		"postinstall": "nuxt prepare",
 		"start": "nuxt start",
-		"build-android": "cross-env MODE=android nuxt generate && npx cap sync android && npx cap open android",
-		"build-ios": "cross-env MODE=ios nuxt generate && npx cap sync ios && npx cap open ios"
+		"build:android": "cross-env MODE=android nuxt generate && npx cap sync android && npx cap open android",
+		"build:ios": "cross-env MODE=ios nuxt generate && npx cap sync ios && npx cap open ios"
 	},
 	"dependencies": {
 		"@capacitor/android": "^7.4.3",
