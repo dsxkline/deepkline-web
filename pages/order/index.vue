@@ -9,6 +9,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="订单" :hideBack="true"/>
 		
 	</div>

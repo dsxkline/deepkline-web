@@ -44,8 +44,9 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="主题设置" :hideBack="!push" />
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }">
 	
 			<MenuList :menus="menus" />
 			

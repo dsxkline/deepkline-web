@@ -51,6 +51,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="账户列表" :hideBack="push != 'rtl'">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">

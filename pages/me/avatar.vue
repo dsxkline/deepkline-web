@@ -7,6 +7,7 @@
 	import type { UploadFile, UploadProps, UploadProgressEvent, UploadRawFile } from 'element-plus'
 	import defaultAvatar from '~/assets/images/default-avatar.svg'
 	import Cropper from '~/components/common/Cropper.vue'
+	import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 	const props = defineProps<{}>()
 	const usepush = usePush()
@@ -233,6 +234,7 @@
 </script>
 <template>
 	<div class="nickname-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="更新头像" :returnBack="returnBack">
 			<template #right>
 				<el-button
@@ -250,7 +252,7 @@
 					class="avatar-uploader"
 					:action="userFetch.getUploadUrl()"
 					:headers="{
-						authorization: 'Bearer ' + useCookie('token').value
+						authorization: 'Bearer ' + useSyncedCookie('token').value
 					}"
 					:show-file-list="false"
 					:on-success="handleAvatarSuccess"
@@ -281,7 +283,7 @@
 				</div>
 			</div>
 		</div>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 140px)' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height) - 140px)' }" :always="false">
 			<div class="global-form p-6">
 				<ul class="text-sm text-grey list-disc pl-4 *:py-1">
 					<li>您今年可以上传 {{useUserStore().user?.editFaceTimes}} 次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>

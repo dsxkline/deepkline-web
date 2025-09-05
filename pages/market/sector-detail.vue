@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	import { usePush, useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import type { MarketSectorDto } from '~/fetch/dtos/exchange.dto'
 	import { useStore } from '~/store'
@@ -23,7 +23,7 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0) - getAppStatusBarHeight()
 		if (!props.push) {
 			tabbarHeight.value -= getMenuHeight() || 55
 		}
@@ -51,6 +51,7 @@
 </script>
 <template>
 	<div class="market-sectors w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" :title="sector.name" :hideBack="!push"> </NavigationBar>
 		<HotSector :sector="sector" ref="mc" />
 		<SymbolList :symbolCategory="MarketType.SPOT" :coins="sector.topCoins?.split(',') || []" :start="true" :height="symbolListHeight" />

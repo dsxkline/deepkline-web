@@ -145,6 +145,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="" :hideBack="true">
 			<template #left>
 				<div class="px-4 flex items-center">
@@ -171,8 +172,8 @@
 				</div>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
-			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))' }" :always="false">
+			<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height) + 1px)' }">
 				<div class="h-[250px] mb-4" v-if="showKline">
 					<KlineChart :symbol="symbol" :sides="['MACD']" />
 				</div>

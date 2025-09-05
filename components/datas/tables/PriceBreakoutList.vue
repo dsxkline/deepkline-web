@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { getNavHeight, getTabbarHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getNavHeight, getTabbarHeight } from '~/composable/useCommon'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import type { PriceSupportDto } from '~/fetch/dtos/symbol.dto'
@@ -99,7 +99,7 @@
 	// 可视区域的数量
 	const visibleCount = computed(() => {
 		// 获取当前组件的高度
-		return Math.ceil((contentHeight.value || useStore().bodyHeight - getNavHeight() - getTabbarHeight()) / itemHeight)
+		return Math.ceil((contentHeight.value || useStore().bodyHeight - getNavHeight() - getTabbarHeight() - getAppStatusBarHeight()) / itemHeight)
 	})
 	// 上下偏移量
 	const offset = computed(() => Math.max(1, 2 * Math.floor(visibleCount.value)))

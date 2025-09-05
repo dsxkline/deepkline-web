@@ -47,6 +47,7 @@
 </script>
 <template>
 	<div class="nickname-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="修改昵称" />
 
 		<div class="global-form p-6">

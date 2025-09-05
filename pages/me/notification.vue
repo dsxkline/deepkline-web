@@ -47,6 +47,7 @@ import { usePush } from '~/composable/usePush'
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="消息通知" :hideBack="!push">
 			<template #right>
 				<button @click="pushNotificationSetting" class="px-4">
@@ -54,7 +55,7 @@ import { usePush } from '~/composable/usePush'
 				</button>
 			</template>
 		</NavigationBar>
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }">
 			<MenuList :menus="menus" size="large"/>
 		</ScrollBar>
 	</div>

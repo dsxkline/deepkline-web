@@ -67,6 +67,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="重置账户" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
 			<div class="flex flex-col items-center justify-center">

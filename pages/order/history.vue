@@ -2,9 +2,10 @@
 	import type { MenuModel } from '~/components/common/TabBar.vue'
 	import { useStore } from '~/store'
 	import { usePush } from '~/composable/usePush'
-	import { getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getNavHeight } from '~/composable/useCommon'
 	import HistoryOrderList from '~/components/order/HistoryOrderList.vue'
 	import HistoryPositionList from '~/components/order/HistoryPositionList.vue'
+	import FundLogsList from '~/components/order/FundLogsList.vue'
 	const props = defineProps<{
 		height?: number
 	}>()
@@ -24,7 +25,7 @@
 				},
 				{
 					name: '交易账单',
-					contentComp: markRaw(HistoryPositionList)
+					contentComp: markRaw(FundLogsList)
 				}
 			]
 	)
@@ -37,7 +38,7 @@
 	)
 
 	function setContentHeight() {
-		tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight())
+		tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight()) - getAppStatusBarHeight()
 	}
 
 	onMounted(() => {
@@ -49,6 +50,7 @@
 </script>
 <template>
 	<div class="history-container">
+		<AppStatusBar />
 		<NavigationBar :title="'交易记录'" ref="navbar"></NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight"> </TabBar>
 	</div>

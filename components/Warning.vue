@@ -1,10 +1,12 @@
 <script setup lang="ts">
+	import { useSyncedCookie } from '~/composable/useSyncedCookie'
+
 	const isCN = ref(false)
 	const hideWarning = computed(() => {
-		return !useCookie('hideWarning').value
+		return !useSyncedCookie('hideWarning').value
 	})
 	function hide() {
-		useCookie('hideWarning', {
+		useSyncedCookie('hideWarning', {
 			expires: new Date(new Date().getTime() + 7 * 1000 * 24 * 60 * 60)
 		}).value = 'true'
 	}
@@ -12,7 +14,7 @@
 	async function detectMainlandIP() {
 		const res = await fetch('https://ipinfo.io/json')
 		const data = await res.json()
-        console.log(data)
+		console.log(data)
 		// data.country = 'CN'
 		// data.region = 'Beijing'
 		// data.city = 'Beijing'

@@ -4,7 +4,7 @@
 	import ExchangeList from './exchange-list.vue'
 	import { usePush } from '~/composable/usePush'
 	import AccountHelp from '../account/account-help.vue'
-	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		push?: boolean
 		height?: number
@@ -36,7 +36,7 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0) - getAppStatusBarHeight()
 		if (!props.push) {
 			tabbarHeight.value -= getMenuHeight() || 55
 		}
@@ -56,6 +56,7 @@
 </script>
 <template>
 	<div class="exchange-index-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="开设账户" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">

@@ -12,6 +12,7 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
 import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 	const props = defineProps<{
 		email: string
@@ -60,7 +61,7 @@ import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captch
 				if (result?.code == FetchResultDto.OK) {
 					useUserStore().setUser(result.data)
 					// 保存cookie
-					useCookie('token').value = result.data?.token
+					useSyncedCookie('token').value = result.data?.token
 					localStorage.setItem('email', props.email)
 					useNuxtApp().$dkws.reconnect()
 					setTimeout(async () => {
@@ -240,6 +241,7 @@ import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captch
 </script>
 <template>
 	<div class="password-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main">
 			密码登录

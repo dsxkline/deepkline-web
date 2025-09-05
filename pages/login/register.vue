@@ -11,6 +11,7 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
 import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
@@ -191,7 +192,7 @@ import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captch
 				if (result?.code == FetchResultDto.OK) {
 					useUserStore().setUser(result.data)
 					// 保存cookie
-					useCookie('token').value = result.data?.token
+					useSyncedCookie('token').value = result.data?.token
 					localStorage.setItem('email', email.value)
 					useNuxtApp().$dkws.reconnect()
 					setTimeout(async () => {

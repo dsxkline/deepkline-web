@@ -5,6 +5,7 @@ import type { FundDto, AccountDto } from './dtos/account.dto'
 import type { ExchangeDto } from './dtos/exchange.dto'
 import type { AddOrderDto, AddOrderRespDto, HistoryOrderListDto, OrderDto, OrderState } from './dtos/order.dto'
 import type { HistoryPositionDto, PositionDto } from './dtos/position.dto'
+import type { HistoryTradeListDto } from './dtos/trade.dto'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
 // console.log('__NUXT__', config, process.client, baseApi)
@@ -13,10 +14,11 @@ const listApi = '/order/list'
 const positionsApi = '/order/position'
 const assetsApi = '/order/assets'
 const historyListApi = '/order/list/history'
-const historyPositionsApi = '/order/positions/history'
+const historyPositionsApi = '/order/position/history'
 const historyAssetsApi = '/order/assets/history'
 const addApi = '/order/add'
 const cancelApi = '/order/cancel'
+const tradeListApi = '/trade/history'
 
 export const orderFetch = {
 	/**
@@ -54,6 +56,12 @@ export const orderFetch = {
 	 * @returns
 	 */
 	historyCrypeAssets: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryPositionDto>>(baseUrl, historyAssetsApi, { accountId, page, pageSize }),
+
+	/**
+	 * 交易账单列表
+	 * @returns
+	 */
+	historyTradeList: (accountId?: number, page: number = 1, pageSize: number = 30) => usePost<ApiResult<HistoryTradeListDto>>(baseUrl, tradeListApi, { accountId, page, pageSize }),
 
 	/**
 	 * 下单

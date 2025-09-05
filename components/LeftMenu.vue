@@ -2,12 +2,14 @@
 	import { ref } from 'vue'
 	import { useStore } from '~/store'
 	import type { MenuModel } from './common/TabBar.vue'
+import { getCssVariable } from '~/composable/useCommon';
 	const props = defineProps<{
 		menus: MenuModel[]
 		active?: number
 	}>()
 
 	const menuActive = ref(props.active || 0)
+	const mainMenu = ref()
 
 	const emit = defineEmits<{
 		(event: 'update:active', value: number): void
@@ -20,11 +22,18 @@
 		emit('update:active', index)
 		emit('menuHandler', menu, index)
 	}
+
+	onMounted(()=>{
+		nextTick(()=>{
+			const safeBottom = getCssVariable('--safe-bottom')
+			console.log('mainMenu',mainMenu.value.clientHeight, safeBottom)
+		})
+	})
 </script>
 
 <template>
 	<div class="left-menu relative flex flex-col justify-between border-r border-[--border-color]">
-		<div class="main-menu">
+		<div class="main-menu" ref="mainMenu">
 			<ul class="menu-list w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li
 					:class="menuActive == index ? 'active' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"

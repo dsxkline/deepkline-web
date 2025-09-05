@@ -117,6 +117,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="连接账户" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">

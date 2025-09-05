@@ -1,10 +1,11 @@
 import { useFetch, type UseFetchOptions } from '#app'
 import CryptoJS from 'crypto-js'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 import { useUserStore } from '~/store/user'
 
 const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, headers: Record<string, any> = {}) => {
-	headers['authorization'] = 'Bearer ' + useCookie('token').value
-	headers['locale'] = useCookie('locale').value
+	headers['authorization'] = 'Bearer ' + useSyncedCookie('token').value
+	headers['locale'] = useSyncedCookie('locale').value
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		body,
@@ -24,7 +25,7 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 			if (data.value.code == 401) {
 				// 注销登录
 				if (process.client) {
-					const channel = new BroadcastChannel('logout');
+					const channel = new BroadcastChannel('logout')
 					channel.postMessage(String(new Date().getTime()))
 				}
 			}
@@ -40,8 +41,8 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 }
 
 const useGet = async <T = any>(baseUrl: string, path: string, query: Record<string, any> = {}, headers: any = {}) => {
-	headers['authorization'] = 'Bearer ' + useCookie('token').value
-	headers['locale'] = useCookie('locale').value
+	headers['authorization'] = 'Bearer ' + useSyncedCookie('token').value
+	headers['locale'] = useSyncedCookie('locale').value
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		query,
@@ -65,7 +66,7 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
 			// console.log('ddddd',data.value)
 			if (data.value.code == 401) {
 				if (process.client) {
-					const channel = new BroadcastChannel('logout');
+					const channel = new BroadcastChannel('logout')
 					channel.postMessage(String(new Date().getTime()))
 				}
 			}

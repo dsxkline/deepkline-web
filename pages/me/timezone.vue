@@ -49,6 +49,7 @@ import { useKlineStore } from '~/store/kline'
 </script>
 <template>
 	<div class="w-full h-full pb-8">
+		<AppStatusBar/>
 		<NavigationBar title="涨跌幅周期和K线时区" :hideBack="true" />
 		<MenuList :menus="menus" />
 	</div>

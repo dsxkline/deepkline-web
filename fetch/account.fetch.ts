@@ -1,7 +1,7 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { FundDto, AccountDto } from './dtos/account.dto'
+import type { FundDto, AccountDto, FundLogType, FundLogsListDto } from './dtos/account.dto'
 import type { ExchangeDto } from './dtos/exchange.dto'
 import type { ChartDto } from './dtos/common.dto'
 let baseApi = config.BASE_API_URL
@@ -14,6 +14,7 @@ const fundApi = '/account/fund'
 const openApi = '/account/open'
 const resetApi = '/account/reset'
 const chartApi = '/account/chart'
+const fundlogsApi = '/account/fund/logs'
 export const accountFetch = {
 	/**
 	 * 账户列表
@@ -63,5 +64,11 @@ export const accountFetch = {
 			exchange,
 			accountId,
 			period
-		})
+		}),
+	/**
+	 * 交易账单列表
+	 * @returns
+	 */
+	fundLogsList: (accountId?: number, symbol?: string, changeType?: FundLogType, page: number = 1, pageSize: number = 30) =>
+		usePost<ApiResult<FundLogsListDto>>(baseUrl, fundlogsApi, { accountId, symbol, changeType, page, pageSize })
 }

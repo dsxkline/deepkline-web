@@ -26,6 +26,7 @@
 	<div class="w-full h-full">
 		<ExchangeIndex v-if="!useAccountStore().accounts?.length" />
 		<template v-else>
+			<AppStatusBar/>
 			<NavigationBar title="" :hideBack="!push">
 				<template #left>
 					<div class="flex justify-center items-center px-4" @click="pushAccounts">
@@ -43,8 +44,8 @@
 					</button>
 				</template>
 			</NavigationBar>
-			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom))' }" :always="false">
-				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) + 1px)' }">
+			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))' }" :always="false">
+				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height) + 1px)' }">
 					<FundCard :account="useAccountStore().currentAccount" />
 					<AccountProfitChart />
 					<AccountCryptoAssets />

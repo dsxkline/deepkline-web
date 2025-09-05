@@ -2,6 +2,10 @@ import { defineStore } from 'pinia'
 import { ApiSource } from '~/types/types.d'
 import clearPWACaches from '~/composable/clearPWACaches'
 import { StatusBar, Style } from '@capacitor/status-bar'
+import { getAppStatusBarHeight, getCssVariable, setCssVariable } from '~/composable/useCommon'
+import { SafeArea } from '@capacitor-community/safe-area'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
+
 export const useStore = defineStore({
 	id: 'main',
 	state: () => ({
@@ -22,7 +26,6 @@ export const useStore = defineStore({
 	actions: {
 		setBodyHeight(height: number) {
 			this.bodyHeight = height
-			// console.log('body height',height)
 		},
 		setBodyWidth(width: number) {
 			this.bodyWidth = width
@@ -80,7 +83,7 @@ export const useStore = defineStore({
 		},
 		async setTheme(theme: string) {
 			this.theme = theme
-			let colorCookie = useCookie('nuxt-color-mode', { default: () => 'dark' })
+			let colorCookie = useSyncedCookie('nuxt-color-mode', { default: () => 'dark' })
 			if (process.client) {
 				document.documentElement.setAttribute('class', theme)
 				// 修改meta标签的主题颜色
@@ -91,12 +94,18 @@ export const useStore = defineStore({
 				// 显示状态栏
 				try {
 					if (StatusBar) {
-						await StatusBar.show()
-						await StatusBar.setOverlaysWebView({ overlay: false }) // 内容不覆盖状态栏
+						// await StatusBar.show()
+						// await StatusBar.setOverlaysWebView({ overlay: false }) // 内容不覆盖状态栏
 						// 设置背景色（支持十六进制）
 						await StatusBar.setBackgroundColor({ color: theme == 'dark' ? '#1e0b2c' : '#ffffff' })
 						// 设置亮色 / 暗色模式（字体图标颜色）
 						await StatusBar.setStyle({ style: theme == 'dark' ? Style.Dark : Style.Light }) // 白色文字
+						if (useNuxtApp().$config.public.MODE == 'ios' || useNuxtApp().$config.public.MODE == 'android') {
+							const info = await StatusBar.getInfo()
+							setCssVariable('--app-status-bar-height', ((info as any).height || 0) + 'px')
+							const safeTop = getCssVariable('--safe-bottom')
+							console.log('Safe Area Top:', safeTop, info, devicePixelRatio)
+						}
 					}
 				} catch (err) {}
 			}

@@ -11,7 +11,7 @@
 	import SymbolSearch from './SymbolSearch.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import CrypeOrder from '../order/CrypeOrder.vue'
-	import { getHeaderHeight, getNavHeight, getStatusBarHeight, getTabbarHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getHeaderHeight, getNavHeight, getStatusBarHeight, getTabbarHeight, getTitleBarHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -86,9 +86,9 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = useStore().bodyHeight - getHeaderHeight() - getStatusBarHeight()
-		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight())
-		console.log('tabbarHeight', tabbarHeight.value, useStore().bodyHeight, getHeaderHeight(),getStatusBarHeight())
+		tabbarHeight.value = useStore().bodyHeight - getHeaderHeight() - getStatusBarHeight() - getAppStatusBarHeight() - getTitleBarHeight()
+		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight()) - getAppStatusBarHeight() - getTitleBarHeight()
+		console.log('tabbarHeight', tabbarHeight.value, useStore().bodyHeight, getHeaderHeight(),getStatusBarHeight(),getTitleBarHeight())
 	}
 
 	const push = usePushUp()
@@ -120,6 +120,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar v-if="useStore().isH5" ref="navbar">
 			<template #left>
 				<button class="flex items-center px-4 h-full" @click="returnBack">

@@ -5,6 +5,8 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
+	import AppStatusBar from '../app/AppStatusBar.vue'
+	import { getAppStatusBarHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		push?: string
 		selectHandle?: (item: SymbolDto) => void
@@ -15,7 +17,7 @@
 	const height = computed(() => {
 		let h = 300
 		if (useStore().isH5) {
-			h = useStore().bodyHeight - (inputDom.value?.clientHeight || 50)
+			h = useStore().bodyHeight - (inputDom.value?.clientHeight || 50) - getAppStatusBarHeight()
 		}
 		return h
 	})
@@ -66,6 +68,7 @@
 </script>
 <template>
 	<div class="w-[600px] relative symbol-search">
+		
 		<div
 			class="symbol-search-item flex items-center justify-center text-xs text-grey w-[100%] h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer"
 			v-click-sound
@@ -75,6 +78,7 @@
 			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.symbol }}</span>
 		</div>
 		<div v-if="show || push" class="search-list absolute top-0 left-0 w-[100%] z-10 bg-base rounded-lg border border-[--transparent10] overflow-hidden">
+			<AppStatusBar />
 			<div class="search-list-box bg-[--transparent05]">
 				<div class="flex">
 					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3 pr-0" @focus="focus" @input="search" />

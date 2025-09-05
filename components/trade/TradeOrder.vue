@@ -14,6 +14,7 @@
 	import LoginIndex from '~/pages/login/index.vue'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { useOrderStore } from '~/store/order'
+	import { getAppStatusBarHeight } from '~/composable/useCommon'
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const props = defineProps<{
@@ -39,7 +40,7 @@
 		// 获取当前组件的高度
 		let h = props.height
 		if (process.client) {
-			h = props.height || useStore().bodyHeight - 4 * 40
+			h = props.height || useStore().bodyHeight - 4 * 40 - getAppStatusBarHeight()
 			nextTick(() => {
 				loading.value = false
 			})

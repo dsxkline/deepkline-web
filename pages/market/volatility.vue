@@ -6,7 +6,7 @@
 	import FundingRateList from '~/components/datas/tables/FundingRateList.vue'
 	import TabBar, { type MenuModel } from '~/components/common/TabBar.vue'
 	import { useStore } from '~/store'
-	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	import BigOrders from '~/components/datas/tables/BigOrders.vue'
 	import ChangeRateList from '~/components/datas/tables/ChangeRateList.vue'
 	const props = defineProps<{
@@ -24,7 +24,7 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = useStore().bodyHeight - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		tabbarHeight.value = useStore().bodyHeight - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0) - getAppStatusBarHeight()
 		if (!props.push) {
 			tabbarHeight.value -= getMenuHeight() || 55
 		}
@@ -82,6 +82,7 @@
 </script>
 <template>
 	<div class="volatility w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="市场异动" :hideBack="!push"> </NavigationBar>
 		<div class="mx-4 overflow-hidden">
 			<TabBar :menus="menus" :height="tabbarHeight" />

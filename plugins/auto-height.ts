@@ -1,5 +1,5 @@
 import { useStore } from '~/store'
-
+import { SafeArea, initialize } from '@capacitor-community/safe-area'
 function setBodyHeight() {
 	const doc = document.documentElement
 	const height = window.innerHeight
@@ -17,8 +17,19 @@ function setRemUnit() {
 	const html = document.documentElement
 	const width = html.clientWidth
 
-	const rem = Math.max(baseSize,Math.min((width / designWidth) * baseSize,20)) // 限制最大值为 20px
+	const rem = Math.max(baseSize, Math.min((width / designWidth) * baseSize, 20)) // 限制最大值为 20px
 	html.style.fontSize = rem + 'px'
+}
+
+function setSafeAreaChange(data: any) {
+	try {
+		console.log('Safe area insets:', data)
+		document.documentElement.style.setProperty('--safe-top', data.top + 'px')
+		document.documentElement.style.setProperty('--safe-bottom', Math.min(data.bottom, 10 * devicePixelRatio) + 'px')
+	} catch (e) {
+		console.error('Failed to parse safe area data', e)
+	}
+	window.removeEventListener('safeAreaChange', setSafeAreaChange)
 }
 
 export default defineNuxtPlugin(({ vueApp }) => {
@@ -31,6 +42,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		next()
 	})
 	if (process.client) {
+		initialize()
 		window.addEventListener('resize', setRemUnit)
 		setRemUnit()
 		// 设置body高度
@@ -43,5 +55,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
 			window.removeEventListener('resize', setBodyHeight)
 			window.removeEventListener('load', setBodyHeight)
 		})
+
+		window.addEventListener('safeAreaChange', setSafeAreaChange)
 	}
 })

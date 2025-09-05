@@ -4,7 +4,7 @@
 	import { getCurrentInstance, render, type ComponentInternalInstance } from 'vue'
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 	import { getParentRefreshComponent, useRefreshChildEvent } from '~/composable/usePush'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
@@ -142,7 +142,7 @@ import { useStore } from '~/store'
 			// let size = props.size == 'auto' ? h : props.size || '100%'
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
 				drawerBody.value.style.height = 'var(--body-height)'
-				if(!useStore().isH5) drawerBody.value.style.height = '100%'
+				if (!useStore().isH5) drawerBody.value.style.height = '100%'
 			} else {
 				// console.log('props.size', props.size)
 				if (props.size) {

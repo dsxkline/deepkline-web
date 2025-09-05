@@ -7,6 +7,9 @@ const config: CapacitorConfig = {
 	plugins: {
 		SplashScreen: {
 			launchAutoHide: true
+		},
+		SafeArea: {
+			enabled: true,
 		}
 	}
 }

@@ -55,3 +55,40 @@ export interface FundDto {
 	profitRate: string
 }
 
+export enum FundLogType {
+	INITIAL_FUND = 'initial_fund', // 初始资金
+	ORDER_FROZEN = 'order_frozen', // 挂单冻结
+	DEPOSIT = 'deposit', // 充值
+	WITHDRAW = 'withdraw', // 提现
+	TRANSFER_IN = 'transfer_in', // 转入
+	TRANSFER_OUT = 'transfer_out', // 转出
+	TRADE_BUY = 'trade_buy', // 成交买入
+	TRADE_SELL = 'trade_sell', // 成交卖出
+	FEE = 'fee', // 手续费
+	ADJUST = 'adjust', // 人工调账
+	FREEZE = 'freeze', // 冻结
+	UNFREEZE = 'unfreeze', // 解冻
+	REBATE = 'rebate', // 返佣
+	LIQUIDATION = 'liquidation' // 强平
+}
+export interface FundLogsDto {
+	id: number
+	userId: number
+	accountId: number | null
+	exchange: string
+	symbol: string
+	changeType: FundLogType
+	amount: string
+	balanceBefore: string
+	balanceAfter: string
+	remark?: string
+	createdAt: Date
+	updatedAt: Date
+}
+
+export interface FundLogsListDto {
+	list: FundLogsDto[]
+	total: number
+	page: number
+	pageSize: number
+}

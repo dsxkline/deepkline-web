@@ -19,6 +19,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="开通成功" :hideBack="!push"> </NavigationBar>
 		<ScrollBar
 			class="w-full h-full"

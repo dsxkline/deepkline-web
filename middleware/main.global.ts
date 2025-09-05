@@ -1,3 +1,4 @@
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 import { accountFetch } from '~/fetch/account.fetch'
 import { FetchResultDto } from '~/fetch/dtos/common.dto'
 import { MarketType } from '~/fetch/dtos/symbol.dto'
@@ -33,7 +34,7 @@ function getDefaultSymbols(marketType: MarketType) {
 }
 
 async function getUser() {
-	if (!useCookie('token').value) return
+	if (!useSyncedCookie('token').value) return
 	const result = await userFetch.getUser()
 	if (result?.code == FetchResultDto.OK) {
 		//console.log('获取用户信息', result.data)
@@ -82,7 +83,7 @@ async function getExchanges() {
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	// 服务端渲染主题
-	const colorMode = useCookie('nuxt-color-mode', { default: () => 'dark' })
+	const colorMode = useSyncedCookie('nuxt-color-mode', { default: () => 'dark' })
 	// console.log('colorMode', colorMode.value)
 	useStore().setTheme(colorMode.value)
 	useHead({
@@ -91,25 +92,29 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		},
 		meta: [{ name: 'theme-color', content: colorMode.value == 'dark' ? '#1e0b2c' : '#ffffff' }],
 		link: [
-			{
-				rel: 'manifest',
-				href: '/api/manifest.webmanifest?theme=' + colorMode.value
-			}
+			...[
+				!process.env.MODE
+					? {
+							rel: 'manifest',
+							href: '/api/manifest.webmanifest?theme=' + colorMode.value
+					  }
+					: {}
+			]
 		]
 	})
 
 	if (process.server) {
+	}
+	if (process.client) {
 		await getUser()
 		await getExchanges()
 		await getUserAccounts()
 		await getUserFund()
-	}
-	if (process.client) {
 		const state = useStore()
 		if (state.apiSource == ApiSource.OKX) {
 			await getDefaultSymbols(MarketType.SPOT)
 			await getDefaultSymbols(MarketType.SWAP)
 		}
-		if(!useUserStore().user) useUserStore().logout()
+		if (!useUserStore().user) useUserStore().logout()
 	}
 })

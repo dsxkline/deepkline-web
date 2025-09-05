@@ -152,13 +152,13 @@
 		class="px-4"
 		:style="{
 			minHeight: useStore().isH5
-				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom))'
-				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height))'
+				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom) - var(--app-status-bar-height))'
+				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
 		}"
 	>
 		<Empty :content="'暂无资产'" v-if="!loading && !error && !assets?.length" class="pt-20">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
-			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开设账户</el-button>
 		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>

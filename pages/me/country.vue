@@ -13,8 +13,9 @@
 </script>
 <template>
 	<div>
+		<AppStatusBar/>
 		<NavigationBar title="选择国家" />
-		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height))' }" :always="false">
+		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }" :always="false">
 			<ul class="px-4 pl-1 *:flex *:items-center *:py-1 [&_b]:flex [&_b]:items-center">
 				<template v-for="{ name, code } in countryOptions">
 					<li>

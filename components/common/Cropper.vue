@@ -19,6 +19,7 @@
 </script>
 <template>
 	<div class="h-[--body-height] cancel-stop-touch">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="裁剪图片" :hideBack="true">
 			<template #right>
 				<el-button :class="['w-full transition-all !py-2 !h-8 !text-sm bt-default mx-4', '!bg-brand !text-white']" @click="save">确定</el-button>

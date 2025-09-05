@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 	import HotSector from '~/components/sector/HotSector.vue'
-	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	import { useCurrentPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import { usePush, useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useStore } from '~/store'
@@ -20,7 +20,7 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0)
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (useStore().isH5 ? navbar.value?.clientHeight || getNavHeight() : 0) - getAppStatusBarHeight()
 		if (!props.push) {
 			tabbarHeight.value -= getMenuHeight() || 55
 		}
@@ -81,6 +81,7 @@
 </script>
 <template>
 	<div class="market-sectors w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" title="板块排行" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight + 'px' }" :always="false">
 			<HotSector :full="true" />

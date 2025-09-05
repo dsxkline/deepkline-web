@@ -1,6 +1,7 @@
 import type { UserDto } from '~/fetch/dtos/user.dto'
 import { useAccountStore } from './account'
 import { useOrderStore } from './order'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 export const useUserStore = defineStore({
 	id: 'user',
@@ -19,7 +20,7 @@ export const useUserStore = defineStore({
 			useOrderStore().orders = []
 			useOrderStore().positions = []
 			useOrderStore().assets = []
-			useCookie('token').value = null
+			useSyncedCookie('token').value = null
 		},
 	},
 	getters: {

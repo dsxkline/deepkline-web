@@ -9,6 +9,7 @@
 	import { useStore } from '~/store'
 	import SymbolSearch from './SymbolSearch.vue'
 	import { usePush } from '~/composable/usePush'
+	import { getAppStatusBarHeight, getMenuHeight, getTitleBarHeight } from '~/composable/useCommon'
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
@@ -28,14 +29,17 @@
 	watch(
 		() => useStore().bodyHeight,
 		(n, o) => {
-			tabbarHeight.value = n - 40 - 30
-			if (useStore().isH5) tabbarHeight.value = n - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0)
+			setHeight()
 		}
 	)
 
+	function setHeight() {
+		tabbarHeight.value = useStore().bodyHeight - 40 - 30 - getAppStatusBarHeight() - getTitleBarHeight()
+		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - getMenuHeight() - getAppStatusBarHeight() - getTitleBarHeight()
+	}
+
 	onMounted(() => {
-		tabbarHeight.value = useStore().bodyHeight - 40 - 30
-		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (search.value?.clientHeight || 0) - (document.querySelector('.left-menu')?.clientHeight || 0)
+		setHeight()
 		// console.log('tabbarHeight', useStore().bodyHeight)
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
@@ -58,8 +62,9 @@
 </script>
 <template>
 	<div>
+		<AppStatusBar />
 		<div class="search-container flex px-4 w-full" ref="search">
-			<SymbolSearchBar/>
+			<SymbolSearchBar />
 			<button @click="pushMe" class="ml-4"><ExchangeLogo exchange="okx" class="w-7" /></button>
 		</div>
 

@@ -1,6 +1,7 @@
 import type { AccountDto, FundDto } from '~/fetch/dtos/account.dto'
 import type { ExchangeDto } from '~/fetch/dtos/exchange.dto'
 import { useOrderStore } from './order'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 export const useAccountStore = defineStore({
 	id: 'account',
@@ -14,12 +15,12 @@ export const useAccountStore = defineStore({
 		setAccounts(payload: AccountDto[]) {
 			this.accounts = payload
 			// 设置当前账号
-			const accountsCookie = parseInt(useCookie('account').value || '0')
+			const accountsCookie = parseInt(useSyncedCookie('account').value || '0')
 			if (this.accounts?.length) {
 				const account = this.accounts.find(item => item.accountId == accountsCookie)
 				// 不存在取第一个
 				if (!account) {
-					useCookie('account').value = String(this.accounts[0].accountId)
+					useSyncedCookie('account').value = String(this.accounts[0].accountId)
 					this.currentAccount = this.accounts[0]
 				} else {
 					this.currentAccount = account
@@ -27,7 +28,7 @@ export const useAccountStore = defineStore({
 			} else {
 				this.currentAccount = null
 				this.fund = null
-				useCookie('account').value = null
+				useSyncedCookie('account').value = null
 			}
 		},
 		getAccount(accountId: number) {

@@ -49,7 +49,7 @@ const defaultConfig: NuxtConfig = {
 					: {}
 		}
 	},
-	pwa: pwa,
+	pwa: winPack?undefined:pwa,
 	experimental:{
 		appManifest:process.env.NODE_ENV != 'development'
 	}

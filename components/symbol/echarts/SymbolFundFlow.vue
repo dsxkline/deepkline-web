@@ -230,7 +230,7 @@
 						points.forEach((p: [x: number, y: number]) => {
 							maxY.value = Math.max(maxY.value, p[1] + 20, 200)
 						})
-						console.log('paramssss', params)
+						// console.log('paramssss', params)
 						return {
 							labelLinePoints: points
 						}

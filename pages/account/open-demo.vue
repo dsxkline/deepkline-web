@@ -63,6 +63,7 @@ import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 </script>
 <template>
 	<div class="w-full h-full">
+		<AppStatusBar/>
 		<NavigationBar title="开通模拟账户" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc('+(currentDialog?currentDialog.props.height:'var(--body-height)')+' - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
 			<div class="p-4 text-xs text-grey border border-[--transparent05] rounded-lg bg-[--transparent05] m-4">

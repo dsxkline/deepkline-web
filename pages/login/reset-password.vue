@@ -79,6 +79,7 @@
 </script>
 <template>
 	<div class="login-index-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar">
 			<template #right>
 				<button class="flex items-center p-2 px-4">

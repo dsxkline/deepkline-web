@@ -148,7 +148,7 @@
 		}
 	}
 	.main-container {
-		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height) - var(--title-bar-height));
+		height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height) - var(--title-bar-height) - var(--app-status-bar-height));
 		width: var(--body-width);
 		&::before {
 			background-image: var(--bg-linear-180);

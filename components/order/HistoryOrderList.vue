@@ -155,7 +155,7 @@
 	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto' }">
 		<Empty :content="'暂无委托'" v-if="!loading && !error && !orders?.length" class="pt-20">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
-			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开始账户</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开设账户</el-button>
 		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>

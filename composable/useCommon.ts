@@ -20,6 +20,11 @@ export const getStatusBarHeight = () => {
 	return statusBarHeight ? parseFloat(statusBarHeight) : 0
 }
 
+export const getAppStatusBarHeight = () => {
+	const statusBarHeight = getCssVariable('--app-status-bar-height')
+	return statusBarHeight ? parseFloat(statusBarHeight) : 0
+}
+
 export const getNavHeight = () => {
 	const navHeight = getCssVariable('--nav-height')
 	return navHeight ? parseFloat(navHeight) : 0
@@ -32,5 +37,10 @@ export const getTabbarHeight = () => {
 
 export const getMenuHeight = () => {
 	const menuHeight = getCssVariable('--menu-height')
+	return menuHeight ? parseFloat(menuHeight) : 0
+}
+// PC端 win mac打包会有标题栏
+export const getTitleBarHeight = () => {
+	const menuHeight = getCssVariable('--title-bar-height')
 	return menuHeight ? parseFloat(menuHeight) : 0
 }

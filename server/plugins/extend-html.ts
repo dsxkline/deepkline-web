@@ -10,7 +10,7 @@ export default defineNitroPlugin(nitroApp => {
         <div class="face-container w-full h-auto flex items-center justify-center mt-[-100px]">
             <div class="face-content flex items-center justify-center flex-col p-4">
                 <div class="face-icon flex items-center justify-center relative overflow-hidden rounded-xl">
-                    <img src="./images/pwa/logo.png" alt="Face Icon" class="w-16 h-16" />
+                    <img src="./images/pwa/logo192.png" alt="Face Icon" class="w-16 h-16" />
                     <div class="progress-bar"></div>
                 </div>
                 <div class="face-text mt-4 text-center text-main text-lg font-semibold">DeepKline</div>

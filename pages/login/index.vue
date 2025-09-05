@@ -3,7 +3,7 @@
 	import Register from './register.vue'
 	import { useStore } from '~/store'
 	import type { ComponentInternalInstance } from 'vue'
-	import { getNavHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getNavHeight } from '~/composable/useCommon'
 
 	const props = defineProps<{ height?: number }>()
 
@@ -25,8 +25,8 @@
 	)
 
 	function setTabbarHeight() {
-		tabbarHeight.value = (props.height || useStore().bodyHeight) - (titleBar.value.clientHeight || 84)
-		if (useStore().isH5) tabbarHeight.value = (props.height || useStore().bodyHeight) - (navbar.value?.clientHeight || getNavHeight()) - (titleBar.value.clientHeight || 84)
+		tabbarHeight.value = (props.height || useStore().bodyHeight) - (titleBar.value.clientHeight || 84) - getAppStatusBarHeight()
+		if (useStore().isH5) tabbarHeight.value = (props.height || useStore().bodyHeight) - (navbar.value?.clientHeight || getNavHeight()) - (titleBar.value.clientHeight || 84) - getAppStatusBarHeight()
 	}
 
 	onMounted(() => {
@@ -39,6 +39,7 @@
 </script>
 <template>
 	<div class="login-index-container">
+		<AppStatusBar/>
 		<NavigationBar ref="navbar" :showClose="true" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main" ref="titleBar">
 			登录 DeepKline

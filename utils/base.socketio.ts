@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client'
+import { useSyncedCookie } from '~/composable/useSyncedCookie'
 
 export class BaseSocketIo {
 	private socket: Socket | null
@@ -24,7 +25,7 @@ export class BaseSocketIo {
 			path: this.path,
 			timeout: 5000,
 			auth: {
-				token: useCookie('token').value,
+				token: useSyncedCookie('token').value,
 				accountId
 			}
 		})
