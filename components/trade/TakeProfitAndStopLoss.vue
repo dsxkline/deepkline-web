@@ -257,7 +257,10 @@
 			return
 		}
 
+		const action = 'close'
+
 		const order = {
+			action,
 			side: Sides.SELL,
 			orderType: OrderType.STOP,
 			price: String('0'),

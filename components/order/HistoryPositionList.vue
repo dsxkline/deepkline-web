@@ -246,7 +246,11 @@
 					<li class="border-b border-[--transparent05] py-3">
 						<div class="flex justify-between">
 							<div class="flex items-center">
-								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" onlyCoin class="text-base roboto-bold leading-[0]" size="25px" />
+								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">开多</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">开空</button>
+								<!-- <button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.BUY">买入</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.SELL">卖出</button> -->
+								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
 							</div>
 							<div class="flex justify-between items-center gap-4">
 								<button class="flex items-center" @click="pushKline(item)">
@@ -255,8 +259,6 @@
 							</div>
 						</div>
 						<div class="py-1 flex items-center *:mr-1">
-							<button class="tag-green" v-if="item.side == Sides.BUY">买</button>
-							<button class="tag-red" v-if="item.side == Sides.SELL">卖</button>
 							<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated">逐仓</button>
 							<button class="tag-default" v-if="item.marginMode == MarginMode.Cross">全仓</button>
 							<button class="tag-default">{{ parseInt(item.leverage) }}x</button>

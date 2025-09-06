@@ -450,7 +450,7 @@
 		)
 	}
 
-	function addOrder(side: Sides) {
+	function addOrder(s: Sides) {
 		if (!useUserStore().user) {
 			if (useStore().isH5) {
 				pushUp(LoginIndex)
@@ -473,8 +473,8 @@
 
 		if (submitLoading.value) return
 		submitLoading.value = true
-		submitSide.value = side
-		if (side == Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
+		submitSide.value = s
+		if (s == Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
 			ElMessage.error({ message: '可用余额不足' })
 			submitLoading.value = false
 			return
@@ -491,8 +491,11 @@
 			return
 		}
 
+		const action = side.value=='buy'?'open':'close'
+
 		const order = {
-			side,
+			action,
+			side:s,
 			orderType: ordType.value,
 			price: String(price.value),
 			lotSize: String(lotSize.value),
@@ -616,7 +619,7 @@
 						v-if="contentHeight"
 					>
 						<div class="pb-[200px] trade-box" v-if="!loading">
-							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound>
+							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound v-if="symbolObj?.marketType == MarketType.SPOT">
 								<el-radio-button :label="buyText" :value="Sides.BUY" class="*:w-full" />
 								<el-radio-button :label="sellText" :value="Sides.SELL" class="*:w-full" />
 							</el-radio-group>
@@ -843,7 +846,7 @@
 								<button size="large" :class="['relative w-full !h-auto !py-3 bt-green']" v-click-sound @click="addOrder(side)">
 									<div class="flex flex-col items-center">
 										<b class="text-base flex items-center"
-											>{{ side == Sides.BUY ? '开多' : '平多' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+											>{{ side == Sides.BUY ? '开多' : '平多' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.BUY"
 										/></b>
 										<p class="pt-2">{{ buyDes }}</p>
 									</div>
@@ -864,7 +867,7 @@
 								<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3" v-click-sound @click="addOrder(Sides.SELL)">
 									<div class="flex flex-col items-center">
 										<b class="text-base flex items-center"
-											>{{ side == Sides.BUY ? '开空' : '平空' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+											>{{ side == Sides.BUY ? '开空' : '平空' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.SELL"
 										/></b>
 										<p class="pt-2">{{ sellDes }}</p>
 									</div>

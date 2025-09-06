@@ -37,6 +37,7 @@ export const useOrderStore = defineStore({
 				const exit = this.positions.findIndex(item => item.positionId == payload.positionId)
 				if (exit < 0) {
 					if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.positions.unshift(payload)
+					this.positions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 				} else {
 					this.positions[exit] = payload
 					// 如果交易量为0，已平仓
@@ -50,8 +51,7 @@ export const useOrderStore = defineStore({
 				const exit = this.assets.findIndex(item => item.positionId == payload.positionId)
 				if (exit < 0) {
 					if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.assets.unshift(payload)
-				}
-				else {
+				} else {
 					this.assets[exit] = payload
 					// 如果交易量为0，已平仓
 					if (DecimalHelper.compare(payload.lotSize, '<=', '0')) {

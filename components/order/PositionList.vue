@@ -141,6 +141,10 @@
 		}
 	}
 
+	function isSpot(symbol: string) {
+		return useSymbolStore().getSymbol(symbol).marketType == MarketType.SPOT
+	}
+
 	onMounted(() => {})
 
 	// 暴露给父组件的方法
@@ -223,7 +227,11 @@
 					<li class="border-b border-[--transparent05] py-3">
 						<div class="flex justify-between">
 							<div class="flex items-center">
-								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" onlyCoin class="text-base roboto-bold leading-[0]" size="25px" />
+								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">开多</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">开空</button>
+								<button class="tag-green-large mr-2" v-if="isSpot(item.symbol) && item.side == Sides.BUY">买入</button>
+								<button class="tag-red-large mr-2" v-if="isSpot(item.symbol) && item.side == Sides.SELL">卖出</button>
+								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" v-else />
 							</div>
 							<div class="flex justify-between items-center gap-4">
 								<button class="flex items-center" @click="pushKline(item)">
@@ -232,8 +240,6 @@
 							</div>
 						</div>
 						<div class="py-1 flex items-center *:mr-1">
-							<button class="tag-green" v-if="item.side == Sides.BUY">买</button>
-							<button class="tag-red" v-if="item.side == Sides.SELL">卖</button>
 							<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated">逐仓</button>
 							<button class="tag-default" v-if="item.marginMode == MarginMode.Cross">全仓</button>
 							<button class="tag-default">{{ parseInt(item.leverage) }}x</button>
@@ -258,7 +264,7 @@
 						</div>
 						<div class="grid grid-cols-3 justify-between items-center text-xs py-3 pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 							<div class="flex flex-col">
-								<span>仓位资产({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
+								<span>{{ isSpot(item.symbol) ? '仓位资产' : '持仓量' }}({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
 								<b>{{ formatNumber(parseFloat(item.lotSize || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 							</div>
 							<div class="flex flex-col items-center">
@@ -286,7 +292,7 @@
 								<b v-if="item.lotBalance">{{ formatNumber(parseFloat(item.lotBalance || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 								<b v-else>-</b>
 							</div>
-							<div class="flex flex-col">
+							<div class="flex flex-col" v-if="isSpot(item.symbol)">
 								<span>负债({{ useSymbolStore().getSymbol(item.symbol).quoteCoin }})</span>
 								<b v-if="item.margin">{{ moneyFormat(parseFloat(item.margin) * parseInt(item.leverage), '', '2') }}</b>
 								<b v-else>-</b>
@@ -309,21 +315,15 @@
 								/>
 							</el-popover>
 
-							<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
-							<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
+							<button class="bt-default" @click="pushSimpleBuySell(item)">市价全平</button>
+							<button class="bt-default" @click="pushSimpleBuySell(item)">平仓</button>
 
-							<el-popover placement="left" trigger="click" ref="popProfitLoss" :hide-after="0" width="300" v-if="item.marketType == MarketType.SPOT">
-								<template #reference>
-									<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
-								</template>
-								<SimpleBuySell :symbol="item.symbol" v-if="!loading" :price="parseFloat(item.lastPrice)" :close="closeSimpleBuySell(item)" />
-							</el-popover>
 						</div>
 						<div class="flex items-center gap-2 justify-between *:flex-1" v-else>
 							<button class="bt-default" @click="pushStopProfitLoss(item)">止盈止损</button>
-							<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
-							<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
-							<button class="bt-default" v-if="item.marketType == MarketType.SPOT" @click="pushSimpleBuySell(item)">买卖</button>
+							<button class="bt-default" @click="pushSimpleBuySell(item)">市价全平</button>
+							<button class="bt-default" @click="pushSimpleBuySell(item)">平仓</button>
+
 						</div>
 					</li>
 				</template>

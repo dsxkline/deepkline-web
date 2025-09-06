@@ -53,6 +53,7 @@ async function getUserAccounts() {
 		const accounts = result.data
 		if (accounts) {
 			useAccountStore().setAccounts(accounts)
+			useNuxtApp().$dkws.reconnect(useAccountStore().currentAccount?.accountId)
 		}
 	}
 }

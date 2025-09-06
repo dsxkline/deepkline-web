@@ -62,8 +62,8 @@ export enum FundLogType {
 	WITHDRAW = 'withdraw', // 提现
 	TRANSFER_IN = 'transfer_in', // 转入
 	TRANSFER_OUT = 'transfer_out', // 转出
-	TRADE_BUY = 'trade_buy', // 成交买入
-	TRADE_SELL = 'trade_sell', // 成交卖出
+	TRADE_OPEN = 'trade_open', // 开仓
+	TRADE_CLOSE = 'trade_close', // 平仓
 	FEE = 'fee', // 手续费
 	ADJUST = 'adjust', // 人工调账
 	FREEZE = 'freeze', // 冻结
@@ -78,6 +78,7 @@ export interface FundLogsDto {
 	exchange: string
 	symbol: string
 	changeType: FundLogType
+	side: string
 	amount: string
 	balanceBefore: string
 	balanceAfter: string

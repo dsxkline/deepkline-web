@@ -58,8 +58,11 @@
 	watch(
 		() => symbol.value,
 		(val, old) => {
+			if(symbolObj.value.marketType!=MarketType.SPOT){
+				// 强制打开杠杆
+				openLarverage.value = true
+			}
 			unSubSymbols()
-
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
 			item.value = null
@@ -182,7 +185,7 @@
 						<TradeOrder :symbol="symbol" :isH5="true" :openLarverage="openLarverage" :side="side" @update:side="(val: Sides) => side = val" />
 					</div>
 					<div class="w-2/5 pr-4 flex flex-col">
-						<div class="flex items-center justify-end mb-2">
+						<div class="flex items-center justify-end mb-2" v-if="symbolObj.marketType==MarketType.SPOT">
 							<span class="text-xs text-grey">杠杆</span>
 							<el-switch
 								v-model="openLarverage"
