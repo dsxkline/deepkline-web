@@ -27,7 +27,7 @@ COPY .env* ./
 RUN npm install
 
 # 复制编译后的代码
-COPY --from=builder /deepkline-api/build ./build
+COPY --from=builder /deepkline-web/build ./build
 
 # 设置默认启动命令
 CMD ["npm", "run", "start"]
