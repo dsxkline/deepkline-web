@@ -1,24 +1,35 @@
-# 使用官方 Node.js 镜像作为基础镜像
-FROM node:20
+# ========== 构建阶段 ==========
+FROM node:20 AS builder
 
-# 设置工作目录
 WORKDIR /deepkline-web
 
-# 复制 package.json 和 package-lock.json (如果有的话) 到容器中
+# 复制依赖清单
 COPY package*.json ./
 COPY .env* ./
 
 # 安装依赖
 RUN npm install
 
-# 复制所有项目文件到容器中
+# 复制项目源码
 COPY . .
 
-# 构建 Nuxt 应用（生产模式）
+# 构建 NestJS 项目
 RUN npm run build
 
-# 暴露 Nuxt 的默认端口（默认是 3000）
-EXPOSE 3000
+# ========== 运行阶段 ==========
+FROM node:20
 
-# 启动 Nuxt 应用
+WORKDIR /deepkline-web
+
+# 复制运行时依赖
+COPY package*.json ./
+COPY .env* ./
+RUN npm install
+
+# 复制编译后的代码
+COPY --from=builder /deepkline-api/build ./build
+
+# 设置默认启动命令
 CMD ["npm", "run", "start"]
+# 显示端口（可选，记得在 docker run 或 compose 中映射）
+EXPOSE 3000
