@@ -2,7 +2,7 @@ import type { NuxtI18nOptions } from '@nuxtjs/i18n'
 
 export const i18nConfig: NuxtI18nOptions = {
 	// 默认语言
-	defaultLocale: (navigator.language || 'en') as any,
+	defaultLocale: ((process.client ? navigator.language : null) || 'en') as any,
 	// 可用语言
 	locales: [
 		{ code: 'en', iso: 'en-US', file: 'TXT_en.json', name: 'English' },
