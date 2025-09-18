@@ -12,16 +12,16 @@
 		return useSymbolStore().symbols[props.symbol]
 	})
 	const cycleList = computed(()=>[
-		{ label: t('1分'), value: '1m', display: true },
-		{ label: t('5分'), value: '5m', display: true },
-		{ label: t('15分'), value: '15m', display: false },
-		{ label: t('30分'), value: '30m', display: useStore().isH5 ? false : true },
-		{ label: t('1小时'), value: '1H', display: true },
-		{ label: t('2小时'), value: '2H', display: false },
-		{ label: t('4小时'), value: '4H', display: false },
-		{ label: t('4小时'), value: '1D', display: true },
-		{ label: t('1周'), value: '1W', display: useStore().isH5 ? false : true },
-		{ label: t('1月'), value: '1M', display: useStore().isH5 ? false : true }
+		{ label: t('1m'), value: '1m', display: true },
+		{ label: t('5m'), value: '5m', display: true },
+		{ label: t('15m'), value: '15m', display: false },
+		{ label: t('30m'), value: '30m', display: useStore().isH5 ? false : true },
+		{ label: t('1h'), value: '1H', display: true },
+		{ label: t('2h'), value: '2H', display: false },
+		{ label: t('4h'), value: '4H', display: false },
+		{ label: t('1D'), value: '1D', display: true },
+		{ label: t('1W'), value: '1W', display: useStore().isH5 ? false : true },
+		{ label: t('1M'), value: '1M', display: useStore().isH5 ? false : true }
 	])
 	const cycle = ref(localStorage.getItem('cycle') || '1m')
 	const popHide = (e?: Event) => {
