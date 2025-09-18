@@ -8,7 +8,7 @@
 	import defaultAvatar from '~/assets/images/default-avatar.svg'
 	import Cropper from '~/components/common/Cropper.vue'
 	import { useSyncedCookie } from '~/composable/useSyncedCookie'
-
+	const { t } = useI18n()
 	const props = defineProps<{}>()
 	const usepush = usePush()
 	const loading = ref(false)
@@ -79,12 +79,12 @@
 					if (user) user.face = selectAvatar.value
 					if (selectAvatar.value.indexOf('https://api.dicebear.com') >= 0) {
 						ElMessage({
-							message: '更新成功',
+							message: t('更新成功'),
 							type: 'success'
 						})
 					} else {
 						ElMessage({
-							message: '头像修改请求已提交，请耐心等待审核通知',
+							message: t('头像修改请求已提交，请耐心等待审核通知'),
 							type: 'success'
 						})
 					}
@@ -102,7 +102,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -146,10 +146,10 @@
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 		const isValidType = allowedTypes.includes(file.type)
 		if (!isValidType) {
-			ElMessage.error('Avatar picture must be JPG/PNG/GIF/WEBP format!')
+			ElMessage.error(t('图片格式必须是JPG/PNG/GIF/WEBP'))
 			return false
 		} else if (file.size / 1024 / 1024 > 2) {
-			ElMessage.error('Avatar picture size can not exceed 2MB!')
+			ElMessage.error(t('图片大小不能超过2MB'))
 			return false
 		}
 		loading.value = true
@@ -163,11 +163,11 @@
 			}
 			reader.readAsDataURL(file)
 		}
-		console.log('file', rawFile)
+		//console.log('file', rawFile)
 		return rawFile ? true : false
 	}
 	const handlePreview: UploadProps['onPreview'] = file => {
-		console.log(file)
+		//console.log(file)
 		imageUrl.value = URL.createObjectURL(file.raw!)
 	}
 
@@ -201,7 +201,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					avatarLoading.value = false
-					avatarError.value = '网络异常，请稍后再试'
+					avatarError.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -213,8 +213,8 @@
 		// 检查是否修改了头像但是没保存
 		if (selectAvatar.value && useUserStore().user?.face != selectAvatar.value && alertOne) {
 			alertOne = false
-			ElMessageBox.confirm('头像未保存，是否保存后退出?',{
-				title:"提示",
+			ElMessageBox.confirm(t('头像未保存，是否保存后退出'),{
+				title:t('提示'),
 				center:true
 			})
 				.then(() => {
@@ -235,13 +235,13 @@
 <template>
 	<div class="nickname-container">
 		<AppStatusBar/>
-		<NavigationBar ref="navbar" title="更新头像" :returnBack="returnBack">
+		<NavigationBar ref="navbar" :title="t('更新头像')" :returnBack="returnBack">
 			<template #right>
 				<el-button
 					:class="['w-full transition-all !py-2 mx-4 !h-8 !text-sm bt-default', selectAvatar ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 					@click="next"
 					:loading="loading"
-					>保存</el-button
+					>{{ t('保存') }}</el-button
 				>
 			</template>
 		</NavigationBar>
@@ -286,12 +286,12 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height) - 140px)' }" :always="false">
 			<div class="global-form p-6">
 				<ul class="text-sm text-grey list-disc pl-4 *:py-1">
-					<li>您今年可以上传 {{useUserStore().user?.editFaceTimes}} 次公开头像，您也可以选择我们提供的备选头像，没有修改限制</li>
-					<li>我们会审核您上传的头像，过程需要一定时间，请耐心等待</li>
-					<li>上传头像时，请勿使用不雅图片</li>
+					<li>{{t('您今年可以上传次公开头像',{count:useUserStore().user?.editFaceTimes})}}</li>
+					<li>{{ t('我们会审核您上传的头像，过程需要一定时间，请耐心等待') }}</li>
+					<li>{{ t('上传头像时，请勿使用不雅图片') }}</li>
 				</ul>
 
-				<h3 class="pt-6 pb-3" v-if="avatarList?.length">头像历史</h3>
+				<h3 class="pt-6 pb-3" v-if="avatarList?.length">{{ t('头像历史') }}</h3>
 				<div v-if="avatarList?.length && !avatarLoading && !avatarError">
 					<ul class="grid grid-cols-5 justify-evenly flex-wrap gap-5">
 						<template v-for="item in avatarList">
@@ -310,10 +310,10 @@
 				</div>
 				<div v-if="avatarLoading" v-loading="avatarLoading" class="w-full min-h-[135px]"></div>
 				<Error v-if="avatarError" class="w-full min-h-[60px]">
-					<button @click="getFaceHistory">重新加载</button>
+					<button @click="getFaceHistory">{{ t('重新加载') }}</button>
 				</Error>
 
-				<h3 class="pt-6 pb-3">选择头像</h3>
+				<h3 class="pt-6 pb-3">{{ t('选择头像') }}</h3>
 				<div>
 					<div class="w-full border-b border-[--transparent05] mb-4">
 						<ul class="flex items-center pb-3 justify-between gp-3">

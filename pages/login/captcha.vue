@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { userFetch } from '~/fetch/user.fetch'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		email: string
 		successCallback: (code: string) => Promise<boolean>
@@ -79,7 +79,7 @@
 		error.value = ''
 		loading.value = true
 		const code = code1.value + code2.value + code3.value + code4.value
-		console.log('code...', code, props.successCallback)
+		// console.log('code...', code, props.successCallback)
 		// 校验验证码是否正确
 		userFetch
 			.checkVerificationCode(props.email, code)
@@ -97,22 +97,22 @@
 									console.log('err', err)
 									setTimeout(() => {
 										loading.value = false
-										error.value = err.message || '网络异常，请稍后再试'
+										error.value = err.message || t('网络异常，请稍后再试')
 									}, 500)
 								})
 					}
 				} else {
 					setTimeout(() => {
 						loading.value = false
-						error.value = result?.msg || '网络异常，请稍后再试'
+						error.value = result?.msg || t('网络异常，请稍后再试')
 					}, 500)
 				}
 			})
 			.catch(err => {
-				console.log('err', err)
+				// console.log('err', err)
 				setTimeout(() => {
 					loading.value = false
-					error.value = err.message || '网络异常，请稍后再试'
+					error.value = err.message || t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -136,7 +136,7 @@
 					console.log('err', err)
 					setTimeout(() => {
 						loading.value = false
-						error.value = err.message || '网络异常，请稍后再试'
+						error.value = err.message || t('网络异常，请稍后再试')
 					}, 500)
 				})
 	}
@@ -181,8 +181,8 @@
 			</template>
 		</NavigationBar>
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
-			输入邮箱验证码
-			<p class="text-sm font-normal text-grey py-1">邮箱验证码已发送到 {{ email }}</p>
+			{{ t('输入邮箱验证码') }}
+			<p class="text-sm font-normal text-grey py-1">{{ t('邮箱验证码已发送到') }} {{ email }}</p>
 		</h1>
 
 		<div class="global-form p-6">
@@ -196,8 +196,8 @@
 				<div class="text-red">
 					<span v-if="!keystr && error">{{ error }}</span>
 				</div>
-				<div class="" @click="reset" v-if="second <= 0">重新发送验证码</div>
-				<div class="" v-if="second > 0">{{ second }}秒后重新发送</div>
+				<div class="" @click="reset" v-if="second <= 0">{{ t('重新发送验证码') }}</div>
+				<div class="" v-if="second > 0">{{ t('秒后重新发送',{second:second}) }}</div>
 			</div>
 
 			<div class="form-item mt-8">
@@ -209,7 +209,7 @@
 						code1 && code2 && code3 && code4 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]'
 					]"
 				>
-					下一步
+					{{ t('下一步') }}
 				</el-button>
 			</div>
 		</div>

@@ -74,3 +74,17 @@ declare module '#app' {
 		$pwa: UnwrapNestedRefs<PwaInjection>
 	}
 }
+
+export interface MenuListModel {
+		id: number
+		code?: string
+		name?: string
+		subName?: string // 子菜单名称
+		icon?: any
+		desc?: string
+		descIcon?: any // 描述图标
+		more?: any
+		hide?: boolean
+		badge?: number
+		callback?: () => void // 点击回调
+	}

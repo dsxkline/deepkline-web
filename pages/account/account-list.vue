@@ -8,6 +8,7 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { useAccountStore } from '~/store/account'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: string
 	}>()
@@ -34,7 +35,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -52,7 +53,7 @@
 <template>
 	<div class="w-full h-full">
 		<AppStatusBar/>
-		<NavigationBar title="账户列表" :hideBack="push != 'rtl'">
+		<NavigationBar :title="t('账户列表')" :hideBack="push != 'rtl'">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
@@ -63,11 +64,11 @@
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(100% - var(--nav-height) - var(--nav-height) - 60px)' }" :always="false">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
-					<el-button @click.stop="getAccounts()">点击刷新</el-button>
+					<el-button @click.stop="getAccounts()">{{ t('重新加载') }}</el-button>
 				</template>
 			</Error>
 
-			<Empty :content="'开设新账户，体验一键速达全球交易！'" v-if="!loading && !error && !accounts?.length"> </Empty>
+			<Empty :content="t('开设新账户，体验一键速达全球交易')" v-if="!loading && !error && !accounts?.length"> </Empty>
 
 			<ul class="account-list mt-4 px-4 flex flex-col *:border *:border-[--transparent10] *:rounded-xl *:mb-4" v-if="loading && !error">
 				<li class="w-full flex items-center hover:bg-[--transparent03] px-4 py-3" v-for="item in 3">
@@ -94,20 +95,20 @@
 							<b class="text-xl flex items-center leading-none mb-1">
 								{{ useAccountStore().getExchange(item.exchange)?.name || item.exchange }} 
 								<span class="text-base px-1 font-normal">({{ phoneStar(item.accountId + '') }})</span>
-								<div :class="['tag-'+(item.envType==AccountEnvType.DEMO?'demo':'real')]">{{ (item.envType==AccountEnvType.DEMO?'模拟':'实盘') }}</div>
+								<div :class="['tag-'+(item.envType==AccountEnvType.DEMO?'demo':'real')]">{{ (item.envType==AccountEnvType.DEMO?t('模拟'):t('实盘')) }}</div>
 							</b>
 							<div class="text-xs">
 								<span>{{ formatPrice(item.total||'0','2') }} USDT</span>
 								<ProfitRate :profit="item?.profit" :profitRate="item?.profitRate"/>
 							</div>
 						</div>
-						<span v-if="item.isCurrent" class="current-item absolute right-0 top-0 text-xs px-3 bg-brand text-white rounded-bl-xl rounded-tr-lg">当前使用中</span>
+						<span v-if="item.isCurrent" class="current-item absolute right-0 top-0 text-xs px-3 bg-brand text-white rounded-bl-xl rounded-tr-lg">{{ t('当前使用中') }}</span>
 					</li>
 				</template>
 			</ul>
 		</ScrollBar>
 		<div class="w-full px-4 pt-[20px] pb-[40px]">
-			<button @click="pushAddAccount" class="add-account-bt h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ 开设新账户</b></button>
+			<button @click="pushAddAccount" class="add-account-bt h-[var(--nav-height)] w-full border border-[--transparent10]"><b>+ {{ t('开设新账户') }}</b></button>
 		</div>
 	</div>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto';
 	import { useSymbolStore } from '~/store/symbol'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 	}>()

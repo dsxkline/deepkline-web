@@ -11,6 +11,7 @@
 	import { Link } from '@element-plus/icons-vue'
 	import { useAccountStore } from '~/store/account'
 	import type { ComponentInternalInstance } from 'vue/dist/vue.js'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		exchange: ExchangeDto
@@ -31,15 +32,15 @@
 	const next = () => {
 		error.value = ''
 		if (exchange.value.apiKeyRequired && !apiKey.value) {
-			error.value = 'API key should not be empty'
+			error.value = t('API key 不能为空')
 			return
 		}
 		if (exchange.value.secretKeyRequired && !secretKey.value) {
-			error.value = 'Secret key should not be empty'
+			error.value = t('Secret key 不能为空')
 			return
 		}
 		if (exchange.value.passphraseRequired && !passPhrase.value) {
-			error.value = 'Passphrase should not be empty'
+			error.value = t('Passphrase 不能为空')
 			return
 		}
 		if (loading.value) return
@@ -51,7 +52,7 @@
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
 					ElMessage({
-						message: '账户连接成功',
+						message: t('账户连接成功'),
 						type: 'success'
 					})
 					await getUserAccounts()
@@ -61,7 +62,7 @@
 				} else {
 					if (result?.code == 100029) {
 						ElMessage({
-							message: '账户已连接',
+							message: t('账户已连接'),
 							type: 'success'
 						})
 						setTimeout(() => {
@@ -79,7 +80,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -105,7 +106,7 @@
 	async function getUserAccounts() {
 		const result = await accountFetch.list()
 		if (result?.code == FetchResultDto.OK) {
-			console.log('获取账户信息', result.data)
+			// console.log('获取账户信息', result.data)
 			const accounts = result.data
 			if (accounts) {
 				useAccountStore().setAccounts(accounts)
@@ -117,8 +118,8 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<AppStatusBar/>
-		<NavigationBar title="连接账户" :hideBack="!push">
+		<AppStatusBar />
+		<NavigationBar :title="t('连接账户')" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushHelp">
 					<HelpIcon class="w-5 h-5" />
@@ -150,19 +151,19 @@
 						<ExchangeLogo :exchange="exchange.slug" class="w-12 h-12" />
 						<div class="flex flex-col px-2">
 							<b class="text-xl">{{ exchange.name }}</b>
-							<span class="text-sm text-grey">okx是简单易用经纪商</span>
+							<span class="text-sm text-grey">{{ t('okx是简单易用经纪商') }}</span>
 						</div>
 					</div>
 				</div>
 				<div class="form-item py-3 text-xs flex !flex-row leading-none justify-between">
-					请在 {{ exchange.name }} 创建 API 密钥，并粘贴至此处
+					{{ t('请在创建API密钥，并粘贴至此处', { exchange: exchange.name }) }}
 					<span class="px-2 text-brand flex items-center justify-center leading-none" @click="pushHelp"
-						>教程<el-icon class="ml-1"><ArrowRight /></el-icon
+						>{{ t('教程') }}<el-icon class="ml-1"><ArrowRight /></el-icon
 					></span>
 				</div>
 				<div class="form-item my-2" v-if="exchange.apiKeyRequired">
 					<label>API Key</label>
-					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所API Key'" size="large" clearable>
+					<el-input ref="apiKeyInput" v-model="apiKey" :placeholder="t('请粘贴交易所API Key', { exchange: exchange.name })" size="large" clearable>
 						<template #suffix>
 							<button @click="pastedHandle(0)"><PastedIcon class="w-5" /></button>
 						</template>
@@ -170,7 +171,7 @@
 				</div>
 				<div class="form-item my-2" v-if="exchange.secretKeyRequired">
 					<label>Secret Key</label>
-					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Secret Key'" size="large" clearable>
+					<el-input ref="secretKeyInput" v-model="secretKey" :placeholder="t('请粘贴交易所Secret Key', { exchange: exchange.name })" size="large" clearable>
 						<template #suffix>
 							<button @click="pastedHandle(1)"><PastedIcon class="w-5" /></button>
 						</template>
@@ -178,7 +179,7 @@
 				</div>
 				<div class="form-item my-2" v-if="exchange.passphraseRequired">
 					<label>Passphrase</label>
-					<el-input ref="passInput" v-model="passPhrase" :placeholder="'请粘贴 ' + exchange.name + ' 交易所 Passphrase'" size="large" clearable>
+					<el-input ref="passInput" v-model="passPhrase" :placeholder="t('请粘贴交易所Passphrase', { exchange: exchange.name })" size="large" clearable>
 						<template #suffix>
 							<button @click="pastedHandle(2)"><PastedIcon class="w-5" /></button>
 						</template>
@@ -186,30 +187,40 @@
 				</div>
 
 				<div class="form-item py-3 text-xs *:flex *:items-center *:py-1 [&_i]:mr-1">
-					<h3 class="text-sm">权限要求:</h3>
+					<h3 class="text-sm">{{ t('权限要求') }}:</h3>
 					<p>
-						<el-icon class="!text-green"><SuccessFilled /></el-icon>读取(必须)
+						<el-icon class="!text-green"><SuccessFilled /></el-icon>{{ t('读取(必须)') }}
 					</p>
 					<p>
-						<el-icon class="!text-green"><SuccessFilled /></el-icon>交易(建议)
+						<el-icon class="!text-green"><SuccessFilled /></el-icon>{{ t('交易(建议)') }}
 					</p>
 					<p>
-						<el-icon class="!text-red"><RemoveFilled /></el-icon>不勾选“提现权限”！为了您的资产安全
+						<el-icon class="!text-red"><RemoveFilled /></el-icon>{{ t('不勾选“提现权限”！为了您的资产安全') }}
 					</p>
 				</div>
 
 				<div class="form-item mt-3">
 					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-base bt-default', exchange.slug + '-bt']" @click="next" :loading="loading">连接</el-button>
 					<div class="text-red text-sm pt-2" v-if="error"><el-alert :title="error" type="error" :closable="false" /></div>
-					<p class="py-3 text-xs text-grey">点击"连接"即表示我确认已阅读<span class="text-main"> 警告 </span>和<span class="text-main"> 使用条款 </span>并接受所有风险</p>
+					<p class="py-3 text-xs text-grey">
+						<i18n-t keypath="点击连接即表示我确认已阅读警告和使用条款并接受所有风险">
+							<template #jinggao>
+								<span class="text-main"> {{ t('警告') }} </span>
+							</template>
+							<template #shiyongtiaokuan>
+								<span class="text-main"> {{ t('使用条款') }} </span>
+							</template>
+						</i18n-t>
+						
+					</p>
 				</div>
 
 				<div class="flex justify-center py-3 text-grey text-sm">
-					<span>或者</span>
+					<span>{{ t('或者') }}</span>
 				</div>
 				<div class="form-item mt-0">
 					<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-[--transparent02] !text-main']" @click="openExchange"
-						>去 {{ exchange.name }} 开设新账户 <el-icon class="ml-1"><Link /></el-icon
+						>{{ t('去开设新账户',{exchange:exchange.name}) }} <el-icon class="ml-1"><Link /></el-icon
 					></el-button>
 				</div>
 			</div>

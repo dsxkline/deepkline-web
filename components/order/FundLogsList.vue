@@ -12,9 +12,9 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import { useStore } from '~/store'
-	import type { TradeDto } from '~/fetch/dtos/trade.dto'
-	import type { FundLogsDto, FundLogType } from '~/fetch/dtos/account.dto'
+	import { FundLogType, type FundLogsDto } from '~/fetch/dtos/account.dto'
 	import { accountFetch } from '~/fetch/account.fetch'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 	}>()
@@ -75,7 +75,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -97,10 +97,13 @@
 				pushLeft(ExchangeIndex)
 				return
 			} else {
-				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 				return
 			}
 		}
+	}
+	function isSpot(symbol: string) {
+		return useSymbolStore().getSymbol(symbol)?.marketType == MarketType.SPOT
 	}
 
 	function update() {
@@ -116,13 +119,13 @@
 
 <template>
 	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto' }">
-		<Empty :content="'暂无交易账单'" v-if="!loading && !error && !fundLogs?.length" class="pt-20">
-			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
-			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开设账户</el-button>
+		<Empty :content="t('暂无交易账单')" v-if="!loading && !error && !fundLogs?.length" class="pt-20">
+			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">{{ t('登录') }}</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">{{ t('开设账户') }}</el-button>
 		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
-				<el-button @click.stop="getDatas">点击刷新</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -166,17 +169,37 @@
 		</ul>
 		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && fundLogs?.length">
 			<ul v-if="!loading && !error && fundLogs?.length">
-				<template v-for="item in fundLogs" :key="item.orderId">
+				<template v-for="item in fundLogs" :key="item.id">
 					<li class="border-b border-[--transparent05] py-3">
 						<div class="flex justify-between">
-							<div class="flex items-center">
-								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
+							<div class="flex flex-col justify-center">
+								<div class="flex items-center pb-1">
+									<span v-if="item.changeType == FundLogType.TRADE_OPEN">{{ t('开仓') }}</span>
+									<span v-if="item.changeType == FundLogType.TRADE_CLOSE">{{ t('平仓') }}</span>
+									<span v-if="item.changeType == FundLogType.CLOSE_PROFIT">{{ t('平仓收益') }}</span>
+									<span v-if="item.changeType == FundLogType.FEE">{{ t('手续费') }}</span>
+									<span v-if="item.changeType == FundLogType.UNFREEZE">{{ t('解冻') }}</span>
+									<span v-if="item.changeType == FundLogType.FREEZE">{{ t('冻结') }}</span>
+									<span v-if="item.changeType == FundLogType.ORDER_FROZEN">{{ t('挂单冻结') }}</span>
+									<span v-if="item.changeType == FundLogType.DEPOSIT">{{ t('充值') }}</span>
+									<span v-if="item.changeType == FundLogType.WITHDRAW">{{ t('提现') }}</span>
+									<span v-if="item.changeType == FundLogType.INITIAL_FUND">{{ t('初始资金') }}</span>
+								</div>
+								<div class="flex items-center" v-if="item.symbol">
+									<button class="tag-green mr-2" v-if="!isSpot(item.symbol) && item.side == Sides.BUY">{{ t('开多') }}</button>
+									<button class="tag-red mr-2" v-if="!isSpot(item.symbol) && item.side == Sides.SELL">{{ t('开空') }}</button>
+									<button class="tag-green mr-2" v-if="isSpot(item.symbol) && item.side == Sides.BUY">{{ t('买入') }}</button>
+									<button class="tag-red mr-2" v-if="isSpot(item.symbol) && item.side == Sides.SELL">{{ t('卖出') }}</button>
+									<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-sm roboto-bold leading-[0]" />
+								</div>
+								<div class="text-grey text-xs pt-1">{{ formatDate(new Date(item.createdAt).getTime(), 'YYYY/MM/DD HH:mm:ss') }}</div>
 							</div>
-							<div class="flex justify-between items-center gap-4">
-								{{ item.amount }}
+							<div class="flex flex-col justify-center items-end">
+								<span>{{ numberToFixed(item.amount, '8') }}</span>
+								<span class="text-xs text-grey">{{ t('余额') }}:{{ numberToFixed(item.balanceAfter,'8') }}</span>
 							</div>
 						</div>
-						<div class="grid grid-cols-3 justify-between items-center text-xs py-3 [&_b]:text-sm [&_span]:text-grey [&_span]:pb-1 [&_b]:pb-2"></div>
+						
 					</li>
 				</template>
 			</ul>

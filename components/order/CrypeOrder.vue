@@ -7,7 +7,7 @@
 	import { useOrderStore } from '~/store/order'
 	import CrypeAssets from './CrypeAssets.vue'
 	import PositionList from './PositionList.vue'
-	import { getNavHeight, getTabbarHeight } from '~/composable/useCommon'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height?: number
 	}>()
@@ -18,15 +18,15 @@
 		() =>
 			<MenuModel[]>[
 				{
-					name: '委托(' + useOrderStore().orders.length + ')',
+					name: t('委托')+'(' + useOrderStore().orders.length + ')',
 					contentComp: markRaw(OrderList)
 				},
 				{
-					name: '仓位(' + useOrderStore().positions.length + ')',
+					name: t('仓位')+'(' + useOrderStore().positions.length + ')',
 					contentComp: markRaw(PositionList)
 				},
 				{
-					name: '资产(' + useOrderStore().assets.length + ')',
+					name: t('资产')+'(' + useOrderStore().assets.length + ')',
 					contentComp: markRaw(CrypeAssets)
 				}
 			]

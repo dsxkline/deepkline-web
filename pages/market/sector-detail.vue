@@ -6,6 +6,7 @@
 	import SymbolList from '~/components/symbol/search/SymbolList.vue'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
 	import HotSector from '~/components/sector/HotSector.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		height?: number
@@ -38,11 +39,11 @@
 
 	useWillDisappear(() => {
 		// 写hook方法
-		console.log('page market willdisappear...')
+		//console.log('page market willdisappear...')
 	})
 
 	useWillAppear(() => {
-		console.log('page market willappear...')
+		//console.log('page market willappear...')
 	})
 
 	defineExpose({

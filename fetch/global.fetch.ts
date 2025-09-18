@@ -5,7 +5,8 @@ import { useUserStore } from '~/store/user'
 
 const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, headers: Record<string, any> = {}) => {
 	headers['authorization'] = 'Bearer ' + useSyncedCookie('token').value
-	headers['locale'] = useSyncedCookie('locale').value
+	headers['locale'] = useSyncedCookie('locale').value || useSyncedCookie('i18n_redirected').value
+	if(process.env.MODE) headers['mode'] = process.env.MODE
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		body,
@@ -35,14 +36,15 @@ const usePost = async <T = any>(baseUrl: string, path: string, body: any = {}, h
 	}
 	return {
 		code: error.value?.statusCode || 500,
-		msg: error.value?.data?.msg || '获取数据失败',
+		msg: error.value?.data?.msg,
 		data: null
 	}
 }
 
 const useGet = async <T = any>(baseUrl: string, path: string, query: Record<string, any> = {}, headers: any = {}) => {
 	headers['authorization'] = 'Bearer ' + useSyncedCookie('token').value
-	headers['locale'] = useSyncedCookie('locale').value
+	headers['locale'] = useSyncedCookie('locale').value || useSyncedCookie('i18n_redirected').value
+	if(process.env.MODE) headers['mode'] = process.env.MODE
 	const options: UseFetchOptions<T> = {
 		headers: Object.assign(headers),
 		query,
@@ -75,7 +77,7 @@ const useGet = async <T = any>(baseUrl: string, path: string, query: Record<stri
 	}
 	return {
 		code: error.value?.statusCode || 500,
-		msg: error.value?.data?.msg || '获取数据失败',
+		msg: error.value?.data?.msg,
 		data: null
 	}
 }

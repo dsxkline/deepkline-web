@@ -31,7 +31,8 @@ export const useOrderStore = defineStore({
 			}
 		},
 		addPosition(payload: PositionDto) {
-			if (DecimalHelper.compare(payload.lotSize, '>', '0')) this.symbolPositions[payload.symbol] = payload
+			// 现货保存持仓索引
+			if (DecimalHelper.compare(payload.lotSize, '>', '0') && DecimalHelper.compare(payload.leverage, '<=', '0')) this.symbolPositions[payload.symbol] = payload
 			// 合约杠杆
 			if (parseFloat(payload.leverage)) {
 				const exit = this.positions.findIndex(item => item.positionId == payload.positionId)

@@ -3,7 +3,7 @@
 	const { MD5 } = pkg
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { userFetch } from '~/fetch/user.fetch'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		email: string
 		forgetPassword?: boolean
@@ -21,11 +21,11 @@
 	}
 	function password2Handle() {
 		if (password.value.length < 8) {
-			error.value = '新密码格式有误，请重新输入'
+			error.value = t('新密码格式有误，请重新输入')
 			return
 		}
 		if (password.value !== password2.value) {
-			error.value = '两次密码输入不一致，请重新输入'
+			error.value = t('两次密码输入不一致，请重新输入')
 			return
 		}
 		error.value = ''
@@ -34,11 +34,11 @@
 	function next() {
 		error.value = ''
 		if (password.value.length < 8) {
-			error.value = '新密码格式有误，请重新输入'
+			error.value = t('新密码格式有误，请重新输入')
 			return
 		}
 		if (password.value !== password2.value) {
-			error.value = '两次密码输入不一致，请重新输入'
+			error.value = t('两次密码输入不一致，请重新输入')
 			return
 		}
 
@@ -51,7 +51,7 @@
 					loading.value = false
 					// 重置成功
 					ElMessage({
-						message: '设置密码成功',
+						message: t('设置密码成功'),
 						type: 'success'
 					})
 					// 应该是返回到登录界面
@@ -66,7 +66,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -88,17 +88,17 @@
 			</template>
 		</NavigationBar>
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center">
-			设置密码
-			<p class="text-sm font-normal text-grey py-1">请设置一个新密码</p>
+			{{ t('设置密码') }}
+			<p class="text-sm font-normal text-grey py-1">{{ t('请设置一个新密码') }}</p>
 		</h1>
 
 		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<label>输入新密码</label>
+				<label>{{ t("输入新密码") }}</label>
 				<el-input v-model="password" type="password" size="large" maxlength="20" :placeholder="'密码由8-20位字符组成，包含数字字母组合'" @input="passwordHandle" clearable :show-password="true" />
 			</div>
 			<div class="form-item my-4">
-				<label>重复输入新密码</label>
+				<label>{{ t('重复输入新密码') }}</label>
 				<el-input v-model="password2" type="password" size="large" maxlength="20" :placeholder="'密码由8-20位字符组成，包含数字字母组合'" @input="password2Handle" clearable :show-password="true" />
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
@@ -113,10 +113,10 @@
 					@click="next"
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', password.length >= 8 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 				>
-					确认
+					{{ t('确认') }}
 				</el-button>
 
-				<div class="p-4 text-grey w-full text-center text-sm cursor-pointer" @click="returnBack">跳过</div>
+				<div class="p-4 text-grey w-full text-center text-sm cursor-pointer" @click="returnBack">{{ t('跳过') }}</div>
 			</div>
 		</div>
 	</div>

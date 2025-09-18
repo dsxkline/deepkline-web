@@ -1,12 +1,12 @@
 <template>
 	<div class="offline-page">
-		<h1>离线模式</h1>
-		<p>您当前没有网络连接，请稍后再试。</p>
+		<h1>{{ t('离线模式') }}</h1>
+		<p>{{t('您当前没有网络连接，请稍后再试')}}</p>
 	</div>
 </template>
 
 <script setup lang="ts">
-	// 这里可以放一些离线状态逻辑，如果需要的话
+	const { t } = useI18n()
 </script>
 
 <style scoped>

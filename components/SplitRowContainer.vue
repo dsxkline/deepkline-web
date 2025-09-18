@@ -1,10 +1,11 @@
 <script setup lang="ts">
 	import Split from 'split.js'
+import { getFooterHeight, getHeaderHeight, getStatusBarHeight, getTitleBarHeight } from '~/composable/useCommon'
 	const splitVertical = ref(null)
 	const upHeight = 40
 	const windowWidth = ref(window?.innerHeight)
 	const updateWindowWidth = () => {
-		windowWidth.value = window.innerHeight - 40 - 40 - 40
+		windowWidth.value = window.innerHeight - getHeaderHeight() - getStatusBarHeight() - getHeaderHeight() - getTitleBarHeight()
 		setAutoSplit()
 	}
 	let up = 20
@@ -34,9 +35,11 @@
 		window.removeEventListener('resize', updateWindowWidth)
 	})
 	function setAutoSplit() {
-		const containerHeight = splitVertical.value ? (splitVertical.value as HTMLElement).offsetHeight : 0
-		up = (upHeight / containerHeight) * 100.0
+		const containerHeight = window.innerHeight - getHeaderHeight() - getStatusBarHeight() - getFooterHeight() - getTitleBarHeight()
+		up = (getHeaderHeight() / containerHeight) * 100.0
 		down = 100 - up
+		split && split.setSizes([up, down])
+		console.log('ddddddd',up,down)
 	}
 	function addAnimation(dom: HTMLElement | null) {
 		if (dom) {

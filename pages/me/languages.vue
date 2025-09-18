@@ -1,55 +1,44 @@
 <script lang="ts" setup>
+	import { useSyncedCookie } from '~/composable/useSyncedCookie'
 	import { useStore } from '~/store'
+	import type { MenuListModel } from '~/types/types'
+	const { locales, locale, setLocale, t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
-	const menus = ref([
-		{
-			id: 1,
-			name: '跟随系统',
-			subName: '我们将根据您设备的系统设置来自动调整主题',
-            more:useStore().theme === 'system' ? 'CircleCheckFilled' : '',
-			callback: () => selectHandle({ id: 1 }),
-		},
-		{
-			id: 2,
-			name: '日间模式',
-            more:useStore().theme === 'light' ? 'CircleCheckFilled' : '',
-			callback: () => selectHandle({ id: 2 }),
-		},
-        {
-			id: 3,
-			name: '夜间模式',
-            more:useStore().theme === 'dark' ? 'CircleCheckFilled' : '',
-			callback: () => selectHandle({ id: 3 }),
-		},
-        
-	])
-    const selectHandle = (item: any) => {
-        if (item.id === 1) {
-            useStore().setTheme('system')
-        } else if (item.id === 2) {
-            useStore().setTheme('light')
-        } else if (item.id === 3) {
-            useStore().setTheme('dark')
-        }
-        menus.value.forEach(menu => {
-            menu.more = ''
-            if (menu.id === item.id) {
-                menu.more = 'CircleCheckFilled'
-            }
-        })
-    }
+	const menus = ref<MenuListModel[]>(
+		locales.value.map((item, index) => {
+			return {
+				id: index,
+				code: item.code as string,
+				name: item.name as string,
+				more: locale.value == item.code ? 'CircleCheckFilled' : '',
+				callback: () => selectHandle({ code: item.code })
+			}
+		})
+	)
+	const selectHandle = (item: { code: any }) => {
+		useSyncedCookie('i18n_redirected', { default: () => 'zh-CN' }).value = item.code
+		// 1) SPA 切换：直接改语言，不跳转
+		setLocale(item.code)
+		menus.value.forEach(menu => {
+			menu.more = ''
+			if (menu.code === item.code) {
+				menu.more = 'CircleCheckFilled'
+			}
+		})
+		setTimeout(() => {
+			useNuxtApp().$pop()
+		}, 500)
+	}
 	onMounted(() => {})
 </script>
 <template>
 	<div class="w-full h-full">
-		<AppStatusBar/>
-		<NavigationBar title="主题设置" :hideBack="!push" />
+		<AppStatusBar />
+		<NavigationBar :title="t('语言设置')" :hideBack="!push" />
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }">
-	
 			<MenuList :menus="menus" />
-			
 		</ScrollBar>
 	</div>
 </template>

@@ -7,7 +7,7 @@
 	import type { UpDownsDto } from '~/fetch/dtos/exchange.dto'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import type { WsResult } from '~/types/types'
-
+	const { t } = useI18n()
 	const upValue = ref(0)
 	const downValue = ref(0)
 	const animation = useRequestAnimation()

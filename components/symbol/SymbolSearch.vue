@@ -7,6 +7,7 @@
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import AppStatusBar from '../app/AppStatusBar.vue'
 	import { getAppStatusBarHeight } from '~/composable/useCommon'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: string
 		selectHandle?: (item: SymbolDto) => void
@@ -82,7 +83,7 @@
 			<div class="search-list-box bg-[--transparent05]">
 				<div class="flex">
 					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3 pr-0" @focus="focus" @input="search" />
-					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">取消</button>
+					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">{{ t('取消') }}</button>
 				</div>
 				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
 					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :selectHandle="selectHandle" :isSearchList="true" />

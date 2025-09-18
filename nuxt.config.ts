@@ -8,10 +8,11 @@ import pluginsConfig from './config/plugins.config'
 import postcssConfig from './config/postcss.config'
 import pwaConfig from './config/pwa.config'
 import tailwindNuxtConfig from './config/tailwind.nuxt.config'
+import {i18nConfig} from './config/i18n.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const winPack = process.env.MODE == 'win'||process.env.MODE == 'mac'
-console.log('是否PC打包', winPack)
+const winPack = process.env.MODE == 'win' || process.env.MODE == 'mac'
+// console.log('是否PC打包', winPack)
 const pwa = pwaConfig as any
 pwa.manifest = false
 
@@ -49,10 +50,11 @@ const defaultConfig: NuxtConfig = {
 					: {}
 		}
 	},
-	pwa: winPack?undefined:pwa,
-	experimental:{
-		appManifest:process.env.NODE_ENV != 'development'
-	}
+	pwa: winPack ? undefined : pwa,
+	experimental: {
+		appManifest: process.env.NODE_ENV != 'development'
+	},
+	i18n: i18nConfig
 }
 
 const winPackConfig: NuxtConfig = {

@@ -9,7 +9,7 @@
 	import type { ComponentInternalInstance } from 'vue/dist/vue.js'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 	}>()
@@ -63,7 +63,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -73,14 +73,14 @@
 </script>
 <template>
 	<div class="exchange-list-container">
-		<Empty :content="'暂无数据'" v-if="!loading && !error && !exchanges?.length" class="pt-20">
+		<Empty :content="t('暂无数据')" v-if="!loading && !error && !exchanges?.length" class="pt-20">
 			<template #default>
-				<el-button @click.stop="getExchanges">点击刷新</el-button>
+				<el-button @click.stop="getExchanges">{{ t('重新加载') }}</el-button>
 			</template>
 		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
-				<el-button @click.stop="getExchanges">点击刷新</el-button>
+				<el-button @click.stop="getExchanges">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul class="p-4 flex flex-col *:rounded-2xl *:overflow-hidden *:p-4 *:my-4 *:border *:border-[--transparent05]" v-if="loading && !error">
@@ -136,21 +136,21 @@
 						<dl class="text-sm flex items-center justify-between *:flex *:flex-col [&_span]:text-xs [&_span]:text-grey [&_b]:text-center">
 							<dt>
 								<b>${{ item.minDeposit }}</b>
-								<span>最小入金</span>
+								<span>{{ t('最小入金') }}</span>
 							</dt>
 							<dt>
 								<b>{{ item.maxLeverage }}:1</b>
-								<span>最大杠杆</span>
+								<span>{{ t('最大杠杆') }}</span>
 							</dt>
 							<dt>
 								<b>{{ item.takerFee }}%</b>
-								<span>手续费</span>
+								<span>{{t('手续费')}}</span>
 							</dt>
 						</dl>
 					</div>
 					<div>
 						<button :class="['exchange-open-bt bt-default w-full h-10 !text-sm !border-0', item.slug + '-bt']" @click="pushAddAccount(item)">
-							开设{{ item.isLocal && item.isDemo ? '模拟' : '' }}账户
+							{{ item.isLocal && item.isDemo ? t('开设模拟账户') : t('开设账户') }}
 						</button>
 					</div>
 				</li>

@@ -11,6 +11,7 @@
 	import { OrderType, type AddOrderDto } from '~/fetch/dtos/order.dto'
 	import { orderFetch } from '~/fetch/order.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
+	const { t } = useI18n()
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const props = defineProps<{
@@ -163,14 +164,14 @@
 	watch(
 		() => szPercent.value,
 		val => {
-			console.log('szPercent', val)
+			// console.log('szPercent', val)
 			setPriceWithPercent(val)
 		}
 	)
 
 	const onProgress = (val: number) => {
 		if (val != undefined) {
-			console.log('onProgress', val)
+			// console.log('onProgress', val)
 			// szPercent.value = parseFloat(val.toFixed(2))
 			// setPriceWithPercent(szPercent.value)
 		}
@@ -197,9 +198,9 @@
 		() => lotBalancePercent.value,
 		val => {
 			lotBalance.value = (parseFloat(props.lotSize || '0') * val) / 100
-			console.log('lotBalancePercent', val, props.lotSize, lotBalance.value)
+			//console.log('lotBalancePercent', val, props.lotSize, lotBalance.value)
 			lotBalance.value = numberToFixed(Math.max(lotBalance.value, parseFloat(symbolObj.value.minSz || '0')), symbolObj.value.lotSz)
-			console.log('onProgressLotBalance', val, symbolObj.value.minSz, symbolObj.value.lotSz, lotBalance.value)
+			//console.log('onProgressLotBalance', val, symbolObj.value.minSz, symbolObj.value.lotSz, lotBalance.value)
 		}
 	)
 
@@ -223,7 +224,7 @@
 				pushLeft(ExchangeIndex)
 				return
 			} else {
-				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 				return
 			}
 		}
@@ -231,13 +232,13 @@
 		submitLoading.value = true
 
 		if (!price.value) {
-			ElMessage.error({ message: '请输入' + (props.type == 0 ? '止盈' : '止损') + '价格' })
+			ElMessage.error({ message: props.type == 0 ? t('请输入止盈价格') : t('请输入止损价格') })
 			submitLoading.value = false
 			return
 		}
 
 		if (!parseFloat(lotBalance.value)) {
-			ElMessage.error({ message: '请输入交易数量' })
+			ElMessage.error({ message: t('请输入交易数量') })
 			submitLoading.value = false
 			return
 		}
@@ -262,7 +263,7 @@
 			openTakeProfit: props.type == 0 ? openStop.value : false
 		} as AddOrderDto
 
-		console.log('order', order)
+		// console.log('order', order)
 
 		orderFetch
 			.add(order)
@@ -280,14 +281,14 @@
 			})
 			.catch(err => {
 				setTimeout(() => {
-					ElMessage.error('网络异常，请稍后再试')
+					ElMessage.error(t('网络异常，请稍后再试'))
 					submitLoading.value = false
 				}, 500)
 			})
 	}
 
 	onMounted(() => {
-		console.log('stopLoss', localStorage.getItem('stopProfitLossClose_' + props.type))
+		// console.log('stopLoss', localStorage.getItem('stopProfitLossClose_' + props.type))
 		lotBalancePercent.value = 100
 		// openStop.value = !(localStorage.getItem('stopProfitLossClose_'+props.type) == 'true')
 		initPrice.value = parseFloat(numberToFixed(props.initPrice || 0, symbolObj.value.tickSz))
@@ -307,36 +308,36 @@
 <template>
 	<div :class="['pt-1', 'stopprofit-h5', type ? 'stoploss' : 'stopprofit']">
 		<h3 class="flex items-center justify-between">
-			<span class="text-main">{{ !type ? '设置止盈' : '设置止损' }} </span>
+			<span class="text-main">{{ !type ? t('设置止盈') : t('设置止损') }} </span>
 			<el-switch v-model="openStop" class="ml-2" :style="`--el-switch-on-color: rgb(var(--color-${!type ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`" />
 		</h3>
 		<div class="py-1 pb-3">
 			<ul>
 				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main" v-if="!position">
-					<span>最新价格</span>
+					<span>{{ t('最新价格') }}</span>
 					<b>{{ formatPrice(initPrice, symbolObj.tickSz) }}</b>
 					<template v-if="lotSize">
-						<span class="pl-2">委托数量</span>
+						<span class="pl-2">{{ t('委托数量') }}</span>
 						<b>{{ formatNumber(parseFloat(lotSize), symbolObj.lotSz) }}</b>
 					</template>
 				</li>
 
 				<li v-else class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main">
-					<span>成本价</span>
+					<span>{{ t('成本价') }}</span>
 					<b>{{ formatPrice(initPrice, symbolObj.tickSz) }}</b>
 					<template v-if="lotSize">
-						<span class="pl-2">可用数量</span>
+						<span class="pl-2">{{ t('可用数量') }}</span>
 						<b>{{ formatNumber(parseFloat(lotSize), symbolObj.lotSz) }}</b>
 					</template>
 				</li>
 				<li class="text-xs [&_span]:text-grey [&_span]:pr-1 [&_b]:text-main" v-if="position">
-					<span>最新价</span>
+					<span>{{ t('最新价') }}</span>
 					<b>{{ formatPrice(position.lastPrice, symbolObj.tickSz) }}</b>
 				</li>
 			</ul>
 		</div>
 		<h3 class="flex items-center justify-between">
-			<span>{{ !type ? '止盈' : '止损' }} </span>
+			<span>{{ !type ? t('止盈') : t('止损') }} </span>
 		</h3>
 		<div class="py-2">
 			<el-input-number
@@ -357,20 +358,34 @@
 				:disabled="!openStop"
 			/>
 			<div class="text-xs text-grey mt-1">
-				<span v-if="price"
-					>当前价格达到 <span class="text-main">${{ price.toFixed(point) }} (约等于 {{ formatNumber(szPercent, '2') }} %)</span> 时触发
-					<span class="text-main">市价委托{{ !type ? '止盈' : '止损' }}</span></span
-				>
-				<template v-if="parseFloat(profit)">
-					<span
-						>，预估{{ !type ? '收益' : '亏损' }}为 <b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b></span
+				<i18n-t keypath="当价格达到止盈" v-if="price && !type">
+					<template #price>
+						<span class="text-main"> ${{ price.toFixed(point) }}</span>
+					</template>
+					<template #percent>
+						<span class="text-main"> {{ formatNumber(szPercent, '2') }} </span>
+					</template>
+					<template #profit v-if="parseFloat(profit)">
+						<b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b>
+					</template>
+				</i18n-t>
+
+				<i18n-t keypath="当价格达到止损" v-if="price && type">
+					<template #price
+						><span class="text-main"> ${{ price.toFixed(point) }} </span></template
 					>
-				</template>
+					<template #percent>
+						<span class="text-main"> {{ formatNumber(szPercent, '2') }}</span>
+					</template>
+					<template #profit v-if="parseFloat(profit)">
+						<b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b>
+					</template>
+				</i18n-t>
 			</div>
 		</div>
 		<div class="flex items-center py-2 gap-3">
 			<div class="w-1/2">
-				<h3 class="mb-3">点数</h3>
+				<h3 class="mb-3">{{ t('点数') }}</h3>
 				<el-input-number
 					@change="amountChange"
 					@input="amountChange"
@@ -387,7 +402,7 @@
 				/>
 			</div>
 			<div class="w-1/2">
-				<h3 class="mb-3">{{ !type ? '涨幅' : '跌幅' }} %</h3>
+				<h3 class="mb-3">{{ !type ? t('涨幅') : t('跌幅') }} %</h3>
 				<div class="slider-box">
 					<el-input-number
 						@change="percentChange"
@@ -414,7 +429,7 @@
 		<div class="slider-wrapper"><slider v-model="szPercent" :step="1" :marks="marks" :showTooltip="false" @progress="onProgress" /></div>
 		<template v-if="position">
 			<div class="py-2">
-				<h3 class="mb-3">数量</h3>
+				<h3 class="mb-3">{{ t('数量') }}</h3>
 				<el-input @change="amountChange" @input="amountChange" v-model="lotBalance" size="large" class="!w-full" v-click-sound inputmode="decimal" :disabled="!openStop" />
 			</div>
 			<div class="slider-wrapper"><slider v-model="lotBalancePercent" :step="1" :marks="lotSizeMarks" :showTooltip="false" @progress="onProgressLotBalance" /></div>
@@ -422,7 +437,7 @@
 
 		<div class="py-3">
 			<button class="stop-bt bt-green w-full !py-2 flex items-center leading-normal" v-click-sound @click="position ? addOrder() : confirm()">
-				<span :class="submitLoading ? 'text-white/50' : 'text-white'">确定</span>
+				<span :class="submitLoading ? 'text-white/50' : 'text-white'">{{ t('确定') }}</span>
 				<Loading v-if="submitLoading" size="14px" class="mx-2" />
 			</button>
 		</div>

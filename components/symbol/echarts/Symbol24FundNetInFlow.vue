@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { useStore } from "~/store";
+const { t } = useI18n()
 const chart = ref(null);
 let echart: echarts.ECharts;
 let base = +new Date(1968, 9, 3);
@@ -70,7 +71,7 @@ onDeactivated(() => {
 <template>
 	<div class="w-full h-full mt-2 border-b border-[--border-color] pb-3 ">
 		<h3 class="py-2 text-sm mb-3 flex justify-between items-center">
-			24小时资金净流入
+			{{ t('24小时资金净流入') }}
 
 		</h3>
 		<div class="container">

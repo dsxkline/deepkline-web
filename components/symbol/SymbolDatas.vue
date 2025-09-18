@@ -3,6 +3,7 @@
 	import { InstanceType, type Ticker } from '~/fetch/okx/okx.type.d'
 	import LongShortAccountRatioTopTrader from './echarts/LongShortAccountRatioTopTrader.vue'
 	import LongShortPositionRatioTopTrader from './echarts/LongShortPositionRatioTopTrader.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 		symbol: string

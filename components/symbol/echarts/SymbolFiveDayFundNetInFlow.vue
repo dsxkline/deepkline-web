@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import * as echarts from "echarts";
 import { _borderColor } from "#tailwind-config/theme";
 import { useStore } from "~/store";
+const { t } = useI18n()
 const chart = ref(null);
 let echart: echarts.ECharts;
 const option = {
@@ -106,7 +107,7 @@ onDeactivated(() => {
 <template>
 	<div class="w-full h-full mt-2 border-b border-[--border-color] pb-3 ">
 		<h3 class="py-2 text-sm mb-3 flex justify-between items-center">
-			5日主力净流入:
+			{{ t('5日主力净流入') }}:
 		</h3>
 		<div class="container">
 			<div class="chart w-full h-[150px]" ref="chart"></div>

@@ -8,21 +8,22 @@
 	import Volatility from '~/pages/market/volatility.vue'
 	import BigOrders from './tables/BigOrders.vue'
 	import ChangeRateList from './tables/ChangeRateList.vue'
+	const {t} = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const usepush = usePush()
 	const loading = ref(true)
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(()=>[
 		{
-			name: '主力追踪',
+			name: t('主力追踪'),
 			contentComp: markRaw(WhaleTrackingList),
 			contentParams: {
 				pageSize: 11
 			}
 		},
 		{
-			name: '支撑位',
+			name: t('支撑位'),
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
 				source: 'home',
@@ -31,7 +32,7 @@
 			}
 		},
 		{
-			name: '压力位',
+			name: t('压力位'),
 			contentComp: markRaw(PriceBreakoutList),
 			contentParams: {
 				source: 'home',
@@ -46,12 +47,12 @@
 		// 	contentParams: {}
 		// },
 		{
-			name: '实时涨幅',
+			name: t('实时涨幅'),
 			contentComp: markRaw(ChangeRateList),
 			contentParams: { source: 'home', pageSize: 8 }
 		},
 		{
-			name: '大单监控',
+			name: t('大单监控'),
 			contentComp: markRaw(BigOrders),
 			contentParams: { pageSize: 8 }
 		}
@@ -67,11 +68,11 @@
 	<div class="market-volatility w-full h-full py-4">
 		<div class="market-volatility mx-4 overflow-hidden">
 			<h3 class="pb-0 flex justify-between items-center font-bold">
-				异动信号 <el-icon @click="pushVolatility"><ElIconArrowRight /></el-icon>
+				{{t('异动信号')}} <el-icon @click="pushVolatility"><ElIconArrowRight /></el-icon>
 			</h3>
 			<TabBar :menus="menus" />
 			<button class="w-full !py-2 text-center text-sm bt-default !bg-transparent !border-[--transparent05] !rounded-full overflow-hidden !text-grey" @click="pushVolatility">
-				更多<el-icon><ElIconArrowRight /></el-icon>
+				{{t('更多')}}<el-icon><ElIconArrowRight /></el-icon>
 			</button>
 		</div>
 	</div>

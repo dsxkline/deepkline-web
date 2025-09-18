@@ -8,7 +8,7 @@
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		pageSize?: number
@@ -23,7 +23,7 @@
 	const lheader = ref()
 
 	const contentHeight = computed(() => {
-		console.log('lheader.value?.clientHeight',lheader.value?.clientHeight)
+		// console.log('lheader.value?.clientHeight',lheader.value?.clientHeight)
 		// 获取当前组件的高度
 		return (props.height || 0) - (lheader.value?.clientHeight || 0)
 	})
@@ -45,7 +45,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
+				if (!datas.value?.length) error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -64,9 +64,7 @@
 		getDatas()
 	}
 
-	function leave() {
-		
-	}
+	function leave() {}
 
 	onMounted(() => {})
 
@@ -79,20 +77,28 @@
 	<div :style="{ height: height ? +contentHeight + 'px' : 'max-content' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getDatas">点击重新加载</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<Empty :msg="error" v-if="!loading && !error && !datas.length">
 			<template #default>
-				<el-button @click.stop="getDatas">点击重新加载</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Empty>
 		<div ref="lheader" class="symbol-list-header w-full py-2" v-else-if="!loading && !error">
 			<ul :class="'grid grid-cols-5 *:flex *:items-center text-xs text-grey'">
-				<li class="col-span-2"><span>名称</span></li>
-				<li class="justify-start"><span>买卖</span></li>
-				<li class="justify-center"><span>成交价</span></li>
-				<li class="justify-end"><span>成交额</span></li>
+				<li class="col-span-2">
+					<span>{{ t('名称') }}</span>
+				</li>
+				<li class="justify-start">
+					<span>{{ t('买卖') }}</span>
+				</li>
+				<li class="justify-center">
+					<span>{{ t('成交价') }}</span>
+				</li>
+				<li class="justify-end">
+					<span>{{ t('成交额') }}</span>
+				</li>
 			</ul>
 		</div>
 		<ScrollBar class="w-full h-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" :always="false" v-if="!loading && !error && datas.length">
@@ -102,17 +108,17 @@
 						<div class="col-span-2 flex flex-col items-start justify-start" v-autosize="16">
 							<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" v-if="useSymbolStore().getSymbol(item.symbol)" size="20px" />
 							<span v-else> -- </span>
-							<span class="text-xs text-grey">{{ formatDate(parseInt(item.ts),'MM/DD HH:mm:ss') }}</span>
+							<span class="text-xs text-grey">{{ formatDate(parseInt(item.ts), 'MM/DD HH:mm:ss') }}</span>
 						</div>
 						<div class="text-center text-xs">
-							<span class="tag-green w-max" v-if="item.side=='buy'">买入</span>
-							<span class="tag-red w-max" v-if="item.side=='sell'">卖出</span>
+							<span class="tag-green w-max" v-if="item.side == 'buy'">{{ t('买入') }}</span>
+							<span class="tag-red w-max" v-if="item.side == 'sell'">{{ t('卖出') }}</span>
 						</div>
 						<div class="text-center text-xs">
-							{{ formatPrice(item.px,'', useSymbolStore().getSymbol(item.symbol).tickSz) }}
+							{{ formatPrice(item.px, '', useSymbolStore().getSymbol(item.symbol).tickSz) }}
 						</div>
 						<div class="text-end text-xs">
-							{{ moneyFormat(parseFloat(item.px)*parseFloat(item.sz)*parseFloat(useSymbolStore().getSymbol(item.symbol).contractSize||'1'), '2') }}
+							{{ moneyFormat(parseFloat(item.px) * parseFloat(item.sz) * parseFloat(useSymbolStore().getSymbol(item.symbol).contractSize || '1'), '2') }}
 						</div>
 					</li>
 				</template>

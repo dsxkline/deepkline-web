@@ -10,8 +10,8 @@
 			</template>
 			<template #footer>
 				<div class="dialog-footer" v-if="showCannel || showConfirm">
-					<el-button @click="dialogVisible = false" v-if="showCannel">Cancel</el-button>
-					<el-button type="primary" @click="dialogVisible = false" v-if="showConfirm"> Confirm </el-button>
+					<el-button @click="dialogVisible = false" v-if="showCannel">{{ t('取消') }}</el-button>
+					<el-button type="primary" @click="dialogVisible = false" v-if="showConfirm"> {{ t('确认') }} </el-button>
 				</div>
 			</template>
 		</el-dialog>
@@ -34,6 +34,8 @@
 		params?: any
 		destroy?: () => void
 	}>()
+
+	const { t } = useI18n()
 
 	// 给子组件全局注入当前dialog实例
 	provide('currentDialog', instance)

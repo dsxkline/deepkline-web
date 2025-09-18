@@ -2,6 +2,7 @@
 	import { useStore } from '~/store'
 	import { useKlineStore } from '~/store/kline'
 	import { useSymbolStore } from '~/store/symbol'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -10,17 +11,17 @@
 	const symbolObj = computed(() => {
 		return useSymbolStore().symbols[props.symbol]
 	})
-	const cycleList = ref([
-		{ label: '1分', value: '1m', display: true },
-		{ label: '5分', value: '5m', display: true },
-		{ label: '15分', value: '15m', display: false },
-		{ label: '30分', value: '30m', display: useStore().isH5 ? false : true },
-		{ label: '1小时', value: '1H', display: true },
-		{ label: '2小时', value: '2H', display: false },
-		{ label: '4小时', value: '4H', display: false },
-		{ label: '1日', value: '1D', display: true },
-		{ label: '1周', value: '1W', display: useStore().isH5 ? false : true },
-		{ label: '1月', value: '1M', display: useStore().isH5 ? false : true }
+	const cycleList = computed(()=>[
+		{ label: t('1分'), value: '1m', display: true },
+		{ label: t('5分'), value: '5m', display: true },
+		{ label: t('15分'), value: '15m', display: false },
+		{ label: t('30分'), value: '30m', display: useStore().isH5 ? false : true },
+		{ label: t('1小时'), value: '1H', display: true },
+		{ label: t('2小时'), value: '2H', display: false },
+		{ label: t('4小时'), value: '4H', display: false },
+		{ label: t('4小时'), value: '1D', display: true },
+		{ label: t('1周'), value: '1W', display: useStore().isH5 ? false : true },
+		{ label: t('1月'), value: '1M', display: useStore().isH5 ? false : true }
 	])
 	const cycle = ref(localStorage.getItem('cycle') || '1m')
 	const popHide = (e?: Event) => {
@@ -45,7 +46,7 @@
 		return menu
 	})
 	const moreText = computed(() => {
-		return showHideMenu.value?.label || '更多'
+		return showHideMenu.value?.label || t('更多')
 	})
 
 	onMounted(() => {
@@ -55,7 +56,6 @@
 		isDestroyed.value = true
 		document.removeEventListener('touchstart', popHide)
 		popCycleBar.value = null
-		cycleList.value = []
 	})
 </script>
 <template>

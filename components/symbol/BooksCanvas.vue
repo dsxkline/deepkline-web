@@ -2,7 +2,7 @@
 	import { onMounted, onBeforeUnmount, ref, watch } from 'vue'
 	import { useRequestAnimation, type requestAnimationType } from '~/composable/useRequestAnimation'
 	import type { BookEntry } from '~/fetch/okx/okx.type.d'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		datas: BookEntry[]
 		point: string

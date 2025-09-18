@@ -1,6 +1,5 @@
 <script setup lang="ts">
 	import SymbolDetail from '~/components/symbol/SymbolDetail.vue'
-	import { getMenuHeight, getNavHeight } from '~/composable/useCommon'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import { usePush } from '~/composable/usePush'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
@@ -8,7 +7,7 @@
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		pageSize?: number
@@ -47,7 +46,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
+				if (!datas.value?.length) error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -79,12 +78,12 @@
 	<div :style="{ height: height ? +contentHeight + 'px' : 'max-content' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getMainForceList">点击重新加载</el-button>
+				<el-button @click.stop="getMainForceList">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<Empty :msg="error" v-if="!loading && !error && !datas.length">
 			<template #default>
-				<el-button @click.stop="getMainForceList">点击重新加载</el-button>
+				<el-button @click.stop="getMainForceList">{{ t('重新加载') }}</el-button>
 			</template>
 		</Empty>
 		<ScrollBar class="w-full h-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" :always="false" v-if="!loading && !error && datas.length">
@@ -103,7 +102,7 @@
 										: ''
 								]"
 							>
-								吸筹
+								{{t('吸筹')}}
 							</button>
 							<button
 								:style="[
@@ -112,7 +111,7 @@
 										: ''
 								]"
 							>
-								拉升中
+								{{t('拉升中')}}
 							</button>
 							<button
 								:style="[
@@ -121,7 +120,7 @@
 										: ''
 								]"
 							>
-								出货
+								{{t('出货')}}
 							</button>
 							<button
 								:style="[
@@ -130,7 +129,7 @@
 										: ''
 								]"
 							>
-								诱多
+								{{t('诱多')}}
 							</button>
 						</div>
 					</li>
@@ -156,7 +155,3 @@
 		</div>
 	</div>
 </template>
-<style lang="less" scoped>
-	.accumulating {
-	}
-</style>

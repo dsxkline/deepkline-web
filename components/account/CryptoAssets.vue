@@ -8,7 +8,7 @@
 	import { useOrderStore } from '~/store/order'
 	import { useSymbolStore } from '~/store/symbol'
 	import { useUserStore } from '~/store/user'
-
+	const { t } = useI18n()
 	const loading = ref(true)
 	const error = ref('')
 	const assets = computed(() => useOrderStore().assets)
@@ -43,7 +43,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -54,11 +54,11 @@
 
 <template>
 	<div class="px-4 min-h-[500px]">
-		<h3 class="pb-3">资产</h3>
-		<Empty :content="'暂无委托'" v-if="!loading && !error && !assets?.length" class="pt-20"> </Empty>
+		<h3 class="pb-3">{{t('资产')}}</h3>
+		<Empty :content="t('暂无委托')" v-if="!loading && !error && !assets?.length" class="pt-20"> </Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
-				<el-button @click.stop="getAssets">点击刷新</el-button>
+				<el-button @click.stop="getAssets">{{t('重新加载')}}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -91,9 +91,9 @@
 		</ul>
 		<ul class="*:grid *:grid-cols-3 *:w-full *:py-2 *:items-center *:my-1 *:border-b *:border-[--transparent05]" v-if="!loading && !error && assets?.length">
 			<li>
-				<div class="text-xs text-grey">名称</div>
-				<div class="text-xs text-right text-grey">数量/余额</div>
-				<div class="text-xs text-right text-grey">收益</div>
+				<div class="text-xs text-grey">{{t('名称')}}</div>
+				<div class="text-xs text-right text-grey">{{t('数量')}}/{{t('余额')}}</div>
+				<div class="text-xs text-right text-grey">{{t('收益')}}</div>
 			</li>
 			<template v-for="item in assets">
 				<li>

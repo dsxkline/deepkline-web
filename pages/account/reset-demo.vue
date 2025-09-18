@@ -6,7 +6,7 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import { useAccountStore } from '~/store/account'
-	import { use } from 'echarts'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -24,7 +24,7 @@
 					loading.value = false
 					await getUserAccounts()
 					ElMessage({
-						message: '重置成功',
+						message: t('重置成功'),
 						type: 'success'
 					})
 					useAccountStore().reset(accountId)
@@ -33,7 +33,7 @@
 					setTimeout(() => {
 						loading.value = false
 						ElMessage({
-							message: result?.msg || '开通失败',
+							message: result?.msg || t('开通失败'),
 							type: 'error'
 						})
 					}, 500)
@@ -43,7 +43,7 @@
 				setTimeout(() => {
 					loading.value = false
 					ElMessage({
-						message: '网络异常，请稍后再试',
+						message: t('网络异常，请稍后再试'),
 						type: 'error'
 					})
 				}, 500)
@@ -53,7 +53,7 @@
 	async function getUserAccounts() {
 		const result = await accountFetch.list()
 		if (result?.code == FetchResultDto.OK) {
-			console.log('获取账户信息', result.data)
+			// console.log('获取账户信息', result.data)
 			const accounts = result.data
 			if (accounts) {
 				useAccountStore().setAccounts(accounts)
@@ -68,19 +68,19 @@
 <template>
 	<div class="w-full h-full">
 		<AppStatusBar/>
-		<NavigationBar title="重置账户" :hideBack="!push"> </NavigationBar>
+		<NavigationBar :title="t('重置账户')" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - 44px - var(--safe-bottom))' }" :always="false">
 			<div class="flex flex-col items-center justify-center">
 				<ResetBannerIcon class="w-1/2 m-0" />
 			</div>
 			<div class="p-4 text-xs text-grey border border-[--transparent05] rounded-lg bg-[--transparent05] m-4">
-				<div class="text-sm font-bold mb-4 text-main">重置账户说明</div>
-				<p class="mb-2">重置账户将清除所有账户交易信息，请谨慎操作。</p>
+				<div class="text-sm font-bold mb-4 text-main">{{ t('重置账户说明') }}</div>
+				<p class="mb-2">{{t('重置账户将清除所有账户交易信息，请谨慎操作')}}。</p>
 			</div>
 		</ScrollBar>
 
 		<div class="fixed bottom-[var(--safe-bottom)] left-0 right-0 p-4">
-			<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="submitResetAccount" :loading="loading">确认重置</el-button>
+			<el-button size="large" :class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', '!bg-brand !text-white']" @click="submitResetAccount" :loading="loading">{{ t('确认重置') }}</el-button>
 		</div>
 	</div>
 </template>

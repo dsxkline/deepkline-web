@@ -4,7 +4,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	const mainSplit = ref()
 	const twoSplit = ref()
-
+	const { t } = useI18n()
 	onMounted(() => {
 		mainSplit.value && useStore().addSplitScreen(mainSplit.value)
 		twoSplit.value && useStore().addSplitScreen(twoSplit.value)
@@ -17,11 +17,11 @@
 
 	useWillDisappear(() => {
 		// 写hook方法
-		console.log('page market willdisappear...')
+		//console.log('page market willdisappear...')
 	})
 
 	useWillAppear(() => {
-		console.log('page market willappear...')
+		//console.log('page market willappear...')
 	})
 
 	watch(

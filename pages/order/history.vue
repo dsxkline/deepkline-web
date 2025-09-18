@@ -6,6 +6,7 @@
 	import HistoryOrderList from '~/components/order/HistoryOrderList.vue'
 	import HistoryPositionList from '~/components/order/HistoryPositionList.vue'
 	import FundLogsList from '~/components/order/FundLogsList.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height?: number
 	}>()
@@ -16,15 +17,15 @@
 		() =>
 			<MenuModel[]>[
 				{
-					name: '历史委托',
+					name: t('历史委托'),
 					contentComp: markRaw(HistoryOrderList)
 				},
 				{
-					name: '历史仓位',
+					name: t('历史仓位'),
 					contentComp: markRaw(HistoryPositionList)
 				},
 				{
-					name: '交易账单',
+					name: t('交易账单'),
 					contentComp: markRaw(FundLogsList)
 				}
 			]
@@ -51,7 +52,7 @@
 <template>
 	<div class="history-container">
 		<AppStatusBar />
-		<NavigationBar :title="'交易记录'" ref="navbar"></NavigationBar>
+		<NavigationBar :title="t('交易记录')" ref="navbar"></NavigationBar>
 		<TabBar :menus="menus" :height="tabbarHeight"> </TabBar>
 	</div>
 </template>

@@ -14,7 +14,9 @@
 	import LoginIndex from '~/pages/login/index.vue'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { useOrderStore } from '~/store/order'
-	import { getAppStatusBarHeight } from '~/composable/useCommon'
+	import { getAppStatusBarHeight, getFooterHeight, getHeaderHeight, getTitleBarHeight } from '~/composable/useCommon'
+	import type { PositionDto } from '~/fetch/dtos/position.dto'
+	const { t } = useI18n()
 	const pushUp = usePushUp()
 	const pushLeft = usePush()
 	const props = defineProps<{
@@ -25,11 +27,14 @@
 		side?: Sides
 		hideProfitLoss?: boolean
 		price?: number
+		position?: PositionDto
+		action?: 'open' | 'close'
 	}>()
 	const emit = defineEmits<{
 		(event: 'update:side', side: Sides): void
 		(event: 'close'): void
 	}>()
+	const _action = ref<'open' | 'close'>('open')
 	const loading = ref(true)
 	const submitLoading = ref(false)
 	const submitSide = ref(Sides.BUY)
@@ -40,7 +45,7 @@
 		// 获取当前组件的高度
 		let h = props.height
 		if (process.client) {
-			h = props.height || useStore().bodyHeight - 4 * 40 - getAppStatusBarHeight()
+			h = props.height || useStore().bodyHeight - getHeaderHeight() - getHeaderHeight() - getHeaderHeight() - getFooterHeight() - getAppStatusBarHeight() - getTitleBarHeight() - 10
 			nextTick(() => {
 				loading.value = false
 			})
@@ -59,16 +64,16 @@
 	const ordTypeOptions = computed(() => {
 		return [
 			{
-				name: '限价单',
+				name: t('限价单'),
 				value: OrderType.LIMIT
 			},
 			{
-				name: '市价单',
+				name: t('市价单'),
 				value: OrderType.MARKET
 			}
 		]
 	})
-	const side = ref<Sides>(props.side || Sides.BUY)
+	const _side = ref<Sides>(Sides.BUY)
 	const ordType = ref<OrderType>(OrderType.MARKET)
 	const price = ref()
 	const lotSize = ref(symbolObj.value?.minSz || '')
@@ -88,10 +93,10 @@
 	const margin = ref('')
 	const marginInput = ref<HTMLElement>()
 	const buyText = computed(() => {
-		return symbolObj.value?.marketType == MarketType.SPOT ? '买入' : '开仓'
+		return symbolObj.value?.marketType == MarketType.SPOT ? t('买入') : t('开仓')
 	})
 	const sellText = computed(() => {
-		return symbolObj.value?.marketType == MarketType.SPOT ? '卖出' : '平仓'
+		return symbolObj.value?.marketType == MarketType.SPOT ? t('卖出') : t('平仓')
 	})
 	const openStopLoss = ref(false)
 	const openTakeProfit = ref(false)
@@ -153,7 +158,9 @@
 
 	// 可用金额
 	const available = computed(() => {
-		if (side.value == Sides.BUY) {
+		// 现货买入，现货杠杆合约买入卖出都读取可用金额，因为现货杠杆可以做空卖出
+
+		if (_action.value == 'open' && ((symbolObj.value.marketType == MarketType.SPOT && _side.value == Sides.BUY) || leverage.value)) {
 			return parseFloat(useAccountStore().fund?.available || '0')
 		} else {
 			// 根据可卖的数量计算
@@ -187,6 +194,8 @@
 	watch(
 		() => props.symbol,
 		(val, old) => {
+			_action.value = props.action || 'open'
+			_side.value = Sides.BUY
 			resetForm()
 			$ws.removeTickerHandler(old, tickerHandler)
 			$ws.addTickerHandler(val, tickerHandler)
@@ -208,8 +217,12 @@
 	)
 
 	watch(
-		() => side.value,
+		() => _side.value,
 		(val, old) => {
+			// 现货切换买卖
+			if (symbolObj.value.marketType == MarketType.SPOT && leverage.value <= 0) {
+				_action.value = val == 'buy' ? 'open' : 'close'
+			}
 			resetForm()
 			emit('update:side', val)
 		}
@@ -249,7 +262,8 @@
 
 	const setCanTradeLotSize = () => {
 		// 根据手续费以及可用金额计算可买标的数量
-		if (side.value == Sides.BUY) {
+		// 现货买入，现货杠杆合约都进入
+		if (_action.value == 'open' && ((symbolObj.value.marketType == MarketType.SPOT && _side.value == Sides.BUY) || leverage.value)) {
 			const last = parseFloat(ticker.value?.last || '0')
 			if (!last) return
 			canTradeLotSize.value = available.value / (((price.value || last) * (100 + fee.value)) / 100)
@@ -265,7 +279,8 @@
 		} else {
 			canTradeLotSize.value = 0
 			// 查询持仓可卖数量
-			const position = useOrderStore().getSymbolPosition(props.symbol)
+			const position = props.position || useOrderStore().getSymbolPosition(props.symbol)
+			// console.log('可平仓数量', _action.value,'leverage', leverage.value, props.position)
 			if (position) {
 				canTradeLotSize.value = parseFloat(numberToFixed(position.lotAvailable, symbolObj.value?.lotSz))
 			}
@@ -275,7 +290,7 @@
 	// 自动设置数量
 	const autoSetLotSize = () => {
 		let losz = DecimalHelper.div(DecimalHelper.mul(canTradeLotSize.value, lotSizePercent.value).toNumber(), 100).toNumber()
-		if (available.value < minMargin.value && side.value == Sides.BUY) {
+		if (available.value < minMargin.value && _side.value == Sides.BUY && _action.value == 'open') {
 			lotSize.value = ''
 		} else {
 			losz = Math.max(losz, parseFloat(symbolObj.value?.minSz))
@@ -375,7 +390,7 @@
 		if (timer.value) clearInterval(timer.value)
 	}
 	const handleKeydown = (event: KeyboardEvent) => {
-		console.log('全局按键：', event.key)
+		// console.log('全局按键：', event.key)
 		inputing = true
 	}
 	function handleClickOrTouch(e: Event) {
@@ -466,7 +481,7 @@
 				pushLeft(ExchangeIndex)
 				return
 			} else {
-				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 				return
 			}
 		}
@@ -474,33 +489,44 @@
 		if (submitLoading.value) return
 		submitLoading.value = true
 		submitSide.value = s
-		if (s == Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value)) {
-			ElMessage.error({ message: '可用余额不足' })
+		if (s == Sides.BUY && DecimalHelper.compare(available.value, '<', minMargin.value) && _action.value == 'open') {
+			ElMessage.error({ message: t('可用余额不足') })
 			submitLoading.value = false
 			return
 		}
 
 		if (!parseFloat(lotSize.value)) {
-			ElMessage.error({ message: '请输入交易数量' })
+			ElMessage.error({ message: t('请输入交易数量') })
 			submitLoading.value = false
 			return
 		}
-		if (!parseFloat(margin.value)) {
-			ElMessage.error('请输入交易金额')
+		if (!parseFloat(margin.value) && _action.value == 'open') {
+			ElMessage.error(t('请输入交易金额'))
 			submitLoading.value = false
 			return
 		}
-
-		const action = side.value=='buy'?'open':'close'
+		// 现货直接买卖，不需要持仓单关联，合约和杠杆需要持仓关联
+		const action = _action.value
+		// 现货合约杠杆平仓，平多单还是平空单
+		if (props.position && action == 'close' && leverage.value > 0) {
+			if (props.position.side == Sides.BUY) s = Sides.SELL
+			else s = Sides.BUY
+		}
+		// 现货卖出，杠杆合约平仓等需要带持仓ID
+		let positionId = props.position?.positionId
+		if(symbolObj.value.marketType==MarketType.SPOT && leverage.value<=0 && s==Sides.SELL){
+			positionId = useOrderStore().getSymbolPosition(props.symbol)?.positionId
+		}
 
 		const order = {
+			positionId,
 			action,
-			side:s,
+			side: s,
 			orderType: ordType.value,
 			price: String(price.value),
 			lotSize: String(lotSize.value),
 			marginMode: marginMode.value,
-			margin: String(margin.value),
+			margin: String(margin.value || '0'),
 			accountId: useAccountStore().currentAccount?.accountId,
 			exchange: useAccountStore().currentAccount?.exchange,
 			symbol: props.symbol,
@@ -511,7 +537,7 @@
 			openTakeProfit: openTakeProfit.value
 		} as AddOrderDto
 
-		console.log('order', order)
+		// console.log('order', order)
 
 		orderFetch
 			.add(order)
@@ -519,10 +545,11 @@
 				if (result?.code == FetchResultDto.OK) {
 					// 下单成功,如果ws五秒内还不来就先给出提示
 					resetForm()
+
 					setTimeout(() => {
 						emit('close')
 						if (submitLoading.value) {
-							// ElMessage.success('委托已提交')
+							ElMessage.success(t('下单成功'))
 							submitLoading.value = false
 						}
 					}, 3000)
@@ -535,14 +562,14 @@
 			})
 			.catch(err => {
 				setTimeout(() => {
-					ElMessage.error('网络异常，请稍后再试')
+					ElMessage.error(t('网络异常，请稍后再试'))
 					submitLoading.value = false
 				}, 500)
 			})
 	}
 
 	const wsOrderHandle = (data: WsResult<OrderDto>) => {
-		console.log('收到订单推送信息', data.payload)
+		// console.log('收到订单推送信息', data)
 		const order = data.payload
 		if (order.state == 'live') {
 			// 挂单成功通知
@@ -553,16 +580,23 @@
 
 		if (order.state == 'rejected' || order.state == 'failed') {
 			// 挂单失败
-			const msg = order.msg || '挂单失败'
+			const msg = order.msg || t('挂单失败')
 			ElMessage.error(msg)
 			submitLoading.value = false
 		}
 	}
 
 	onMounted(() => {
-		console.log('tradeorder mounted', props.price)
+		// console.log('tradeorder mounted', props.price, props.action)
+		if (props.action) {
+			_action.value = props.action
+		}
 		leverage.value = props.openLarverage ? 1 : 0
 		price.value = props.price
+		if (props.action == 'close' && props.position) {
+			_side.value = props.position?.side as Sides
+			leverage.value = parseInt(props.position.leverage)
+		}
 		setCanTradeLotSize()
 		autoSetMargin()
 		startTimer()
@@ -614,32 +648,37 @@
 				<ScrollBar :height="isH5 ? '100%' : contentHeight + 'px'" v-show="!loading && !error">
 					<div
 						ref="tradeContainer"
-						:class="['trade-container p-4 text-xs flex flex-col justify-between h-full', side]"
+						:class="['trade-container p-4 text-xs flex flex-col justify-between h-full', _side]"
 						:style="['height:' + (isH5 ? '100%' : contentHeight + 'px')]"
 						v-if="contentHeight"
 					>
 						<div class="pb-[200px] trade-box" v-if="!loading">
-							<el-radio-group v-model="side" class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full" v-click-sound v-if="symbolObj?.marketType == MarketType.SPOT">
+							<el-radio-group
+								v-model="_side"
+								class="trade-side w-full flex justify-between *:flex-1 *:!flex *:w-full"
+								v-click-sound
+								v-if="(!position && symbolObj?.marketType == MarketType.SPOT) || (position && !parseInt(position.leverage))"
+							>
 								<el-radio-button :label="buyText" :value="Sides.BUY" class="*:w-full" />
 								<el-radio-button :label="sellText" :value="Sides.SELL" class="*:w-full" />
 							</el-radio-group>
 
 							<div class="flex items-center justify-between">
 								<el-radio-group v-model="ordType" size="small" class="trade-type my-3 mb-3 w-full" v-click-sound>
-									<el-radio-button label="限价单" :value="OrderType.LIMIT" class="*:w-full" />
-									<el-radio-button label="市价单" :value="OrderType.MARKET" class="*:w-full" />
+									<el-radio-button :label="t('限价单')" :value="OrderType.LIMIT" class="*:w-full" />
+									<el-radio-button :label="t('市价单')" :value="OrderType.MARKET" class="*:w-full" />
 								</el-radio-group>
 
 								<!-- <el-select v-model="leverage" class="trade-leverage-select w-full">
 									<el-option v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" />
 								</el-select> -->
 								<div class="flex items-center justify-end larver-switch">
-									<span class="text-xs text-grey text-nowrap">杠杆</span>
+									<span class="text-xs text-grey text-nowrap">{{ t('杠杆') }}</span>
 									<el-switch
 										v-model="openSelfLarverage"
 										class="ml-2"
 										size="small"
-										:style="`--el-switch-on-color: rgb(var(--color-${side == Sides.BUY ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`"
+										:style="`--el-switch-on-color: rgb(var(--color-${_side == Sides.BUY ? 'green' : 'red'})); --el-switch-off-color: var(--transparent10)`"
 									/>
 								</div>
 							</div>
@@ -648,25 +687,25 @@
 							<div class="flex items-center justify-between margin-type-box-small" v-if="orderWidth <= 200 && !useStore().isH5">
 								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
+										<span class="text-grey leverage-title" v-if="!isH5">{{t('杠杆')}}</span>
 										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
-										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
-										<span class="flex-auto text-right !text-grey" v-else>无</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{t('杠杆')}}</span>
+										<span class="flex-auto text-right !text-grey" v-else>{{ t('无') }}</span>
 									</template>
-									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
+									<div class="px-4 w-full text-center" v-if="isH5">{{t('杠杆')}}</div>
 									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 
 								<el-radio-group v-model="marginMode" size="small" class="margin-type my-0 mb-2 w-full" v-click-sound v-if="parseFloat(leverage)">
-									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
-									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
+									<el-radio-button :label="t('逐仓')" :value="MarginMode.Isolated" class="*:w-full" />
+									<el-radio-button :label="t('全仓')" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
 							</div>
 
 							<div class="flex items-center justify-between margin-type-box" v-else-if="openLarverage || (openSelfLarverage && !useStore().isH5)">
 								<el-radio-group v-model="marginMode" size="small" class="margin-type w-full" v-click-sound>
-									<el-radio-button label="逐仓" :value="MarginMode.Isolated" class="*:w-full" />
-									<el-radio-button label="全仓" :value="MarginMode.Cross" class="*:w-full" />
+									<el-radio-button :label="t('逐仓')" :value="MarginMode.Isolated" class="*:w-full" />
+									<el-radio-button :label="t('全仓')" :value="MarginMode.Cross" class="*:w-full" />
 								</el-radio-group>
 
 								<!-- <el-select v-model="leverage" class="trade-leverage-select w-full">
@@ -675,18 +714,18 @@
 
 								<Select v-model="leverage" class="!min-h-0 !p-1 !px-2 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey leverage-title" v-if="!isH5">杠杆</span>
+										<span class="text-grey leverage-title" v-if="!isH5">{{t('杠杆')}}</span>
 										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
-										<span class="flex-auto text-right text-grey" v-else-if="isH5">杠杆</span>
-										<span class="flex-auto text-right !text-grey" v-else>无</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{t('杠杆')}}</span>
+										<span class="flex-auto text-right !text-grey" v-else>{{t('无')}}</span>
 									</template>
-									<div class="px-4 w-full text-center" v-if="isH5">杠杆</div>
+									<div class="px-4 w-full text-center" v-if="isH5">{{t('杠杆')}}</div>
 									<SelectOption v-for="item in leverages.filter((it:any) => it.value != '0')" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
 
 							<div class="relative price-input">
-								<h5 class="pb-2">价格({{ symbolObj?.quoteCoin }})</h5>
+								<h5 class="pb-2">{{t('价格')}}({{ symbolObj?.quoteCoin }})</h5>
 								<el-input-number
 									@change="priceChange"
 									@focus="priceFocus"
@@ -710,13 +749,13 @@
 								</div>
 							</div>
 							<div class="amount-container">
-								<h5 class="py-2">数量({{ symbolObj?.baseCoin }})</h5>
+								<h5 class="py-2">{{t('数量')}}({{ symbolObj?.baseCoin }})</h5>
 								<el-input
 									v-click-sound
 									inputmode="decimal"
 									v-model="lotSize"
 									@input="lotSizeChange"
-									:placeholder="'最小数量 ' + symbolObj?.minSz + symbolObj?.baseCoin"
+									:placeholder="t('最小数量')+' ' + symbolObj?.minSz + symbolObj?.baseCoin"
 									size="large"
 									class="!w-full"
 									:clearable="!isH5"
@@ -727,7 +766,8 @@
 							</div>
 
 							<div class="money-container" ref="marginInput">
-								<h5 class="py-2">金额({{ symbolObj?.quoteCoin }})</h5>
+								<!-- 现货开仓才显示金额 -->
+								<h5 class="py-2" v-if="symbolObj?.marketType == MarketType.SPOT">{{t('金额')}}({{ symbolObj?.quoteCoin }})</h5>
 								<el-input
 									v-click-sound
 									inputmode="decimal"
@@ -735,20 +775,22 @@
 									v-model="margin"
 									:max="available"
 									:min="minMargin"
-									:placeholder="'请输入金额'"
+									:placeholder="t('请输入金额')"
 									size="large"
 									class="!w-full"
 									:clearable="!isH5"
 									@input="marginChange"
+									v-if="symbolObj?.marketType == MarketType.SPOT"
 								/>
-								<div class="trade-av">
+								<!-- 现货 -->
+								<div class="trade-av" v-if="symbolObj?.marketType == MarketType.SPOT && parseInt(position?.leverage || '0') <= 0">
 									<div class="py-1 pt-2 av-item">
-										<span class="text-grey">{{ side == Sides.BUY ? '可用' : '可卖' }}({{ symbolObj?.quoteCoin }})</span>
+										<span class="text-grey">{{ _side == Sides.BUY ? t('可用') : t('可卖') }}({{ symbolObj?.quoteCoin }})</span>
 										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
 									<div class="py-1 av-item" v-if="symbolObj?.marketType == MarketType.SPOT">
-										<span class="text-grey">{{ side == Sides.BUY ? '可买' : '可用' }}({{ symbolObj?.baseCoin }})</span>
+										<span class="text-grey">{{ _side == Sides.BUY ? t('可买') : t('可用') }}({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
@@ -760,7 +802,7 @@
 									<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popProfit" :hide-after="0" width="300">
 										<template #reference>
 											<div v-click-sound class="bg-[--transparent02] rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
-												<h6 class="pb-2 text-grey">止盈</h6>
+												<h6 class="pb-2 text-grey">{{ t('止盈') }}</h6>
 												<div v-if="!takeProfit">-</div>
 												<div v-else class="flex flex-col text-green">
 													<span>{{ numberToFixed(takeProfit, symbolObj?.tickSz) }}</span>
@@ -773,7 +815,7 @@
 									<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="300">
 										<template #reference>
 											<div v-click-sound class="bg-[--transparent02] mt-1 rounded-md p-2 border border-[--transparent10] flex flex-col hover:border-[--transparent30] cursor-pointer">
-												<h6 class="pb-2 text-grey">止损</h6>
+												<h6 class="pb-2 text-grey">{{ t('止损') }}</h6>
 												<div v-if="!stopLoss">-</div>
 												<div v-else class="flex flex-col text-red">
 													<span>{{ numberToFixed(stopLoss, symbolObj?.tickSz) }}</span
@@ -790,7 +832,7 @@
 										@click="pushStopProfitLoss(0)"
 										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
 									>
-										<h6 class="pb-0 text-grey">止盈</h6>
+										<h6 class="pb-0 text-grey">{{t('止盈')}}</h6>
 										<div v-if="!takeProfit">-</div>
 										<div v-else class="text-green">{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
 									</div>
@@ -799,7 +841,7 @@
 										@click="pushStopProfitLoss(1)"
 										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
 									>
-										<h6 class="pb-0 text-grey">止损</h6>
+										<h6 class="pb-0 text-grey">{{t('止损')}}</h6>
 										<div v-if="!stopLoss">-</div>
 										<div v-else class="text-red">{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
 									</div>
@@ -809,11 +851,12 @@
 
 						<div class="flex flex-col trade-bts absolute bottom-0 left-0 w-full p-3 z-10" v-if="!loading">
 							<!-- 现货 -->
-							<template v-if="symbolObj?.marketType == MarketType.SPOT">
-								<button size="large" :class="['relative w-full !h-auto !py-3', side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(side)">
+							<!-- 传持仓过来就是合约或者现货杠杆 -->
+							<template v-if="symbolObj?.marketType == MarketType.SPOT && parseInt(position?.leverage || '0') <= 0">
+								<button size="large" :class="['relative w-full !h-auto !py-3', _side == Sides.SELL ? 'bt-red' : 'bt-green']" v-click-sound @click="addOrder(_side)">
 									<div class="flex flex-col items-center">
 										<b class="text-base flex items-center"
-											>{{ side == Sides.BUY ? buyText : sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
+											>{{ _side == Sides.BUY ? buyText : sellText }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200"
 										/></b>
 										<p class="pt-2">{{ buyDes }}</p>
 									</div>
@@ -829,45 +872,47 @@
 									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.SELL" />
 								</button>
 							</template>
-							<!-- 合约 -->
+							<!-- 合约/现货杠杆 -->
 							<template v-else>
 								<div class="swap-cans pb-2">
-									<div class="py-1 pt-2 flex justify-between items-center">
-										<span class="text-grey">可开多 ({{ symbolObj?.quoteCoin }})</span>
+									<div class="py-1 pt-2 flex justify-between items-center" v-if="!position || position?.side == Sides.BUY">
+										<span class="text-grey">{{ _action == 'close' ? t('可平仓') : t('可开多') }} ({{ symbolObj?.quoteCoin }})</span>
 										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
-									<div class="py-1 flex justify-between items-center">
-										<span class="text-grey">数量 ({{ symbolObj?.baseCoin }})</span>
+									<div class="py-1 flex justify-between items-center" v-if="!position || position?.side == Sides.BUY">
+										<span class="text-grey">{{t('数量')}} ({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
 								</div>
-								<button size="large" :class="['relative w-full !h-auto !py-3 bt-green']" v-click-sound @click="addOrder(side)">
+								<button size="large" :class="['relative w-full !h-auto !py-3 bt-green']" v-click-sound @click="addOrder(_side)" v-if="!position || position?.side == Sides.BUY">
 									<div class="flex flex-col items-center">
 										<b class="text-base flex items-center"
-											>{{ side == Sides.BUY ? '开多' : '平多' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.BUY"
+											>{{ _side == Sides.BUY && !position ? t('开多') : _action == 'close' ? t('平仓') : t('平多') }} <span class="ccy px-1" v-if="_action == 'open'">{{ symbolObj?.baseCoin }}</span>
+											<Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.BUY"
 										/></b>
 										<p class="pt-2">{{ buyDes }}</p>
 									</div>
 									<Loading class="absolute inset-0 bg-black/30" v-if="submitLoading && orderWidth <= 200 && submitSide == Sides.BUY" />
 								</button>
-								<div class="swap-cans pt-2">
+								<div class="swap-cans pt-2" v-if="!position || position?.side == Sides.SELL">
 									<div class="py-1 pt-2 flex justify-between items-center">
-										<span class="text-grey">可开空 ({{ symbolObj?.quoteCoin }})</span>
+										<span class="text-grey">可{{ _action == 'close' ? t('平仓') : t('开空') }} ({{ symbolObj?.quoteCoin }})</span>
 										<b class="font-normal" v-if="available">{{ formatPrice(available, '2', '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
-									<div class="py-1 flex justify-between items-center">
-										<span class="text-grey">数量 ({{ symbolObj?.baseCoin }})</span>
+									<div class="py-1 flex justify-between items-center" v-if="!position || position?.side == Sides.SELL">
+										<span class="text-grey">{{ t('数量') }} ({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
 								</div>
-								<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3" v-click-sound @click="addOrder(Sides.SELL)">
+								<button size="large" class="relative w-full !h-auto mt-3 !ml-0 bt-red !py-3" v-click-sound @click="addOrder(Sides.SELL)" v-if="!position || position?.side == Sides.SELL">
 									<div class="flex flex-col items-center">
 										<b class="text-base flex items-center"
-											>{{ side == Sides.BUY ? '开空' : '平空' }} <span class="ccy px-1">{{ symbolObj?.baseCoin }}</span> <Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.SELL"
+											>{{ _side == Sides.BUY ? t('开空') : _action == 'close' ? t('平仓') : t('平空') }} <span class="ccy px-1" v-if="_action == 'open'">{{ symbolObj?.baseCoin }}</span>
+											<Loading size="18px" class="ml-1" v-if="submitLoading && orderWidth > 200 && submitSide == Sides.SELL"
 										/></b>
 										<p class="pt-2">{{ sellDes }}</p>
 									</div>

@@ -10,18 +10,19 @@
 	import SymbolSearch from './SymbolSearch.vue'
 	import { usePush } from '~/composable/usePush'
 	import { getAppStatusBarHeight, getMenuHeight, getTitleBarHeight } from '~/composable/useCommon'
+	const { t } = useI18n()
 	const tabbar = ref()
 	const active = ref(0)
 	const tabbarHeight = ref(0)
 	const search = ref()
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(() => [
 		{
-			name: '自选',
+			name: t('自选'),
 			contentComp: markRaw(Options),
 			contentParams: {}
 		},
 		{
-			name: '市场',
+			name: t('市场'),
 			contentComp: markRaw(MarketList)
 		}
 	])

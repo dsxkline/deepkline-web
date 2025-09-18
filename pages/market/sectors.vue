@@ -5,6 +5,7 @@
 	import { usePush, useRefreshChildEvent, useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		height?: number
@@ -30,7 +31,7 @@
 	watch(
 		() => pageSubSymbols.value,
 		val => {
-			console.log('板块首页的品种变动', val)
+			// console.log('板块首页的品种变动', val)
 			unSubSymbols()
 			subSymbols()
 		},
@@ -66,12 +67,12 @@
 
 	useWillDisappear(() => {
 		// 写hook方法
-		console.log('page market sector willdisappear...')
+		//console.log('page market sector willdisappear...')
         unSubSymbols()
 	})
 
 	useWillAppear(() => {
-		console.log('page market sector willappear...')
+		//console.log('page market sector willappear...')
         subSymbols()
 	})
 
@@ -82,7 +83,7 @@
 <template>
 	<div class="market-sectors w-full h-full">
 		<AppStatusBar/>
-		<NavigationBar ref="navbar" title="板块排行" :hideBack="!push"> </NavigationBar>
+		<NavigationBar ref="navbar" :title="t('板块排行')" :hideBack="!push"> </NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: tabbarHeight + 'px' }" :always="false">
 			<HotSector :full="true" />
 		</ScrollBar>

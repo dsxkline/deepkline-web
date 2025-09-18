@@ -9,6 +9,7 @@
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import SymbolDetail from '~/components/symbol/SymbolDetail.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		pageSize?: number
@@ -49,7 +50,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
+				if (!datas.value?.length) error.value = t('网络异常，请稍后再试')
 			})
 	}
 

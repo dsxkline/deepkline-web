@@ -5,6 +5,7 @@
 	import { throttle } from 'lodash-es'
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 	}>()
@@ -106,7 +107,7 @@
 			.catch(err => {
 				console.log('err', err)
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -137,7 +138,7 @@
 	const wsError = (state: number) => {
 		if (state <= -1 && !tradesList.value?.length) {
 			loading.value = false
-			error.value = '网络异常，连接错误'
+			error.value = t('网络异常，请稍后再试')
 		} else {
 			error.value = ''
 		}
@@ -182,7 +183,7 @@
 	<div class="w-full h-full min-h-[650px] overflow-hidden">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b>最新成交</b>
+				<b>{{ t('最新成交') }}</b>
 			</h3>
 			<!-- <el-select v-model="pointLevel" style="width: 100px" v-if="!loading" v-click-sound>
 				<el-option v-for="item in pointLevelOptions" :key="item" :label="item" :value="item" v-click-sound />
@@ -197,9 +198,9 @@
 		<template v-else-if="!error">
 			<div class="w-full h-full relative" v-observe-visible.multi="onObserveVisible">
 				<div class="trade-title w-full text-grey grid grid-cols-3 my-[1px] py-[1px] items-center justify-between h-[20px] absolute top-0 left-0 z-10">
-					<div>价格(USDT)</div>
-					<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
-					<div class="text-right">时间</div>
+					<div>{{t('价格')}}(USDT)</div>
+					<div class="text-right">{{t('数量')}}({{ symbolObj?.baseCoin }})</div>
+					<div class="text-right">{{ t('时间') }}</div>
 				</div>
 
 				<div

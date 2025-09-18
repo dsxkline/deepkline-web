@@ -11,6 +11,7 @@
 	import SymbolSearch from './SymbolSearch.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import CrypeOrder from '../order/CrypeOrder.vue'
+	const { t } = useI18n()
 	import { getAppStatusBarHeight, getHeaderHeight, getNavHeight, getStatusBarHeight, getTabbarHeight, getTitleBarHeight } from '~/composable/useCommon'
 	const props = defineProps<{
 		symbol: string
@@ -22,30 +23,30 @@
 	const currentSymbol = ref(props.symbol)
 	const tabbarHeight = ref(0)
 	const navbar = ref()
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(()=>[
 		{
-			name: '行情',
+			name: t('行情'),
 			contentComp: markRaw(SymbolMarketDatas),
 			contentParams: {
 				symbol: currentSymbol.value
 			}
 		},
 		{
-			name: '概况',
+			name: t('概况'),
 			contentComp: markRaw(SymbolInfo),
 			contentParams: {
 				symbol: currentSymbol.value
 			}
 		},
 		{
-			name: '数据',
+			name: t('数据'),
 			contentComp: markRaw(SymbolDatas),
 			contentParams: {
 				symbol: props.symbol
 			}
 		},
 		{
-			name: '订单',
+			name: t('订单'),
 			contentComp: markRaw(CrypeOrder),
 			contentParams: {
 				symbol: currentSymbol.value,
@@ -113,7 +114,6 @@
 		setTabbarHeight()
 	})
 	onUnmounted(() => {
-		menus.value = []
 		navbar.value = null
 		console.log('SymbolDetail unmounted')
 	})
@@ -127,7 +127,7 @@
 					<el-icon><ArrowLeftBold /></el-icon>
 				</button>
 				<b class="text-xl flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
-					>{{ getSymbolName(symbolObj) }} {{ symbolObj?.marketType == MarketType.SWAP ? '永续' : '' }}</b
+					>{{ getSymbolName(symbolObj) }} {{ symbolObj?.marketType == MarketType.SWAP ? t('永续') : '' }}</b
 				>
 				<button class="flex items-center pl-2 h-full" @click="pushSearch">
 					<el-icon><CaretBottom /></el-icon>

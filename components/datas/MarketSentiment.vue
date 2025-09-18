@@ -4,7 +4,7 @@
 	import CryptoChangeChart from './chart/CryptoChangeChart.vue'
 	import { exchangeFetch } from '~/fetch/exchange.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-
+	const {t, locale} = useI18n()
 	const color = ref('')
 	const value = ref(0)
 	const slug = ref('')
@@ -44,9 +44,16 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
+
+	watch(
+		() => locale.value,
+		newVal => {
+			getFear()
+		}
+	)
 
 	onMounted(() => {
 		getFear()
@@ -57,10 +64,10 @@
 </script>
 <template>
 	<div class="market-sentiment px-4 py-2">
-		<h3 class="pb-3 font-bold">市场情绪</h3>
+		<h3 class="pb-3 font-bold">{{t('市场情绪')}}</h3>
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getFear">点击刷新</el-button>
+				<el-button @click.stop="getFear">{{t('重新加载')}}</el-button>
 			</template>
 		</Error>
 

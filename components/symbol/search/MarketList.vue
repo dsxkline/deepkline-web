@@ -3,6 +3,7 @@
 	import TabBar from '../../common/TabBar.vue'
 	import SymbolList from './SymbolList.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 		start?: boolean
@@ -15,9 +16,9 @@
 	}>()
 	const tabbar = ref()
 	const active = ref(0)
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(()=>[
 		{
-			name: '现货',
+			name: t('现货'),
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: MarketType.SPOT,
@@ -31,7 +32,7 @@
 			}
 		},
 		{
-			name: '合约',
+			name: t('合约'),
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: MarketType.SWAP,

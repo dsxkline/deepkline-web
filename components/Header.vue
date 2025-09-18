@@ -5,6 +5,7 @@
 	import Languages from './common/Languages.vue'
 	import LoginIndex from '~/pages/login/index.vue'
 	import { useUserStore } from '~/store/user'
+	const { t } = useI18n()
 	// const store = useStore();
 	// store.increment();
 	function clickSplitScreen(num: number) {
@@ -43,8 +44,8 @@
 			</div>
 			<el-divider direction="vertical" class="mx-1"></el-divider>
 			<div class="flex items-center justify-center" v-if="!useUserStore().user">
-				<button class="bt-default mx-1" @click="pushLogin">登录</button>
-				<button class="bt-primary mx-1" @click="pushLogin">注册</button>
+				<button class="bt-default mx-1" @click="pushLogin">{{ t('登录') }}</button>
+				<button class="bt-primary mx-1" @click="pushLogin">{{ t('注册') }}</button>
 			</div>
 			<div class="flex items-center justify-center" v-else>
 				<UserFund/>

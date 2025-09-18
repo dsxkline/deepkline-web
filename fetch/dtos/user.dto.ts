@@ -1,3 +1,5 @@
+import type { MessageEvents } from "../dk/dk.websocket"
+
 export interface LoginReqDto {
 	userName: string
 	password?: string
@@ -24,6 +26,54 @@ export interface UserDto {
 	cancelTime: string
 	levelCode: string
 	appleOpenId: string
-	editNicknameTimes:number
-	editFaceTimes:number
+	editNicknameTimes: number
+	editFaceTimes: number
+}
+
+export interface MessageDto {
+	id: number
+	type: MessageType
+	title: string
+	content: string
+	event: MessageEvents
+	category: MessageCategory
+	userId: string
+	isRead: boolean
+	payload: Record<string, any>
+	createdAt: Date
+	updatedAt: Date
+	readAt: Date
+}
+
+export enum MessageType {
+	BROADCAST = 'broadcast', // 广播
+	USER = 'user' // 用户
+}
+
+export enum MessageCategory {
+	SYSTEM = 'system', // 系统
+	TRADE = 'trade', // 交易
+	WARNING = 'warning' // 价格预警，强平预警
+}
+export interface MessageRespDto {
+	list: MessageDto[]
+	total: number
+	page: number
+	pageSize: number
+}
+
+export interface MessageUnReadRespDto {
+	total: number
+	system: {
+		content: MessageDto
+		count: number
+	}
+	trade: {
+		content: MessageDto
+		count: number
+	}
+	warning: {
+		content: MessageDto
+		count: number
+	}
 }

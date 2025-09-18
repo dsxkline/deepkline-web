@@ -64,6 +64,7 @@ export enum FundLogType {
 	TRANSFER_OUT = 'transfer_out', // 转出
 	TRADE_OPEN = 'trade_open', // 开仓
 	TRADE_CLOSE = 'trade_close', // 平仓
+	CLOSE_PROFIT = 'close_profit', // 平仓收益
 	FEE = 'fee', // 手续费
 	ADJUST = 'adjust', // 人工调账
 	FREEZE = 'freeze', // 冻结

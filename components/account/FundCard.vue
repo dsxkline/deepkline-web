@@ -1,12 +1,12 @@
 <script setup lang="ts">
 	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { accountFetch } from '~/fetch/account.fetch'
-	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.dto'
+	import { AccountEnvType, type AccountDto, type FundDto } from '~/fetch/dtos/account.dto'
 	import { FetchResultDto, type ChartDto } from '~/fetch/dtos/common.dto'
 	import ResetDemo from '~/pages/account/reset-demo.vue'
 	import { useAccountStore } from '~/store/account'
 	import HistoryOrder from '~/pages/order/history.vue'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		account?: AccountDto | null | undefined
 		size?: 'small' | 'large'
@@ -16,19 +16,27 @@
 	const error = ref('')
 	const usepush = usePush()
 	const chartDatas = ref<ChartDto[]>([])
-	const fund = computed(() => useAccountStore().fund)
-
+	const fund = ref<FundDto | null>(useAccountStore().fund)
+	watch(
+		() => useAccountStore().fund,
+		val => {
+			fund.value = val
+			// console.log('资产变动',val?.total)
+		},{
+			deep:true
+		}
+	)
 	function getUserAccountBalance() {
 		if (!useAccountStore().accounts?.length) return
 		if (loading.value) return
-		if (fund.value) return
+		if (fund.value?.total) return
 		error.value = ''
 		accountFetch
 			.fund(useAccountStore().currentAccount?.accountId)
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
-					console.log('FundCard获取账户余额', result.data)
+					//console.log('FundCard获取账户余额', result.data)
 					if (result.data) {
 						useAccountStore().setFund(result.data)
 					}
@@ -42,12 +50,12 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					if (!fund.value?.total) error.value = '网络异常，请稍后再试'
+					if (!fund.value?.total) error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
 
-		const getChartDatas = async () => {
+	const getChartDatas = async () => {
 		const currentAccount = useAccountStore().currentAccount
 		if (!currentAccount) return
 		accountFetch
@@ -60,7 +68,7 @@
 				}
 			})
 			.catch(err => {
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -85,36 +93,36 @@
 	<div class="p-3 glass mx-4 rounded-md overflow-hidden relative mt-2">
 		<div v-if="!loading && !error" class="relative">
 			<div class="flex items-center">
-				<span class="pb-1 text-sm text-grey">总资产(USDT)</span>
+				<span class="pb-1 text-sm text-grey">{{t('总资产')}}(USDT)</span>
 			</div>
-			<b v-autosize="25" :class="'roboto-bold flex items-end '" v-if="fund">
+			<b v-autosize="25" class="roboto-bold flex items-end" >
 				<NumberIncrease :value="formatNumber(parseFloat(fund?.total || '0'), '2')" unit="" :fontSize="25" />
 			</b>
 			<div class="text-xs pt-0 text-main">
-				<span class="pr-1">收益</span>
+				<span class="pr-1">{{t('收益')}}</span>
 				<ProfitRate :profit="parseFloat(String(fund?.profit || '0'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
 			</div>
 
 			<div class="flex justify-between items-center pt-6" v-if="size != 'small'">
 				<ul class="w-full grid grid-cols-3 *:flex *:flex-col text-grey text-sm [&_b]:text-main [&_b]:pt-1">
 					<li>
-						<span>可用</span>
+						<span>{{t('可用')}}</span>
 						<b>{{ formatNumber(parseFloat(fund?.available || '0'), '2', '$') }}</b>
 					</li>
 					<li class="items-center">
-						<span>保证金</span>
+						<span>{{t('保证金')}}</span>
 						<b>{{ formatNumber(parseFloat(fund?.margin || '0'), '2', '$') }}</b>
 					</li>
 					<li class="items-end">
-						<span>冻结</span>
+						<span>{{t('冻结')}}</span>
 						<b>{{ formatNumber(parseFloat(fund?.frozen || '0'), '2', '$') }}</b>
 					</li>
 				</ul>
 			</div>
 
 			<div class="flex justify-between items-center pt-6 *:w-full gap-3 *:!rounded-full *:!py-2 *:overflow-hidden" v-if="size != 'small'">
-				<button class="bt-default !text-sm" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? '重置' : '解绑' }}</button>
-				<button class="bt-default !text-sm" @click="pushHistoryOrder">账单</button>
+				<button class="bt-default !text-sm" @click="pushReset">{{ account?.envType == AccountEnvType.DEMO ? t('重置') : t('解绑') }}</button>
+				<button class="bt-default !text-sm" @click="pushHistoryOrder">{{t('账单')}}</button>
 			</div>
 			<div v-else class="w-1/3 absolute right-0 top-0 h-full"><LineChart :datas="chartDatas" class="w-full h-full" /></div>
 		</div>
@@ -143,7 +151,7 @@
 		</div>
 		<div class="min-h-20 flex items-center" v-if="!loading && error">
 			<Error :content="error" :hideIcon="true">
-				<button @click="getUserAccountBalance">重新加载</button>
+				<button @click="getUserAccountBalance">{{t('重新加载')}}</button>
 			</Error>
 		</div>
 	</div>

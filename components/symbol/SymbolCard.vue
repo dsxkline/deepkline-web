@@ -6,6 +6,7 @@
 	import SymbolDetail from './SymbolDetail.vue'
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 	}>()

@@ -2,7 +2,7 @@
 	import { usePush, useWillAppear } from '~/composable/usePush'
 	import { useAvatar } from '~/composable/useAvatar'
 	import { accountFetch } from '~/fetch/account.fetch'
-	import { AccountEnvType, type AccountDto } from '~/fetch/dtos/account.dto'
+	import { AccountEnvType, type AccountDto, type FundDto } from '~/fetch/dtos/account.dto'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
 	import ResetDemo from '~/pages/account/reset-demo.vue'
 	import { useAccountStore } from '~/store/account'
@@ -11,6 +11,7 @@
 	import { useUserStore } from '~/store/user'
 	import defaultAvatar from '~/assets/images/default-avatar.svg'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		account?: AccountDto | null | undefined
 		size?: 'small' | 'large'
@@ -19,6 +20,8 @@
 	const loading = ref(false)
 	const error = ref('')
 	const usepush = usePush()
+	const fundContainer = ref()
+	const minWidth = ref(0)
 
 	watch(
 		() => useAccountStore().currentAccount,
@@ -27,9 +30,17 @@
 		}
 	)
 
-	const fund = computed(() => {
-		return useAccountStore().fund
-	})
+	const fund = ref<FundDto | null>(useAccountStore().fund)
+	watch(
+		() => useAccountStore().fund,
+		val => {
+			fund.value = val
+			if (fundContainer.value) {
+				const w = fundContainer.value.clientWidth
+				minWidth.value = Math.max(w, minWidth.value)
+			}
+		}
+	)
 	const upl = computed(() => {
 		return parseFloat(fund?.value?.unrealizedPnl || '0')
 	})
@@ -45,10 +56,10 @@
 			.then(result => {
 				if (result?.code == FetchResultDto.OK) {
 					loading.value = false
-					console.log('UserFund获取账户余额', result.data)
-					const fund = result.data
-					if (fund) {
-						useAccountStore().setFund(fund)
+					// console.log('UserFund获取账户余额', result.data)
+					const data = result.data
+					if (data) {
+						useAccountStore().setFund(data)
 					}
 				} else {
 					setTimeout(() => {
@@ -60,7 +71,7 @@
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					if (!fund.value?.total) error.value = '网络异常，请稍后再试'
+					if (!fund.value?.total) error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -81,7 +92,7 @@
 	}
 
 	function openAccount() {
-		useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+		useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 	}
 
 	useWillAppear(() => {
@@ -108,7 +119,7 @@
 		<el-divider direction="vertical" class="mx-1"></el-divider>
 		<div v-if="!loading && !error" class="relative flex flex-col justify-center cursor-pointer hover:bg-[--transparent05]">
 			<template v-if="useAccountStore().accounts.length">
-				<div class="flex justify-between items-center">
+				<div class="flex justify-between items-center transition-all" ref="fundContainer" :style="['min-width:'+minWidth+'px']">
 					<div class="flex justify-center items-center">
 						<div v-if="fund" class="text-sm flex items-center">
 							<div class="flex items-center px-2 text-base leading-normal">
@@ -116,12 +127,12 @@
 								<b>{{ phoneStar(useAccountStore().currentAccount?.accountId + '') }}</b>
 							</div>
 							<span class="pr-2">
-								<span :class="['', 'tag-' + (useAccountStore().currentAccount?.envType == 0 ? 'demo' : 'real')]">{{ useAccountStore().currentAccount?.envType == 0 ? '模拟' : '实盘' }}</span>
+								<span :class="['', 'tag-' + (useAccountStore().currentAccount?.envType == 0 ? 'demo' : 'real')]">{{ useAccountStore().currentAccount?.envType == 0 ? t('模拟') : t('实盘') }}</span>
 							</span>
-							<b class="text-base"><NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '0.01')" unit="$" :fontSize="16" /></b>
+							<b class="text-base"><NumberIncrease :value="formatPrice(parseFloat(fund?.total || '0'), '2')" unit="$" :fontSize="16" /></b>
 						</div>
 						<div class="text-sm text-main pl-2 flex items-center">
-							<ProfitRate :profit="parseFloat(String(fund?.profit || '0'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
+							<ProfitRate :profit="parseFloat(formatNumber(fund?.profit, '2'))" :profitRate="parseFloat(String(fund?.profitRate || '0'))" />
 						</div>
 					</div>
 					<div class="pl-3 pr-1 flex items-center">
@@ -131,7 +142,7 @@
 			</template>
 			<template v-else>
 				<button class="bt-brand" @click="openAccount">
-					开通账户<el-icon><ArrowRight /></el-icon>
+					{{ t('开通账户') }}<el-icon><ArrowRight /></el-icon>
 				</button>
 			</template>
 		</div>
@@ -153,7 +164,7 @@
 
 		<div class="min-h-20 flex items-center" v-if="!loading && error">
 			<Error :content="error" :hideIcon="true">
-				<button @click="getUserAccountBalance">重新加载</button>
+				<button @click="getUserAccountBalance">{{ t('重新加载') }}</button>
 			</Error>
 		</div>
 	</div>

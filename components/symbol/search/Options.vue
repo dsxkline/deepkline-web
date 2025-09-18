@@ -4,16 +4,17 @@
 	import TabBar from '../../common/TabBar.vue'
 	import SymbolList from './SymbolList.vue'
 	import { useSymbolStore } from '~/store/symbol'
-
+	import { MarketType } from '~/fetch/dtos/symbol.dto'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 	}>()
 	const tabbar = ref()
 	const active = ref(0)
 
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(() => [
 		{
-			name: '现货',
+			name: t('现货'),
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: InstanceType.SPOT,
@@ -21,7 +22,7 @@
 			}
 		},
 		{
-			name: '合约',
+			name: t('合约'),
 			contentComp: markRaw(SymbolList),
 			contentParams: {
 				symbolCategory: InstanceType.SWAP,
@@ -31,7 +32,7 @@
 	])
 
 	function update() {
-		console.log('update', active.value)
+		// console.log('update', active.value)
 		tabbar.value.update(active.value)
 	}
 
@@ -39,8 +40,8 @@
 		// 计算 TabBar 的高度
 		useSymbolStore().loadFavoriteSymbols()
 		let favoriteSymbols = useSymbolStore().favoriteSymbols || []
-		let favoriteSymbolsSWAP = favoriteSymbols.filter(item => item.instType === InstanceType.SWAP) || []
-		let favoriteSymbolsSPOT = favoriteSymbols.filter(item => item.instType === InstanceType.SPOT) || []
+		let favoriteSymbolsSWAP = favoriteSymbols.filter(item => item.marketType === MarketType.SWAP) || []
+		let favoriteSymbolsSPOT = favoriteSymbols.filter(item => item.marketType === MarketType.SPOT) || []
 		// 有合约没有现货的自选，自动切过去
 		if (favoriteSymbolsSWAP?.length > 0 && !favoriteSymbolsSPOT?.length) {
 			active.value = 1

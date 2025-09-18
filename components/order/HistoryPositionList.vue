@@ -18,6 +18,7 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import SymbolDetail from '../symbol/SymbolDetail.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
 	}>()
@@ -35,13 +36,13 @@
 	const pageSize = ref(30)
 
 	const positionStatus = {
-		undefined: '已平仓',
-		open: '持仓中',
-		closed: '已平仓',
-		partially_closed: '部分平仓',
-		liquidating: '强制平仓中',
-		liquidated: '已爆仓',
-		frozen: '冻结'
+		undefined: t('已平仓'),
+		open: t('持仓中'),
+		closed: t('已平仓'),
+		partially_closed: t('部分平仓'),
+		liquidating: t('强制平仓中'),
+		liquidated: t('已爆仓'),
+		frozen: t('冻结')
 	}
 
 	watch(
@@ -85,7 +86,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -119,11 +120,11 @@
 	}
 
 	const closeSimpleBuySell = (position: PositionDto) => () => {
-		console.log('closeSimpleBuySell')
+		//console.log('closeSimpleBuySell')
 		popProfitLoss.value.forEach(item => (item as any).hide())
 	}
 	const pushSimpleBuySell = (position: PositionDto) => {
-		console.log('pushSimpleBuySell', position.lastPrice)
+		//console.log('pushSimpleBuySell', position.lastPrice)
 		pushUp(
 			SimpleBuySell,
 			{
@@ -158,10 +159,13 @@
 				pushLeft(ExchangeIndex)
 				return
 			} else {
-				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 				return
 			}
 		}
+	}
+	function isSpot(symbol: string) {
+		return useSymbolStore().getSymbol(symbol).marketType == MarketType.SPOT
 	}
 
 	onMounted(() => {})
@@ -179,13 +183,13 @@
 				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
 		}"
 	>
-		<Empty :content="'暂无仓位'" v-if="!loading && !error && !positions?.length" class="pt-20">
-			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">登录</el-button>
-			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">开设账户</el-button>
+		<Empty :content="t('暂无仓位')" v-if="!loading && !error && !positions?.length" class="pt-20">
+			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">{{ t('登录') }}</el-button>
+			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">{{ t('开设账户') }}</el-button>
 		</Empty>
 		<Error :content="error" v-if="!loading && error" class="pt-20">
 			<template #default>
-				<el-button @click.stop="getDatas">点击刷新</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -246,10 +250,10 @@
 					<li class="border-b border-[--transparent05] py-3">
 						<div class="flex justify-between">
 							<div class="flex items-center">
-								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">开多</button>
-								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">开空</button>
-								<!-- <button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.BUY">买入</button>
-								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SPOT && item.side == Sides.SELL">卖出</button> -->
+								<button class="tag-green-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.BUY">{{ t('开多') }}</button>
+								<button class="tag-red-large mr-2" v-if="useSymbolStore().getSymbol(item.symbol).marketType == MarketType.SWAP && item.side == Sides.SELL">{{ t('开空') }}</button>
+								<button class="tag-green-large mr-2" v-if="isSpot(item.symbol) && item.side == Sides.BUY">{{ t('买入') }}</button>
+								<button class="tag-red-large mr-2" v-if="isSpot(item.symbol) && item.side == Sides.SELL">{{ t('卖出') }}</button>
 								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
 							</div>
 							<div class="flex justify-between items-center gap-4">
@@ -259,14 +263,14 @@
 							</div>
 						</div>
 						<div class="py-1 flex items-center *:mr-1">
-							<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated">逐仓</button>
-							<button class="tag-default" v-if="item.marginMode == MarginMode.Cross">全仓</button>
+							<button class="tag-default" v-if="item.marginMode == MarginMode.Isolated">{{ t('逐仓') }}</button>
+							<button class="tag-default" v-if="item.marginMode == MarginMode.Cross">{{ t('全仓') }}</button>
 							<button class="tag-default">{{ parseInt(item.leverage) }}x</button>
 							<span class="text-xs text-grey leading-normal">{{ formatDate(new Date(item.createdAt).getTime(), 'YYYY/MM/DD HH:mm:ss') }}</span>
 						</div>
 						<div class="grid grid-cols-2 justify-between items-center text-xs pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 							<div class="flex flex-col">
-								<span>收益额</span>
+								<span>{{ t('收益额') }}</span>
 								<b v-if="item.profit && parseFloat(item.profit)" :class="[parseFloat(item.profit) > 0 ? 'text-green' : 'text-red']"
 									>{{ parseFloat(item.profit) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profit), '2') }}</b
 								>
@@ -274,7 +278,7 @@
 							</div>
 
 							<div class="flex flex-col justify-center items-end">
-								<span>收益率</span>
+								<span>{{ t('收益率') }}</span>
 								<b v-if="item.profitRate && parseFloat(item.profitRate)" :class="[parseFloat(item.profitRate) > 0 ? 'text-green' : 'text-red']"
 									>{{ parseFloat(item.profitRate) > 0 ? '+' : '' }}{{ formatNumber(parseFloat(item.profitRate) * 100, '2') }}%</b
 								>
@@ -283,36 +287,36 @@
 						</div>
 						<div class="grid grid-cols-3 justify-between items-center text-xs py-3 pt-1 [&_b]:text-sm [&_span]:text-grey [&_span]:pt-2 [&_span]:pb-1">
 							<div class="flex flex-col">
-								<span>最大持仓量({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
+								<span>{{ t('最大持仓量') }}({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
 								<b v-if="item.lotTotal">{{ formatNumber(parseFloat(item.lotTotal || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col items-center">
-								<span>平仓量({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
-								<b v-if="item.lotTotal">{{ formatNumber(parseFloat(item.lotTotal || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
+								<span>{{t('平仓量')}}({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
+								<b v-if="item.lotTotal">{{ formatNumber(parseFloat(item.lotTotal || '0') - parseFloat(item.lotSize || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col items-end">
-								<span>平仓类型</span>
+								<span>{{ t('平仓类型') }}</span>
 								<b>{{ positionStatus[item.status] }}</b>
 							</div>
 							<div class="flex flex-col">
-								<span>开仓均价</span>
+								<span>{{ t('开仓均价') }}</span>
 								<b v-if="item.costPrice">{{ formatPrice(item.costPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col items-center">
-								<span>平仓均价</span>
+								<span>{{ t('平仓均价') }}</span>
 								<b v-if="item.closePrice">{{ formatPrice(item.closePrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col items-end">
-								<span>强平数量</span>
+								<span>{{ t('强平数量') }}</span>
 								<b v-if="item.lotForce">{{ formatNumber(parseFloat(item.lotForce || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col col-span-3">
-								<span>平仓时间</span>
+								<span>{{ t('平仓时间') }}</span>
 								<b v-if="item.margin">{{ formatDate(new Date(item.updatedAt).getTime(), 'YYYY/MM/DD HH:mm:ss') }}</b>
 								<b v-else>-</b>
 							</div>
@@ -321,7 +325,7 @@
 							<div class="flex items-center gap-2 justify-between *:flex-1" v-if="!useStore().isH5">
 								<el-popover placement="left" trigger="click" ref="popProfitLoss" :hide-after="0" width="300">
 									<template #reference>
-										<button class="bt-default">止盈止盈</button>
+										<button class="bt-default">{{ t('止盈止盈') }}</button>
 									</template>
 									<TakeProfitAndStopLoss
 										:symbol="item.symbol"
@@ -335,21 +339,21 @@
 									/>
 								</el-popover>
 
-								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
-								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
+								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">{{ t('市价全平') }}</button>
+								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">{{ t('平仓') }}</button>
 
 								<el-popover placement="left" trigger="click" ref="popProfitLoss" :hide-after="0" width="300" v-if="item.marketType == MarketType.SPOT">
 									<template #reference>
-										<button class="bt-default" v-if="item.marketType == MarketType.SPOT">买卖</button>
+										<button class="bt-default" v-if="item.marketType == MarketType.SPOT">{{ t('买卖') }}</button>
 									</template>
 									<SimpleBuySell :symbol="item.symbol" v-if="!loading" :price="parseFloat(item.lastPrice)" :close="closeSimpleBuySell(item)" />
 								</el-popover>
 							</div>
 							<div class="flex items-center gap-2 justify-between *:flex-1" v-else>
-								<button class="bt-default" @click="pushStopProfitLoss(item)">止盈止损</button>
-								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">市价全平</button>
-								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">平仓</button>
-								<button class="bt-default" v-if="item.marketType == MarketType.SPOT" @click="pushSimpleBuySell(item)">买卖</button>
+								<button class="bt-default" @click="pushStopProfitLoss(item)">{{ t('止盈止损') }}</button>
+								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">{{ t('市价全平') }}</button>
+								<button class="bt-default" v-if="item.marketType == MarketType.SWAP">{{ t('平仓') }}</button>
+								<button class="bt-default" v-if="item.marketType == MarketType.SPOT" @click="pushSimpleBuySell(item)">{{ t('买卖') }}</button>
 							</div>
 						</template>
 					</li>

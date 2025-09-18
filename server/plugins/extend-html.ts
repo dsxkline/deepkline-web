@@ -5,6 +5,9 @@ export default defineNitroPlugin(nitroApp => {
 		// html.head.push(`<meta name="description" content="My custom description" />`)
 		// const storage = useStorage()
 		// console.log("nuxt-color-mode",await storage.getItem('nuxt-color-mode'));
+
+    
+
 		html.bodyAppend.push(
 			`<div class="startup-container bg-base fixed top-0 left-0 w-full h-full z-[99999] transition-all flex items-center justify-center">
         <div class="face-container w-full h-auto flex items-center justify-center mt-[-100px]">
@@ -14,7 +17,7 @@ export default defineNitroPlugin(nitroApp => {
                     <div class="progress-bar"></div>
                 </div>
                 <div class="face-text mt-4 text-center text-main text-lg font-semibold">DeepKline</div>
-                <div class="face-button mt-1 text-muted text-sm">大佬说:"Keep building"</div>
+                <div class="face-button mt-1 text-muted text-sm min-h-5"></div>
             </div>
         </div>
 	    </div>

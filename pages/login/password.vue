@@ -11,8 +11,9 @@
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
-import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
-import { useSyncedCookie } from '~/composable/useSyncedCookie'
+	import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
+	import { useSyncedCookie } from '~/composable/useSyncedCookie'
+	const { t } = useI18n()
 
 	const props = defineProps<{
 		email: string
@@ -68,11 +69,11 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 						await getUserAccounts()
 						// 登录成功
 						ElMessage({
-							message: '登录成功',
+							message: t('登录成功'),
 							type: 'success'
 						})
 						// 如果是dialog打开
-						console.log('password login success',currentDialog)
+						// console.log('password login success', currentDialog)
 						currentDialog?.exposed && currentDialog.exposed.close()
 						clearPWACaches()
 						useNuxtApp().$popRoot(null, -2)
@@ -90,7 +91,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 			})
 	}
@@ -99,7 +100,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 		if (!useUserStore().user) return
 		const result = await accountFetch.list()
 		if (result?.code == FetchResultDto.OK) {
-			console.log('获取账户信息', result.data)
+			// console.log('获取账户信息', result.data)
 			const accounts = result.data
 			if (accounts) {
 				useAccountStore().setAccounts(accounts)
@@ -113,7 +114,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 	function captchCallback(isreset: boolean) {
 		return (res: ICaptchaResult) => {
 			// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
-			console.log('captchCallback', res)
+			//console.log('captchCallback', res)
 			if (res.ret == 0) {
 				if (forgetPassword) {
 					// 验证成功进入发送验证码流程
@@ -177,7 +178,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					loading.value = false
 					// 发送成功进入验证码输入界面
 					ElMessage({
-						message: '验证码已发送',
+						message: t('验证码已发送'),
 						type: 'success'
 					})
 					if (!isreset) pushCaptchaView()
@@ -202,11 +203,11 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 				if (isreset)
 					ElMessage({
-						message: '网络异常，请稍后再试',
+						message: t('网络异常，请稍后再试'),
 						type: 'error'
 					})
 				return false
@@ -218,7 +219,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			email: props.email,
 			forgetPassword: forgetPassword,
 			successCallback: async (validId: string) => {
-				console.log('success callback:', validId)
+				// console.log('success callback:', validId)
 				if (forgetPassword) {
 					// 如果是忘记密码，进入重置密码界面
 					usepush(ResetPassword, { email: props.email, forgetPassword: true, validId: validId })
@@ -241,22 +242,22 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 </script>
 <template>
 	<div class="password-container">
-		<AppStatusBar/>
+		<AppStatusBar />
 		<NavigationBar ref="navbar" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main">
-			密码登录
-			<p class="text-sm font-normal text-grey py-2" v-if="!isRegister">未注册邮箱将自动注册</p>
-			<p class="text-sm font-normal text-grey py-2" v-else>您的账号已注册,请输入登录密码</p>
+			{{ t('密码登录') }}
+			<p class="text-sm font-normal text-grey py-2" v-if="!isRegister">{{ t('未注册邮箱将自动注册') }}</p>
+			<p class="text-sm font-normal text-grey py-2" v-else>{{ t('您的账号已注册,请输入登录密码') }}</p>
 		</h1>
 		<div class="global-form p-6">
 			<div class="form-item my-4">
-				<el-input ref="passInput" v-model="password" :placeholder="'请输入8-20位数字字母组合的密码'" size="large" type="password" clearable :show-password="true" @keydown.enter="next"></el-input>
+				<el-input ref="passInput" v-model="password" :placeholder="t('请输入8-20位数字字母组合的密码')" size="large" type="password" clearable :show-password="true" @keydown.enter="next"></el-input>
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
 					<span v-if="error">{{ error }}</span>
 				</div>
-				<div class="text-grey cursor-pointer" @click="forgetPasswordHandle">忘记密码?</div>
+				<div class="text-grey cursor-pointer" @click="forgetPasswordHandle">{{t('忘记密码')}}?</div>
 			</div>
 
 			<div class="form-item mt-8">
@@ -265,7 +266,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', password.length >= 8 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 					@click="next"
 					:loading="loading"
-					>登录</el-button
+					>{{ t('登录') }}</el-button
 				>
 			</div>
 		</div>

@@ -17,7 +17,7 @@ import { getCssVariable } from '~/composable/useCommon';
 	}>()
 
 	const handleOpen = (menu: MenuModel, index: number) => {
-		console.log('handleOpen', menu, index)
+		//console.log('handleOpen', menu, index)
 		menuActive.value = index
 		emit('update:active', index)
 		emit('menuHandler', menu, index)
@@ -26,7 +26,7 @@ import { getCssVariable } from '~/composable/useCommon';
 	onMounted(()=>{
 		nextTick(()=>{
 			const safeBottom = getCssVariable('--safe-bottom')
-			console.log('mainMenu',mainMenu.value.clientHeight, safeBottom)
+			//console.log('mainMenu',mainMenu.value.clientHeight, safeBottom)
 		})
 	})
 </script>

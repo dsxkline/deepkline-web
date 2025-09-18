@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const {$ws} = useNuxtApp()
 const signalState = ref(0)
+const { t } = useI18n()
 $ws?.onSignalState((stateLevel:number) => {
     // console.log('signalState',stateLevel)
     signalState.value = stateLevel
@@ -9,19 +10,19 @@ $ws?.onSignalState((stateLevel:number) => {
 const signalStateText = computed(() => {
     switch (signalState.value) {
         case -2:
-            return '连接失败'
+            return t('连接失败')
         case -1:
-            return '重连中...'
+            return t('重连中')
         case 0:
-            return '无信号'
+            return t('无信号')
         case 1:
-            return '弱信号'
+            return t('弱信号')
         case 2:
-            return '中信号'
+            return t('中信号')
         case 3:
-            return '强信号'
+            return t('强信号')
         case 4:
-            return '超强信号'
+            return t('超强信号')
         default:
             return ''
     }

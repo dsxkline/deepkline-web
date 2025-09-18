@@ -1,7 +1,7 @@
 import type { ApiResult } from '~/types/types'
 import { useGet, usePost } from './global.fetch'
 import config from '~/config/config'
-import type { LoginReqDto, UserDto } from './dtos/user.dto'
+import type { LoginReqDto, MessageCategory, MessageDto, MessageRespDto, MessageUnReadRespDto, UserDto } from './dtos/user.dto'
 import type { CheckEmailReqDto, CheckEmailRespDto } from './dtos/check-email.dto'
 let baseApi = config.BASE_API_URL
 if (typeof window != 'undefined' && window.__NUXT__) baseApi = window.__NUXT__?.config.public.BASE_API_URL
@@ -16,6 +16,10 @@ const userInfoApi = '/user/info'
 const nickFaceApi = '/user/nickface/update'
 const faceHistoryApi = '/user/face/history'
 const uploadPhotoApi = '/user/upload'
+const messageListApi = '/user/message/list'
+const messageUnReadApi = '/user/message/unread'
+const messageReadApi = '/user/message/read'
+const messageReadAllApi = '/user/message/read/all'
 
 export const userFetch = {
 	/**
@@ -82,7 +86,7 @@ export const userFetch = {
 
 	/**
 	 * 获取用户详情
-	 * @returns 
+	 * @returns
 	 */
 	getUser: () => usePost<ApiResult<UserDto>>(baseUrl, userInfoApi, {}),
 
@@ -90,13 +94,13 @@ export const userFetch = {
 	 * 修改昵称或头像
 	 * @param nickName 昵称
 	 * @param face 头像
-	 * @returns 
+	 * @returns
 	 */
 	updateNickFace: (nickName?: string, face?: string) => usePost<ApiResult<boolean>>(baseUrl, nickFaceApi, { nickName, face }),
 
 	/**
 	 * 头像上传地址
-	 * @returns 
+	 * @returns
 	 */
 	getUploadUrl: () => baseUrl + uploadPhotoApi,
 
@@ -104,5 +108,26 @@ export const userFetch = {
 	 * 获取用户头像历史列表
 	 * @returns 头像历史列表
 	 */
-	getFaceHistory: () => usePost<ApiResult<string[]>>(baseUrl, faceHistoryApi, {})
+	getFaceHistory: () => usePost<ApiResult<string[]>>(baseUrl, faceHistoryApi, {}),
+
+	/**
+	 * 消息列表
+	 * @returns
+	 */
+	messageList: (category: MessageCategory, page: number = 1, pageSize: number = 30) => usePost<ApiResult<MessageRespDto>>(baseUrl, messageListApi, { category, page, pageSize }),
+	/**
+	 * 未读消息
+	 * @returns 
+	 */
+	messageUnRead: () => usePost<ApiResult<MessageUnReadRespDto>>(baseUrl, messageUnReadApi),
+	/**
+	 * 设置消息已读
+	 */
+	messageRead: (messageId: number) => usePost<ApiResult<MessageUnReadRespDto>>(baseUrl, messageReadApi, { messageId }),
+	/**
+	 * 设置某个分组的消息为全部已读
+	 * @param category 
+	 * @returns 
+	 */
+	messageReadAll: (category: MessageCategory) => usePost<ApiResult<MessageUnReadRespDto>>(baseUrl, messageReadAllApi, { category })
 }

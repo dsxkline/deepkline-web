@@ -2,6 +2,7 @@
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import type { Ticker } from '~/fetch/okx/okx.type'
 	import { MarketType } from '~/fetch/dtos/symbol.dto'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: SymbolDto
 		onlyCoin?: boolean

@@ -24,6 +24,7 @@ export interface AddOrderRespDto {
 }
 
 export interface OrderDto {
+	action: 'open' | 'close'
 	accountId: number
 	createdAt: string
 	endAt: string
@@ -69,6 +70,20 @@ export enum OrderState {
 	REJECTED = 'rejected', // 拒绝(下单失败)
 	STOPPED = 'stopped', // 已停止
 	FAILED = 'failed' // 下单失败
+}
+
+export const OrderStateText: Record<OrderState, string> = {
+  [OrderState.ALL]: '全部',
+  [OrderState.NEW]: '挂单',
+  [OrderState.FILLED]: '全部成交',
+  [OrderState.CANCELED]: '已撤销',
+  [OrderState.PARTIALLY_FILLED]: '部分成交',
+  [OrderState.EXPIRED]: '过期',
+  [OrderState.LIVE]: '等待成交',
+  [OrderState.PENDING_CANCEL]: '撤销中',
+  [OrderState.REJECTED]: '拒绝',
+  [OrderState.STOPPED]: '已停止',
+  [OrderState.FAILED]: '失败',
 }
 
 export enum OrderType {

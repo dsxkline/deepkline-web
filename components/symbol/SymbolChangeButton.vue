@@ -1,6 +1,7 @@
 <script setup lang="ts">
 	import type { SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import { type Ticker } from '~/fetch/okx/okx.type.d'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: SymbolDto
 	}>()

@@ -11,7 +11,7 @@
 	import KlineGreenRedIcon from '~/components/icons/KlineGreenRedIcon.vue'
 	import KlineRedGreenIcon from '~/components/icons/KlineRedGreenIcon.vue'
 	import Timezone from './timezone.vue'
-	import Aboutus from './aboutus.vue'
+	import About from './about.vue'
 	import Login from '../login/index.vue'
 	import { useUserStore } from '~/store/user'
 	import Security from './security.vue'
@@ -19,6 +19,8 @@
 	import LoginIndex from '../login/index.vue'
 	import AccountSyncIcon from '~/components/icons/account/AccountSyncIcon.vue'
 	import AccountList from '../account/account-list.vue'
+	import Languages from './languages.vue'
+	const { t,localeProperties } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -27,7 +29,7 @@
 	const menus = computed(() => [
 		{
 			id: 1,
-			name: '个人资料',
+			name: t('个人资料'),
 			subName: '',
 			icon: 'User',
 			desc: '',
@@ -47,7 +49,7 @@
 		// },
 		{
 			id: 2,
-			name: '安全设置',
+			name: t('安全设置'),
 			subName: '',
 			icon: 'Lock',
 			desc: '',
@@ -56,18 +58,18 @@
 				usepush(Security)
 			}
 		},
-		{
-			id: 3,
-			name: '钱包',
-			subName: '',
-			icon: 'Wallet',
-			desc: '',
-			hide: !useUserStore().user?.id,
-			callback: () => {}
-		},
+		// {
+		// 	id: 3,
+		// 	name: '钱包',
+		// 	subName: '',
+		// 	icon: 'Wallet',
+		// 	desc: '',
+		// 	hide: !useUserStore().user?.id,
+		// 	callback: () => {}
+		// },
 		{
 			id: 4,
-			name: '通知',
+			name: t('通知'),
 			subName: '',
 			icon: 'Bell',
 			desc: '',
@@ -78,7 +80,7 @@
 		},
 		{
 			id: 5,
-			name: '帮助与反馈',
+			name: t('在线反馈'),
 			subName: '',
 			icon: 'Help',
 			desc: '',
@@ -87,26 +89,28 @@
 
 		{
 			id: 6,
-			name: '语言',
+			name: t('语言'),
 			subName: '',
 			icon: markRaw(LanguagesIcon),
-			desc: '简体中文',
-			callback: () => {}
+			desc: localeProperties.value.name,
+			callback: () => {
+				usepush(Languages)
+			}
 		},
 
 		{
 			id: 7,
-			name: '主题',
+			name: t('主题'),
 			subName: '',
 			icon: 'Moon',
-			desc: '夜间模式',
+			desc: t('夜间模式'),
 			callback: () => {
 				usepush(Theme)
 			}
 		},
 		{
 			id: 8,
-			name: '涨跌幅周期和K线时间',
+			name: t('涨跌幅周期和K线时间'),
 			subName: '',
 			icon: 'Clock',
 			desc: useKlineStore().timezone === 'UTC+8' ? 'UTC+8' : useKlineStore().timezone === 'UTC' ? 'UTC' : '24小时制',
@@ -116,32 +120,32 @@
 		},
 		{
 			id: 9,
-			name: '涨跌颜色',
+			name: t('涨跌颜色'),
 			subName: '',
 			icon: 'DataLine',
-			desc: useKlineStore().klineColorModel === 'red-green' ? '红涨绿跌' : '绿涨红跌',
+			desc: useKlineStore().klineColorModel === 'red-green' ? t('红涨绿跌') : t('绿涨红跌'),
 			descIcon: markRaw(useKlineStore().klineColorModel === 'red-green' ? KlineRedGreenIcon : KlineGreenRedIcon),
 			callback: () => {
 				pushUp(Colors)
 			}
 		},
-		{
-			id: 10,
-			name: '交易记录',
-			subName: '',
-			icon: 'Tickets',
-			desc: '',
-			hide: !useUserStore().user?.id,
-			callback: () => {}
-		},
+		// {
+		// 	id: 10,
+		// 	name: '交易记录',
+		// 	subName: '',
+		// 	icon: 'Tickets',
+		// 	desc: '',
+		// 	hide: !useUserStore().user?.id,
+		// 	callback: () => {}
+		// },
 		{
 			id: 11,
-			name: '关于',
+			name: t('关于'),
 			subName: '',
 			icon: 'Postcard',
 			desc: '',
 			callback: () => {
-				usepush(Aboutus)
+				usepush(About)
 			}
 		}
 	])
@@ -150,7 +154,7 @@
 		theme => {
 			menus.value.forEach(menu => {
 				if (menu.id === 7) {
-					menu.desc = theme === 'dark' ? '夜间模式' : '日间模式'
+					menu.desc = theme === 'dark' ? t('夜间模式') : t('日间模式')
 					menu.icon = theme === 'dark' ? 'Moon' : 'Sunny'
 				}
 			})
@@ -161,7 +165,7 @@
 		colorModel => {
 			menus.value.forEach(menu => {
 				if (menu.id === 9) {
-					menu.desc = colorModel === 'red-green' ? '红涨绿跌' : '绿涨红跌'
+					menu.desc = colorModel === 'red-green' ? t('红涨绿跌') : t('绿涨红跌')
 					menu.descIcon = colorModel === 'red-green' ? KlineRedGreenIcon : KlineGreenRedIcon
 				}
 			})
@@ -172,7 +176,7 @@
 		timezone => {
 			menus.value.forEach(menu => {
 				if (menu.id === 8) {
-					menu.desc = timezone === 'UTC+8' ? 'UTC+8' : timezone === 'UTC' ? 'UTC' : '24小时制'
+					menu.desc = timezone === 'UTC+8' ? 'UTC+8' : timezone === 'UTC' ? 'UTC' : t('24小时制')
 				}
 			})
 		}
@@ -207,8 +211,8 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<AppStatusBar/>
-		<NavigationBar title="我的" :hideBack="!push">
+		<AppStatusBar />
+		<NavigationBar :title="t('我的')" :hideBack="!push">
 			<template #right>
 				<button class="flex items-center p-2 px-4" @click="pushAccountList">
 					<AccountSyncIcon class="w-5 h-5" />
@@ -217,12 +221,12 @@
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }" :always="false">
 			<UserFace v-if="useUserStore().user" />
-			<LoginCard v-else :title="'欢迎回来'" :desc="'实战才是检验真理的唯一标准'" />
+			<LoginCard v-else :title="t('欢迎回来')" :desc="t('实战才是检验真理的唯一标准')" />
 			<MenuList :menus="menus" :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height) - 170px)' }" />
 			<div class="my-3 px-3 pb-5 flex flex-col items-center justify-center">
 				<button class="logout-bt glass w-full bt-default !py-3 !rounded-full mb-3 !text-sm overflow-hidden" @click="logout" v-if="useUserStore().user">退出登录 <LogoutIcon class="w-4 ml-2" /></button>
 				<el-divider class="!my-3" />
-				<div class="text-center text-xs text-muted">版本 1.0.0</div>
+				<div class="text-center text-xs text-muted">version 1.0.0</div>
 			</div>
 		</ScrollBar>
 	</div>

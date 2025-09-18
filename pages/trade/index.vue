@@ -7,6 +7,7 @@
 	import BooksFull from '~/components/symbol/BooksFull.vue'
 	import CrypeOrder from '~/components/order/CrypeOrder.vue'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
+	const { t } = useI18n()
 	const symbol = ref('BTC-USDT')
 	const showKline = ref(false)
 	const item = ref<Ticker | null>(null)
@@ -58,6 +59,7 @@
 	watch(
 		() => symbol.value,
 		(val, old) => {
+			loading.value = true
 			if(symbolObj.value.marketType!=MarketType.SPOT){
 				// 强制打开杠杆
 				openLarverage.value = true
@@ -117,22 +119,22 @@
 	watch(
 		() => side.value,
 		(val, old) => {
-			console.log('trade index side changed', val, old)
+			//console.log('trade index side changed', val, old)
 		}
 	)
 
 	onMounted(() => {
-		console.log('trade-index onMounted....')
+		//console.log('trade-index onMounted....')
 		$ws.addTickerHandler(symbol.value, tickerHandler)
 		tickerHandler($ws.getTickers(symbol.value))
 	})
 
 	useWillDisappear(() => {
-		console.log('trade-index useWillDisappear....')
+		//console.log('trade-index useWillDisappear....')
 		unSubSymbols()
 	})
 	useWillAppear(() => {
-		console.log('trade-index useWillAppear....')
+		//console.log('trade-index useWillAppear....')
 		subSymbols()
 	})
 
@@ -154,7 +156,7 @@
 				<div class="px-4 flex items-center">
 					<img :src="symbolObj?.icon" class="mr-1 w-6 h-6" v-if="symbolObj?.icon" />
 					<b class="text-lg flex items-center leading-[normal] font-extrabold roboto-bold h-full" @click="pushSearch"
-						>{{ getSymbolName(symbolObj) }} {{ symbolObj?.marketType == InstanceType.SWAP ? '永续' : '' }}</b
+						>{{ getSymbolName(symbolObj) }} {{ symbolObj?.marketType == InstanceType.SWAP ? t('永续') : '' }}</b
 					>
 					<button class="flex items-center pl-2 h-full" @click="pushSearch">
 						<el-icon><CaretBottom /></el-icon>
@@ -186,7 +188,7 @@
 					</div>
 					<div class="w-2/5 pr-4 flex flex-col">
 						<div class="flex items-center justify-end mb-2" v-if="symbolObj.marketType==MarketType.SPOT">
-							<span class="text-xs text-grey">杠杆</span>
+							<span class="text-xs text-grey">{{ t('杠杆') }}</span>
 							<el-switch
 								v-model="openLarverage"
 								class="ml-2"

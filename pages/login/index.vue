@@ -4,15 +4,15 @@
 	import { useStore } from '~/store'
 	import type { ComponentInternalInstance } from 'vue'
 	import { getAppStatusBarHeight, getNavHeight } from '~/composable/useCommon'
-
+	const { t } = useI18n()
 	const props = defineProps<{ height?: number }>()
 
 	const tabbarHeight = ref(0)
 	const navbar = ref()
 	const titleBar = ref()
-	const menus = ref<MenuModel[]>([
+	const menus = computed<MenuModel[]>(()=>[
 		{
-			name: '注册',
+			name: t('注册'),
 			contentComp: markRaw(Register)
 		}
 	])
@@ -33,7 +33,6 @@
 		setTabbarHeight()
 	})
 	onUnmounted(() => {
-		menus.value = []
 		navbar.value = null
 	})
 </script>
@@ -42,8 +41,8 @@
 		<AppStatusBar/>
 		<NavigationBar ref="navbar" :showClose="true" />
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main" ref="titleBar">
-			登录 DeepKline
-			<p class="text-sm font-normal text-grey py-2">未注册邮箱将自动注册</p>
+			{{ t('登录') }} DeepKline
+			<p class="text-sm font-normal text-grey py-2">{{ t('未注册邮箱将自动注册') }}</p>
 		</h1>
 		<TabBar :menus="menus" :height="tabbarHeight" />
 
@@ -53,7 +52,20 @@
 				<button><AppleIcon class="w-10 pb-1" /><span>Apple ID</span></button>
 			</div>
 
-			<div class="text-sm text-center text-grey [&_span]:text-main">登录即代表您已仔细阅读并完全理解<span>客户协议</span>,<span>隐私政策</span>,<span>风险披露</span>的全部内容，接受并同意。</div>
+			<div class="text-sm text-center text-grey [&_span]:text-main">
+				<i18n-t keypath="登录即代表您已仔细阅读并完全理解客户协议,隐私政策,风险披露的全部内容，接受并同意">
+					<template #kehuxieyi>
+						<span>{{ t('客户协议') }}</span>
+					</template>
+					<template #yinshizhengce>
+						<span>{{ t('隐私政策') }}</span>
+					</template>
+					<template #fengxianpilu>
+						<span>{{ t('风险披露') }}</span>
+					</template>
+				</i18n-t>
+				
+			</div>
 		</div>
 	</div>
 </template>

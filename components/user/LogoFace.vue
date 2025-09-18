@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
 
 <template>
 	<div class="face-container w-full h-auto flex items-center justify-center">
@@ -8,7 +10,7 @@
 				<div class="progress-bar"></div>
 			</div>
 			<div class="face-text mt-4 text-center text-main text-lg font-semibold">DeepKline</div>
-			<div class="face-button mt-1 text-muted text-sm">大佬说:"Keep building"</div>
+			<div class="face-button mt-1 text-muted text-sm">{{ t('口号') }}</div>
 		</div>
 	</div>
 </template>

@@ -9,6 +9,7 @@
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { MessageEvents } from '~/fetch/dk/dk.websocket'
 	import type { WsResult } from '~/types/types'
+	const { t } = useI18n()
 	const props = defineProps({
 		symbol: {
 			type: String,
@@ -32,7 +33,7 @@
 		totalAmount.value = moneyFlow.total.buyAmount - moneyFlow.total.sellAmount
 		let datas = [
 			{
-				name: '超大单卖出',
+				name: t('超大单卖出'),
 				value: numberToFixed((moneyFlow.ultra?.sellRate || 0) * 100, '2'),
 				itemStyle: {
 					color: reds[0],
@@ -44,7 +45,7 @@
 				amount: moneyFlow.ultra.sellAmount
 			},
 			{
-				name: '大单卖出',
+				name: t('大单卖出'),
 				value: numberToFixed((moneyFlow.big?.sellRate || 0) * 100, '2'),
 				itemStyle: {
 					color: reds[1],
@@ -55,7 +56,7 @@
 				amount: moneyFlow.big.sellAmount
 			},
 			{
-				name: '中单卖出',
+				name: t('中单卖出'),
 				value: numberToFixed((moneyFlow.mid?.sellRate || 0) * 100, '2'),
 				itemStyle: {
 					color: reds[2],
@@ -66,7 +67,7 @@
 				amount: moneyFlow.mid.sellAmount
 			},
 			{
-				name: '小单卖出',
+				name: t('小单卖出'),
 				value: numberToFixed((moneyFlow.small?.sellRate || 0) * 100, '2'),
 				itemStyle: {
 					color: reds[3],
@@ -77,7 +78,7 @@
 				amount: moneyFlow.small.sellAmount
 			},
 			{
-				name: '超大单买入',
+				name: t('超大单买入'),
 				value: numberToFixed((moneyFlow.ultra?.buyRate || 0) * 100, '2'),
 				itemStyle: {
 					color: green[0],
@@ -88,7 +89,7 @@
 				amount: moneyFlow.ultra.buyAmount
 			},
 			{
-				name: '大单买入',
+				name: t('大单买入'),
 				value: numberToFixed((moneyFlow.big?.buyRate || 0) * 100, '2'),
 				itemStyle: {
 					color: green[1],
@@ -99,7 +100,7 @@
 				amount: moneyFlow.big.buyAmount
 			},
 			{
-				name: '中单买入',
+				name: t('中单买入'),
 				value: numberToFixed((moneyFlow.mid?.buyRate || 0) * 100, '2'),
 				itemStyle: {
 					color: green[2],
@@ -110,7 +111,7 @@
 				amount: moneyFlow.mid.buyAmount
 			},
 			{
-				name: '小单买入',
+				name: t('小单买入'),
 				value: numberToFixed((moneyFlow.small?.buyRate || 0) * 100, '2'),
 				itemStyle: {
 					color: green[3],
@@ -126,7 +127,7 @@
 		flowDatas.value = datas
 		const option = {
 			title: {
-				text: (totalAmount.value >= 0 ? '流入' : '流出') + '\n\n' + moneyFormat(totalAmount.value, '', '2'),
+				text: (totalAmount.value >= 0 ? t('流入') : t('流出')) + '\n\n' + moneyFormat(totalAmount.value, '', '2'),
 				left: 'center',
 				top: '75',
 				itemGap: 3,
@@ -260,7 +261,7 @@
 			.catch(err => {
 				console.log('err', err)
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -330,7 +331,7 @@
 	<echart-container class="mt-3 border-b border-[--border-color] pb-3" ref="conteiner" :resetSize="resetSize">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b class="text-base">资金流向</b>
+				<b class="text-base">{{ t('资金流向') }}</b>
 			</h3>
 		</div>
 		<div class="container min-h-[260px] relative" v-show="!loading && !error">
@@ -338,9 +339,9 @@
 			<div :style="'height:' + maxY + 'px'"></div>
 			<ul class="w-full mt-7">
 				<li class="grid grid-cols-5 items-center justify-between mb-2 text-xs w-full text-grey">
-					<div class="flex col-span-2">方向</div>
-					<div class="flex justify-start">成交额</div>
-					<div class="flex justify-start w-[40px]">占比</div>
+					<div class="flex col-span-2">{{ t('方向') }}</div>
+					<div class="flex justify-start">{{ t('成交额') }}</div>
+					<div class="flex justify-start w-[40px]">{{ t('占比') }}</div>
 					<div class="flex justify-between items-center"></div>
 				</li>
 				<li
@@ -362,9 +363,9 @@
 			</ul>
 		</div>
 		<el-skeleton :rows="5" animated v-if="loading && !error" />
-		<el-result icon="error" title="错误提示" :sub-title="error" v-if="!loading && error">
+		<el-result icon="error" :title="t('错误提示')" :sub-title="error" v-if="!loading && error">
 			<template #extra>
-				<el-button type="primary" @click.stop="fetchData()">点击刷新</el-button>
+				<el-button type="primary" @click.stop="fetchData()">{{ t('重新加载') }}</el-button>
 			</template>
 		</el-result>
 	</echart-container>

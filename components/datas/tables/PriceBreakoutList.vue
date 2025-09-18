@@ -5,7 +5,7 @@
 	import type { PriceSupportDto } from '~/fetch/dtos/symbol.dto'
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { useStore } from '~/store'
-	import { useSymbolStore } from '~/store/symbol'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 		pageSize?: number
@@ -50,7 +50,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				if (!datas.value?.length) error.value = '网络异常，请稍后再试'
+				if (!datas.value?.length) error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -191,19 +191,19 @@
 	<div :style="{ height: height ? +contentHeight + 'px' : 'max-content' }">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getDatas">点击重新加载</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<Empty :msg="error" v-if="!loading && !error && !datas.length">
 			<template #default>
-				<el-button @click.stop="getDatas">点击重新加载</el-button>
+				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
 			</template>
 		</Empty>
 		<div ref="lheader" class="symbol-list-header w-full py-2" v-else-if="!loading && !error">
 			<ul :class="'grid grid-cols-5 *:flex *:items-center text-xs text-grey'">
-				<li class="col-span-2"><span>名称</span></li>
-				<li class="justify-start pl-4 col-span-2" v-if="type=='support'"><span>支撑</span></li>
-				<li class="justify-end col-span-3 pr-4" v-if="type=='resistance'"><span>压力</span></li>
+				<li class="col-span-2"><span>{{ t('名称') }}</span></li>
+				<li class="justify-start pl-4 col-span-2" v-if="type=='support'"><span>{{ t('支撑') }}</span></li>
+				<li class="justify-end col-span-3 pr-4" v-if="type=='resistance'"><span>{{ t('压力') }}</span></li>
 			</ul>
 		</div>
 		<ScrollBar

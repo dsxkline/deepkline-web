@@ -4,6 +4,7 @@
 	import Trades from './Trades.vue'
 	import { useStore } from '~/store/index'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -74,11 +75,11 @@
 	})
 
 	useWillDisappear(() => {
-		console.log('symbol-market-datas useWillDisappear....')
+		// console.log('symbol-market-datas useWillDisappear....')
 		unSubSymbols()
 	})
 	useWillAppear(() => {
-		console.log('symbol-market-datas useWillAppear....')
+		// console.log('symbol-market-datas useWillAppear....')
 		subSymbols()
 	})
 
@@ -107,42 +108,42 @@
 
 				<ul class="market-datas-head-right grid grid-cols-2 gap-2 text-invert mb-3 px-4 text-xs">
 					<li>
-						<span>24H开盘</span>
+						<span>{{ t('24H开盘') }}</span>
 						<span v-if="item?.open24h">{{ formatPrice(parseFloat(item?.open24h), symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H最高</span>
+						<span>{{ t('24H最高') }}</span>
 						<span v-if="item?.high24h">{{ formatPrice(parseFloat(item?.high24h), symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li>
-						<span>24H收盘</span>
+						<span>{{ t('24H收盘') }}</span>
 						<span v-if="item?.last">{{ formatPrice(parseFloat(item?.last), symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H最低</span>
+						<span>{{ t('24H最低') }}</span>
 						<span v-if="item?.low24h">{{ formatPrice(parseFloat(item?.low24h), symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H成交量</span>
+						<span>{{ t('24H成交量') }}</span>
 						<span v-if="item?.vol24h">{{ moneyFormat(item?.vol24h) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li>
-						<span>买一价</span>
+						<span>{{ t('买一价') }}</span>
 						<span v-if="item?.askPx">{{ formatPrice(item?.askPx, symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li class="show">
-						<span>24H成交额</span>
+						<span>{{ t('24H成交额') }}</span>
 						<span v-if="item?.volCcy24h">{{ moneyFormat(item?.volCcy24h) }}</span>
 						<span v-else>--</span>
 					</li>
 					<li>
-						<span>卖一价</span>
+						<span>{{ t('卖一价') }}</span>
 						<span v-if="item?.bidPx">{{ formatPrice(item?.bidPx, symbolObj.tickSz) }}</span>
 						<span v-else>--</span>
 					</li>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-	import { useStore } from '~/store'
+	const { t } = useI18n()
 	const titleBar = ref()
+	
 	onMounted(() => {
 		nextTick(() => {
 			titleBar.value.clientHeight && document.documentElement.style.setProperty('--title-bar-height', `30px`)
@@ -17,7 +18,7 @@
 			<!-- <div class="flex items-center justify-center w-[18px] h-[18px] mr-1" v-else>
 				<img src="~/assets/images/logo.png" alt="logo" class="w-[15px] h-[15px] rounded-full" />
 			</div> -->
-			<b class="logo-text mr-2 font-mono text-xs text-main"> DeepKline is the most silky cryptocurrency trading system. </b>
+			<b class="logo-text mr-2 font-mono text-xs text-main"> DeepKline {{ t('品牌口号') }} </b>
 		</div>
 		<div>
 			<!--  -->
@@ -48,11 +49,11 @@
 			// transition: all 0.3s ease;
 		}
 	}
-    @media (max-width:999px) {
-        .title-bar{
-            .logo-text{
-                display: none;
-            }
-        }
-    }
+	@media (max-width: 999px) {
+		.title-bar {
+			.logo-text {
+				display: none;
+			}
+		}
+	}
 </style>

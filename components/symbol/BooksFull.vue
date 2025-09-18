@@ -6,7 +6,7 @@
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
 	import { useRequestAnimation, type requestAnimationType } from '~/composable/useRequestAnimation'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 		limitPoint?: string
@@ -150,7 +150,7 @@
 			.catch(err => {
 				console.log('err', err)
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -286,7 +286,7 @@
 	const wsError = (state: number) => {
 		if (state <= -1 && !asks.value?.length && !bids.value?.length) {
 			loading.value = false
-			error.value = '网络异常，连接错误'
+			error.value = t('网络异常，请稍后再试')
 		} else {
 			error.value = ''
 		}
@@ -304,7 +304,7 @@
 
 	const { $windowEvent } = useNuxtApp()
 	onMounted(() => {
-		console.log('booksfull onMounted....')
+		// console.log('booksfull onMounted....')
 		// createStartAnimations()
 		$ws.onSignalState(wsError)
 		$windowEvent.addEvent(whenBrowserActive)
@@ -340,7 +340,7 @@
 	<div :class="['w-full h-full min-h-[400px] flex flex-col justify-between', isH5 ? 'books-small' : '']">
 		<div class="flex items-center justify-between mb-2" v-if="!isH5">
 			<h3 class="text-sm mb-1 flex items-center">
-				<b class="books-title">订单表</b>
+				<b class="books-title">{{ t('订单表') }}</b>
 				<!-- <div class="flex items-center mx-2 *:border *:border-[var(--transparent20)] *:mx-1 *:opacity-50 *:rounded-sm">
 					<button :class="['hover:opacity-80', activeBook == 0 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 0" v-click-sound><BooksListIcon /></button>
 					<button :class="['hover:opacity-80', activeBook == 1 ? '!opacity-100 !border-[var(--transparent30)]' : '']" @click="activeBook = 1" v-click-sound><BooksBuyListIcon /></button>
@@ -361,22 +361,22 @@
 			<div v-if="isH5">
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
-						<div>价格</div>
-						<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
+						<div>{{ t('价格') }}</div>
+						<div class="text-right">{{t('数量')}}({{ symbolObj?.baseCoin }})</div>
 					</li>
 				</ul>
 			</div>
 			<div v-else class="flex gap-3">
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
-						<div>数量({{ symbolObj?.baseCoin }})</div>
-						<div class="text-right">价格</div>
+						<div>{{ t('数量') }}({{ symbolObj?.baseCoin }})</div>
+						<div class="text-right">{{ t('价格') }}</div>
 					</li>
 				</ul>
 				<ul class="w-full h-full *:w-full flex flex-col *:grid *:grid-cols-2 *:my-[1px] *:py-[1.0px] *:items-center *:justify-between *:relative *:overflow-hidden">
 					<li class="text-grey">
-						<div>价格</div>
-						<div class="text-right">数量({{ symbolObj?.baseCoin }})</div>
+						<div>{{ t('价格') }}</div>
+						<div class="text-right">{{t('数量')}}({{ symbolObj?.baseCoin }})</div>
 					</li>
 				</ul>
 			</div>

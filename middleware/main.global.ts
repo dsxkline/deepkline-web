@@ -82,6 +82,17 @@ async function getExchanges() {
 	}
 }
 
+async function getMessageUnRead() {
+	userFetch
+		.messageUnRead()
+		.then(result => {
+			if (result?.code == FetchResultDto.OK) {
+				useUserStore().setUnRead(result.data)
+			}
+		})
+		.catch(err => {})
+}
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
 	// 服务端渲染主题
 	const colorMode = useSyncedCookie('nuxt-color-mode', { default: () => 'dark' })
@@ -111,6 +122,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		await getExchanges()
 		await getUserAccounts()
 		await getUserFund()
+		await getMessageUnRead()
 		const state = useStore()
 		if (state.apiSource == ApiSource.OKX) {
 			await getDefaultSymbols(MarketType.SPOT)

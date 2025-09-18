@@ -1,31 +1,27 @@
 <script setup lang="ts">
 	import { useSyncedCookie } from '~/composable/useSyncedCookie'
-
+	const { setLocale, locales, locale, localeProperties } = useI18n()
 	const langPopover = ref()
 	const visible = ref(false)
+	const loading = ref(false)
 	const emit = defineEmits<{
 		(event: 'onClose', lang: string): void
 	}>()
-	const languages = useSyncedCookie('languages', { default: () => 'zh-CN' })
-	const languageList = [
-		{
-			label: '简体中文',
-			value: 'zh-CN'
-		},
-		{
-			label: '繁體中文',
-			value: 'zh-TW'
-		},
-		{
-			label: 'English',
-			value: 'en-US'
-		}
-	]
-	const changeLanguage = (lang: string) => {
-		languages.value = lang
-		useSyncedCookie('languages', { default: () => 'zh-CN' }).value = lang
-		emit('onClose', lang)
-		langPopover.value?.hide()
+	const currentLang = ref(locale.value)
+	const changeLanguage = async (lang: any) => {
+		loading.value = true
+		currentLang.value = lang
+		setTimeout(() => {
+			useSyncedCookie('i18n_redirected', { default: () => 'zh-CN' }).value = lang
+			// 1) SPA 切换：直接改语言，不跳转
+			setLocale(lang)
+			loading.value = false
+			emit('onClose', lang)
+			langPopover.value?.hide()
+		}, 100)
+		// 2) 如果你想让 URL 同步变化（路由模式）
+		// const path = useSwitchLocalePath()(lang)
+		// navigateTo(path)
 	}
 
 	onBeforeUnmount(() => {
@@ -33,7 +29,6 @@
 	})
 	onMounted(() => {
 		visible.value = true
-		languages.value = languages.value
 	})
 </script>
 <template>
@@ -51,13 +46,14 @@
 			<div class="bg-[--transparent05]">
 				<ul>
 					<li
-						:class="['flex items-center justify-center h-[40px] text-sm px-6 hover:bg-[--transparent05] cursor-pointer', languages.value == item.value ? 'text-main' : '']"
-						v-for="item in languageList"
-						:key="item.value"
-						@click="changeLanguage(item.value)"
+						:class="['flex items-center justify-center h-[40px] text-sm px-6 hover:bg-[--transparent05] cursor-pointer text-grey', currentLang == item.code ? '!text-main' : '']"
+						v-for="item in locales"
+						:key="item.code"
+						@click="changeLanguage(item.code)"
 						v-click-sound
 					>
-						{{ item.label }}
+						{{ item.name }}
+						<Loading v-if="loading && currentLang == item.code" size="14px" class="pl-1" />
 					</li>
 				</ul>
 			</div>

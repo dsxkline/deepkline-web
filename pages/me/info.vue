@@ -2,15 +2,16 @@
 	import NickName from '~/pages/me/nickname.vue'
 	import { useUserStore } from '~/store/user'
 	import { usePush } from '~/composable/usePush'
-import Country from './country.vue';
+	import Country from './country.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
 	const usepush = usePush()
-	const menus = computed(()=>[
+	const menus = computed(() => [
 		{
 			id: 1,
-			name: '昵称',
+			name: t('昵称'),
 			subName: '',
 			desc: useUserStore().user?.nickName,
 			callback: () => {
@@ -27,12 +28,12 @@ import Country from './country.vue';
 				copyText(useUserStore().user?.openId, (err: any) => {
 					if (!err) {
 						ElMessage({
-							message: '已复制到剪切板',
+							message: t('已复制到剪切板'),
 							type: 'success'
 						})
 					} else {
 						ElMessage({
-							message: '复制失败',
+							message: t('复制失败'),
 							type: 'error'
 						})
 					}
@@ -41,7 +42,7 @@ import Country from './country.vue';
 		},
 		{
 			id: 1,
-			name: '国家或地区',
+			name: t('国家或地区'),
 			subName: '',
 			desc: '中国',
 			callback: () => {
@@ -57,7 +58,7 @@ import Country from './country.vue';
 		// },
 		{
 			id: 1,
-			name: '用户等级',
+			name: t('用户等级'),
 			subName: '',
 			desc: useUserStore().user?.levelCode,
 			callback: () => {}
@@ -67,8 +68,8 @@ import Country from './country.vue';
 </script>
 <template>
 	<div class="w-full h-full">
-		<AppStatusBar/>
-		<NavigationBar title="个人资料" :hideBack="!push" />
+		<AppStatusBar />
+		<NavigationBar :title="t('个人资料')" :hideBack="!push" />
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }">
 			<MenuList :menus="menus" />
 		</ScrollBar>

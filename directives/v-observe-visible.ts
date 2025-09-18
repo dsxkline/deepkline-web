@@ -4,7 +4,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 	mounted(el, binding) {
 		const callback = typeof binding.value === 'function' ? binding.value : (binding.value as any)?.callback
 		// 当元素滚动进入视口（默认 10%）时，触发回调函数
-		const options = (binding.value as any)?.options || { threshold: 0.1 }
+		const options = (binding.value as any)?.options || { threshold: 0.05 }
 
 		if (typeof callback !== 'function') {
 			console.warn('[v-observe-visible] binding value must be a function or an object with callback')
@@ -12,7 +12,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		}
 
 		const observer = new IntersectionObserver(([entry]) => {
-            // console.log('inview', entry)
+            console.log('inview', entry)
 			// 进入或离开视口都触发回调
 			callback(entry.isIntersecting)
 			if (entry.isIntersecting) {
@@ -27,17 +27,17 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		observer.observe(el);
 
 		// ⚠️ 初始化时主动触发一次（可能此时元素就在视口内）
-		// requestAnimationFrame(() => {
-		// 	const rect = el.getBoundingClientRect()
-		// 	const inView = rect.top < window.innerHeight && rect.bottom > 0
-		// 	console.log('inview', inView, rect)
-		// 	if (inView) {
-		// 		callback(true)
-		// 		if (!binding.modifiers?.multi) {
-		// 			observer.unobserve(el)
-		// 		}
-		// 	}
-		// })
+		setTimeout(() => {
+			const rect = el.getBoundingClientRect()
+			const inView = rect.top < window.innerHeight && rect.bottom > 0
+			console.log('inview', inView, rect)
+			if (inView) {
+				callback(true)
+				if (!binding.modifiers?.multi) {
+					observer.unobserve(el)
+				}
+			}
+		},100)
 	},
 	unmounted(el) {
 		;(el as any).__observer__?.disconnect();

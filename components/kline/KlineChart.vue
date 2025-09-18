@@ -5,6 +5,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+	const { t,locale } = useI18n()
 	const props = defineProps<{
 		symbol: string
 		sides?: string[]
@@ -73,6 +74,14 @@
 			chart && chart.tapSymbol(newVal)
 		}
 	)
+
+	watch(
+		() => locale.value,
+		newVal => {
+			reloadChart()
+		}
+	)
+
 	onMounted(() => {
 		const symbol = props.symbol
 		const symbolDetail = useSymbolStore().symbols[symbol]
@@ -108,7 +117,7 @@
 			loading.value = false
 		}
 		chart.onError = err => {
-			error.value = '网络异常，请稍后再试'
+			error.value = t('网络异常，请稍后再试')
 		}
 
 		// console.log('create kline chart ');
@@ -120,11 +129,11 @@
 	})
 
 	useWillDisappear(() => {
-		console.log('klinechart useWillDisappear....')
+		//console.log('klinechart useWillDisappear....')
 		//chart?.leave()
 	})
 	useWillAppear(() => {
-		console.log('klinechart useWillAppear....')
+		//console.log('klinechart useWillAppear....')
 		//chart?.reload()
 	})
 </script>
@@ -132,7 +141,7 @@
 	<div class="kline-chart-container w-full h-full" ref="klineDom">
 		<Error :content="error" v-if="error">
 			<template #default>
-				<el-button type="info" @click.stop="reloadChart">点击刷新</el-button>
+				<el-button type="info" @click.stop="reloadChart">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<el-skeleton :rows="10" animated v-if="loading && !error" class="p-3" />

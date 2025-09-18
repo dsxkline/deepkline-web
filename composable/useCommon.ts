@@ -14,6 +14,10 @@ export const getHeaderHeight = () => {
 	const headerHeight = getCssVariable('--header-height')
 	return headerHeight ? parseFloat(headerHeight) : 0
 }
+export const getFooterHeight = () => {
+	const fHeight = getCssVariable('--footer-height')
+	return fHeight ? parseFloat(fHeight) : 0
+}
 
 export const getStatusBarHeight = () => {
 	const statusBarHeight = getCssVariable('--status-bar-height')

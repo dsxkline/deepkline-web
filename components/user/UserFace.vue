@@ -5,6 +5,7 @@ import Login from '~/pages/login/index.vue';
 import Avatar from '~/pages/me/avatar.vue';
 import { useUserStore } from '~/store/user';
 import defaultAvatar from '~/assets/images/default-avatar.svg'
+const { t } = useI18n()
 const pushUp = usePushUp()
 const clickHandle = ()=>{
     if(!useUserStore()?.user?.id){
@@ -33,10 +34,10 @@ onBeforeUnmount(() => {
                 <button class="absolute bottom-0 right-0 rounded-full bg-[--transparent20] w-6 h-6 flex items-center justify-center" @click.stop="pushAvatar" v-if="useUserStore()?.user?.id"><el-icon><Edit/></el-icon></button>
             </div>
             <div class="face-text mt-4 text-center text-main text-lg font-semibold">
-                {{ useUserStore()?.user?.nickName || '登录/注册' }}
+                {{ useUserStore()?.user?.nickName || t('登录/注册') }}
             </div>
             <div class="face-button mt-1 text-muted text-sm">
-                {{ useUserStore()?.user?.email || '注册即送$500体验金' }}
+                {{ useUserStore()?.user?.email || t('注册即送体验金',{money:'$10'}) }}
             </div>
         </div>
     </div>

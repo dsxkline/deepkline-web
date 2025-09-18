@@ -22,7 +22,7 @@ const orderHandle = (data: WsResult<OrderDto>) => {
 const fundHandle = (data: WsResult<FundDto>) => {
 	if(!useUserStore().user) return
 	if(!useAccountStore().currentAccount?.accountId) return
-	//console.log('收到资产推送信息', data)
+	console.log('收到资产推送信息', data)
 	data?.payload && useAccountStore().setFund(data.payload)
 }
 

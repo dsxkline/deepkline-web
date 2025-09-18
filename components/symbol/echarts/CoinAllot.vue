@@ -1,7 +1,8 @@
 <script setup lang="ts">
 	import { onMounted, ref } from 'vue'
 	import * as echarts from 'echarts'
-import { useStore } from '~/store'
+	import { useStore } from '~/store'
+	const { t } = useI18n()
 	const props = defineProps({
 		symbol: {
 			type: String,
@@ -117,7 +118,7 @@ import { useStore } from '~/store'
 								rich: {
 									name: {
 										fontWeight: 'bold',
-										fontSize: 10,
+										fontSize: 10
 									},
 									time: {
 										fontSize: 10,
@@ -195,9 +196,9 @@ import { useStore } from '~/store'
 				createEchart()
 			})
 			.catch(error => {
-				console.error('一个请求失败:', error)
+				// console.error('一个请求失败:', error)
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -205,7 +206,7 @@ import { useStore } from '~/store'
 		if (!datas.value) return
 		datas.value[0] = []
 		symbolAllocationData.value.list.forEach(item => {
-			console.log('data item', item)
+			// console.log('data item', item)
 			datas.value &&
 				datas.value[0].push({
 					name: item.label,
@@ -223,7 +224,7 @@ import { useStore } from '~/store'
 		// datas.value[0].push({ name: 'Locked', value: parseFloat((parseFloat(symbolProgressData.value.percOfLocked) * 100).toFixed(2)), progress: 1, itemStyle: { color: itemColor } })
 
 		echart && echart.dispose()
-		echart = echarts.init(chart.value,useStore().theme == 'dark' ? 'dark' : 'light')
+		echart = echarts.init(chart.value, useStore().theme == 'dark' ? 'dark' : 'light')
 		echart.setOption(option())
 		echart && echart.resize()
 
@@ -231,7 +232,7 @@ import { useStore } from '~/store'
 		const colorPalette = ops.color as echarts.Color[]
 		datas.value[0].forEach((item, index) => {
 			const color = item.itemStyle?.color || colorPalette[index % colorPalette.length]
-			console.log(`${item.name} 实际颜色为: ${color}`)
+			// console.log(`${item.name} 实际颜色为: ${color}`)
 			if (item.itemStyle) item.itemStyle.color = color as string
 			else
 				item.itemStyle = {
@@ -305,50 +306,60 @@ import { useStore } from '~/store'
 <template>
 	<div class="w-full h-full my-4 pb-3" ref="containerRef">
 		<div class="flex items-center justify-between mb-2">
-			<h3 class="mb-1 flex items-center">代币解锁</h3>
+			<h3 class="mb-1 flex items-center">{{ t('代币解锁') }}</h3>
 		</div>
 		<div class="flex w-full flex-col mb-4">
 			<div class="pb-2">
 				<ul class="flex flex-row items-center justify-between text-sm *:flex *:flex-col *:text-grey">
 					<li>
-						<div class="flex items-center"><i class="bg-green w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>已解锁</span></div>
-						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.unlocked))}}</b>
-						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))}}%</span>
+						<div class="flex items-center">
+							<i class="bg-green w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>{{ t('已解锁') }}</span>
+						</div>
+						<b class="text-main font-bold">{{ thousandUnit(moneyFormat(symbolProgressData.unlocked)) }}</b>
+						<span>{{ parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2)) }}%</span>
 					</li>
 					<li class="items-center">
-						<div class="flex items-center"><i class="bg-red w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>已锁定</span></div>
-						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.locked))}}</b>
-						<span>{{parseFloat((parseFloat(symbolProgressData.percOfLocked) * 100).toFixed(2))}}%</span>
+						<div class="flex items-center">
+							<i class="bg-red w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>{{ t('已锁定') }}</span>
+						</div>
+						<b class="text-main font-bold">{{ thousandUnit(moneyFormat(symbolProgressData.locked)) }}</b>
+						<span>{{ parseFloat((parseFloat(symbolProgressData.percOfLocked) * 100).toFixed(2)) }}%</span>
 					</li>
 					<li class="items-end">
-						<div class="flex items-center"><i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>未追踪</span></div>
-						<b class="text-main font-bold">{{thousandUnit(moneyFormat(symbolProgressData.untracked))}}</b>
-						<span>{{parseFloat((parseFloat(symbolProgressData.percOfUntracked) * 100).toFixed(2))}}%</span>
+						<div class="flex items-center">
+							<i class="bg-gray-500 w-2 h-2 rounded-full flex mr-1 text-xs"></i><span>{{ t('未追踪') }}</span>
+						</div>
+						<b class="text-main font-bold">{{ thousandUnit(moneyFormat(symbolProgressData.untracked)) }}</b>
+						<span>{{ parseFloat((parseFloat(symbolProgressData.percOfUntracked) * 100).toFixed(2)) }}%</span>
 					</li>
 				</ul>
 			</div>
 			<div class="w-full relative">
 				<el-progress :percentage="parseFloat((parseFloat(symbolProgressData.percOfUnlocked) * 100).toFixed(2))" :show-text="false" />
-				<div class="absolute top-0 bg-red h-full rounded-r-full" :style="{
-					width: (parseFloat(symbolProgressData.percOfLocked) * 100)+'%',
-					left:'calc('+(parseFloat(symbolProgressData.percOfUnlocked) * 100)+'% - 5px)'
-					
-					}"></div>
+				<div
+					class="absolute top-0 bg-red h-full rounded-r-full"
+					:style="{
+						width: parseFloat(symbolProgressData.percOfLocked) * 100 + '%',
+						left: 'calc(' + parseFloat(symbolProgressData.percOfUnlocked) * 100 + '% - 5px)'
+					}"
+				></div>
 			</div>
 		</div>
 		<div class="flex items-center justify-between mb-2">
-			<h3 class="mb-1 flex items-center">代币配置</h3>
-			<span class="text-xs text-grey">最大供应量<b class="text-base pl-1 text-main">{{moneyFormat(symbolProgressData.maxSupply)}}</b></span>
+			<h3 class="mb-1 flex items-center">{{ t('代币配置') }}</h3>
+			<span class="text-xs text-grey"
+				>{{ t('最大供应量') }}<b class="text-base pl-1 text-main">{{ moneyFormat(symbolProgressData.maxSupply) }}</b></span
+			>
 		</div>
 		<div class="container min-h-[260px] relative" v-show="!loading && !error">
 			<div class="chart w-full h-full absolute top-0 left-0 overflow-hidden" :style="'height:' + (maxY + 50) + 'px'" ref="chart"></div>
 			<div :style="'height:' + maxY + 'px'"></div>
 			<ul class="w-full mt-7">
 				<li class="flex items-center justify-between mb-2 text-xs w-full text-grey">
-					<div class="w-[40%]">代币配置</div>
-					<div class="w-[40px]">总量</div>
-					<div class="w-[40px]">已解锁</div>
-					<div class="w-[80px] text-right">进度</div>
+					<div class="w-[40%]">{{ t('代币配置') }}</div>
+					<div class="w-[40px]">{{ t('总量') }}</div>
+					<div class="w-[40px]">{{ t('已解锁') }}</div>
+					<div class="w-[80px] text-right">{{ t('进度') }}</div>
 				</li>
 				<li
 					v-if="datas"
@@ -370,7 +381,7 @@ import { useStore } from '~/store'
 		</div>
 		<el-skeleton :rows="5" animated v-if="loading && !error" />
 		<Error :content="error" v-if="!loading && error">
-			<el-button type="primary" @click.stop="fetchData()">点击刷新</el-button>
+			<el-button type="primary" @click.stop="fetchData()">{{ t('重新加载') }}</el-button>
 		</Error>
 	</div>
 </template>

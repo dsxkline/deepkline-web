@@ -9,7 +9,7 @@
 	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	import type { Ticker } from '~/fetch/okx/okx.type'
 	import type { WsResult } from '~/types/types'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		full?: boolean
 		onlyOne?: boolean
@@ -78,7 +78,7 @@
 			<b :class="['text-base font-bold', (sectorRate || sector.rate) >= 0 ? 'text-green' : 'text-red']" v-else
 				>{{ (sectorRate || sector.rate) > 0 ? '+' : '' }}{{ numberToFixed((sectorRate || sector.rate) * 100, '2') }}%</b
 			>
-			<span class="text-xs text-grey">24小时涨跌</span>
+			<span class="text-xs text-grey">{{ t('24小时涨跌') }}</span>
 		</div>
 		<div class="text-xs flex pt-2">
 			<span>{{ topCoin }}</span

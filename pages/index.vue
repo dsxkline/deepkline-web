@@ -11,6 +11,7 @@
 	import TradeIcon from '~/components/icons/TradeIcon.vue'
 	import Home from './home.vue'
 	import { useAccountStore } from '~/store/account'
+	const { t } = useI18n()
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
 	})
@@ -23,20 +24,20 @@
 	const activeMenu = computed(() => menus.value && menus.value[active.value])
 	const activeMenuH5 = computed(() => menus5.value && menus5.value[active.value])
 	// 定义菜单及对应的组件
-	const menus = ref<MenuModel[] | null>([
+	const menus = computed<MenuModel[] | null>(() => [
 		{
-			name: '行情',
+			name: t('行情'),
 			// iconSelected: markRaw(Logo),
 			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
 		},
 		{
-			name: '下载',
+			name: t('下载简称'),
 			icon: markRaw(Download),
 			contentComp: markRaw(DownloadIndex),
 			contentParams: {}
-		},
+		}
 		// {
 		// 	name: '策略',
 		// 	icon: markRaw(Opportunity),
@@ -51,23 +52,23 @@
 		// }
 	])
 
-	const menus5 = ref<MenuModel[] | null>([
+	const menus5 = computed<MenuModel[] | null>(() => [
 		{
-			name: '首页',
+			name: t('首页'),
 			iconSelected: markRaw(Logo),
 			icon: markRaw(HomeFilled),
 			contentComp: markRaw(Home),
 			contentParams: {}
 		},
 		{
-			name: '行情',
+			name: t('行情'),
 			// iconSelected: markRaw(Logo),
 			icon: markRaw(Histogram),
 			contentComp: markRaw(MarketIndex),
 			contentParams: {}
 		},
 		{
-			name: '交易',
+			name: t('交易'),
 			icon: markRaw(TradeIcon),
 			contentComp: markRaw(TradeIndex),
 			contentParams: {}
@@ -79,7 +80,7 @@
 		// 	contentParams: {}
 		// },
 		{
-			name: '资产',
+			name: t('资产'),
 			icon: markRaw(AssetsIcon),
 			contentComp: markRaw(AccountIndex),
 			contentParams: {}
@@ -112,8 +113,6 @@
 	onMounted(() => {})
 
 	onBeforeUnmount(() => {
-		menus.value = null
-		menus5.value = null
 		console.log('onBeforeUnmount.............................')
 	})
 </script>

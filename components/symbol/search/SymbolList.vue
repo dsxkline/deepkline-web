@@ -15,7 +15,8 @@
 	import type { MarketType, SymbolDto } from '~/fetch/dtos/symbol.dto'
 	import { symbolsFetch } from '~/fetch/symbols.fetch'
 	import { FetchResultDto } from '~/fetch/dtos/common.dto'
-import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
+	import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
+	const { t } = useI18n()
 
 	const props = defineProps<{
 		symbolCategory: MarketType
@@ -63,7 +64,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	const end = ref(visibleCount.value)
 	// 虚拟列表
 	const virtualList = computed<SymbolDto[]>(() => {
-		console.log('virtualList', start.value, end.value)
+		// console.log('virtualList', start.value, end.value)
 		return symbols.value?.slice(start.value, end.value)
 	})
 	// 记录滚动位置
@@ -156,7 +157,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 			if (props.keyword) {
 				symbols.value = symbols.value.filter(item => item.symbol.toLowerCase().includes((props.keyword + '').toLowerCase()))
 			}
-			console.log('props.putSymbols', symbols.value)
+			// console.log('props.putSymbols', symbols.value)
 			if (symbols.value?.length) {
 				nextTick(() => {
 					scrollHandler({ scrollLeft: 0, scrollTop: mainScrollTop.value })
@@ -199,7 +200,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '获取失败'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 	function update() {
@@ -471,7 +472,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 
 	// 使用页面订阅收集器
 	const pageSubSymbols = useAddPageSubSymbols()
-	
+
 	// 暴露给父组件的方法
 	defineExpose({ update, leave })
 </script>
@@ -479,7 +480,7 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 	<div class="w-full h-full" ref="symbolDom">
 		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getGroupSymbols()">点击刷新</el-button>
+				<el-button @click.stop="getGroupSymbols()">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 
@@ -505,9 +506,9 @@ import { useAddPageSubSymbols } from '~/composable/usePageSubSymbols'
 		<div ref="lheader" class="symbol-list-header w-full py-2 px-4" v-else-if="!loading && !error">
 			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey' + (isSearchList ? ' grid-cols-[30px_1fr_1fr_1fr_1fr]' : '')">
 				<li class="justify-start cursor-pointer select-none" v-if="isSearchList"><span></span></li>
-				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>名称</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
-				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle"><span>最新价</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>今日涨跌</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
+				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>{{ t('名称') }}</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
+				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle"><span>{{ t('最新价') }}</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
+				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>{{ t('今日涨跌') }}</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
 			</ul>
 		</div>
 		<ScrollBar class="w-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">

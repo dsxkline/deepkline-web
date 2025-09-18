@@ -3,18 +3,19 @@
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { FetchResultDto, type ChartDto } from '~/fetch/dtos/common.dto'
 	import { useAccountStore } from '~/store/account'
+	const { t } = useI18n()
 	const loading = ref(false)
 	const error = ref('')
 	const chartDatas = ref<ChartDto[]>([])
 	const period = ref<'day' | 'week' | 'month' | 'halfYear' | 'year' | 'full'>('month')
 	const currentPeriod = ref('month')
-	const periods = ref([
+	const periods = computed(()=>[
 		// { name: '1日', period: 'day' },
-		{ name: '1周', period: 'week' },
-		{ name: '1月', period: 'month' },
-		{ name: '半年', period: 'halfYear' },
-		{ name: '1年', period: 'year' },
-		{ name: '全部', period: 'full' }
+		{ name: t('1周'), period: 'week' },
+		{ name: t('1月'), period: 'month' },
+		{ name: t('半年'), period: 'halfYear' },
+		{ name: t('1年'), period: 'year' },
+		{ name: t('全部'), period: 'full' }
 	])
 	const clickPeriod = (period: string) => {
 		if (loading.value) return
@@ -40,7 +41,7 @@
 			})
 			.catch(err => {
 				loading.value = false
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -57,11 +58,11 @@
 
 <template>
 	<div class="px-4 my-4 flex flex-col justify-between">
-		<h3 class="pb-2 border-b border-[--transparent05]">收益曲线</h3>
+		<h3 class="pb-2 border-b border-[--transparent05]">{{ t('收益曲线') }}</h3>
 		<div class="w-full h-[250px]">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
-					<el-button @click.stop="getChartDatas">点击重新加载</el-button>
+					<el-button @click.stop="getChartDatas">{{ t('重新加载') }}</el-button>
 				</template>
 			</Error>
 			<Empty :content="error" v-if="!loading && !error && !chartDatas.length"> </Empty>

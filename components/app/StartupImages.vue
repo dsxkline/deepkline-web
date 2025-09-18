@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n()
 	const props = defineProps<{
 		modelValue?: boolean
 	}>()
@@ -62,7 +63,7 @@
 		<LogoFace class="mt-[-100px]" />
 		<!-- <img src="/images/pwa/launch-iphonexsmax-1242x2688.png" class="w-full h-full object-cover" /> -->
 		<ClientOnly>
-			<span class="absolute top-4 right-4 px-4 py-2 bg-[--transparent10] rounded-full text-xs" @click="hide">跳过 {{ second }}s</span>
+			<span class="absolute top-4 right-4 px-4 py-2 bg-[--transparent10] rounded-full text-xs mt-[var(--app-status-bar-height)]" @click="hide">{{t('跳过')}} {{ second }}s</span>
 		</ClientOnly>
 	</div>
 </template>

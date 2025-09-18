@@ -10,14 +10,15 @@
 	import clearPWACaches from '~/composable/clearPWACaches'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { useAccountStore } from '~/store/account'
-import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
-import { useSyncedCookie } from '~/composable/useSyncedCookie'
+	import { createCaptcha, createTicket, type ICaptchaResult } from '~/utils/captcha.helper'
+	import { useSyncedCookie } from '~/composable/useSyncedCookie'
+	const { t } = useI18n()
 
 	// 定义回调函数
 	function captchCallback(isreset: boolean, isRegister?: boolean) {
 		return (res: ICaptchaResult) => {
 			// 此处代码仅为验证结果的展示示例，真实业务接入，建议基于ticket和errorCode情况做不同的业务处理
-			console.log('captchCallback', res)
+			// console.log('captchCallback', res)
 			if (res.ret == 0) {
 				if (isRegister) {
 					usepush(Password, { email: email.value, ticket: res.ticket, randstr: res.randstr, isRegister }, '100%', currentDialog)
@@ -57,12 +58,12 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 	const forgetPassword = ref(false)
 	// 如果是dialog打开
 	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
-	console.log('当前dialog', currentDialog)
+	// console.log('当前dialog', currentDialog)
 	const nextStep = () => {
 		error.value = ''
 		// 忘记密码会强制开启用户行为验证并发送邮箱验证码
 		if (email.value.indexOf('@') < 0) {
-			error.value = '请输入邮箱账号'
+			error.value = t('请输入邮箱账号')
 			return
 		}
 		next()
@@ -97,7 +98,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					} catch (err) {
 						loadErrorCallback(isreset, isRegister)
 						ElMessage({
-							message: '验证码发送异常，请稍后再试',
+							message: t('验证码发送异常，请稍后再试'),
 							type: 'error'
 						})
 						return false
@@ -118,11 +119,11 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 				if (isreset)
 					ElMessage({
-						message: '网络异常，请稍后再试',
+						message: t('网络异常，请稍后再试'),
 						type: 'error'
 					})
 				return false
@@ -138,7 +139,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					loading.value = false
 					// 发送成功进入验证码输入界面
 					ElMessage({
-						message: '验证码已发送',
+						message: t('验证码已发送'),
 						type: 'success'
 					})
 					if (!isreset) pushCaptchaView()
@@ -163,11 +164,11 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			.catch(err => {
 				setTimeout(() => {
 					loading.value = false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}, 500)
 				if (isreset)
 					ElMessage({
-						message: '网络异常，请稍后再试',
+						message: t('网络异常，请稍后再试'),
 						type: 'error'
 					})
 				return false
@@ -179,7 +180,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 			email: email.value,
 			forgetPassword: forgetPassword.value,
 			successCallback: async (validId: string) => {
-				console.log('success callback:', validId)
+				// console.log('success callback:', validId)
 				// 如果是忘记密码，进入重置密码界面
 				if (forgetPassword.value) {
 					usepush(ResetPassword, { email: email.value, forgetPassword: forgetPassword.value, validId: validId }, '100%', currentDialog)
@@ -188,7 +189,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 				// 否则就是登录校验验证码后进行登录操作
 				// 输入验证码后回调
 				const result = await userFetch.login({ userName: email.value, validId: validId })
-				console.log('result de', FetchResultDto.OK, result)
+				// console.log('result de', FetchResultDto.OK, result)
 				if (result?.code == FetchResultDto.OK) {
 					useUserStore().setUser(result.data)
 					// 保存cookie
@@ -198,7 +199,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					setTimeout(async () => {
 						await getUserAccounts()
 						ElMessage({
-							message: '登录成功',
+							message: t('登录成功'),
 							type: 'success'
 						})
 
@@ -223,7 +224,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 		if (!useUserStore().user) return
 		const result = await accountFetch.list()
 		if (result?.code == FetchResultDto.OK) {
-			console.log('获取账户信息', result.data)
+			// console.log('获取账户信息', result.data)
 			const accounts = result.data
 			if (accounts) {
 				useAccountStore().setAccounts(accounts)
@@ -238,7 +239,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 		<div class="global-form p-6">
 			<div class="form-item my-4">
 				<!-- <label>邮箱登录:</label> -->
-				<el-input v-model="email" :placeholder="'请输入邮箱 例如: 123@gmail.com'" size="large" inputmode="email" @keydown.enter="nextStep" />
+				<el-input v-model="email" :placeholder="t('请输入邮箱 例如: 123@gmail.com')" size="large" inputmode="email" @keydown.enter="nextStep" />
 			</div>
 			<div class="flex justify-between items-center text-grey text-sm">
 				<div class="text-red">
@@ -252,7 +253,7 @@ import { useSyncedCookie } from '~/composable/useSyncedCookie'
 					:class="['w-full transition-all !py-3 !h-auto !text-sm bt-default', email.indexOf('@') >= 0 ? '!bg-brand !text-white' : ' !text-grey !bg-[--transparent01] !border-[--transparent01]']"
 					@click="nextStep"
 					:loading="loading"
-					>下一步</el-button
+					>{{ t('下一步') }}</el-button
 				>
 			</div>
 		</div>

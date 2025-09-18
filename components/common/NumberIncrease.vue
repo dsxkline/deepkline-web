@@ -1,9 +1,9 @@
 <template>
-	<div :style="{ 'min-height': fontHeight + 'px' }">
+	<div :style="{ 'min-height': fontHeight + 'px' }" v-observe-visible.multi="onObserveVisible">
 		<ul v-show="fontWidth <= 0">
 			<li>{{ unit }}{{ value }}</li>
 		</ul>
-		<ul class="number-container" v-show="fontWidth > 0" v-observe-visible.multi="onObserveVisible">
+		<ul class="number-container" v-show="fontWidth > 0">
 			<li
 				:style="{
 					height: fontHeight + 'px'
@@ -79,8 +79,9 @@
 		watch: {
 			value: function (val) {
 				// if (window.dsxKlineScrolling) return
+				// console.log('更新',val,this.orderNumOld.length,this.interVisible,this.inited,this.fontWidth,val)
 				if (this.orderNumOld?.length && !this.interVisible) return
-				if (this.fontWidth > 0 && this.inited) this.updateNumbers()
+				if (this.inited) this.updateNumbers()
 			}
 		},
 		data() {
@@ -139,6 +140,7 @@
 			onObserveVisible(visible) {
 				this.interVisible = visible
 				// console.log('inview numberincrease', this.interVisible)
+				this.updateNumbers()
 			},
 			setDefaultDisplay() {
 				this.setNumberWidth()

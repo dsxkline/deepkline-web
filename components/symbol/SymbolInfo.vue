@@ -2,7 +2,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import FacebookIcon from '../icons/social/FacebookIcon.vue'
 	import { Link } from '@element-plus/icons-vue'
-
+	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
 		height: number
@@ -102,7 +102,7 @@
 
 	const getSymbolDetail = () => {
 		const url = `${useRuntimeConfig().public.BASE_API_URL}/v1/symbols/detail?symbol=${props.symbol.split('-')[0]}`
-		console.log('getSymbolDetail', useRuntimeConfig().public.BASE_API_URL, useRuntimeConfig().public, process.env.BASE_API_URL)
+		// console.log('getSymbolDetail', useRuntimeConfig().public.BASE_API_URL, useRuntimeConfig().public, process.env.BASE_API_URL)
 		return fetch(url)
 	}
 
@@ -135,7 +135,7 @@
 				console.log(datas) // 这里是请求的结果数据
 				const [detail, dataInfo, coinInfo] = datas
 				if (!detail?.data || !dataInfo?.data || !coinInfo?.data) {
-					error.value = '数据错误，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				}else{
 					symbolInfo.value = detail.data
 					symbolDataInfo.value = dataInfo.data
@@ -143,10 +143,10 @@
 				}
 			})
 			.catch(err => {
-				console.error('一个请求失败:', err)
+				// console.error('一个请求失败:', err)
 				setTimeout(()=>{
 					loading.value=false
-					error.value = '网络异常，请稍后再试'
+					error.value = t('网络异常，请稍后再试')
 				},100);
 				
 			})
@@ -177,38 +177,38 @@
 					</div>
 					<ul class="my-3 text-grey *:flex *:justify-between *:py-1 text-xs [&_b]:text-main [&_b]:font-normal">
 						<li>
-							<span>市值</span><b>${{ thousandUnit(moneyFormat(symbolDataInfo.marketCap)) }}</b>
+							<span>{{ t('市值') }}</span><b>${{ thousandUnit(moneyFormat(symbolDataInfo.marketCap)) }}</b>
 						</li>
 						<li>
-							<span>流通量</span><b>{{ thousandUnit(symbolDataInfo.flowTotal) }} {{ symbolDataInfo?.name }}</b>
+							<span>{{ t('流通量') }}</span><b>{{ thousandUnit(symbolDataInfo.flowTotal) }} {{ symbolDataInfo?.name }}</b>
 						</li>
 						<li>
-							<span>历史最高价</span><b>${{ thousandUnit(symbolDataInfo.high_price) }} ({{ formatDate(symbolDataInfo?.highPriceDate, 'YYYY/MM/DD') }})</b>
+							<span>{{ t('历史最高价') }}</span><b>${{ thousandUnit(symbolDataInfo.high_price) }} ({{ formatDate(symbolDataInfo?.highPriceDate, 'YYYY/MM/DD') }})</b>
 						</li>
 						<li>
-							<span>历史最低价</span> <b>${{ thousandUnit(symbolDataInfo.historyLowPrice) }} ({{ formatDate(symbolDataInfo?.historyLowPriceTime, 'YYYY/MM/DD') }})</b>
+							<span>{{ t('历史最低价') }}</span> <b>${{ thousandUnit(symbolDataInfo.historyLowPrice) }} ({{ formatDate(symbolDataInfo?.historyLowPriceTime, 'YYYY/MM/DD') }})</b>
 						</li>
 						<li>
-							<span>首次发行时间</span> <b>{{ formatDate(symbolDataInfo.issueTime, 'YYYY/MM/DD') }}</b>
+							<span>{{ t('首次发行时间') }}</span> <b>{{ formatDate(symbolDataInfo.issueTime, 'YYYY/MM/DD') }}</b>
 						</li>
 						<li v-if="symbolCoinInfo?.pubChain?.length">
-							<span>所属公链</span> <b>{{ symbolCoinInfo?.pubChain?.join(',') }}</b>
+							<span>{{ t('所属公链') }}</span> <b>{{ symbolCoinInfo?.pubChain?.join(',') }}</b>
 						</li>
 						<li v-if="symbolDataInfo?.issuePrice">
-							<span>首次发行价</span> <b>${{ thousandUnit(symbolDataInfo.issuePrice) }}</b>
+							<span>{{ t("首次发行价") }}</span> <b>${{ thousandUnit(symbolDataInfo.issuePrice) }}</b>
 						</li>
 						<li>
-							<span>最大供应量</span> <b>{{ thousandUnit(symbolDataInfo.maxFlowTotal) }} {{ symbolDataInfo?.name }}</b>
+							<span>{{ t('最大供应量') }}</span> <b>{{ thousandUnit(symbolDataInfo.maxFlowTotal) }} {{ symbolDataInfo?.name }}</b>
 						</li>
 						<li>
-							<span>最大供应市值</span> <b>${{ thousandUnit(moneyFormat(symbolDataInfo.fullyDilutedValuation)) }}</b>
+							<span>{{ t('最大供应市值') }}</span> <b>${{ thousandUnit(moneyFormat(symbolDataInfo.fullyDilutedValuation)) }}</b>
 						</li>
 						<li>
-							<span>流通率</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
+							<span>{{ t('流通率') }}</span> <b>{{ thousandUnit(((parseFloat(symbolDataInfo.flowTotal) / parseFloat(symbolDataInfo.maxFlowTotal)) * 100).toFixed(2)) }}%</b>
 						</li>
 					</ul>
 
-					<h3>介绍</h3>
+					<h3>{{ t('介绍') }}</h3>
 					<!-- <span class="text-gray-300 my-3">{{ symbolInfo?.fullName }}</span> -->
 					<div class="cursor-pointer text-sm text-main my-2 mb-3 max-h-[100px] overflow-hidden line-clamp-5" v-html="symbolInfo?.introduce" @click="visibleDetail = true" v-click-sound></div>
 					<!-- <button @click="visibleDetail = !visibleDetail" v-click-sound>
@@ -220,22 +220,22 @@
 						<CoinAllot :symbol="symbol" />
 					</div>
 					<div class="w-full">
-						<h3>官方链接</h3>
+						<h3>{{ t('官方链接') }}</h3>
 						<div class="w-full my-3 text-main flex items-center flex-wrap *:mb-2 *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_i]:ml-1">
 							<a :href="symbolInfo?.officialUrl" target="_blank" v-if="symbolInfo?.officialUrl" class="hover:bg-[--transparent20]">
-								官网 <el-icon><Link /></el-icon>
+								{{ t('官网') }} <el-icon><Link /></el-icon>
 							</a>
 							<a :href="symbolInfo?.github" target="_blank" v-if="symbolInfo?.github" class="hover:bg-[--transparent20]">
 								Github <el-icon><Link /></el-icon>
 							</a>
 							<a :href="symbolInfo?.blockBrowser" target="_blank" v-if="symbolInfo?.blockBrowser" class="hover:bg-[--transparent20]">
-								区块浏览器 <el-icon><Link /></el-icon>
+								{{ t('区块浏览器') }} <el-icon><Link /></el-icon>
 							</a>
 						</div>
 					</div>
 
 					<div class="w-full" v-if="symbolCoinInfo.agency?.length > 0">
-						<h3>投资机构</h3>
+						<h3>{{ t('投资机构') }}</h3>
 						<div
 							class="w-full my-3 text-main flex items-center flex-wrap *:flex *:items-center *:justify-center text-xs *:rounded-full *:border-1 *:bg-[--transparent10] *:px-3 *:mr-2 *:py-2 [&_img]:ml-1 [&_img]:w-[20px] [&_img]:rounded-full *:mb-1"
 						>
@@ -244,7 +244,7 @@
 					</div>
 
 					<div class="w-full">
-						<h3>社交媒体</h3>
+						<h3>{{ t('社交媒体') }}</h3>
 						<div class="w-full my-3 text-grey flex items-center *:flex *:items-center *:justify-center text-xs [&_b]:text-main [&_b]:font-normal [&_svg]:w-[20px] [&_svg]:h-[20px] [&_svg]:mr-2">
 							<a :href="symbolInfo?.twitter" target="_blank" v-if="symbolInfo?.twitter">
 								<XIcon />
@@ -262,7 +262,7 @@
 		</div>
 		<div v-else class="p-4" :style="{height:contentHeight + 'px'}">
 			<Error :content="error" v-if="!loading && error">
-				<button @click.stop="getSymbolInfo()">点击刷新</button>
+				<button @click.stop="getSymbolInfo()">{{ t('重新加载') }}</button>
 			</Error>
 			<el-skeleton :rows="3" animated v-if="loading && !error" class="py-2" />
 		</div>

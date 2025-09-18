@@ -10,7 +10,7 @@
 	import type { Ticker } from '~/fetch/okx/okx.type'
 	import type { WsResult } from '~/types/types'
 	import { MessageEvents } from '~/fetch/dk/dk.websocket'
-
+const { t } = useI18n()
 	const props = defineProps<{
 		full?: boolean
 		sector?: MarketSectorDto
@@ -40,7 +40,7 @@
 				}
 			})
 			.catch(err => {
-				error.value = '网络异常，请稍后再试'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 
@@ -86,12 +86,12 @@
 <template>
 	<div class="market-category px-4 py-2">
 		<h3 class="pb-3 flex justify-between items-center font-bold" @click="pushSectors" v-if="!full && !sector">
-			热门板块 <el-icon><ElIconArrowRight /></el-icon>
+			{{ t('热门板块') }} <el-icon><ElIconArrowRight /></el-icon>
 		</h3>
 		<div :class="['w-full', !full ? 'overflow-x-scroll scrollbar-hide' : '']">
 			<Error :content="error" v-if="!loading && error">
 				<template #default>
-					<el-button @click.stop="getMarketSectors">点击刷新</el-button>
+					<el-button @click.stop="getMarketSectors">{{ t('重新加载') }}</el-button>
 				</template>
 			</Error>
 			<ul :class="[full && !sector ? 'grid grid-cols-2 gap-4 pb-4' : 'flex w-max', sector ? '!w-full' : '']" v-if="!loading && !error">

@@ -4,6 +4,7 @@
 	import ExchangeIndex from '../exchange/index.vue'
 	import { useAccountStore } from '~/store/account'
 	import FundCard from '~/components/account/FundCard.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
@@ -26,7 +27,7 @@
 	<div class="w-full h-full">
 		<ExchangeIndex v-if="!useAccountStore().accounts?.length" />
 		<template v-else>
-			<AppStatusBar/>
+			<AppStatusBar />
 			<NavigationBar title="" :hideBack="!push">
 				<template #left>
 					<div class="flex justify-center items-center px-4" @click="pushAccounts">
@@ -34,7 +35,7 @@
 							<ExchangeLogo :exchange="useAccountStore().currentAccount?.exchange" class="w-5 h-5 mr-1" />
 							<b>{{ phoneStar(useAccountStore().currentAccount?.accountId + '') }}</b>
 						</div>
-						<span :class="['mr-2', 'tag-' + (useAccountStore().currentAccount?.envType == 0 ? 'demo' : 'real')]">{{ useAccountStore().currentAccount?.envType == 0 ? '模拟' : '实盘' }}</span>
+						<span :class="['mr-2', 'tag-' + (useAccountStore().currentAccount?.envType == 0 ? 'demo' : 'real')]">{{ useAccountStore().currentAccount?.envType == 0 ? t('模拟') : t('实盘') }}</span>
 						<el-icon><ElIconArrowDownBold /></el-icon>
 					</div>
 				</template>
@@ -44,7 +45,11 @@
 					</button>
 				</template>
 			</NavigationBar>
-			<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))' }" :always="false">
+			<ScrollBar
+				class="w-full h-full"
+				:wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))' }"
+				:always="false"
+			>
 				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height) + 1px)' }">
 					<FundCard :account="useAccountStore().currentAccount" />
 					<AccountProfitChart />

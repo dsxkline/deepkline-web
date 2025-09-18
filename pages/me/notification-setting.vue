@@ -2,30 +2,24 @@
 	import { useStore } from '~/store'
 	import { useSymbolStore } from '~/store/symbol'
 	import UserFace from '~/components/user/UserFace.vue'
+	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
 	}>()
-	const menus = ref([
+	const menus = computed(()=>[
 		{
 			id: 1,
-			name: '系统通知',
-			subName: '',
-			desc: 'new hans',
+			name: t('系统消息'),
 			callback: () => {}
 		},
 		{
 			id: 1,
-			name: '预警通知',
-			subName: '',
-			desc: '12x22x2x22xx222x',
-			more: 'CopyDocument',
+			name: t('预警消息'),
 			callback: () => {}
 		},
 		{
 			id: 1,
-			name: '订单通知',
-			subName: '',
-			desc: '中国',
+			name: t('交易提醒'),
 			callback: () => {}
 		},
 		
@@ -35,7 +29,7 @@
 <template>
 	<div class="w-full h-full">
 		<AppStatusBar/>
-		<NavigationBar title="通知设置" :hideBack="!push" >
+		<NavigationBar :title="t('通知设置')" :hideBack="!push" >
 	
 		</NavigationBar>
 		<ScrollBar class="w-full h-full" :wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--app-status-bar-height))' }">

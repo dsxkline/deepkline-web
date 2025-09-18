@@ -151,6 +151,7 @@
 		// 默认点击某个菜单
 		const menu = props.menus[index]
 		if (menu) menuHandler(menu, index)
+		setTabbarHeaderScrollBg()
 	}
 
 	function updateAll() {
@@ -168,6 +169,7 @@
 		setTabbarHeaderScrollBg()
 	})
 
+	// 动态适配背景色
 	const setTabbarHeaderScrollBg = () => {
 		if (tabbarHeader.value) {
 			const rect = tabbarHeader.value.getBoundingClientRect()
@@ -187,6 +189,9 @@
 		nextTick(() => {
 			props.autoLoad && update(menuActive.value)
 			setTabbarHeaderScrollBg()
+			setTimeout(() => {
+				setTabbarHeaderScrollBg()
+			}, 300);
 		})
 	})
 
@@ -243,21 +248,21 @@
 			position: sticky;
 			top: 0;
 			z-index: 1000;
-			background: rgb(var(--color-bg-base));
-			&::before {
-				background-image: var(--bg-linear-180);
-				background-position: var(--tabbar-background-position);
-				background-size: 100% var(--body-height);
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				content: '';
-				z-index: -1;
-				opacity: 0.15;
-				// transition: all 0.3s ease;
-			}
+			// background: rgb(var(--color-bg-base));
+			// &::before {
+			// 	background-image: var(--bg-linear-180);
+			// 	background-position: var(--tabbar-background-position);
+			// 	background-size: 100% var(--body-height);
+			// 	position: absolute;
+			// 	top: 0;
+			// 	left: 0;
+			// 	width: 100%;
+			// 	height: 100%;
+			// 	content: '';
+			// 	z-index: -1;
+			// 	opacity: 0.15;
+			// 	// transition: all 0.3s ease;
+			// }
 			ul {
 				li {
 					cursor: pointer;

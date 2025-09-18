@@ -8,6 +8,7 @@
 	import { useSymbolStore } from '~/store/symbol'
 	import { useStore } from '~/store'
 	import { MarketType, type SymbolDto } from '~/fetch/dtos/symbol.dto'
+	const { t } = useI18n()
 	const chart = ref(null)
 	const period = ref('1H')
 	const loading = ref(true)
@@ -85,7 +86,7 @@
 		},
 		series: [
 			{
-				name: '主动买入量',
+				name: t('主动买入量'),
 				type: symbolObj.value?.marketType == MarketType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
 				smooth: true,
@@ -106,7 +107,7 @@
 				data: seriesData
 			},
 			{
-				name: '主动卖出量',
+				name: t('主动卖出量'),
 				type: symbolObj.value?.marketType == MarketType.SPOT ? 'bar' : 'line',
 				showSymbol: false,
 				smooth: true,
@@ -167,13 +168,13 @@
 					createEchart()
 					// console.log(xAxisData,seriesData);
 				} else {
-					error.value = res?.msg || '获取数据失败'
+					error.value = res?.msg || t('获取数据失败')
 				}
 			})
 			.catch(() => {
 				loading.value = false
 				disabled.value = false
-				error.value = '网络不给力'
+				error.value = t('网络异常，请稍后再试')
 			})
 	}
 	watch(
@@ -250,12 +251,12 @@
 	<div class="w-full h-full mt-2 border-b border-[--border-color] py-4 min-h-[350px] flex flex-col justify-between" ref="containerRef" :style="{ width: width > 0 ? width + 'px' : 'auto' }">
 		<div class="flex items-center justify-between mb-2">
 			<h3 class="text-sm flex items-center">
-				<b class="text-base">主动买入/卖出量</b>
+				<b class="text-base">{{ t('主动买入/卖出量') }}</b>
 			</h3>
 			<el-radio-group v-model="period" :disabled="disabled" size="small" v-click-sound>
-				<el-radio-button value="5m">5分钟</el-radio-button>
-				<el-radio-button value="1H">1小时</el-radio-button>
-				<el-radio-button value="1D">1天</el-radio-button>
+				<el-radio-button value="5m">{{ t('5分钟') }}</el-radio-button>
+				<el-radio-button value="1H">{{ t('1小时') }}</el-radio-button>
+				<el-radio-button value="1D">{{ t('1天') }}</el-radio-button>
 			</el-radio-group>
 		</div>
 
@@ -265,7 +266,7 @@
 		<el-skeleton :rows="7" animated v-if="loading && !error" />
 		<Error :content="error" v-if="!loading && error" class="flex-1">
 			<template #default>
-				<el-button type="primary" @click.stop="fetchData(Period.M5, true)">点击刷新</el-button>
+				<el-button type="primary" @click.stop="fetchData(Period.M5, true)">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 	</div>
