@@ -1,7 +1,7 @@
 # ========== 构建阶段 ==========
 FROM node:20 AS builder
 
-WORKDIR /deepkline-web
+WORKDIR /bitkline-web
 
 # 复制依赖清单
 COPY package*.json ./
@@ -19,7 +19,7 @@ RUN npm run build
 # ========== 运行阶段 ==========
 FROM node:20
 
-WORKDIR /deepkline-web
+WORKDIR /bitkline-web
 
 # 复制运行时依赖
 COPY package*.json ./
@@ -27,7 +27,7 @@ COPY .env* ./
 RUN npm install
 
 # 复制编译后的代码
-COPY --from=builder /deepkline-web/build ./build
+COPY --from=builder /bitkline-web/build ./build
 
 # 设置默认启动命令
 CMD ["npm", "run", "start"]
