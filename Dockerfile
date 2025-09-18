@@ -27,7 +27,7 @@ COPY .env* ./
 RUN npm install
 
 # 复制编译后的代码
-COPY --from=builder /bitkline-web/build ./build
+COPY --from=builder /bitkline-web/.output ./.output
 
 # 设置默认启动命令
 CMD ["npm", "run", "start"]
