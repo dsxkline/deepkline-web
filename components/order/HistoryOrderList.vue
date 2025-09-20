@@ -12,6 +12,7 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import { useStore } from '~/store'
+	import type { DownLoadingInstance, UpLoadingInstance } from '~/types/types'
 	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
@@ -37,23 +38,24 @@
 		}
 	)
 
-	const getOrders = () => {
+	const getOrders = (downInstance?: DownLoadingInstance) => {
 		if (loading.value) return
 		if (!useUserStore().user || !useAccountStore().currentAccount?.accountId) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (orders.value?.length && page.value == 1) {
+		if (orders.value?.length && page.value == 1 && !downInstance) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (page.value == 1) loading.value = true
+		if (page.value == 1 && !downInstance) loading.value = true
 		error.value = ''
 		orderFetch
 			.historyList(useAccountStore().currentAccount?.accountId, OrderState.ALL, page.value, pageSize.value)
 			.then(result => {
+				downInstance?.success()
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					if (page.value <= 1) {
@@ -65,12 +67,16 @@
 					if (result.data?.total) {
 						const totalPages = Math.ceil(result.data?.total / result.data?.pageSize)
 						if (page.value < totalPages) page.value += 1
+						else{
+							downInstance?.theend(t('到底了'))
+						}
 					}
 				} else {
 					error.value = result?.msg
 				}
 			})
 			.catch(err => {
+				downInstance?.error()
 				loading.value = false
 				error.value = t('网络异常，请稍后再试')
 			})
@@ -146,6 +152,16 @@
 	}
 	function leave() {}
 
+	const downLoading = (downInstance: DownLoadingInstance) => {
+		//console.log('下拉刷新开设,,,,,', downInstance)
+		page.value = 1
+		getOrders(downInstance)
+	}
+	const upLoading = (upInstance: UpLoadingInstance) => {
+		//console.log('下拉刷新开设,,,,,', upInstance)
+		getOrders(upInstance)
+	}
+
 	onMounted(() => {})
 
 	// 暴露给父组件的方法
@@ -153,14 +169,14 @@
 </script>
 
 <template>
-	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto' }">
-		<Empty :content="t('暂无委托')" v-if="!loading && !error && !orders?.length" class="pt-20">
+	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto', height: contentHeight ? contentHeight + 'px' : 'auto' }">
+		<Empty :content="t('暂无委托')" v-if="!loading && !error && !orders?.length">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">{{ t('登录') }}</el-button>
 			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">{{ t('开设账户') }}</el-button>
 		</Empty>
-		<Error :content="error" v-if="!loading && error" class="pt-20">
+		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getOrders">{{ t('重新加载') }}</el-button>
+				<el-button @click.stop="getOrders()">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -202,7 +218,15 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && orders?.length">
+		<ScrollBar
+			:downLoading="downLoading"
+			:upLoading="upLoading"
+			class="w-full"
+			:noScroll="!contentHeight"
+			:style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }"
+			ref="scrollbar"
+			v-if="!loading && !error && orders?.length"
+		>
 			<ul v-if="!loading && !error && orders?.length">
 				<template v-for="item in orders" :key="item.orderId">
 					<li class="border-b border-[--transparent05] py-3">
@@ -246,24 +270,24 @@
 
 							<template v-if="parseFloat(item.takeProfitPrice) && parseFloat(item.stopLossPrice)">
 								<div class="flex flex-col">
-									<span>{{ t("止盈") }}</span>
+									<span>{{ t('止盈') }}</span>
 									<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 									<b v-else> - </b>
 								</div>
 								<div class="flex flex-col items-center">
-									<span>{{ t("止损") }}</span>
+									<span>{{ t('止损') }}</span>
 									<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 									<b v-else> - </b>
 								</div>
 							</template>
 							<template v-else>
 								<div class="flex flex-col" v-if="parseFloat(item.takeProfitPrice)">
-									<span>{{ t("止盈") }}</span>
+									<span>{{ t('止盈') }}</span>
 									<b v-if="parseFloat(item.takeProfitPrice)">{{ formatPrice(item.takeProfitPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 									<b v-else> - </b>
 								</div>
 								<div class="flex flex-col" v-if="parseFloat(item.stopLossPrice)">
-									<span>{{ t("止损") }}</span>
+									<span>{{ t('止损') }}</span>
 									<b v-if="parseFloat(item.stopLossPrice)">{{ formatPrice(item.stopLossPrice, useSymbolStore().getSymbol(item.symbol).tickSz) }}</b>
 									<b v-else> - </b>
 								</div>

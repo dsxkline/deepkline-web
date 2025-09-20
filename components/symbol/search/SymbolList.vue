@@ -455,17 +455,17 @@
 		addouChange.value = null
 	})
 	onMounted(() => {
-		console.log('symbollist', props.start)
+		//console.log('symbollist', props.start)
 		if (props.start) update()
 		$windowEvent.addEvent(whenBrowserActive)
 	})
 	useWillDisappear(() => {
-		console.log('symbollist willdisappear.....')
+		//console.log('symbollist willdisappear.....')
 		// 暂停订阅动画，通常用在h5页面切换事件中
 		unSubSymbols()
 	})
 	useWillAppear(() => {
-		console.log('symbollist willappear.....')
+		//console.log('symbollist willappear.....')
 		if (isLeave.value) return
 		subSymbols()
 	})

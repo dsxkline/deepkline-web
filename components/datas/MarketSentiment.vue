@@ -74,7 +74,7 @@
 		<div class="rounded-md bg-[--transparent03] pb-3 flex justify-between" v-if="value && !loading && !error">
 			<div class="sentiment-chart relative w-[160px]">
 				<div class="absolute w-full h-full flex flex-col items-center justify-end" :style="'color:' + color">
-					<b class="pt-6 text-xl font-extrabold roboto-bold">{{ value }}</b>
+					<b class="pt-6 text-xl font-extrabold roboto-bold leading-none" v-autosize="20">{{ value }}</b>
 					<span class="text-xs" v-if="value">{{ slug }}</span>
 					<span class="text-xs" v-else> - </span>
 				</div>

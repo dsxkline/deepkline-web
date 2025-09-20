@@ -88,3 +88,16 @@ export interface MenuListModel {
 		badge?: number
 		callback?: () => void // 点击回调
 	}
+
+export interface DownLoadingInstance {
+	success:()=>void,
+	error:()=>void,
+	theend:(text:string)=>void,
+	restart:()=>void
+}
+export interface UpLoadingInstance {
+	success:()=>void,
+	error:()=>void,
+	theend:(text:string)=>void,
+	restart:()=>void
+}

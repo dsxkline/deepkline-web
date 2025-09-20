@@ -83,12 +83,12 @@
 			const order = message.payload as OrderDto
 			// 现货
 			if (order.marketType == MarketType.SPOT) {
-				content = `${order.action == 'open' ? t('开仓') : t('平仓')}${order.side == 'buy' ? t('买入') : t('卖出')}`
+				content = `${order.action == 'open' ? t('开仓') : t('平仓')} ${order.side == 'buy' ? t('买入') : t('卖出')} `
 			} else {
-				content = `${order.action == 'open' ? t('开仓') : t('平仓')}${order.action == 'open' ? (order.side == 'buy' ? t('开多') : t('开空')) : order.side == 'buy' ? t('平多') : t('平空')}`
+				content = `${order.action == 'open' ? t('开仓') : t('平仓')} ${order.action == 'open' ? (order.side == 'buy' ? t('开多') : t('开空')) : order.side == 'buy' ? t('平多') : t('平空')} `
 			}
-			content += `${getSymbolName(useSymbolStore().getSymbol(order.symbol))},数量:${order.matchSize},${OrderStateText[order.state]}`
-			if (order.state == OrderState.FILLED) content += `,成交价格:${order.matchPrice}`
+			content += `${getSymbolName(useSymbolStore().getSymbol(order.symbol))},${t('数量')}:${order.matchSize},${OrderStateText[order.state]}`
+			if (order.state == OrderState.FILLED) content += `,${t('成交价格')}:${order.matchPrice}`
 		}
 		return `${content}`
 	}
@@ -167,7 +167,7 @@
 				pushLeft(ExchangeIndex)
 				return
 			} else {
-				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', '开设账户')
+				useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 				return
 			}
 		}
@@ -185,7 +185,7 @@
 		<AppStatusBar />
 		<NavigationBar :title="title" :hideBack="!push">
 			<template #right>
-				<button @click="setAllRead" :class="['mx-4 bt-default', messageLoading[-1] ? '!text-grey' : '']">全部已读 <Loading v-if="messageLoading[-1]" size="12px" class="ml-2" /></button>
+				<button @click="setAllRead" :class="['mx-4 bt-default', messageLoading[-1] ? '!text-grey' : '']">{{ t('全部已读') }} <Loading v-if="messageLoading[-1]" size="12px" class="ml-2" /></button>
 			</template>
 		</NavigationBar>
 		<Empty :content="t('暂无通知')" v-if="!loading && !error && !messages?.length">

@@ -21,14 +21,14 @@
 	}
 	onMounted(() => {
 		// 初始化工作
-		console.log('NavigationBar component mounted')
+		//console.log('NavigationBar component mounted')
 		// setTimeout(() => {
 		//     useNuxtApp().$pop()
 		// }, 3000);
 	})
 	onBeforeUnmount(() => {
 		// 清理工作
-		console.log('NavigationBar component is being destroyed')
+		//console.log('NavigationBar component is being destroyed')
 	})
 </script>
 <template>

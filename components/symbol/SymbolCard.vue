@@ -63,11 +63,11 @@
 	})
 
 	useWillDisappear(() => {
-		console.log('symbol-card useWillDisappear....')
+		//console.log('symbol-card useWillDisappear....')
 		pageSubSymbols.removeSubSymbols([props.symbol])
 	})
 	useWillAppear(() => {
-		console.log('symbol-card useWillAppear....')
+		//console.log('symbol-card useWillAppear....')
 		pageSubSymbols.addSubSymbols([props.symbol])
 	})
 

@@ -84,7 +84,7 @@
 		if (!props.datas) return
 		if (props.datas.length == 1) props.datas.push(props.datas[0])
 		seriesData = props.datas.map(item => item.val)
-		console.log('seriesData', props.datas, seriesData)
+		// console.log('seriesData', props.datas, seriesData)
 		const first = seriesData[0]
 		const end = seriesData[seriesData.length - 1]
 		const minValue = Math.min(...seriesData)
@@ -156,7 +156,7 @@
 				  }
 				: null
 			echart && echart.resize({ width: width.value, height: height.value, animation: animationOption })
-			console.log('line chart', width.value, height.value, parentElement)
+			// console.log('line chart', width.value, height.value, parentElement)
 		}
 	}
 

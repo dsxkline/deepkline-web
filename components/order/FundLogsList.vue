@@ -14,6 +14,7 @@
 	import { useStore } from '~/store'
 	import { FundLogType, type FundLogsDto } from '~/fetch/dtos/account.dto'
 	import { accountFetch } from '~/fetch/account.fetch'
+	import type { DownLoadingInstance, UpLoadingInstance } from '~/types/types'
 	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
@@ -40,23 +41,24 @@
 		}
 	)
 
-	const getDatas = () => {
+	const getDatas = (downInstance?: DownLoadingInstance) => {
 		if (loading.value) return
 		if (!useUserStore().user || !useAccountStore().currentAccount?.accountId) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (fundLogs.value?.length && page.value == 1) {
+		if (fundLogs.value?.length && page.value == 1 && !downInstance) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (page.value == 1) loading.value = true
+		if (page.value == 1 && !downInstance) loading.value = true
 		error.value = ''
 		accountFetch
 			.fundLogsList(useAccountStore().currentAccount?.accountId, symbol.value, changeType.value, page.value, pageSize.value)
 			.then(result => {
+				downInstance?.success()
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					if (page.value <= 1) {
@@ -68,12 +70,16 @@
 					if (result.data?.total) {
 						const totalPages = Math.ceil(result.data?.total / result.data?.pageSize)
 						if (page.value < totalPages) page.value += 1
+						else{
+							downInstance?.theend(t('到底了'))
+						}
 					}
 				} else {
 					error.value = result?.msg
 				}
 			})
 			.catch(err => {
+				downInstance?.success()
 				loading.value = false
 				error.value = t('网络异常，请稍后再试')
 			})
@@ -111,6 +117,16 @@
 	}
 	function leave() {}
 
+	const downLoading = (downInstance: DownLoadingInstance) => {
+		//console.log('下拉刷新开设,,,,,', downInstance)
+		page.value = 1
+		getDatas(downInstance)
+	}
+	const upLoading = (upInstance: UpLoadingInstance) => {
+		//console.log('下拉刷新开设,,,,,', upInstance)
+		getDatas(upInstance)
+	}
+
 	onMounted(() => {})
 
 	// 暴露给父组件的方法
@@ -119,13 +135,13 @@
 
 <template>
 	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto' }">
-		<Empty :content="t('暂无交易账单')" v-if="!loading && !error && !fundLogs?.length" class="pt-20">
+		<Empty :content="t('暂无交易账单')" v-if="!loading && !error && !fundLogs?.length">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">{{ t('登录') }}</el-button>
 			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">{{ t('开设账户') }}</el-button>
 		</Empty>
-		<Error :content="error" v-if="!loading && error" class="pt-20">
+		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
+				<el-button @click.stop="getDatas()">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -167,7 +183,15 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && fundLogs?.length">
+		<ScrollBar
+			:downLoading="downLoading"
+			:upLoading="upLoading"
+			class="w-full"
+			:noScroll="!contentHeight"
+			:style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }"
+			ref="scrollbar"
+			v-if="!loading && !error && fundLogs?.length"
+		>
 			<ul v-if="!loading && !error && fundLogs?.length">
 				<template v-for="item in fundLogs" :key="item.id">
 					<li class="border-b border-[--transparent05] py-3">
@@ -196,10 +220,9 @@
 							</div>
 							<div class="flex flex-col justify-center items-end">
 								<span>{{ numberToFixed(item.amount, '8') }}</span>
-								<span class="text-xs text-grey">{{ t('余额') }}:{{ numberToFixed(item.balanceAfter,'8') }}</span>
+								<span class="text-xs text-grey">{{ t('余额') }}:{{ numberToFixed(item.balanceAfter, '8') }}</span>
 							</div>
 						</div>
-						
 					</li>
 				</template>
 			</ul>

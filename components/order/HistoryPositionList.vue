@@ -18,6 +18,7 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import SymbolDetail from '../symbol/SymbolDetail.vue'
+	import type { DownLoadingInstance, UpLoadingInstance } from '~/types/types'
 	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
@@ -52,22 +53,23 @@
 		}
 	)
 
-	const getDatas = () => {
+	const getDatas = (downInstance?: DownLoadingInstance) => {
 		if (!useUserStore().user || !useAccountStore().currentAccount?.accountId) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (positions.value?.length && page.value == 1) {
+		if (positions.value?.length && page.value == 1 && !downInstance) {
 			error.value = ''
 			loading.value = false
 			return
 		}
-		if (page.value == 1) loading.value = true
+		if (page.value == 1 && !downInstance) loading.value = true
 		error.value = ''
 		orderFetch
 			.historyPositions(useAccountStore().currentAccount?.accountId, page.value, pageSize.value)
 			.then(result => {
+				downInstance?.success()
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					if (page.value <= 1) {
@@ -85,6 +87,7 @@
 				}
 			})
 			.catch(err => {
+				downInstance?.error()
 				loading.value = false
 				error.value = t('网络异常，请稍后再试')
 			})
@@ -168,6 +171,16 @@
 		return useSymbolStore().getSymbol(symbol).marketType == MarketType.SPOT
 	}
 
+	const downLoading = (downInstance: DownLoadingInstance) => {
+		//console.log('下拉刷新开设,,,,,', downInstance)
+		page.value = 1
+		getDatas(downInstance)
+	}
+	const upLoading = (upInstance: UpLoadingInstance) => {
+		//console.log('上拉刷新 ', page.value)
+		getDatas(upInstance)
+	}
+
 	onMounted(() => {})
 
 	// 暴露给父组件的方法
@@ -175,21 +188,14 @@
 </script>
 
 <template>
-	<div
-		class="px-4"
-		:style="{
-			minHeight: useStore().isH5
-				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom) - var(--app-status-bar-height))'
-				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
-		}"
-	>
-		<Empty :content="t('暂无仓位')" v-if="!loading && !error && !positions?.length" class="pt-20">
+	<div class="px-4 h-full w-full" :style="{ minHeight: contentHeight ? contentHeight + 'px' : 'auto' }">
+		<Empty :content="t('暂无仓位')" v-if="!loading && !error && !positions?.length">
 			<el-button @click.stop="pushLogin" v-if="!useUserStore().user" class="min-w-[150px]">{{ t('登录') }}</el-button>
 			<el-button @click.stop="pushOpenAccount" v-else-if="!useAccountStore().currentAccount?.accountId" class="min-w-[150px]">{{ t('开设账户') }}</el-button>
 		</Empty>
-		<Error :content="error" v-if="!loading && error" class="pt-20">
+		<Error :content="error" v-if="!loading && error">
 			<template #default>
-				<el-button @click.stop="getDatas">{{ t('重新加载') }}</el-button>
+				<el-button @click.stop="getDatas()">{{ t('重新加载') }}</el-button>
 			</template>
 		</Error>
 		<ul v-if="loading && !error">
@@ -244,7 +250,15 @@
 				<div class="flex items-center gap-2 justify-between *:flex-1"></div>
 			</li>
 		</ul>
-		<ScrollBar class="w-full" :noScroll="!contentHeight" :style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }" ref="scrollbar" v-if="!loading && !error && positions?.length">
+		<ScrollBar
+			:downLoading="downLoading"
+			:upLoading="upLoading"
+			class="w-full"
+			:noScroll="!contentHeight"
+			:style="{ height: contentHeight ? contentHeight + 'px' : 'auto' }"
+			ref="scrollbar"
+			v-if="!loading && !error && positions?.length"
+		>
 			<ul v-if="!loading && !error && positions?.length">
 				<template v-for="item in positions" :key="item.orderId">
 					<li class="border-b border-[--transparent05] py-3">
@@ -292,7 +306,7 @@
 								<b v-else>-</b>
 							</div>
 							<div class="flex flex-col items-center">
-								<span>{{t('平仓量')}}({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
+								<span>{{ t('平仓量') }}({{ useSymbolStore().getSymbol(item.symbol).baseCoin }})</span>
 								<b v-if="item.lotTotal">{{ formatNumber(parseFloat(item.lotTotal || '0') - parseFloat(item.lotSize || '0'), useSymbolStore().getSymbol(item.symbol).lotSz) }}</b>
 								<b v-else>-</b>
 							</div>

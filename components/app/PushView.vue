@@ -174,6 +174,12 @@
 
 			if (h >= window.innerHeight) bttFull.value = true
 			else bttFull.value = false
+
+			if(!bttFull.value){
+				// 不满屏隐藏子组件的app状态栏
+				const appStatusBar = drawerBody.value.querySelector('.app-status-bar') as HTMLElement
+				if(appStatusBar) appStatusBar.style.display = 'none'
+			}
 		}
 		if (drawBg.value) {
 			drawBg.value.style.opacity = visible ? (props.direction == 'btt' ? '0.3' : '0') : '0'

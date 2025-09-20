@@ -1,7 +1,7 @@
 import { version } from '../package.json'
 const winUrlPrefx = (process.env.MODE != 'win' && process.env.MODE != 'mac') ? '' : '.'
 export default {
-	title: 'DeepKline is the most silky cryptocurrency trading system.',
+	title: 'DeepKline Deep Vision · Smart Trading',
 	htmlAttrs: {
 		lang: 'zh-CN',
 		class: 'dark'
@@ -73,11 +73,11 @@ export default {
 		{
 			src: winUrlPrefx + '/js/dsx.kline_v_3_1_0.js?v=' + version
 		},
-		{
-			src: winUrlPrefx + '/js/qq.hq_v_3_1_0.js?v=' + version
-		},
-		{
-			src: winUrlPrefx + '/kline.js?v=' + version
-		}
+		// {
+		// 	src: winUrlPrefx + '/js/qq.hq_v_3_1_0.js?v=' + version
+		// },
+		// {
+		// 	src: winUrlPrefx + '/kline.js?v=' + version
+		// }
 	]
 }

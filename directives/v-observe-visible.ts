@@ -12,7 +12,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		}
 
 		const observer = new IntersectionObserver(([entry]) => {
-            console.log('inview', entry)
+            // console.log('inview', entry)
 			// 进入或离开视口都触发回调
 			callback(entry.isIntersecting)
 			if (entry.isIntersecting) {
@@ -30,7 +30,7 @@ export const vObserveVisible: Directive<HTMLElement, number> = {
 		setTimeout(() => {
 			const rect = el.getBoundingClientRect()
 			const inView = rect.top < window.innerHeight && rect.bottom > 0
-			console.log('inview', inView, rect)
+			// console.log('inview', inView, rect)
 			if (inView) {
 				callback(true)
 				if (!binding.modifiers?.multi) {

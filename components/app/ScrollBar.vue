@@ -1,16 +1,22 @@
 <script setup lang="ts">
 	import { _100 } from '#tailwind-config/theme/backdropBrightness'
 	import { useRefreshChildScrollTop } from '~/composable/useScrollBar'
+import DownLoading from './DownLoading.vue';
+import UpLoading from './UpLoading.vue';
+import type { DownLoadingInstance } from '~/types/types';
 
 	const props = defineProps<{
 		height?: string
 		always?: boolean
 		wrapStyle?: any
 		noScroll?: boolean
+		upLoading?:(instance:any)=>void
+		downLoading?:(instance:any)=>void
 	}>()
 
 	const scrollBarRef = ref<HTMLElement | null>(null)
 	const thumbRef = ref<HTMLElement | null>(null)
+	const upDom = ref()
 
 	const emit = defineEmits<{
 		(e: 'scroll', params: { scrollLeft: number; scrollTop: number }): void
@@ -36,6 +42,12 @@
 			thumbRef.value.style.transform = `translateY(${thumbTop}px)`
 		}
 	}
+
+	const startDownloading = (downInstance:DownLoadingInstance)=>{
+		upDom.value?.restart()
+		props.downLoading && props.downLoading(downInstance)
+	}
+
 	onMounted(() => {
 		if (scrollBarRef.value && thumbRef.value) {
 			nextTick(() => {
@@ -54,8 +66,11 @@
 	<div class="scroll-bar relative overflow-hidden w-full h-auto" :style="{ height: height || '100%', ...wrapStyle }">
 		<div class="scroll-bar-thumb absolute top-0 right-1 rounded-full w-2 z-10 bg-[--transparent20]" ref="thumbRef" v-if="always"></div>
 		<div :class="['scroll-bar-inner overflow-x-hidden', noScroll ? 'overflow-y-hidden' : 'overflow-y-auto']" ref="scrollBarRef" :style="{ height: height || '100%' }" @scroll="scrollHandle">
+			<DownLoading :startLoading="startDownloading" v-if="downLoading"/>
 			<slot></slot>
+			<UpLoading :startLoading="upLoading" v-if="upLoading" ref="upDom"/>
 		</div>
+		
 	</div>
 </template>
 <style lang="less" scoped>

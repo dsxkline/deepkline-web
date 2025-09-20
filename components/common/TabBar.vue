@@ -66,7 +66,7 @@
 	)
 
 	const contentHeight = computed(() => {
-		console.log('contentHeight', props.height, tabbarHeader.value?.clientHeight)
+		// console.log('contentHeight', props.height, tabbarHeader.value?.clientHeight)
 		// 获取当前组件的高度
 		return props.height ? props.height - tabbarHeader.value?.clientHeight || 0 : 0
 	})
@@ -189,9 +189,7 @@
 		nextTick(() => {
 			props.autoLoad && update(menuActive.value)
 			setTabbarHeaderScrollBg()
-			setTimeout(() => {
-				setTabbarHeaderScrollBg()
-			}, 300);
+			
 		})
 	})
 
@@ -243,26 +241,35 @@
 </template>
 
 <style scoped lang="less">
+.light{
+	.tabbar-container {
+		.tabbar-header {
+			&::before{
+				background-image: none;
+			}
+		}
+	}
+}
 	.tabbar-container {
 		.tabbar-header {
 			position: sticky;
 			top: 0;
 			z-index: 1000;
-			// background: rgb(var(--color-bg-base));
-			// &::before {
-			// 	background-image: var(--bg-linear-180);
-			// 	background-position: var(--tabbar-background-position);
-			// 	background-size: 100% var(--body-height);
-			// 	position: absolute;
-			// 	top: 0;
-			// 	left: 0;
-			// 	width: 100%;
-			// 	height: 100%;
-			// 	content: '';
-			// 	z-index: -1;
-			// 	opacity: 0.15;
-			// 	// transition: all 0.3s ease;
-			// }
+			background: rgb(var(--color-bg-base));
+			&::before {
+				background-image: var(--bg-linear-180);
+				background-position: var(--tabbar-background-position);
+				background-size: 100% var(--body-height);
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				content: '';
+				z-index: -1;
+				opacity: 0.15;
+				// transition: all 0.3s ease;
+			}
 			ul {
 				li {
 					cursor: pointer;

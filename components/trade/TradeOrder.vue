@@ -112,44 +112,53 @@
 	const { $wsb, $ws } = useNuxtApp()
 	const ticker = ref<Ticker | null>($ws && $ws.getTickers(props.symbol))
 	const leverage = ref(0)
-	const leverages = ref([
-		{
-			label: 'x1',
-			value: '1'
-		},
-		{
-			label: 'x2',
-			value: '2'
-		},
-		{
-			label: 'x3',
-			value: '3'
-		},
-		{
-			label: 'x5',
-			value: '5'
-		},
-		{
-			label: 'x10',
-			value: '10'
-		},
-		{
-			label: 'x20',
-			value: '20'
-		},
-		{
-			label: 'x30',
-			value: '30'
-		},
-		{
-			label: 'x50',
-			value: '50'
-		},
-		{
-			label: 'x100',
-			value: '100'
+	const leverages = computed(() => {
+		const lv = [
+			{
+				label: 'x1',
+				value: '1'
+			},
+			{
+				label: 'x2',
+				value: '2'
+			},
+			{
+				label: 'x3',
+				value: '3'
+			},
+			{
+				label: 'x5',
+				value: '5'
+			},
+			{
+				label: 'x10',
+				value: '10'
+			},
+			{
+				label: 'x20',
+				value: '20'
+			},
+			{
+				label: 'x30',
+				value: '30'
+			},
+			{
+				label: 'x50',
+				value: '50'
+			},
+			{
+				label: 'x100',
+				value: '100'
+			}
+		]
+		if (orderWidth.value <= 200 && !useStore().isH5) {
+			lv.unshift({
+				label: t('无'),
+				value: '0'
+			})
 		}
-	])
+		return lv
+	})
 	const marginMode = ref<MarginMode>(MarginMode.Isolated)
 	const openSelfLarverage = ref(props.openLarverage || false)
 	const orderWidth = ref(0)
@@ -514,7 +523,7 @@
 		}
 		// 现货卖出，杠杆合约平仓等需要带持仓ID
 		let positionId = props.position?.positionId
-		if(symbolObj.value.marketType==MarketType.SPOT && leverage.value<=0 && s==Sides.SELL){
+		if (symbolObj.value.marketType == MarketType.SPOT && leverage.value <= 0 && s == Sides.SELL) {
 			positionId = useOrderStore().getSymbolPosition(props.symbol)?.positionId
 		}
 
@@ -687,12 +696,12 @@
 							<div class="flex items-center justify-between margin-type-box-small" v-if="orderWidth <= 200 && !useStore().isH5">
 								<Select v-model="leverage" class="!min-h-0 !p-1 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey leverage-title" v-if="!isH5">{{t('杠杆')}}</span>
+										<span class="text-grey leverage-title" v-if="!isH5">{{ t('杠杆') }}</span>
 										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
-										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{t('杠杆')}}</span>
-										<span class="flex-auto text-right !text-grey" v-else>{{ t('无') }}</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{ t('杠杆') }}</span>
+										<span class="flex-auto text-right !text-grey" v-else></span>
 									</template>
-									<div class="px-4 w-full text-center" v-if="isH5">{{t('杠杆')}}</div>
+									<div class="px-4 w-full text-center" v-if="isH5">{{ t('杠杆') }}</div>
 									<SelectOption v-for="item in leverages" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 
@@ -714,18 +723,18 @@
 
 								<Select v-model="leverage" class="!min-h-0 !p-1 !px-2 gap-1 text-nowrap leverage-select">
 									<template #name>
-										<span class="text-grey leverage-title" v-if="!isH5">{{t('杠杆')}}</span>
+										<span class="text-grey leverage-title" v-if="!isH5">{{ t('杠杆') }}</span>
 										<span class="flex-auto text-right" v-if="parseFloat(leverage)">{{ leverage }}x</span>
-										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{t('杠杆')}}</span>
-										<span class="flex-auto text-right !text-grey" v-else>{{t('无')}}</span>
+										<span class="flex-auto text-right text-grey" v-else-if="isH5">{{ t('杠杆') }}</span>
+										<span class="flex-auto text-right !text-grey" v-else>{{ t('无') }}</span>
 									</template>
-									<div class="px-4 w-full text-center" v-if="isH5">{{t('杠杆')}}</div>
+									<div class="px-4 w-full text-center" v-if="isH5">{{ t('杠杆') }}</div>
 									<SelectOption v-for="item in leverages.filter((it:any) => it.value != '0')" :key="item.value" :label="item.label" :value="item.value" class="justify-center"> </SelectOption>
 								</Select>
 							</div>
 
 							<div class="relative price-input">
-								<h5 class="pb-2">{{t('价格')}}({{ symbolObj?.quoteCoin }})</h5>
+								<h5 class="pb-2">{{ t('价格') }}({{ symbolObj?.quoteCoin }})</h5>
 								<el-input-number
 									@change="priceChange"
 									@focus="priceFocus"
@@ -749,13 +758,13 @@
 								</div>
 							</div>
 							<div class="amount-container">
-								<h5 class="py-2">{{t('数量')}}({{ symbolObj?.baseCoin }})</h5>
+								<h5 class="py-2">{{ t('数量') }}({{ symbolObj?.baseCoin }})</h5>
 								<el-input
 									v-click-sound
 									inputmode="decimal"
 									v-model="lotSize"
 									@input="lotSizeChange"
-									:placeholder="t('最小数量')+' ' + symbolObj?.minSz + symbolObj?.baseCoin"
+									:placeholder="t('最小数量') + ' ' + symbolObj?.minSz + symbolObj?.baseCoin"
 									size="large"
 									class="!w-full"
 									:clearable="!isH5"
@@ -767,7 +776,7 @@
 
 							<div class="money-container" ref="marginInput">
 								<!-- 现货开仓才显示金额 -->
-								<h5 class="py-2" v-if="symbolObj?.marketType == MarketType.SPOT">{{t('金额')}}({{ symbolObj?.quoteCoin }})</h5>
+								<h5 class="py-2" v-if="symbolObj?.marketType == MarketType.SPOT">{{ t('金额') }}({{ symbolObj?.quoteCoin }})</h5>
 								<el-input
 									v-click-sound
 									inputmode="decimal"
@@ -832,7 +841,7 @@
 										@click="pushStopProfitLoss(0)"
 										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
 									>
-										<h6 class="pb-0 text-grey">{{t('止盈')}}</h6>
+										<h6 class="pb-0 text-grey">{{ t('止盈') }}</h6>
 										<div v-if="!takeProfit">-</div>
 										<div v-else class="text-green">{{ numberToFixed(takeProfit, symbolObj?.tickSz) }} ≈ {{ formatNumber(takeChangeRate, '2') }}%</div>
 									</div>
@@ -841,7 +850,7 @@
 										@click="pushStopProfitLoss(1)"
 										class="bg-[--transparent02] mb-3 rounded-md p-2 border border-[--transparent10] flex justify-between hover:border-[--transparent30] cursor-pointer"
 									>
-										<h6 class="pb-0 text-grey">{{t('止损')}}</h6>
+										<h6 class="pb-0 text-grey">{{ t('止损') }}</h6>
 										<div v-if="!stopLoss">-</div>
 										<div v-else class="text-red">{{ numberToFixed(stopLoss, symbolObj?.tickSz) }} ≈ {{ formatNumber(stopChangeRate, '2') }}%</div>
 									</div>
@@ -881,7 +890,7 @@
 										<b class="font-normal" v-else>--</b>
 									</div>
 									<div class="py-1 flex justify-between items-center" v-if="!position || position?.side == Sides.BUY">
-										<span class="text-grey">{{t('数量')}} ({{ symbolObj?.baseCoin }})</span>
+										<span class="text-grey">{{ t('数量') }} ({{ symbolObj?.baseCoin }})</span>
 										<b class="font-normal" v-if="canTradeLotSize">{{ formatNumber(canTradeLotSize, symbolObj?.lotSz, '') }} </b>
 										<b class="font-normal" v-else>--</b>
 									</div>
