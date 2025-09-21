@@ -95,7 +95,7 @@ export default class BaseWebSocket {
 				const now = new Date().getTime()
 				const diff = now - this.connectStateTime
 				if (diff >= this.connectStateTimeout) {
-					console.log('主动触发重连...')
+					//console.log('主动触发重连...')
 					this.close()
 				}
 			}, this.heatInterval)
@@ -114,7 +114,7 @@ export default class BaseWebSocket {
 			this.connectLevel = -2
 		}
 		this.ws.onclose = event => {
-			console.log('主动触发重连... onclose')
+			//console.log('主动触发重连... onclose')
 			this.connectLevel = -2
 			if (this.heatTimer) {
 				clearInterval(this.heatTimer)

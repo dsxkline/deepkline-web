@@ -89,14 +89,14 @@
 			</el-popover>
 		</div>
 
-		<el-divider direction="vertical" v-if="!useStore().isH5"></el-divider>
+		<!-- <el-divider direction="vertical" v-if="!useStore().isH5"></el-divider>
 
 		<div class="flex items-center *:h-full *:flex *:items-center">
 			<button class="pl-1"><IndicatorIcon class="w-4 h-4" /></button>
 			<button class="pl-4">
 				<el-icon class="!w-4 !h-4 !text-[var(--transparent70)] hover:!text-main"><Tools class="!w-4 !h-4" /></el-icon>
 			</button>
-		</div>
+		</div> -->
 	</div>
 </template>
 <style scoped lang="less">

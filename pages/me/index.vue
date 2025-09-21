@@ -199,10 +199,10 @@
 		// }, 1000)
 	})
 	onBeforeUnmount(() => {
-		console.log('Me component unmounted, menus cleared')
+		// console.log('Me component unmounted, menus cleared')
 	})
 	onUnmounted(() => {
-		console.log('Me component unmounted')
+		// console.log('Me component unmounted')
 	})
 
 	defineExpose({

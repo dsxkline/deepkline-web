@@ -1,4 +1,5 @@
 <script setup lang="ts">
+	import { useStore } from '~/store'
 	import { type MenuModel } from '../../common/TabBar.vue'
 	import TabBar from '../../common/TabBar.vue'
 	import SymbolList from './SymbolList.vue'
@@ -16,7 +17,7 @@
 	}>()
 	const tabbar = ref()
 	const active = ref(0)
-	const menus = computed<MenuModel[]>(()=>[
+	const menus = computed<MenuModel[]>(() => [
 		{
 			name: t('现货'),
 			contentComp: markRaw(SymbolList),
@@ -58,6 +59,8 @@
 			}
 		}
 	)
+
+	
 
 	function update() {
 		// console.log('update',props.keyword)

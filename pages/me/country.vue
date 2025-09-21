@@ -4,7 +4,7 @@
 	import enLocale from 'i18n-iso-countries/langs/en.json'
 	const { t } = useI18n()
 	countries.registerLocale(enLocale) // 注册语言
-	console.log('countries', countries.getNames('en'))
+	// console.log('countries', countries.getNames('en'))
 	const countryOptions = computed(() => {
 		return Object.entries(countries.getNames('en')).map(([code, name]) => ({
 			name: name,

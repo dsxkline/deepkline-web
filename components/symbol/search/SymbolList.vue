@@ -414,7 +414,7 @@
 				symbol && coinSymbols.push(symbol)
 			})
 			symbols.value = coinSymbols
-			console.log('filterByCoins', props.coins, symbols.value)
+			//console.log('filterByCoins', props.coins, symbols.value)
 		}
 	}
 	function filterBySymbols() {
@@ -430,6 +430,17 @@
 			return newSymbols
 		}
 	}
+
+	// web 搜索卡片隐藏，重新发起订阅
+	watch(
+		() => useStore().searchCardVisible,
+		n => {
+			console.log('searchCardVisible', n)
+			if (!n) {
+				whenBrowserActive()
+			}
+		}
+	)
 
 	const whenBrowserActive = () => {
 		// console.log('浏览器重新激活')
@@ -506,9 +517,18 @@
 		<div ref="lheader" class="symbol-list-header w-full py-2 px-4" v-else-if="!loading && !error">
 			<ul :class="'grid grid-cols-4 *:flex *:items-center text-xs text-grey' + (isSearchList ? ' grid-cols-[30px_1fr_1fr_1fr_1fr]' : '')">
 				<li class="justify-start cursor-pointer select-none" v-if="isSearchList"><span></span></li>
-				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle"><span>{{ t('名称') }}</span><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" /></li>
-				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle"><span>{{ t('最新价') }}</span><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" /></li>
-				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle"><span>{{ t('今日涨跌') }}</span><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" /></li>
+				<li class="col-span-2 cursor-pointer select-none" @click.stop="addouName.clickHandle">
+					<span>{{ t('名称') }}</span
+					><ArrowDropDownOrUp @onChange="symbolOrderNameHandle" ref="addouName" />
+				</li>
+				<li class="justify-end cursor-pointer select-none pr-2" @click.stop="addouPrice.clickHandle">
+					<span>{{ t('最新价') }}</span
+					><ArrowDropDownOrUp @onChange="symbolOrderPriceHandle" ref="addouPrice" />
+				</li>
+				<li class="justify-end cursor-pointer select-none" @click.stop="addouChange.clickHandle">
+					<span>{{ t('今日涨跌') }}</span
+					><ArrowDropDownOrUp @onChange="symbolOrderChangeHandle" ref="addouChange" />
+				</li>
 			</ul>
 		</div>
 		<ScrollBar class="w-full" :noScroll="!height" :style="{ height: height ? +contentHeight + 'px' : 'auto' }" @scroll="scrollHandler" ref="scrollbar" v-if="!loading && !error">

@@ -92,7 +92,7 @@
 			if (type == 1) secretKey.value = text
 			if (type == 2) passPhrase.value = text
 		} catch (err) {
-			console.log('paste error', err)
+			// console.log('paste error', err)
 		}
 	}
 	function pushHelp() {

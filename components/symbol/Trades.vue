@@ -170,12 +170,12 @@
 	})
 
 	useWillDisappear(() => {
-		console.log('trades useWillDisappear....')
+		//console.log('trades useWillDisappear....')
 		updateTimer && clearTimeout(updateTimer)
 		$ws.unsubscribe(subHandle)
 	})
 	useWillAppear(() => {
-		console.log('trades useWillAppear....')
+		//console.log('trades useWillAppear....')
 		if (!loading.value) getTradeList()
 	})
 </script>

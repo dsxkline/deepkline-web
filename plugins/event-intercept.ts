@@ -101,7 +101,7 @@ class WindowsEvent {
 
 			if (delta > 1500) {
 				// 超过预期时间间隔，可能被限流
-				console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`, new Date())
+				// console.log(`限流检测：延迟了 ${delta - 1000} 毫秒`, new Date())
 				if (!this.isBrowserDelay) {
 					this.isBrowserDelay = true
 					this.leaveForeground()
@@ -126,7 +126,7 @@ class WindowsEvent {
 	leaveForeground() {
 		useStore().isLeave = this.isLeave
 		if (this.isLeave) return
-		console.log('leaveForeground', new Date())
+		// console.log('leaveForeground', new Date())
 		// 离开前台
 		// 窗口失去焦点时的处理
 		this.quiescentTime = new Date().getTime()
@@ -138,7 +138,7 @@ class WindowsEvent {
 		useStore().isLeave = this.isLeave
 		// 恢复前台
 		const t = new Date().getTime() - this.quiescentTime
-		console.log('resumeForeground', t, this.isBrowserDelay, this.quiescentTimeout, new Date())
+		// console.log('resumeForeground', t, this.isBrowserDelay, this.quiescentTimeout, new Date())
 		if (t > this.quiescentTimeout && this.isBrowserDelay) {
 			// 刷新k线自动刷新时间
 			this.quiescentTime = new Date().getTime()
@@ -151,22 +151,22 @@ class WindowsEvent {
 
 	// 处理程序
 	blurHandler = () => {
-		console.log('blurHandler')
+		// console.log('blurHandler')
 		this.leaveForeground()
 	}
 
 	pagehideHandler = () => {
-		console.log('pagehideHandler')
+		//console.log('pagehideHandler')
 		this.leaveForeground()
 	}
 
 	freezeHandler = () => {
-		console.log('freezeHandler')
+		//console.log('freezeHandler')
 		this.leaveForeground()
 	}
 
 	visibilityChangeHandler = () => {
-		console.log('visibilityChangeHandler', document.visibilityState, new Date())
+		//console.log('visibilityChangeHandler', document.visibilityState, new Date())
 		if (document.visibilityState === 'hidden') {
 			// 页面不可见时执行的操作
 			this.leaveForeground()
@@ -177,16 +177,16 @@ class WindowsEvent {
 	}
 
 	focusHandler = () => {
-		console.log('focusHandler')
+		//console.log('focusHandler')
 		this.resumeForeground()
 	}
 
 	pageshowHandler = () => {
-		console.log('pageshowHandler')
+		//console.log('pageshowHandler')
 		this.resumeForeground()
 	}
 	resumeHandler = () => {
-		console.log('resumeHandler')
+		//console.log('resumeHandler')
 		this.resumeForeground()
 	}
 
@@ -237,14 +237,14 @@ function storageHandle(this: BroadcastChannel, ev: MessageEvent) {
 
 function beforeunload() {
 	// 页面离开或者刷新的时候注销组件释放内存等
-	console.log('beforeunload')
+	//console.log('beforeunload')
 	useNuxtApp().$windowEvent.destroy()
 	useStore().unload = true
 	useNuxtApp().$ws.destroy()
 	useNuxtApp().$wsb.destroy()
 	useNuxtApp().$dkws.destroy()
 	window.removeEventListener('beforeunload', beforeunload)
-	console.log('beforeunload success')
+	//console.log('beforeunload success')
 }
 
 export default defineNuxtPlugin(({ vueApp }) => {
@@ -252,8 +252,9 @@ export default defineNuxtPlugin(({ vueApp }) => {
 	if (process.client) {
 		// 注入浏览器激活事件
 		nuxtApp.provide('windowEvent', new WindowsEvent())
-		const audio = new Audio('/sounds/click.mov')
-		nuxtApp.provide('clickSound', soundHandle(audio))
+		// const audio = new Audio('/sounds/click.mov')
+		// nuxtApp.provide('clickSound', soundHandle(audio))
+		nuxtApp.provide('clickSound', () => {})
 
 		window.addEventListener('beforeunload', beforeunload)
 		const channel = new BroadcastChannel('logout')

@@ -213,7 +213,7 @@
 	}
 
 	onMounted(() => {
-		console.log(props.symbol, Period?.M5, process.server)
+		//console.log(props.symbol, Period?.M5, process.server)
 		nextTick(() => {
 			fetchData(period.value as Period)
 		})

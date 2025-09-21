@@ -252,14 +252,14 @@
 				loading.value = false
 				if (res?.code == 0 && res.data) {
 					const data = res.data
-					console.log('moneyFlow', data)
+					//console.log('moneyFlow', data)
 					createEchart(createOptions(data))
 				} else {
 					error.value = res?.msg
 				}
 			})
 			.catch(err => {
-				console.log('err', err)
+				//console.log('err', err)
 				loading.value = false
 				error.value = t('网络异常，请稍后再试')
 			})

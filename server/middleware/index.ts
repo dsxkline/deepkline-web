@@ -62,7 +62,7 @@ async function sendRequest(event: any) {
 			retry: 0 // 增加重试次数
 		}
 		sign(options, path as string)
-		console.log('server api options', url, options)
+		//console.log('server api options', url, options)
 		// 转发请求到目标 URL
 		const fetch = $fetch.create({
 			headers: newHeaders

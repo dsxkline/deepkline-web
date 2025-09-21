@@ -35,7 +35,7 @@ class DsxKlineChart {
 		dsxConfig.theme.dark.gridLineCount = 10; // 网格线数量
 		dsxConfig.theme.dark.fontSize = 10; // 字体大小
 		// dsxConfig.theme.white.gridPriceBgShow = false;
-		console.log(dsxConfig);
+		//console.log(dsxConfig);
 
 		dsxConfig.theme.white.gridPriceBackgroundColor = "rgba(0,0,0,0)";
 	}
@@ -80,7 +80,7 @@ class DsxKlineChart {
 			nextPage: function (data, index) {
 				// 加载完数据必须调用此方法
 				// kline.finishLoading();
-				console.log("开始加载下一页数据.....");
+				//console.log("开始加载下一页数据.....");
 				// 继续加载下一页数据
 				if (_this.kline.chartType >= dsxConfig.chartType.candle) _this.getDay(_this.kline);
 			}

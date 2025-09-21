@@ -38,7 +38,7 @@
 		hide()
 	}
 	const closed = () => {
-		console.log('drawer 调用 closed',drawer.value)
+		//console.log('drawer 调用 closed',drawer.value)
 		//show.value = false
         
 	}
@@ -47,12 +47,12 @@
 	const visibleDrawer = computed({
 		get: () => {
 			const vs = usePushStore().getPushComponent(instance) >= 0 ? true : false
-			console.log('visibleDrawer', vs)
+			//console.log('visibleDrawer', vs)
 			return vs
 		},
 		set: val => {
 			const vs = usePushStore().getPushComponent(instance) >= 0 ? true : false
-			console.log('visibleDrawer set', val, vs)
+			//console.log('visibleDrawer set', val, vs)
 			if (!val && vs) usePushStore().pop()
 			if (container.value) {
 				// render(null, container.value as HTMLElement)
@@ -87,7 +87,7 @@
 	}
 
 	onUnmounted(() => {
-		console.log('push onUnmounted', container.value)
+		//console.log('push onUnmounted', container.value)
 		// 获取组件的父级               
 		if (props.parent) {
 			let parent: ComponentInternalInstance | null = props.parent

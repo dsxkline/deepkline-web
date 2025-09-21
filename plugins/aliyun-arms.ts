@@ -7,4 +7,6 @@ export default defineNuxtPlugin(({ vueApp }) => {
 		value: 1,
 		msg: '测试'
 	})
+	const nuxtApp = useNuxtApp()
+	nuxtApp.provide('arms', ArmsRum)
 })

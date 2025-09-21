@@ -21,13 +21,13 @@ import { getFooterHeight, getHeaderHeight, getStatusBarHeight, getTitleBarHeight
 			direction: 'vertical',
 			gutterSize: 0,
 			onDragStart: () => {
-				console.log('onDragStart')
+				//console.log('onDragStart')
 			},
 			onDrag: () => {
-				console.log('onDrag')
+				//console.log('onDrag')
 			},
 			onDragEnd: () => {
-				console.log('onDragEnd')
+				//console.log('onDragEnd')
 			}
 		})
 	})
@@ -39,7 +39,7 @@ import { getFooterHeight, getHeaderHeight, getStatusBarHeight, getTitleBarHeight
 		up = (getHeaderHeight() / containerHeight) * 100.0
 		down = 100 - up
 		split && split.setSizes([up, down])
-		console.log('ddddddd',up,down)
+		// console.log('ddddddd',up,down)
 	}
 	function addAnimation(dom: HTMLElement | null) {
 		if (dom) {

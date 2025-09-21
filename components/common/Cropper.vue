@@ -12,7 +12,7 @@
 	const save = () => {
 		cropper.value.getCropBlob((data: string) => {
 			// do something
-			console.log(data)
+			//console.log(data)
 			if (props.successCallback) props.successCallback(data)
             useNuxtApp().$pop()
 		})

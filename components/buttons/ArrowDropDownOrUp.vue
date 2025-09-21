@@ -15,13 +15,13 @@ const clickHandle = ()=>{
     active.value ++
     if(active.value>=3) active.value = 0
     emit('update:modelValue',active.value)
-    console.log('update:modelValue',active.value)
+    //console.log('update:modelValue',active.value)
     emit('onChange',active.value)
     useNuxtApp().$clickSound()
 }
 const reset = ()=>{
     active.value = 0
-    console.log('reset',active.value)
+   // console.log('reset',active.value)
 }
 
 onMounted(()=>{

@@ -1,6 +1,8 @@
 import type OKXWebSocket from '~/fetch/okx/okx.websocket'
 import 'vue'
 import type DKWebSocket from '~/fetch/dk/dk.websocket'
+import type Aegis from 'aegis-web-sdk'
+import type { ArmsRum } from '@arms/rum-browser'
 export enum ApiSource {
 	OKX,
 	BINANCE,
@@ -33,7 +35,9 @@ declare module '#app' {
 		$dialog: (comp: any, params: {}, width?: string, height?: string, title?: string, msg?: string, showCancel?: boolean, showComfirm?: boolean) => ComponentInternalInstance
 		$clickSound: () => void
 		$windowEvent: WindowsEvent
-		$isMobile: globalThis.Ref<boolean>
+		$isMobile: globalThis.Ref<boolean>,
+		$aegis:Aegis,
+		$arms:ArmsRum
 	}
 }
 

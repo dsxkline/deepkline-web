@@ -43,7 +43,7 @@
 				loading.value = false
 				if (result?.code == FetchResultDto.OK) {
 					datas.value = result.data || []
-					console.log('symbols',symbols)
+					//console.log('symbols',symbols)
 				} else {
 					if (!datas.value?.length) error.value = result?.msg
 				}

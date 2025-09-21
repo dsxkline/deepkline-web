@@ -1,5 +1,6 @@
 import type { NuxtPlugin } from "nuxt/schema";
 export default [
+    {src: '~/plugins/tencent-aegis.ts', mode: 'client'},
     {src: '~/plugins/aliyun-arms.ts', mode: 'client'},
     {src: '~/plugins/push.ts', mode: 'client'},
     '~/plugins/element-plus.ts',

@@ -8,7 +8,7 @@
 
 	onBeforeUnmount(() => {
 		// 清理工作
-		console.log('MenuList component is being destroyed')
+		//console.log('MenuList component is being destroyed')
 	})
 </script>
 <template>

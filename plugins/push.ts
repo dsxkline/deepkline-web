@@ -49,7 +49,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 	}
 	// 渲染节点
 	const renderDom = (container && container.vnode.el && container.vnode.el.querySelector('.dialog-push-container .scroll-bar-inner')) || document.body
-	console.log('renderDom', renderDom)
+	//console.log('renderDom', renderDom)
 
 	// 加载 push 组件
 	// 创建 push 组件实例
@@ -82,16 +82,16 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		box.classList.add('push-' + direction)
 		if (direction == 'rtl') {
 			// 上一个drawer
-			console.log('parentDrawer instance', instance)
+			//console.log('parentDrawer instance', instance)
 			if (instance?.vnode.el) {
 				const parentDrawer = instance.vnode.el.closest('.drawer-container .drawer-body') as HTMLElement
-				console.log('parentDrawer', parentDrawer)
+				//console.log('parentDrawer', parentDrawer)
 				if (parentDrawer) {
 					if (parentDrawer.classList.contains('rtl')) parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
 					// 针对dialog处理
 					if (renderDom.getAttribute('class')?.indexOf('scroll-bar-inner')>=0) {
-						console.log('dialog-push-container.....')
+						//console.log('dialog-push-container.....')
 					} else {
 						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
 						if (__nuxt) __nuxt.style.transform = 'translateX(-30%)'

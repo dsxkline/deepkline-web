@@ -1,5 +1,5 @@
 <script setup lang="ts">
-	import { usePush, useWillAppear } from '~/composable/usePush'
+	import { usePush, usePushUp, useWillAppear } from '~/composable/usePush'
 	import { useAvatar } from '~/composable/useAvatar'
 	import { accountFetch } from '~/fetch/account.fetch'
 	import { AccountEnvType, type AccountDto, type FundDto } from '~/fetch/dtos/account.dto'
@@ -11,6 +11,8 @@
 	import { useUserStore } from '~/store/user'
 	import defaultAvatar from '~/assets/images/default-avatar.svg'
 	import ExchangeIndex from '~/pages/exchange/index.vue'
+	import LoginIndex from '~/pages/login/index.vue'
+	
 	const { t } = useI18n()
 	const props = defineProps<{
 		account?: AccountDto | null | undefined
@@ -20,8 +22,11 @@
 	const loading = ref(false)
 	const error = ref('')
 	const usepush = usePush()
+	const pushUp = usePushUp()
 	const fundContainer = ref()
 	const minWidth = ref(0)
+
+	const badge = computed(() => useUserStore().unRead?.total || 0)
 
 	watch(
 		() => useAccountStore().currentAccount,
@@ -95,6 +100,22 @@
 		useNuxtApp().$dialog(ExchangeIndex, {}, '800px', '500px', t('开设账户'))
 	}
 
+	function pushNotification() {
+		if (!useUserStore().user) {
+			pushUp(LoginIndex)
+			return
+		}
+		// usepush(Notification)
+	}
+
+	function pushChat() {
+		if (!useUserStore().user) {
+			pushUp(LoginIndex)
+			return
+		}
+		// usepush(Notification)
+	}
+
 	useWillAppear(() => {
 		getUserAccountBalance()
 	})
@@ -116,10 +137,19 @@
 			/>
 			<img @error="imageOnError" src="~/assets/images/logo.png" alt="Face Icon" class="w-6 h-6 rounded-full" v-else />
 		</div>
+		<div class="flex items-center px-2 *:flex *:items-center *:justify-center *:h-10">
+			<button class="px-2"><CustomerServiceIcon class="w-5 h-5 text-main" @click="pushChat" /></button>
+			<button class="px-2 relative" @click="pushNotification">
+				<el-icon class="!w-6 !h-6 text-main"><Bell class="!w-6 !h-6" /></el-icon>
+				<template v-if="badge">
+					<div class="text-xs rounded-full bg-red text-white px-1 h-4 min-w-4 flex items-center leading-normal justify-center absolute right-1 top-1">{{ badge > 99 ? '99+' : badge }}</div>
+				</template>
+			</button>
+		</div>
 		<el-divider direction="vertical" class="mx-1"></el-divider>
 		<div v-if="!loading && !error" class="relative flex flex-col justify-center cursor-pointer hover:bg-[--transparent05]">
 			<template v-if="useAccountStore().accounts.length">
-				<div class="flex justify-between items-center transition-all" ref="fundContainer" :style="['min-width:'+minWidth+'px']">
+				<div class="flex justify-between items-center transition-all" ref="fundContainer" :style="['min-width:' + minWidth + 'px']">
 					<div class="flex justify-center items-center">
 						<div v-if="fund" class="text-sm flex items-center">
 							<div class="flex items-center px-2 text-base leading-normal">

@@ -125,14 +125,14 @@
 
 		Promise.all([getSymbolDetail(), getSymbolDataInfo(), getSymbolCoinInfo()])
 			.then(responses => {
-				console.log(responses)
+				//console.log(responses)
 				// 所有请求成功时
 				return Promise.all(responses.map(response => response.json()))
 			})
 			.then(datas => {
 				loading.value = false
 				error.value = ''
-				console.log(datas) // 这里是请求的结果数据
+				//console.log(datas) // 这里是请求的结果数据
 				const [detail, dataInfo, coinInfo] = datas
 				if (!detail?.data || !dataInfo?.data || !coinInfo?.data) {
 					error.value = t('网络异常，请稍后再试')

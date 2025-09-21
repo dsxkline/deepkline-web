@@ -89,7 +89,7 @@
 	function setTabbarHeight() {
 		tabbarHeight.value = useStore().bodyHeight - getHeaderHeight() - getStatusBarHeight() - getAppStatusBarHeight() - getTitleBarHeight()
 		if (useStore().isH5) tabbarHeight.value = useStore().bodyHeight - (navbar.value?.clientHeight || getNavHeight()) - getAppStatusBarHeight() - getTitleBarHeight()
-		console.log('tabbarHeight', tabbarHeight.value, useStore().bodyHeight, getHeaderHeight(),getStatusBarHeight(),getTitleBarHeight())
+		//console.log('tabbarHeight', tabbarHeight.value, useStore().bodyHeight, getHeaderHeight(),getStatusBarHeight(),getTitleBarHeight())
 	}
 
 	const push = usePushUp()
@@ -115,7 +115,7 @@
 	})
 	onUnmounted(() => {
 		navbar.value = null
-		console.log('SymbolDetail unmounted')
+		//console.log('SymbolDetail unmounted')
 	})
 </script>
 <template>

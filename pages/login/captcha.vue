@@ -125,7 +125,7 @@
 		keystr.value = ''
 		error.value = ''
 		loading.value = true
-		console.log('code...', code1.value, code2.value, code3.value, code4.value, props.successCallback)
+		// console.log('code...', code1.value, code2.value, code3.value, code4.value, props.successCallback)
 		props.resetCallback &&
 			props
 				.resetCallback()

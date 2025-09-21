@@ -99,7 +99,7 @@
 	}
 
 	function onPop(data: any) {
-		console.log('onpop', data)
+		//console.log('onpop', data)
 		emit('update:modelValue', data)
 	}
 

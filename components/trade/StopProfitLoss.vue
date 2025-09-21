@@ -21,6 +21,7 @@
 		initPrice?: number
 		push?: string
 		lotSize?: string
+		leverage?: string
 		position?: PositionDto
 	}>()
 	const emit = defineEmits<{
@@ -98,7 +99,7 @@
 		} else {
 			amount.value = DecimalHelper.div(DecimalHelper.sub(initPrice.value, price).toString(), tickSz.value).toNumber()
 		}
-		console.log('priceChange', price, initPrice.value, amount.value, tickSz.value)
+		// console.log('priceChange', price, initPrice.value, amount.value, tickSz.value)
 	}
 
 	function priceFocus() {}
@@ -187,7 +188,7 @@
 
 	const profit = computed(() => {
 		if (props.lotSize && price.value > 0) {
-			const p = (price.value - initPrice.value) * parseFloat(props.lotSize)
+			const p = (price.value - initPrice.value) * parseFloat(props.lotSize) * parseFloat(props.leverage || '1')
 			return formatNumber(p, '2')
 		} else {
 			return '0'
@@ -358,24 +359,24 @@
 				:disabled="!openStop"
 			/>
 			<div class="text-xs text-grey mt-1">
-				<i18n-t keypath="当价格达到止盈" v-if="price && !type">
+				<i18n-t keypath="当价格达到止盈" v-if="price && !type && szPercent">
 					<template #price>
 						<span class="text-main"> ${{ price.toFixed(point) }}</span>
 					</template>
 					<template #percent>
-						<span class="text-main"> {{ formatNumber(szPercent, '2') }} </span>
+						<span class="text-main"> +{{ formatNumber(szPercent, '2') }}% </span>
 					</template>
 					<template #profit v-if="parseFloat(profit)">
 						<b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b>
 					</template>
 				</i18n-t>
 
-				<i18n-t keypath="当价格达到止损" v-if="price && type">
+				<i18n-t keypath="当价格达到止损" v-if="price && type && szPercent">
 					<template #price
 						><span class="text-main"> ${{ price.toFixed(point) }} </span></template
 					>
 					<template #percent>
-						<span class="text-main"> {{ formatNumber(szPercent, '2') }}</span>
+						<span class="text-main"> {{ formatNumber(szPercent, '2') }}%</span>
 					</template>
 					<template #profit v-if="parseFloat(profit)">
 						<b class="text-[--el-color-primary]">{{ parseFloat(profit) >= 0 ? '+' : '' }} {{ profit }} USDT</b>

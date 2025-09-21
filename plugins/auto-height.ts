@@ -23,7 +23,7 @@ function setRemUnit() {
 
 function setSafeAreaChange(data: any) {
 	try {
-		console.log('Safe area insets:', data)
+		// console.log('Safe area insets:', data)
 		document.documentElement.style.setProperty('--safe-top', data.top + 'px')
 		document.documentElement.style.setProperty('--safe-bottom', Math.min(data.bottom, 10 * devicePixelRatio) + 'px')
 	} catch (e) {

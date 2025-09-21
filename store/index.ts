@@ -21,7 +21,8 @@ export const useStore = defineStore({
 		theme: 'dark', // 主题，默认dark
 		exchange: 'deepkline', // 默认交易所
 		locale: 'zh-CN',
-		pageSubSymbols: {} as Record<string, string[]> // 页面级别的订阅品种收集器
+		pageSubSymbols: {} as Record<string, string[]>, // 页面级别的订阅品种收集器
+		searchCardVisible: false
 	}),
 	actions: {
 		setBodyHeight(height: number) {
@@ -104,7 +105,7 @@ export const useStore = defineStore({
 							const info = await StatusBar.getInfo()
 							setCssVariable('--app-status-bar-height', ((info as any).height || 0) + 'px')
 							const safeTop = getCssVariable('--safe-bottom')
-							console.log('Safe Area Top:', safeTop, info, devicePixelRatio)
+							//console.log('Safe Area Top:', safeTop, info, devicePixelRatio)
 						}
 					}
 				} catch (err) {}

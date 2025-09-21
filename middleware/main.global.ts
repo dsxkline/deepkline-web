@@ -20,6 +20,7 @@ function getDefaultSymbols(marketType: MarketType) {
 			if (res?.data) {
 				symbolStore.setSymbols(res.data)
 			} else {
+				console.error(res)
 				setTimeout(() => {
 					getDefaultSymbols(marketType)
 				}, 5000)

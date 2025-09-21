@@ -21,7 +21,7 @@ const pushAddAccount = ()=>{
 }
 onBeforeUnmount(() => {
     // Cleanup or additional logic if needed
-    console.log('UserFace component is being destroyed');
+    //console.log('UserFace component is being destroyed');
 });
 </script>
 

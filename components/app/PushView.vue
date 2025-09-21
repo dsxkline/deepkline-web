@@ -132,7 +132,7 @@
 
 	onUnmounted(() => {
 		usePushStore().setPushState(false)
-		console.log('push onUnmounted')
+		//console.log('push onUnmounted')
 	})
 
 	const setDrawerBodyStyle = (visible: boolean) => {
@@ -222,7 +222,7 @@
 	// 如果是在dialog环境，把dialog实例传下去
 	// 给子组件全局注入当前dialog实例
 	props.dialog && provide('currentDialog', props.dialog)
-	console.log('props.dialog', props.dialog)
+	//console.log('props.dialog', props.dialog)
 
 	defineExpose({
 		...useRefreshChildEvent()

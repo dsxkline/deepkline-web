@@ -16,7 +16,7 @@
 	const show = ref(false)
 	const inputDom = ref()
 	const height = computed(() => {
-		let h = 300
+		let h = 500
 		if (useStore().isH5) {
 			h = useStore().bodyHeight - (inputDom.value?.clientHeight || 50) - getAppStatusBarHeight()
 		}
@@ -48,9 +48,15 @@
 		(n, o) => {
 			if (n) {
 				nextTick(() => {
+					useStore().searchCardVisible = n
 					if (inputDom.value) {
 						inputDom.value.focus()
 					}
+				})
+			}else{
+				// 搜索卡片隐藏状态变更，通知其他组件重新订阅等
+				nextTick(() => {
+					useStore().searchCardVisible = n
 				})
 			}
 		}
@@ -68,24 +74,23 @@
 	})
 </script>
 <template>
-	<div class="w-[600px] relative symbol-search">
-		
+	<div class="relative symbol-search">
 		<div
-			class="symbol-search-item flex items-center justify-center text-xs text-grey w-[100%] h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer"
+			class="symbol-search-item flex items-center justify-center text-xs text-grey w-full h-[25px] bg-[--transparent05] rounded-lg border border-[--transparent10] cursor-pointer"
 			v-click-sound
 			@click="search"
 		>
 			<el-icon><Search /></el-icon>
 			<span class="px-2">{{ useSymbolStore().getActiveSymbol()?.symbol }}</span>
 		</div>
-		<div v-if="show || push" class="search-list absolute top-0 left-0 w-[100%] z-[10000] bg-base rounded-lg border border-[--transparent10] overflow-hidden">
-			<AppStatusBar/>
+		<div v-if="show || push" class="search-list absolute top-0 left-0 w-full z-[10000] bg-base rounded-lg border border-[--transparent10] overflow-hidden">
+			<AppStatusBar />
 			<div class="search-list-box bg-[--transparent05]">
-				<div class="flex">
-					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" class="p-3 pr-0" @focus="focus" @input="search" />
+				<div class="flex w-full">
+					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" :class="['p-3', useStore().isH5 ? 'pr-0' : '']" @focus="focus" @input="search" />
 					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">{{ t('取消') }}</button>
 				</div>
-				<div class="search-list-content w-[100%] min-h-[316px] max-h-[50vh] py-2">
+				<div class="search-list-content w-full min-h-[316px] max-h-[50vh] py-2">
 					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :selectHandle="selectHandle" :isSearchList="true" />
 				</div>
 			</div>
@@ -155,6 +160,32 @@
 			box-shadow: none;
 			border: 1px solid rgb(var(--color-brand));
 			border-radius: 8px;
+		}
+	}
+
+	@media (min-width: 999px) {
+		.symbol-search{
+			width:600px;
+		}
+		:deep(.tabbar-container) {
+			.tabbar-header {
+				background: transparent;
+				&::before{
+					background-image: none;
+				}
+			}
+		}
+	}
+
+	@media (max-width: 1500px){
+		.symbol-search{
+			width:400px;
+		}
+	}
+
+	@media (max-width: 1200px){
+		.symbol-search{
+			width:350px;
 		}
 	}
 

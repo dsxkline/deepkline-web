@@ -468,6 +468,7 @@
 				initPrice: parseFloat(ticker.value?.last || '0'),
 				price: type == 0 ? takeProfit.value : stopLoss.value,
 				lotSize: lotSize.value,
+				leverage: String(leverage.value),
 				onClose: type == 0 ? confirmProfit : confirmLoss
 			},
 			'90%'
@@ -618,7 +619,7 @@
 		if (container.value) {
 			const resizeObserver = new ResizeObserver(() => {
 				orderWidth.value = container.value?.clientWidth || 0
-				console.log('container width changed', orderWidth.value)
+				//console.log('container width changed', orderWidth.value)
 			})
 			resizeObserver.observe(container.value)
 			onBeforeUnmount(() => {
@@ -819,7 +820,16 @@
 												</div>
 											</div>
 										</template>
-										<StopProfitLoss :type="0" :symbol="symbol" :lotSize="lotSize" :price="takeProfit" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmProfit" v-if="!loading" />
+										<StopProfitLoss
+											:leverage="String(leverage)"
+											:type="0"
+											:symbol="symbol"
+											:lotSize="lotSize"
+											:price="takeProfit"
+											:initPrice="parseFloat(ticker?.last || '0')"
+											@close="confirmProfit"
+											v-if="!loading"
+										/>
 									</el-popover>
 									<el-popover :placement="isH5 ? 'right' : 'left'" trigger="click" ref="popLoss" :hide-after="0" width="300">
 										<template #reference>
@@ -832,7 +842,16 @@
 												</div>
 											</div>
 										</template>
-										<StopProfitLoss :type="1" :symbol="symbol" :lotSize="lotSize" :price="stopLoss" :initPrice="parseFloat(ticker?.last || '0')" @close="confirmLoss" v-if="!loading" />
+										<StopProfitLoss
+											:leverage="String(leverage)"
+											:type="1"
+											:symbol="symbol"
+											:lotSize="lotSize"
+											:price="stopLoss"
+											:initPrice="parseFloat(ticker?.last || '0')"
+											@close="confirmLoss"
+											v-if="!loading"
+										/>
 									</el-popover>
 								</div>
 								<div class="pt-2 stop-container" v-else>

@@ -19,7 +19,7 @@ export class BaseSocketIo {
 
 	connect(accountId?: number): Socket {
 		const fullUrl = `${this.url}${this.namespace}`
-		console.log('connect url', fullUrl, accountId)
+		//console.log('connect url', fullUrl, accountId)
 		const socket = io(fullUrl, {
 			transports: ['websocket'],
 			path: this.path,

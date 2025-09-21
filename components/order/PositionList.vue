@@ -80,7 +80,7 @@
 	})
 
 	const configmProfitLoss = (position: PositionDto) => (takeProfitPrice: number, stopLossPrice: number) => {
-		console.log('configmProfitLoss', takeProfitPrice, stopLossPrice)
+		//console.log('configmProfitLoss', takeProfitPrice, stopLossPrice)
 		popProfitLoss.value.forEach(item => (item as any).hide())
 	}
 	const pushStopProfitLoss = (position: PositionDto) => {

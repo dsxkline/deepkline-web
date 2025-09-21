@@ -59,7 +59,7 @@ import type { DownLoadingInstance } from '~/types/types';
 	onBeforeUnmount(() => {
 		scrollBarRef.value = null
 		thumbRef.value = null
-		console.log('ScrollBar component unmounted')
+		//console.log('ScrollBar component unmounted')
 	})
 </script>
 <template>

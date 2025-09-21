@@ -25,7 +25,7 @@ const { t } = useI18n()
 	function hide() {
 		opacity.value = 0
 		emit('update:modelValue', true)
-		console.log('startup', props.modelValue)
+		//console.log('startup', props.modelValue)
 		setTimeout(() => {
 			closed.value = true
 			const statups = document.querySelectorAll('.startup-container')

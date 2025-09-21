@@ -177,14 +177,14 @@
 
 		Promise.all([getSymbolProgress(), getSymbolAllocation()])
 			.then(responses => {
-				console.log(responses)
+				//console.log(responses)
 				// 所有请求成功时
 				return Promise.all(responses.map(response => response.json()))
 			})
 			.then(res => {
 				loading.value = false
 				error.value = ''
-				console.log(res) // 这里是请求的结果数据
+				//console.log(res) // 这里是请求的结果数据
 				const [progress, allocation] = res
 				if (progress?.code === 0) {
 					symbolProgressData.value = progress.data
