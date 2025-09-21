@@ -23,7 +23,7 @@
 	const currentSymbol = ref(props.symbol)
 	const tabbarHeight = ref(0)
 	const navbar = ref()
-	const menus = computed<MenuModel[]>(()=>[
+	const menus = computed<MenuModel[]>(() => [
 		{
 			name: t('行情'),
 			contentComp: markRaw(SymbolMarketDatas),
@@ -44,15 +44,15 @@
 			contentParams: {
 				symbol: props.symbol
 			}
-		},
-		{
-			name: t('订单'),
-			contentComp: markRaw(CrypeOrder),
-			contentParams: {
-				symbol: currentSymbol.value,
-				height: tabbarHeight.value
-			}
 		}
+		// {
+		// 	name: t('订单'),
+		// 	contentComp: markRaw(CrypeOrder),
+		// 	contentParams: {
+		// 		symbol: currentSymbol.value,
+		// 		height: tabbarHeight.value
+		// 	}
+		// }
 	])
 
 	const symbolObj = computed(() => {
@@ -120,7 +120,7 @@
 </script>
 <template>
 	<div class="w-full h-full">
-		<AppStatusBar/>
+		<AppStatusBar />
 		<NavigationBar v-if="useStore().isH5" ref="navbar">
 			<template #left>
 				<button class="flex items-center px-4 h-full" @click="returnBack">
