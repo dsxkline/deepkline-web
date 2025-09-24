@@ -11,6 +11,8 @@
 		titleComp?: Component
 		contentComp?: Component
 		contentParams?: Record<any, any>
+		isCard?: boolean
+		cardWidth?:number
 		onClick?: () => void
 	}
 	const props = defineProps({
@@ -216,7 +218,7 @@
 <template>
 	<div ref="tabbarContainer" class="tabbar-container flex flex-col">
 		<div class="tabbar-header px-4 w-full relative overflow-x-scroll scrollbar-hide h-[var(--tabbar-height)]" ref="tabbarHeader">
-			<ul class="flex py-1 w-max h-full text-base *:mx-2">
+			<ul class="flex pt-1 w-max h-full text-base *:mx-2">
 				<li v-for="(item, index) in menus" :key="index" v-click-sound @click="menuHandler(item, index)" :class="{ active: index == menuActive }">
 					<template v-if="item.titleComp">
 						<component :is="item.titleComp" />

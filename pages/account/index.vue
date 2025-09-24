@@ -4,9 +4,12 @@
 	import ExchangeIndex from '../exchange/index.vue'
 	import { useAccountStore } from '~/store/account'
 	import FundCard from '~/components/account/FundCard.vue'
+	import { useProvideParent } from '~/composable/useProviderParent'
+import { useStore } from '~/store'
 	const { t } = useI18n()
 	const props = defineProps<{
 		push?: boolean
+		mode?: string
 	}>()
 	const pushLeft = usePush()
 	const pushUp = usePushUp()
@@ -16,7 +19,7 @@
 	function pushAccounts() {
 		pushUp(AccountList, {}, 'auto')
 	}
-
+	
 	onMounted(() => {})
 
 	defineExpose({
@@ -47,7 +50,7 @@
 			</NavigationBar>
 			<ScrollBar
 				class="w-full h-full"
-				:wrap-style="{ height: 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))' }"
+				:wrap-style="{ height: useStore().isH5?'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height))':'calc(var(--body-height) - var(--nav-height) - var(--header-height) - var(--status-bar-height))' }"
 				:always="false"
 			>
 				<div :style="{ minHeight: 'calc(var(--body-height) - var(--nav-height)  - var(--menu-height) - var(--safe-bottom) - var(--app-status-bar-height) + 1px)' }">

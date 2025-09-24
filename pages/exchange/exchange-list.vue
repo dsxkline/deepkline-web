@@ -168,8 +168,17 @@
 	}
 
 	.exchange-list-container {
+		container-type: inline-size; /* 启用容器查询 */
 		ul {
 			@apply grid grid-cols-2 gap-3;
+		}
+	}
+
+	@container (max-width: 500px) {
+		.exchange-list-container {
+			ul {
+				display: flex!important;
+			}
 		}
 	}
 

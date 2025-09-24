@@ -54,7 +54,7 @@ const { t } = useI18n()
 </script>
 <template>
 	<div
-		class="startup-container bg-base fixed top-0 left-0 w-full h-full z-[999999] transition-all flex items-center justify-center"
+		class="startup-container bg-base fixed top-0 left-0 w-full h-full z-[99999999] transition-all flex items-center justify-center"
 		v-if="!closed"
 		:style="{
 			opacity: opacity

@@ -416,7 +416,7 @@
 		stopLoss.value = 0
 		lotSize.value = symbolObj.value?.minSz
 		margin.value = ''
-		price.value = 0
+		if(ordType.value == OrderType.MARKET) price.value = 0
 		lotSizePercent.value = 0
 		canChangePrice.value = true
 		openTakeProfit.value = false
@@ -560,8 +560,8 @@
 						emit('close')
 						if (submitLoading.value) {
 							ElMessage.success(t('下单成功'))
-							submitLoading.value = false
 						}
+						submitLoading.value = false
 					}, 3000)
 				} else {
 					setTimeout(() => {
@@ -583,7 +583,7 @@
 		const order = data.payload
 		if (order.state == 'live') {
 			// 挂单成功通知
-			// if (submitLoading.value) ElMessage.success('挂单成功')
+			if (submitLoading.value) ElMessage.success('挂单成功')
 			submitLoading.value = false
 			emit('close')
 		}
@@ -1177,7 +1177,7 @@
 		}
 	}
 
-	@media (max-width: 999px) {
+	@container (max-width: 999px) {
 		.trade-small {
 			min-width: 210px;
 

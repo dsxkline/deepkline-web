@@ -156,7 +156,7 @@
 		:style="{
 			minHeight: useStore().isH5
 				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom) - var(--app-status-bar-height))'
-				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
+				: 'calc(var(--body-height) - var(--nav-height) - var(--header-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
 		}"
 	>
 		<Empty :content="t('暂无资产')" v-if="!loading && !error && !assets?.length" class="pt-20">
@@ -228,7 +228,7 @@
 							<div class="flex items-center">
 								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" onlyCoin class="text-base roboto-bold leading-[0]" size="25px" />
 							</div>
-							<div class="flex justify-between items-center gap-4">
+							<div class="flex justify-between items-center gap-4" v-if="useStore().isH5">
 								<button class="flex items-center" @click="pushKline(item)">
 									<el-icon><KlineIcon class="w-5 h-5" /></el-icon>
 								</button>

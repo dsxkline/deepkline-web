@@ -90,7 +90,7 @@
 					<el-input ref="inputDom" v-model="keyword" placeholder="Please Input" :prefix-icon="Search" :class="['p-3', useStore().isH5 ? 'pr-0' : '']" @focus="focus" @input="search" />
 					<button class="flex items-center text-nowrap px-4" @click="useNuxtApp().$pop()" v-if="useStore().isH5">{{ t('取消') }}</button>
 				</div>
-				<div class="search-list-content w-full min-h-[316px] max-h-[50vh] py-2">
+				<div class="search-list-content w-full min-h-[316px] py-2 h-max">
 					<MarketList :height="height" :keyword="keyword" @clickHandle="hide" :selectHandle="selectHandle" :isSearchList="true" />
 				</div>
 			</div>
@@ -139,6 +139,9 @@
 					@apply px-3;
 				}
 			}
+		}
+		.search-list-content{
+			height: 500px;
 		}
 	}
 	:deep(.tabbar-container) {
@@ -214,6 +217,7 @@
 					}
 					.search-list-content {
 						max-height: unset;
+						height: auto;
 						padding: 0;
 					}
 				}

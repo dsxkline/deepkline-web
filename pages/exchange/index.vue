@@ -87,7 +87,7 @@
 	}
 
 	.navbar {
-		display: none;
+		// display: none;
 	}
 
 	@media (max-width: 999px) {

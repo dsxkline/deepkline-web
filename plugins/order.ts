@@ -8,7 +8,7 @@ import { useSymbolStore } from '~/store/symbol'
 import { useUserStore } from '~/store/user'
 import type { WsResult } from '~/types/types'
 const orderHandle = (data: WsResult<OrderDto>) => {
-	const { t } = useI18n()
+	const { $i18n } = useNuxtApp()
 	//console.log('收到订单推送信息', data)
 	if(!useUserStore().user) return
 	if(!useAccountStore().currentAccount?.accountId) return
@@ -16,7 +16,7 @@ const orderHandle = (data: WsResult<OrderDto>) => {
 	const symbolObj = useSymbolStore().getSymbol(order?.symbol)
 	if (order.state == 'filled') {
 		// 成交通知
-		ElMessage.success(t('挂单已成交，成交价为') + formatPrice(order.matchPrice, symbolObj.tickSz))
+		ElMessage.success($i18n.t('挂单已成交，成交价为') + formatPrice(order.matchPrice, symbolObj.tickSz))
 	}
     data?.payload && useOrderStore().addOrder(data.payload)
 }

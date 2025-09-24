@@ -62,7 +62,10 @@
 	.simple-title {
 		display: none;
 	}
-	@media (max-width: 999px) {
+	@container (max-width: 999px) {
+		:deep(.trade-container) {
+			@apply px-4;
+		}
 		.simple-title {
 			display: flex;
 		}

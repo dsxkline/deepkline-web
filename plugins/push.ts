@@ -48,8 +48,8 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 		component: comp?.default || comp
 	}
 	// 渲染节点
-	const renderDom = (container && container.vnode.el && container.vnode.el.querySelector('.dialog-push-container .scroll-bar-inner')) || document.body
-	//console.log('renderDom', renderDom)
+	const renderDom = (container && container.vnode.el && (container.vnode.el.querySelector('.dialog-push-container .scroll-bar-inner') || container.vnode.el)) || document.body
+	//console.log('container', container,renderDom)
 
 	// 加载 push 组件
 	// 创建 push 组件实例
@@ -90,7 +90,7 @@ const pushHandle = function (this: ComponentInternalInstance | null, comp: any, 
 					if (parentDrawer.classList.contains('rtl')) parentDrawer.style.transform = 'translateX(-30%)'
 				} else {
 					// 针对dialog处理
-					if (renderDom.getAttribute('class')?.indexOf('scroll-bar-inner')>=0) {
+					if (renderDom.getAttribute('class')?.indexOf('scroll-bar-inner')>=0 || renderDom.getAttribute('class')?.indexOf('parent-push-container')>=0) {
 						//console.log('dialog-push-container.....')
 					} else {
 						const __nuxt = document.querySelector('#__nuxt') as HTMLElement
@@ -117,7 +117,7 @@ const pop = function (data: any) {
 	if (topPush?.props && data != undefined) topPush.props.popData = data
 	// 栈顶实例将要隐藏事件
 	const app = getParentRefreshComponent(topPush)
-	if (app.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
+	if (app?.exposed?.refreshChildWillDisAppear) app.exposed?.refreshChildWillDisAppear()
 	// topPush.vnode = null
 	// topPush.component = null
 	topPush = null

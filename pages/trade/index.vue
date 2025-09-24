@@ -127,6 +127,7 @@
 		//console.log('trade-index onMounted....')
 		$ws.addTickerHandler(symbol.value, tickerHandler)
 		tickerHandler($ws.getTickers(symbol.value))
+		subSymbols()
 	})
 
 	useWillDisappear(() => {

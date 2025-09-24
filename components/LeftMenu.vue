@@ -2,7 +2,7 @@
 	import { ref } from 'vue'
 	import { useStore } from '~/store'
 	import type { MenuModel } from './common/TabBar.vue'
-import { getCssVariable } from '~/composable/useCommon';
+	import { getCssVariable } from '~/composable/useCommon'
 	const props = defineProps<{
 		menus: MenuModel[]
 		active?: number
@@ -11,6 +11,13 @@ import { getCssVariable } from '~/composable/useCommon';
 	const menuActive = ref(props.active || 0)
 	const mainMenu = ref()
 
+	watch(
+		() => props.active,
+		n => {
+			if (n != undefined) menuActive.value = n
+		}
+	)
+
 	const emit = defineEmits<{
 		(event: 'update:active', value: number): void
 		(event: 'menuHandler', menu: MenuModel, index: number): void
@@ -18,13 +25,13 @@ import { getCssVariable } from '~/composable/useCommon';
 
 	const handleOpen = (menu: MenuModel, index: number) => {
 		//console.log('handleOpen', menu, index)
-		menuActive.value = index
+		// menuActive.value = index
 		emit('update:active', index)
 		emit('menuHandler', menu, index)
 	}
 
-	onMounted(()=>{
-		nextTick(()=>{
+	onMounted(() => {
+		nextTick(() => {
 			const safeBottom = getCssVariable('--safe-bottom')
 			//console.log('mainMenu',mainMenu.value.clientHeight, safeBottom)
 		})
@@ -32,7 +39,7 @@ import { getCssVariable } from '~/composable/useCommon';
 </script>
 
 <template>
-	<div class="left-menu relative flex flex-col justify-between border-r border-[--border-color]">
+	<div class="left-menu relative flex flex-col justify-between">
 		<div class="main-menu" ref="mainMenu">
 			<ul class="menu-list w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
 				<li
@@ -47,7 +54,10 @@ import { getCssVariable } from '~/composable/useCommon';
 				</li>
 			</ul>
 
-			<ul :style="['grid-template-columns:'+(menus.map(()=>1/menus.length*100+'%').join(' '))]" class="menu-list-h5 w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]">
+			<ul
+				:style="['grid-template-columns:' + menus.map(() => (1 / menus.length) * 100 + '%').join(' ')]"
+				class="menu-list-h5 w-[var(--menu-width)] *:flex *:items-center *:justify-center *:py-3 *:flex-col *:text-xs *:cursor-pointer *:text-muted *:min-h-[76px]"
+			>
 				<li
 					:class="menuActive == index ? '!text-brand font-bold' : 'hover:bg-[var(--transparent05)] hover:text-muted' + ''"
 					v-for="(menu, index) in menus"
@@ -84,6 +94,7 @@ import { getCssVariable } from '~/composable/useCommon';
 		}
 	}
 	.left-menu {
+		background: rgb(var(--color-bg-base));
 		&::before {
 			background-image: var(--bg-linear-180);
 			// filter: blur(60px);
@@ -94,7 +105,7 @@ import { getCssVariable } from '~/composable/useCommon';
 			height: 100%;
 			content: '';
 			z-index: -1;
-			opacity: 0.1;
+			opacity: 0.3;
 		}
 		.main-menu {
 			.active {
@@ -137,7 +148,7 @@ import { getCssVariable } from '~/composable/useCommon';
 					flex-direction: row;
 					align-items: center;
 					display: grid;
-					
+
 					li {
 						height: var(--menu-height);
 						min-height: auto;

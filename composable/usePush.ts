@@ -1,16 +1,22 @@
 // composables/usePush.ts
 import { getCurrentInstance, type ComponentInternalInstance, defineExpose } from 'vue'
+import { useGetProvideParent } from './useProviderParent'
 
 export function usePush() {
 	let instance = getCurrentInstance()
 	if (!instance) throw new Error('must be used in setup')
-	return (comp: any, params = {}, size = '100%', container?: ComponentInternalInstance | null) => useNuxtApp().$push.call(instance, comp, params, size, container)
+	// 自动吸附到父级，否则从body根节点开始渲染
+	const parentContainer = useGetProvideParent()
+
+	return (comp: any, params = {}, size = '100%', container?: ComponentInternalInstance | null) => useNuxtApp().$push.call(instance, comp, params, size, container || parentContainer)
 }
 
 export function usePushUp() {
 	let instance = getCurrentInstance()
 	if (!instance) throw new Error('must be used in setup')
-	return (comp: any, params = {}, size = 'auto') => useNuxtApp().$pushUp.call(instance, comp, params, size)
+		// 自动吸附到父级，否则从body根节点开始渲染
+	const parentContainer = useGetProvideParent()
+	return (comp: any, params = {}, size = 'auto', container?: ComponentInternalInstance | null) => useNuxtApp().$pushUp.call(instance, comp, params, size, container||parentContainer)
 }
 
 export function usePop() {

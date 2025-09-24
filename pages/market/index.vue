@@ -55,26 +55,22 @@
 						<SymbolDetail :symbol="useSymbolStore().activeSymbol" />
 					</template>
 					<template #right>
-						<SplitRowContainer>
-							<template #up>
-								<KlineHeader :symbol="useSymbolStore().activeSymbol" />
-							</template>
-							<template #down>
-								<div class="flex flex-col justify-between w-full h-full">
-									<div class="flex-1">
-										<SplitContainer :right="120" :left="0">
-											<template #left>
-												<KlineChart :symbol="useSymbolStore().activeSymbol" />
-											</template>
-											<template #right>
-												<TradeOrder :symbol="useSymbolStore().activeSymbol" />
-											</template>
-										</SplitContainer>
-									</div>
-									<div><KlineFooter :symbol="useSymbolStore().activeSymbol" /></div>
+						<div class="flex flex-col justify-between w-full">
+							<KlineHeader :symbol="useSymbolStore().activeSymbol" />
+							<div class="flex flex-col justify-between w-full">
+								<div style="height: calc(var(--body-height) - var(--header-height) - var(--status-bar-height) - var(--header-height) - var(--footer-height) - var(--title-bar-height));">
+									<SplitContainer :right="120" :left="0">
+										<template #left>
+											<KlineChart :symbol="useSymbolStore().activeSymbol" />
+										</template>
+										<template #right>
+											<TradeOrder :symbol="useSymbolStore().activeSymbol" />
+										</template>
+									</SplitContainer>
 								</div>
-							</template>
-						</SplitRowContainer>
+								<div class="flex-1"><KlineFooter :symbol="useSymbolStore().activeSymbol" /></div>
+							</div>
+						</div>
 					</template>
 				</SplitContainer>
 			</template>

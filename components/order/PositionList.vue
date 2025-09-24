@@ -18,6 +18,7 @@
 	import ExchangeIndex from '~/pages/exchange/index.vue'
 	import { usePush, usePushUp } from '~/composable/usePush'
 	import SymbolDetail from '../symbol/SymbolDetail.vue'
+import { useGetProvideParent } from '~/composable/useProviderParent'
 	const { t } = useI18n()
 	const props = defineProps<{
 		height: number
@@ -83,6 +84,8 @@
 		//console.log('configmProfitLoss', takeProfitPrice, stopLossPrice)
 		popProfitLoss.value.forEach(item => (item as any).hide())
 	}
+	const parentContainer = useGetProvideParent()
+	
 	const pushStopProfitLoss = (position: PositionDto) => {
 		pushUp(
 			TakeProfitAndStopLoss,
@@ -95,7 +98,8 @@
 				position: position,
 				onClose: configmProfitLoss(position)
 			},
-			'90%'
+			'90%',
+			parentContainer
 		)
 	}
 
@@ -114,7 +118,8 @@
 				position: position,
 				action: 'close'
 			},
-			'90%'
+			'90%',
+			parentContainer
 		)
 	}
 
@@ -222,7 +227,7 @@
 		:style="{
 			minHeight: useStore().isH5
 				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom) - var(--app-status-bar-height))'
-				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
+				: 'calc(var(--body-height) - var(--nav-height) - var(--header-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
 		}"
 	>
 		<Empty :content="t('暂无仓位')" v-if="!loading && !error && !positions?.length" class="pt-20">
@@ -298,7 +303,7 @@
 								<button class="tag-red-large mr-2" v-if="isSpot(item.symbol) && item.side == Sides.SELL">{{ t('卖出') }}</button>
 								<SymbolName :symbol="useSymbolStore().getSymbol(item.symbol)" class="text-base roboto-bold leading-[0]" />
 							</div>
-							<div class="flex justify-between items-center gap-4">
+							<div class="flex justify-between items-center gap-4" v-if="useStore().isH5">
 								<button class="flex items-center" @click="pushKline(item)">
 									<el-icon><KlineIcon class="w-5 h-5" /></el-icon>
 								</button>

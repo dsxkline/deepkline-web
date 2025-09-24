@@ -80,7 +80,7 @@
 			height: 100%;
 			content: '';
 			z-index: -1;
-			opacity: 0.2;
+			opacity: 0.3;
 
 			// transition: all 0.3s ease;
 		}

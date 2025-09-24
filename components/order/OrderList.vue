@@ -146,7 +146,7 @@
 		:style="{
 			minHeight: useStore().isH5
 				? 'calc(var(--body-height) - var(--nav-height) - var(--menu-height) - var(--tabbar-height) - var(--safe-bottom) - var(--app-status-bar-height))'
-				: 'calc(var(--body-height) - var(--header-height) - var(--tabbar-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
+				: 'calc(var(--body-height) - var(--nav-height) - var(--header-height) - var(--tabbar-height) - var(--status-bar-height) - var(--app-status-bar-height))'
 		}"
 	>
 		<Empty :content="t('暂无委托')" v-if="!loading && !error && !orders?.length" class="pt-20">
