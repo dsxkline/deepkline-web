@@ -16,7 +16,7 @@
 		<component :is="comp" v-bind="contentParams" />
 	</div>
 </template>
-<style lang="less">
+<style lang="less" scoped>
 	.menu-container {
 		// background: rgb(var(--color-bg-base));
 		&::before {

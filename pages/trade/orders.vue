@@ -19,7 +19,7 @@
 		<CrypeOrder :height="tabbarHeight" />
 	</div>
 </template>
-<style lang="less">
+<style lang="less" scoped>
 	.order-container {
 		// background: var(--transparent01);
 		&::before {

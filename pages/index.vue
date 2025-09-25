@@ -156,12 +156,14 @@
 	)
 
 	onMounted(() => {
-		// 监听点击事件
-		leftCardBg.value.addEventListener('click', hideLeftCard)
+		nextTick(()=>{
+			// 监听点击事件
+			leftCardBg.value && leftCardBg.value.addEventListener('click', hideLeftCard)
+		})
 	})
 
 	onBeforeUnmount(() => {
-		leftCardBg.value.removeEventListener('click', hideLeftCard)
+		leftCardBg.value && leftCardBg.value.removeEventListener('click', hideLeftCard)
 	})
 </script>
 <template>
