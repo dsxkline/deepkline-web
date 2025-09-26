@@ -25,6 +25,7 @@ export interface UserDto {
 	updatedAt: string
 	cancelTime: string
 	levelCode: string
+	country: string
 	appleOpenId: string
 	editNicknameTimes: number
 	editFaceTimes: number

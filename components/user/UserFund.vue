@@ -102,7 +102,7 @@
 
 	function pushNotification() {
 		if (!useUserStore().user) {
-			pushUp(LoginIndex)
+			pushUp(LoginIndex,{},'100%')
 			return
 		}
 		// usepush(Notification)
@@ -110,7 +110,7 @@
 
 	function pushChat() {
 		if (!useUserStore().user) {
-			pushUp(LoginIndex)
+			pushUp(LoginIndex,{},'100%')
 			return
 		}
 		// usepush(Notification)

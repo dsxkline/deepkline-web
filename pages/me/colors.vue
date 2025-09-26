@@ -6,7 +6,7 @@
 	import { useKlineStore } from '~/store/kline'
 	const { t } = useI18n()
 	const props = defineProps<{
-		push?: boolean
+		push?: string
 	}>()
 	const pop = usePop()
 	const menus = computed(() => [

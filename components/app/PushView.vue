@@ -5,6 +5,7 @@
 	import { useRequestAnimation } from '~/composable/useRequestAnimation'
 	import { getParentRefreshComponent, useRefreshChildEvent } from '~/composable/usePush'
 	import { useStore } from '~/store'
+	import { useGetProvideParent } from '~/composable/useProviderParent'
 	// import SymbolSearch from '../symbol/SymbolSearch.vue';
 	const instance = getCurrentInstance()
 	const props = defineProps<{
@@ -30,6 +31,8 @@
 	const bttFull = ref(false)
 	// 是否vnode
 	const vnodeContainer = ref()
+	// 是否在盒子里
+	const parentPushContainer = ref<HTMLElement | null | undefined>(null)
 	// 异步加载组件
 	const asyncComp = defineAsyncComponent(() => {
 		return new Promise((resolve, reject) => {
@@ -135,26 +138,35 @@
 		//console.log('push onUnmounted')
 	})
 
+	const setParentPushContainer = ()=>{
+		parentPushContainer.value = drawerContainer.value?.closest('.parent-push-container')
+	}
+
 	const setDrawerBodyStyle = (visible: boolean) => {
+		setParentPushContainer()
+		const pheight = parentPushContainer.value?.clientHeight ? parentPushContainer.value.clientHeight + 'px' : 'var(--body-height)'
+		const pwidth = parentPushContainer.value?.clientWidth ? parentPushContainer.value.clientWidth + 'px' : 'var(--body-width)'
+		console.log('parentBox?.value',parentPushContainer)
+		let windowHeight = parentPushContainer.value?.clientHeight || window.innerHeight
 		// 处理auto
 		if (drawerBody.value) {
-			let h = Math.min(drawerBody.value.getBoundingClientRect().height || 0, window.innerHeight)
+			let h = Math.min(drawerBody.value.getBoundingClientRect().height || 0, windowHeight)
 			// let size = props.size == 'auto' ? h : props.size || '100%'
 			if (props.direction == 'rtl' || props.direction == 'ltr') {
-				drawerBody.value.style.height = 'var(--body-height)'
+				drawerBody.value.style.height = pheight
 				if (!useStore().isH5) drawerBody.value.style.height = '100%'
 			} else {
 				// console.log('props.size', props.size)
 				if (props.size) {
 					if (props.size.indexOf('%') > 0) {
-						h = (window.innerHeight * parseFloat(props.size)) / 100
+						h = (windowHeight * parseFloat(props.size)) / 100
 					} else if (props.size == 'auto') {
 					} else if (props.size?.indexOf('px')) {
 						// px 等
-						h = window.innerHeight * parseFloat(props.size)
+						h = windowHeight * parseFloat(props.size)
 					} else if (props.size?.indexOf('vh')) {
 						// vh 等
-						h = (window.innerHeight * parseFloat(props.size)) / 100
+						h = (windowHeight * parseFloat(props.size)) / 100
 					}
 				}
 				drawerBody.value.style.height = h + 'px'
@@ -166,19 +178,19 @@
 
 			drawerBody.value.style.transform = visible
 				? props.direction == 'btt'
-					? 'translateY(calc(var(--body-height) - 100%))'
+					? 'translateY(calc(' + pheight + ' - 100%))'
 					: 'translateX(0)'
 				: props.direction == 'btt'
-				? 'translateY(var(--body-height))'
-				: 'translateX(var(--body-width))'
+				? 'translateY(' + pheight + ')'
+				: 'translateX(' + pwidth + ')'
 
-			if (h >= window.innerHeight) bttFull.value = true
+			if (h >= windowHeight) bttFull.value = true
 			else bttFull.value = false
 
-			if(!bttFull.value){
+			if (!bttFull.value) {
 				// 不满屏隐藏子组件的app状态栏
 				const appStatusBar = drawerBody.value.querySelector('.app-status-bar') as HTMLElement
-				if(appStatusBar) appStatusBar.style.display = 'none'
+				if (appStatusBar) appStatusBar.style.display = 'none'
 			}
 		}
 		if (drawBg.value) {
@@ -210,10 +222,12 @@
 			render(h('div', props.params, props.to), vnodeContainer.value)
 		}
 		parentContainer.value = instance?.vnode.el?.parentNode
+		setParentPushContainer()
 		if (props.direction == 'rtl' || props.direction == 'ltr') nextTick(() => setDrawerBodyStyle(true))
 		new Promise(resolve => {
 			setTimeout(() => {
 				showComponent.value = true
+				
 				resolve(true)
 			}, 30)
 		})
@@ -233,7 +247,7 @@
 	<div class="drawer-container absolute top-0 left-0 w-full h-full" ref="drawerContainer">
 		<div
 			ref="drawerBody"
-			:class="['drawer-body bg-base w-full max-h-[--body-height] relative z-10', direction, bttFull ? 'btt-full' : '']"
+			:class="['drawer-body bg-base w-full relative z-10', direction, bttFull ? 'btt-full' : '', parentPushContainer?.clientHeight ? 'max-h-[' + parentPushContainer?.clientHeight + ']' : 'max-h-[--body-height]']"
 			v-swipe-down="direction == 'btt' && size != '100%' ? swipeDown : null"
 		>
 			<template v-if="direction == 'btt' && !bttFull">

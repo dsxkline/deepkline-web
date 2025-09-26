@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { getCssVariable, setCssVariable } from '~/composable/useCommon'
 export const useKlineStore = defineStore({
   id: 'kline',
   state: () => ({
@@ -36,6 +37,11 @@ export const useKlineStore = defineStore({
     },
     setKlineColorModel(model:'green-red'|'red-green') {
       this.klineColorModel = model
+      // 直接修改css变量 --color-green:45 189 133; --color-red:245 70 130;
+      const colorGreen = getCssVariable('--color-green')
+      const colorRed = getCssVariable('--color-red')
+      setCssVariable('--color-green',colorRed)
+      setCssVariable('--color-red',colorGreen)
     },
     setTimezone(timezone:'UTC+8'|"UTC"|"24") {
       this.timezone = timezone

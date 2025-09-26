@@ -2,7 +2,7 @@
 	<div class="up-loading" ref="upLoading" :style="{ height: height + 'px' }">
 		<div class="up-loading-content" ref="upLoadingContent">
 			<div class="up-loading-text">
-				<span class="icon" v-show="status === 'loading' || status === 'show'">
+				<span class="icon" v-show="!isTheend && (status === 'loading' || status === 'show')">
 					<div class="loading-page">
 						<div class="loading" ref="loading"></div>
 					</div>
@@ -168,9 +168,8 @@
 				const scrollTop = this.scroll.scrollTop
 				const scrollHeight = this.scroll.scrollHeight
 				const clientHeight = this.scroll.clientHeight
-				if (this.touchY <= 0 && scrollTop + clientHeight + 1 >= scrollHeight && this.status != 'loading') {
+				if (this.touchY <= 0 && scrollTop + clientHeight + 1 >= scrollHeight && this.status != 'loading' && scrollTop>0) {
 					const h = Math.max(Math.abs(this.deltaY), scrollTop + clientHeight + 1)
-
 					// 手指离开后，利用滚动惯性，继续加载
 					if (this.startLoading && Math.abs(h) >= this.height && scrollTop + clientHeight + 1 >= scrollHeight) {
 						this.setHeight(-Math.abs(this.height))
@@ -194,7 +193,7 @@
 				const clientHeight = this.scroll.clientHeight
 				const scrollTop = this.scroll.scrollTop
 
-				if (deltaY < 0 && scrollTop + clientHeight + this.height >= scrollHeight) {
+				if (deltaY < 0 && scrollTop + clientHeight + this.height >= scrollHeight && scrollTop>0) {
 					this.setHeight(deltaY)
 					// this.scroll.scrollTop = this.touchScrollY+Math.abs(deltaY);
 				}
@@ -215,7 +214,7 @@
 				const clientHeight = this.scroll.clientHeight
 				const scrollTop = this.scroll.scrollTop
 				// console.log('scrollHeight', scrollHeight, 'clientHeight', clientHeight, 'scrollTop', scrollTop);
-				if (this.startLoading && Math.abs(this.deltaY) >= this.height && scrollTop + clientHeight + 1 >= scrollHeight) {
+				if (this.startLoading && Math.abs(this.deltaY) >= this.height && scrollTop + clientHeight + 1 >= scrollHeight && scrollTop>0) {
 					// 正在加载状态
 					this.status = 'loading'
 					this.loadingAnimation()
@@ -252,7 +251,7 @@
 		},
 		mounted() {
 			this.observeScroll()
-			this.reset('show')
+			// this.reset('show')
 			// console.log('this', this)
 		},
 		beforeDestroy() {

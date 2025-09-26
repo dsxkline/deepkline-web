@@ -12,7 +12,7 @@ const props = defineProps<{
 const pushUp = usePushUp()
 const clickHandle = ()=>{
     if(!useUserStore()?.user?.id){
-        pushUp(Login)
+        pushUp(Login,{},'100%')
     }
 }
 const usepush = usePush()

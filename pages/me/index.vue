@@ -22,7 +22,8 @@
 	import Languages from './languages.vue'
 	const { t,localeProperties } = useI18n()
 	const props = defineProps<{
-		push?: boolean
+		push?: string,
+		height?: number
 	}>()
 	let usepush = usePush()
 	let pushUp = usePushUp()
@@ -189,14 +190,12 @@
 		if (useUserStore().user) {
 			usepush(AccountList)
 		} else {
-			pushUp(LoginIndex)
+			pushUp(LoginIndex,{},'100%')
 		}
 	}
 
 	onMounted(() => {
-		// setTimeout(() => {
-		// 	useNuxtApp().$pop()
-		// }, 1000)
+		console.log('meindex.height',props.height)
 	})
 	onBeforeUnmount(() => {
 		// console.log('Me component unmounted, menus cleared')

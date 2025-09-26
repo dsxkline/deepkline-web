@@ -34,7 +34,7 @@
 						<el-icon v-if="item.more == undefined" class="ml-2 text-muted">
 							<ArrowRight />
 						</el-icon>
-						<el-icon v-else-if="typeof item.more != 'boolean'" class="ml-2 text-muted">
+						<el-icon v-else-if="typeof item.more != 'boolean' && item.more!=''" class="ml-2 text-muted">
 							<component :is="item.more" />
 						</el-icon>
 					</div>

@@ -22,7 +22,7 @@
 	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
 	const pushAddAccount = (exchange: ExchangeDto) => {
 		if (!useUserStore().user) {
-			pushUp(LoginIndex)
+			pushUp(LoginIndex,{},'100%')
 			return
 		}
 		if (exchange.isLocal && exchange.isDemo) {
@@ -39,7 +39,7 @@
 	}
 	const pushAddDemoAccount = () => {
 		if (!useUserStore().user) {
-			pushUp(LoginIndex)
+			pushUp(LoginIndex,{},'100%')
 			return
 		}
 		pushLeft(CreateDemo, {}, '100%', currentDialog)

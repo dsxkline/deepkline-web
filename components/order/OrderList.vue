@@ -108,7 +108,7 @@
 	function pushLogin() {
 		if (!useUserStore().user) {
 			if (useStore().isH5) {
-				pushUp(LoginIndex)
+				pushUp(LoginIndex,{},'100%')
 				return
 			} else {
 				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')

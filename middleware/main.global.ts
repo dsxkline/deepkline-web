@@ -95,6 +95,7 @@ async function getMessageUnRead() {
 }
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
+	const mobilePack = process.env.MODE == 'android' || process.env.MODE == 'ios'
 	// 服务端渲染主题
 	const colorMode = useSyncedCookie('nuxt-color-mode', { default: () => 'dark' })
 	// console.log('colorMode', colorMode.value)
@@ -106,7 +107,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		meta: [{ name: 'theme-color', content: colorMode.value == 'dark' ? '#1e0b2c' : '#ffffff' }],
 		link: [
 			...[
-				!process.env.MODE
+				!process.env.MODE && !mobilePack
 					? {
 							rel: 'manifest',
 							href: '/api/manifest.webmanifest?theme=' + colorMode.value

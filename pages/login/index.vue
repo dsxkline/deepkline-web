@@ -5,7 +5,7 @@
 	import type { ComponentInternalInstance } from 'vue'
 	import { getAppStatusBarHeight, getNavHeight } from '~/composable/useCommon'
 	const { t } = useI18n()
-	const props = defineProps<{ height?: number }>()
+	const props = defineProps<{ height?: number,push?:string }>()
 
 	const tabbarHeight = ref(0)
 	const navbar = ref()
@@ -30,6 +30,7 @@
 	}
 
 	onMounted(() => {
+		console.log('login push',props.push)
 		setTabbarHeight()
 	})
 	onUnmounted(() => {
@@ -39,7 +40,7 @@
 <template>
 	<div class="login-index-container">
 		<AppStatusBar/>
-		<NavigationBar ref="navbar" :showClose="true" />
+		<NavigationBar ref="navbar" :showClose="true" v-if="push=='btt'"/>
 		<h1 class="px-6 text-2xl font-bold pt-4 text-center text-main" ref="titleBar">
 			{{ t('登录') }} DeepKline
 			<p class="text-sm font-normal text-grey py-2">{{ t('未注册邮箱将自动注册') }}</p>
@@ -76,9 +77,9 @@
 			display: none;
 		}
 	}
-	:deep(.navbar) {
-		display: none;
-	}
+	// :deep(.navbar) {
+	// 	display: none;
+	// }
 
 	@media (max-width: 999px) {
 		.login-index-container{

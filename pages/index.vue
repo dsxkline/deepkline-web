@@ -5,7 +5,7 @@
 	import AccountIndex from '@/pages/account/index.vue'
 	import DownloadIndex from '@/pages/download/index.vue'
 	import type { MenuModel } from '~/components/common/TabBar.vue'
-	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled, HomeFilled, Download } from '@element-plus/icons-vue'
+	import { UserFilled, Histogram, Monitor, Opportunity, HelpFilled, HomeFilled, Download, User } from '@element-plus/icons-vue'
 	import { useStore } from '~/store'
 	import Logo from '~/components/icons/Logo.vue'
 	import AssetsIcon from '~/components/icons/AssetsIcon.vue'
@@ -15,6 +15,7 @@
 	import OrderIcon from '~/components/icons/order/OrderIcon.vue'
 	import DownloadIcon from '~/components/icons/DownloadIcon.vue'
 	import MenuContent from '~/components/MenuContent.vue'
+	import MeIndex from '~/pages/me/index.vue'
 	const { t } = useI18n()
 	useHead({
 		script: [{ src: 'https://turing.captcha.qcloud.com/TCaptcha.js' }]
@@ -52,12 +53,23 @@
 			}
 		},
 		{
-			name: '资产',
+			name: t('资产'),
 			icon: markRaw(AssetsIcon),
 			contentComp: markRaw(MenuContent),
 			isCard: true,
 			contentParams: {
 				comp: AccountIndex,
+				width: 400,
+				contentParams: { mode: 'web' }
+			}
+		},
+		{
+			name: t('我的'),
+			icon: markRaw(User),
+			contentComp: markRaw(MenuContent),
+			isCard: true,
+			contentParams: {
+				comp: MeIndex,
 				width: 400,
 				contentParams: { mode: 'web' }
 			}
@@ -189,7 +201,7 @@
 	</div>
 
 	<div class="main-h5 main-container flex justify-between flex-row w-full h-full" v-if="useStore().isH5">
-		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5"></LeftMenu>
+		<LeftMenu @menuHandler="menuHandler" :menus="menus5" v-if="menus5" :active="active"></LeftMenu>
 		<!-- 使用缓存 -->
 		<div class="right-container">
 			<KeepAlive>

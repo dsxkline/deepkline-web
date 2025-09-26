@@ -74,7 +74,7 @@
 						})
 						// 如果是dialog打开
 						// console.log('password login success', currentDialog)
-						currentDialog?.exposed && currentDialog.exposed.close()
+						typeof currentDialog?.exposed?.close === 'function' && currentDialog?.exposed?.close()
 						clearPWACaches()
 						useNuxtApp().$popRoot(null, -2)
 					}, 100)

@@ -12,9 +12,10 @@ import {i18nConfig} from './config/i18n.config'
 const config = require('./config/config').default
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const winPack = process.env.MODE == 'win' || process.env.MODE == 'mac'
+const mobilePack = process.env.MODE == 'android' || process.env.MODE == 'ios'
 // console.log('是否PC打包', winPack)
 const pwa = pwaConfig as any
-pwa.manifest = false
+if(process.env.MODE) pwa.manifest = false
 
 // console.log('pwa',pwa,modulesConfig)
 
@@ -50,10 +51,10 @@ const defaultConfig: NuxtConfig = {
 					: {}
 		}
 	},
-	pwa: winPack ? undefined : pwa,
-	experimental: {
-		appManifest: process.env.NODE_ENV != 'development'
-	},
+	pwa: winPack || mobilePack ? undefined : pwa,
+	// experimental: {
+	// 	appManifest: process.env.NODE_ENV != 'development'
+	// },
 	i18n: i18nConfig
 }
 

@@ -289,7 +289,7 @@ class DsxKlineChart {
 			let cricleColorStartRed = 'rgba(254, 53, 53, 0.5)'
 			let cricleColorStopRed = cricleColorStop
 			// 空 红色
-			if(lastKline.OPEN>lastKline.CLOSE){
+			if((useKlineStore().klineColorModel == 'green-red' && lastKline.OPEN>lastKline.CLOSE) || (useKlineStore().klineColorModel == 'red-green' && lastKline.OPEN<lastKline.CLOSE)){
 				this.kline.theme.cricleColor = cricleColorRed
 				this.kline.theme.cricleColorStart = cricleColorStartRed
 				this.kline.theme.cricleColorStop = cricleColorStopRed

@@ -10,7 +10,7 @@
 	import ChangeRateList from './tables/ChangeRateList.vue'
 	const {t} = useI18n()
 	const props = defineProps<{
-		push?: boolean
+		push?: string
 	}>()
 	const usepush = usePush()
 	const loading = ref(true)

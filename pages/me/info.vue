@@ -44,9 +44,10 @@
 			id: 1,
 			name: t('国家或地区'),
 			subName: '',
-			desc: '中国',
+			desc: useUserStore().user?.country || '',
+			more:false,
 			callback: () => {
-				usepush(Country)
+				// usepush(Country)
 			}
 		},
 		// {
@@ -60,7 +61,8 @@
 			id: 1,
 			name: t('用户等级'),
 			subName: '',
-			desc: useUserStore().user?.levelCode,
+			desc: useUserStore().user?.levelCode || 'L1',
+			more:false,
 			callback: () => {}
 		}
 	])

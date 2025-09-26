@@ -1,5 +1,6 @@
 import { version } from '../package.json'
 const winUrlPrefx = (process.env.MODE != 'win' && process.env.MODE != 'mac') ? '' : '.'
+
 export default {
 	title: 'DeepKline Deep Vision · Smart Trading',
 	htmlAttrs: {

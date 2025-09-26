@@ -4,6 +4,7 @@
 	import Trades from './Trades.vue'
 	import { useStore } from '~/store/index'
 	import { useWillAppear, useWillDisappear } from '~/composable/usePush'
+import { MarketType } from '~/fetch/dtos/symbol.dto'
 	const { t } = useI18n()
 	const props = defineProps<{
 		symbol: string
@@ -129,7 +130,14 @@
 					</li>
 					<li class="show">
 						<span>{{ t('24H成交量') }}</span>
-						<span v-if="item?.vol24h">{{ moneyFormat(item?.vol24h) }}</span>
+						<span v-if="item?.vol24h">
+							<template v-if="symbolObj.marketType==MarketType.SPOT">
+								{{ moneyFormat(parseFloat(item?.vol24h || '0')) }}
+							</template>
+							<template v-if="symbolObj.marketType==MarketType.SWAP">
+								{{ moneyFormat(parseFloat(item?.last || '0') * parseFloat(item?.vol24h || '0') * (parseFloat(symbolObj?.contractSize) || 1)) }}
+							</template>
+							</span>
 						<span v-else>--</span>
 					</li>
 					<li>
@@ -139,7 +147,14 @@
 					</li>
 					<li class="show">
 						<span>{{ t('24H成交额') }}</span>
-						<span v-if="item?.volCcy24h">{{ moneyFormat(item?.volCcy24h) }}</span>
+						<span v-if="item?.volCcy24h">
+							<template v-if="symbolObj.marketType==MarketType.SPOT">
+								{{ moneyFormat(parseFloat(item?.volCcy24h || '0')) }}
+							</template>
+							<template v-if="symbolObj.marketType==MarketType.SWAP">
+								{{ moneyFormat(parseFloat(item?.last || '0') * parseFloat(item?.volCcy24h || '0')) }}
+							</template>
+						</span>
 						<span v-else>--</span>
 					</li>
 					<li>

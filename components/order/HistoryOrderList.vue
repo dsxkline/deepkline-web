@@ -66,8 +66,11 @@
 					// 没有
 					if (result.data?.total) {
 						const totalPages = Math.ceil(result.data?.total / result.data?.pageSize)
-						if (page.value < totalPages) page.value += 1
-						else{
+						if (page.value < totalPages) {
+							upLoading.value = upLoadingHandle
+							page.value += 1
+						} else {
+							upLoading.value = upLoadingHandle
 							downInstance?.theend(t('到底了'))
 						}
 					}
@@ -126,7 +129,7 @@
 	function pushLogin() {
 		if (!useUserStore().user) {
 			if (useStore().isH5) {
-				pushUp(LoginIndex)
+				pushUp(LoginIndex,{},'100%')
 				return
 			} else {
 				useNuxtApp().$dialog(LoginIndex, {}, '600px', '560px')
@@ -157,7 +160,8 @@
 		page.value = 1
 		getOrders(downInstance)
 	}
-	const upLoading = (upInstance: UpLoadingInstance) => {
+	const upLoading = ref()
+	const upLoadingHandle = (upInstance: UpLoadingInstance) => {
 		//console.log('下拉刷新开设,,,,,', upInstance)
 		getOrders(upInstance)
 	}
