@@ -124,8 +124,8 @@
 	"1D": "1D",
 	"1W": "1W",
 	"1M": "1M",
-	"1小时":"1h",
-	"1天":"1D",
+	"1小时": "1h",
+	"1天": "1D",
 	"多空持仓人数比": "Long/Short Position Ratio",
 	"多仓人数": "Long Holders",
 	"空仓人数": "Short Holders",
@@ -404,5 +404,8 @@
 	"提示": "Notice",
 	"到底了": "No more content",
 	"当价格达到止盈": "When the price reaches {price} ({percent}), estimated profit {profit}",
-	"当价格达到止损": "When the price reaches {price} ({percent}), estimated loss {profit}"
+	"当价格达到止损": "When the price reaches {price} ({percent}), estimated loss {profit}",
+	"方向": "Direction",
+	"占比": "Proportion",
+	"平仓均价": "Avg. Exit Price"
 }
