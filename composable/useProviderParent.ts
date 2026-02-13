@@ -11,6 +11,6 @@ export function useGetProvideParent() {
 	const parent: ComponentInternalInstance | any = inject('parentContainer', null)
 	// 如果是弹框优先
 	const currentDialog: ComponentInternalInstance | any = inject('currentDialog', null) // 也能拿到
-	console.log('ComponentInternalInstance', parent, currentDialog)
+	// console.log('ComponentInternalInstance', parent, currentDialog)
 	return currentDialog || parent
 }

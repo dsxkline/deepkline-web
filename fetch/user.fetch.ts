@@ -20,6 +20,7 @@ const messageListApi = '/user/message/list'
 const messageUnReadApi = '/user/message/unread'
 const messageReadApi = '/user/message/read'
 const messageReadAllApi = '/user/message/read/all'
+const authGoogleApi = '/user/google/login'
 
 export const userFetch = {
 	/**
@@ -29,6 +30,15 @@ export const userFetch = {
 	login: (params: LoginReqDto) =>
 		usePost<ApiResult<UserDto>>(baseUrl, loginApi, {
 			...params
+		}),
+	
+	/**
+	 * Google登录
+	 * @returns
+	 */
+	googleLogin: (idToken:string) =>
+		usePost<ApiResult<UserDto>>(baseUrl, authGoogleApi, {
+			idToken
 		}),
 
 	/**

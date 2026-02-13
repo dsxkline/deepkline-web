@@ -117,6 +117,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 		]
 	})
 
+	useHead({
+		script: [
+			{
+				src: 'https://accounts.google.com/gsi/client',
+			}
+		]
+	})
+
 	if (process.server) {
 	}
 	if (process.client) {
