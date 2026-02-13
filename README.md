@@ -15,7 +15,7 @@ https://dev.deepkline.com
 
 支持 web h5 pc android ios pwa
 
-<video controls src="deepkline demo.mov" title="Title"></video>
+![alt text](<deepkline demo.gif>)
 
 ![alt text](局部截取_20260213_114930.png)
 
