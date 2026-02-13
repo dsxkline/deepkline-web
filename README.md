@@ -10,7 +10,8 @@ capacitor
 
 
 ### 预览
-https://dev.deepkline.com
+https://dev.deepkline.com 
+演示账号：dangfm@qq.com 密码 12345678
 
 支持 web h5 pc android ios pwa
 
@@ -30,4 +31,4 @@ https://dev.deepkline.com
 "generate:win": "cross-env MODE=win nuxt generate",
 "generate:mac": "cross-env MODE=mac nuxt generate",
 ```
-
+需拷贝dist目录到electron的out/render目录
